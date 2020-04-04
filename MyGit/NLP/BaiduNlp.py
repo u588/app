@@ -1,0 +1,6 @@
+from aip import AipNlp
+
+APP_ID = '16875411'
+API_KEY = 'orZf33QyuPwTUClWWPqGSGCa'
+SECRET_KEY = 'V52KgKB1pQ2j6iFF8579CRz5IYq0SNnS'
+
