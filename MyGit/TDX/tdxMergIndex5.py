@@ -5,7 +5,7 @@ import pandas as pd
     融合所有指数的每日收盘价为一个数据表
 """
 home = '10.145.254.55:5432'
-job = '10.3.18.55:5432'
+job = '10.3.18.56:5432'
 ip = job
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxIndexs5')

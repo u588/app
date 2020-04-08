@@ -8,8 +8,8 @@ from sqlalchemy import create_engine
 #   'sz399007', 'sz399008']
 # StocksList =['002384']
 Index = '930706_中证水泥'
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxStocks')
-engX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxXdXr')
+engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+engX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxXdXr')
 
 data = pd.read_excel('f:/ConsData/Cons/'+ Index + '.xls', index_col=0,dtype={'index_code':object, 'st_code':object})
 StocksList = data.st_code.tolist()

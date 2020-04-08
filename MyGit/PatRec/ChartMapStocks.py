@@ -4,8 +4,8 @@ import data_fq  as fq
 from sqlalchemy import create_engine
 
 
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxStocks')
-engX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxXdXr')
+engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+engX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxXdXr')
 
 StockCode = '002017'
 

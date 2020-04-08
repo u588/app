@@ -5,9 +5,9 @@ import datetime
 import calendar
 import time
 
-engFq = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/Fq')
+engFq = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/Fq')
 engBas = create_engine(
-    'postgresql+psycopg2://sa:11111111@10.3.18.55:5432/StockBas')
+    'postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
 
 
 def FqStock(stock):

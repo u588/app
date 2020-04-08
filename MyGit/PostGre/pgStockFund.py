@@ -2,7 +2,7 @@
 import tushare as ts
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/StockFund')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockFund')
 
 
 try:

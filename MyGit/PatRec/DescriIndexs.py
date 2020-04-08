@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 #  'sh000905', 'sz399314', 'sz399315', 'sz399316', 'sz399106',
 #   'sz399007', 'sz399008']
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxIndexs')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndexs')
 
 data = pd.read_excel('F:/IndexsData/tdxIndexLists.xls', dtype={'code':object})
 IndexsList = data.code.tolist()

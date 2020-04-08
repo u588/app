@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 home = '10.145.254.55:5432'
-job = '10.3.18.55:5432'
-ip = home
+job = '10.3.18.56:5432'
+ip = job
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/MarkCap')
 

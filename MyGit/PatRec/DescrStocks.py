@@ -7,8 +7,8 @@ from sqlalchemy import create_engine
 #  'sh000905', 'sz399314', 'sz399315', 'sz399316', 'sz399106',
 #   'sz399007', 'sz399008']
 # StocksList =['603686']
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxStocks')
-engX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxXdXr')
+engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+engX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxXdXr')
 
 data = pd.read_csv('f:/stocksdata/stockslist.csv', index_col=0,dtype={'code':object})
 StocksList = data.code.tolist()

@@ -8,8 +8,8 @@ api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
 home = '10.145.254.55:5432'
-job = '10.3.18.55:5432'
-ip = home
+job = '10.3.18.56:5432'
+ip = job
 Cate = 0
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
 """

@@ -8,7 +8,7 @@ api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
 api = TdxHq_API()
 home = '10.145.254.55:5432'
-job = '10.3.18.55:5432'
+job = '10.3.18.56:5432'
 ip = job
 Cate = 9
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
@@ -27,7 +27,7 @@ Cate = 9
 """
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxIndexs')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndexs')
 
 
 IndexLists = pd.read_sql('IndexList', eng)['index_code'].tolist()

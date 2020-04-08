@@ -4,7 +4,7 @@ import pandas  as pd
 import datetime, calendar
 import time
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/db')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/db')
 
 def getStock(tiker):
     intraday = ts.get_hist_data(code=ticker,start=lastMon, end=dateToday, ktype='5')

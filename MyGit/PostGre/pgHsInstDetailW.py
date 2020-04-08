@@ -4,7 +4,7 @@ import pandas as pd
 import datetime
 #import time
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/MarkCap')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/MarkCap')
 
 
 #dateToday = datetime.datetime.today().strftime('%Y%m%d')

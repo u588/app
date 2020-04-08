@@ -5,8 +5,8 @@ import matplotlib as mpl
 from sqlalchemy import create_engine
 
 
-engD = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxStocks')
-eng5 = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/tdxStocks5')
+engD = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+eng5 = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks5')
 
 StockCode = '600624'
 

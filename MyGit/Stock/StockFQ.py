@@ -3,8 +3,8 @@ import data_fq  as fq
 import pandas as pd
 
 home = '10.145.254.55:5432'
-job = '10.3.18.55:5432'
-ip = home
+job = '10.3.18.56:5432'
+ip = job
 
 engS = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
 engX = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxXdXr')

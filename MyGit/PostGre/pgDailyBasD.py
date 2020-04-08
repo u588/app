@@ -4,9 +4,9 @@ import pandas  as pd
 import datetime
 import time
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/DailyBasD')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DailyBasD')
 ts.set_token('eee11f7ac92d7b2eed02dadb10d1ddfed44cee3b458dffb6f3fe7ba7')
-engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/DailyBas')
+engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DailyBas')
 
 pro = ts.pro_api()
 

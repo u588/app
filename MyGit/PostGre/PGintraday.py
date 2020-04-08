@@ -6,7 +6,7 @@ import pandas  as pd
 #import time
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/db')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/db')
 
 def stockPriceIntraday(ticker):
     intraday = ts.get_hist_data(ticker, ktype='5')

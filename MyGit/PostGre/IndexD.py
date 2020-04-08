@@ -3,7 +3,7 @@ import tushare as ts
 import pandas as pd
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/csIndex')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/csIndex')
 
 
 def GetIndex(cIndex):

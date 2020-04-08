@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 class Lottery(object):
 
     def __init__(self):
-        self.db = eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.55:5432/Lottery')
+        self.db = eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/Lottery')
 
         self.baseUrl = "http://www.cwl.gov.cn/cwl_admin/kjxx/findDrawNotice?name=ssq"
         self.headers = {
