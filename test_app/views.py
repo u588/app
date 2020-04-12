@@ -4,7 +4,6 @@ from flask import Flask, render_template
 
 from . import app
 
-
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -29,3 +28,4 @@ def hello_there(name = None):
 @app.route("/api/data")
 def get_data():
     return app.send_static_file("data.json")
+
