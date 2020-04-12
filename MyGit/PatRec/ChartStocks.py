@@ -6,7 +6,7 @@ from pyecharts import Line, Kline, Bar, Overlap, Grid
 
 # get Data
 CodeId='002547'
-StocksList = pd.read_csv('f:/WWWstocks/StocksList.csv', dtype={'code':object})
+StocksList = pd.read_csv('/home/ts/app/www/html/StocksList.csv', dtype={'code':object})
 Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
 df = Stock
 df.reset_index(inplace=True)
@@ -155,5 +155,5 @@ grid.add(macd_overlap, grid_top='60%')
 grid.add(ad_overlap, grid_top='60%')
 
 
-grid.render('F:/WWWstocks/'+data['code'][0]+df['name'][0]+'.html')
+grid.render('/home/ts/app/www/html/'+data['code'][0]+df['name'][0]+'.html')
 print('ok')

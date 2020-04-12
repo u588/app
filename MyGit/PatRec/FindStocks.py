@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 today = datetime.date.today().strftime('%m%d')
 
-df = pd.read_csv('f:/WWWstocks/StocksList.csv', dtype={'code':object})
+df = pd.read_csv('/home/ts/app/www/html/StocksList.csv', dtype={'code':object})
 StocksList = df.code.tolist()
 SL = pd.DataFrame(columns=['code'])
 

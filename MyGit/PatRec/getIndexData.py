@@ -5,7 +5,7 @@ import tushare as ts
 IndexsList= ['sh000001', 'sh000300',  'sh000016',
  'sh000905', 'sz399314', 'sz399315', 'sz399316', 'sz399106',
   'sz399007', 'sz399008']
-# IndexsList = pd.read_excel('F:/WWWStocks/IndexsList.xls')
+# IndexsList = pd.read_excel('/home/ts/app/www/html/IndexsList.xls')
 # Index = IndexsList.loc[IndexsList['code']==Id]
 def getData(Code):
 	

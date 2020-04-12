@@ -25,5 +25,5 @@ heatmap.add("热力图直角坐标系", X, Y, data,
     visual_orient="horizontal",
     visual_range = [0,ma]
 )
-heatmap.render('F:/WWWstocks/'+ ConsName + '.html')
+heatmap.render('/home/ts/app/www/html/'+ ConsName + '.html')
 print('ok !')

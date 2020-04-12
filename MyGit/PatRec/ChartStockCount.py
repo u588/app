@@ -21,5 +21,5 @@ bar = Bar('StocksCount', height=600, width=1300, page_title= today+'StocksCount'
 bar.add('Count', D.index.tolist(), D.Count.tolist(), mark_point=['max'],
         is_label_show=True, is_datazoom_show=True)
 
-bar.render('F:/WWWStocks/'+today + 'StocksCount.html')
+bar.render('/home/ts/app/www/html/'+today + 'StocksCount.html')
 print('Chart OK !')

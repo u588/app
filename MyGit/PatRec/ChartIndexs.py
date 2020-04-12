@@ -4,12 +4,11 @@ import pandas as pd
 from pyecharts import Line, Kline, Bar, Overlap, Grid
 
 # sh000001 sh000300  sh000016 sh000905  sz399314  sz399315 sz399316 sz399106 sz399007 sz399008
-Id='sh000001'
-IndexsList = pd.read_excel('F:/WWWStocks/IndexsList.xls')
+Id='sz399001'
+IndexsList = pd.read_excel('/home/ts/app/data/IndexsList.xls')
 Index = IndexsList.loc[IndexsList['code']==Id]
 df = Index
 df.reset_index(inplace=True)
-
 
 data = ts.get_k_data(code=Id[2:], index='True')
 
@@ -133,4 +132,4 @@ grid.add(k_overlap, grid_bottom="45%")
 grid.add(macd_overlap, grid_top='60%')
 grid.add(ad_overlap, grid_top='60%')
 
-grid.render('F:/WWWstocks/Indexs/'+Id[2:]+Index['name'][0]+'.html')
+grid.render('/home/ts/app/www/html/'+Id[2:]+Index['name'][0]+'.html')

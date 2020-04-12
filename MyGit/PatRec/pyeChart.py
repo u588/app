@@ -171,4 +171,4 @@ grid.add(macd_overlap, grid_top='60%')
 
 
 
-grid.render('F:/WWWstocks/'+data['code'][0]+'.html')
+grid.render('/home/ts/app/www/html/'+data['code'][0]+'.html')
