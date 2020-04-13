@@ -2,7 +2,11 @@ from datetime import datetime
 
 from flask import Flask, render_template
 
-from . import app
+# from . import app
+
+app = Flask(__name__, 
+                    template_folder='/home/ts/app/test_app/templates',
+                    static_folder='/home/ts/app/test_app/static'     )
 
 @app.route("/")
 def home():
@@ -29,5 +33,5 @@ def hello_there(name = None):
 def get_data():
     return app.send_static_file("data.json")
 
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()
