@@ -30,8 +30,8 @@ def index():
 @app.route("/barChart")
 def get_bar_chart():
     c = bar_base()
-    #return c.dump_options_with_quotes()
-    return Markup(c.render_embed())
+    return c.dump_options_with_quotes()
+    # return Markup(c.render_embed())
 
 
 if __name__ == "__main__":
