@@ -25,14 +25,14 @@ def bar_base() -> Bar:
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index1.html")
 
 
 @app.route("/barChart")
 def get_bar_chart():
     c = bar_base()
     return c.dump_options_with_quotes()
-    # return Markup(c.render_embed())
+    
 
 
 if __name__ == "__main__":
