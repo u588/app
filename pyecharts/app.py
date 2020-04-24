@@ -8,7 +8,8 @@ from pyecharts import options as opts
 from pyecharts.charts import Bar
 
 
-app = Flask(__name__, static_folder="templates")
+app = Flask(__name__, static_folder='static',
+                        template_folder='templates')
 
 
 def bar_base() -> Bar:
