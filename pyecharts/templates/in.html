@@ -16,7 +16,7 @@
             var chart = echarts.init(document.getElementById('bar'), 'gray', {renderer: 'canvas'});
             $.ajax({
                 type: "GET",
-                url: "/barChart",
+                url: "http://10.3.18.52:5000/barChart",
                 dataType: 'json',
                 data: {result: result_json},
                 success: function (result) {
