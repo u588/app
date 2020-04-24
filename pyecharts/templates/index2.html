@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>my-pyecharts</title>
-    <script src="/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/js/echarts.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
 
 </head>
 <body>
@@ -34,7 +34,7 @@
         function getDynamicData() {
             $.ajax({
                 type: "GET",
-                url: "lineDynamicData",
+                url: "/lineDynamicData",
                 dataType: "json",
                 success: function (result) {
                     old_data.push([result.name, result.value]);
