@@ -7,8 +7,9 @@ from pyecharts import options as opts
 from pyecharts.charts import Line
 
 
-app = Flask(__name__, static_url_path='/',
-                        static_folder='static',
+app = Flask(__name__, 
+                        # static_url_path='/',
+                        # static_folder='static',
                         template_folder='templates')
 
 
