@@ -8,14 +8,14 @@
 
 </head>
 <body>
-    <div id="bar" style="width:1000px; height:600px;"></div>
+    <div id="bar" style="width:1800px; height:500px;"></div>
     <script>
         var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
         var old_data = [];
         $(
             function () {
                 fetchData(chart);
-                setInterval(getDynamicData, 2000);
+                setInterval(getDynamicData, 1000);
             }
         );
 

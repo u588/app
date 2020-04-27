@@ -19,7 +19,7 @@ def line_base() -> Line:
         .add_xaxis(["{}".format(i) for i in range(10)])
         .add_yaxis(
             series_name="",
-            y_axis=[randrange(50, 80) for _ in range(10)],
+            y_axis=[randrange(0, 80) for _ in range(10)],
             is_smooth=True,
             label_opts=opts.LabelOpts(is_show=False),
         )
@@ -50,7 +50,7 @@ idx = 9
 def update_line_data():
     global idx
     idx = idx + 1
-    return jsonify({"name": idx, "value": randrange(50, 80)})
+    return jsonify({"name": idx, "value": randrange(0, 80)})
 
 
 if __name__ == "__main__":
