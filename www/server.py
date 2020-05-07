@@ -26,8 +26,8 @@ def bar_base() -> Bar:
     )
     return c
 
-def Kline_zoom() -> Kline:
-    d = ts.get_hist_data('000893')[['open', 'close','low','high' ]].head(100).sort_index(ascending=True)
+def Kline_zoom(code) -> Kline:
+    d = ts.get_hist_data(code)[['open', 'close','low','high' ]].head(100).sort_index(ascending=True)
     x = d.index.tolist()
     data = np.array(d).tolist()
     c = (
@@ -42,8 +42,9 @@ def Kline_zoom() -> Kline:
                     is_show=True, areastyle_opts=opts.AreaStyleOpts(opacity=1)
                 ),
             ),
-            datazoom_opts=[opts.DataZoomOpts(type_="inside")],
-            title_opts=opts.TitleOpts(title="Kline-DataZoom-inside"),
+        #    datazoom_opts=[opts.DataZoomOpts(type_="inside")],
+            datazoom_opts=[opts.DataZoomOpts(pos_bottom="-2%")],
+            title_opts=opts.TitleOpts(title=code),
         )
         # .render("kline_datazoom_inside.html")
     )
@@ -51,9 +52,9 @@ def Kline_zoom() -> Kline:
 
 @app.route("/")
 def index():
-    c = Kline_zoom()
+    c = Kline_zoom('000623')
     return Markup(c.render_embed())
-    # return c.dump_options_with_quotes()
+    
 
 
 if __name__ == "__main__":
