@@ -1,12 +1,16 @@
 from datetime import datetime
-
 from flask import Flask, render_template
 
-# from . import app
+import mytab
+import mytable
+import Kpro
+
+
 
 app = Flask(__name__, 
-                    template_folder='/home/ts/app/test_app/templates',
-                    static_folder='/home/ts/app/test_app/static'     )
+                    static_url_path='/',
+                    template_folder='templates',
+                    static_folder='static')
 
 @app.route("/")
 def home():
@@ -23,15 +27,19 @@ def contact():
 @app.route("/hello/")
 @app.route("/hello/<name>")
 def hello_there(name = None):
+
+    c=Kpro.Kchart(name)
+
+
     return render_template(
-        "hello_there.html",
-        name=name,
-        date=datetime.now()
+        "simple_chart.html",
+        c
+        # date=datetime.now()
     )
 
 @app.route("/api/data")
 def get_data():
     return app.send_static_file("data.json")
 
-# if __name__ == '__main__':
-#     app.run()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='5000')
