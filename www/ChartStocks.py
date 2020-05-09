@@ -10,7 +10,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 
 # get Data
-CodeId='603530'
+CodeId='603501'
 name = CodeId
 StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
 Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)

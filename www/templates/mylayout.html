@@ -4,22 +4,18 @@
         <meta charset="utf-8" />
         <title>{% block title %}{% endblock %}</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='site.css')}}" />
-        <script src="/jquery.min.js"></script>
-        <script type="text/javascript" src="/echarts.min.js"></script>
     </head>
 
     <body>
         <div class="navbar">
             <a href="{{ url_for('home') }}" class="navbar-brand">主页</a>
             <a href="{{ url_for('about') }}" class="navbar-item">About</a>
-            <a href="{{ url_for('contact') }}" class="navbar-item">专业画图</a>
+            <a href="{{ url_for('contact') }}" class="navbar-item">Contact</a>
         </div>
 
-        {% block content %}
-        {% endblock %}
-
         <div class="body-content">
-
+            {% block content %}
+            {% endblock %}
             <hr/>
             <footer>
                 <p>© 2020</p>

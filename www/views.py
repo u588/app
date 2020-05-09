@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, render_template
+from jinja2 import Markup, Environment, FileSystemLoader
 
 import mytab
 import mytable
@@ -24,22 +25,14 @@ def about():
 def contact():
     return render_template("contact.html")
 
-@app.route("/hello/")
-@app.route("/hello/<name>")
-def hello_there(name = None):
-
-    c=Kpro.Kchart(name)
-
-
-    return render_template(
-        "simple_chart.html",
-        c
-        # date=datetime.now()
-    )
+@app.route("/gridChart")
+def gridChart():
+    c = Kpro.Kchart('603535')
+    return c.dump_options_with_quotes()
 
 @app.route("/api/data")
 def get_data():
     return app.send_static_file("data.json")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000')
+    app.run()

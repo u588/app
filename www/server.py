@@ -12,6 +12,7 @@ import tushare as ts
 import pandas as pd
 import numpy as np
 
+import Kpro
 
 app = Flask(__name__, static_folder="templates")
 
@@ -52,7 +53,7 @@ def Kline_zoom(code) -> Kline:
 
 @app.route("/")
 def index():
-    c = Kline_zoom('000623')
+    c = Kpro.Kchart('000623')
     return Markup(c.render_embed())
     
 

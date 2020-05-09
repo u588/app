@@ -18,6 +18,8 @@ def Kchart(CodeId):
     df = Stock
     df.reset_index(inplace=True)
     data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
+    dd = data
+    
 
     # 数据计算
     ADOSC = tb.ADOSC(data.high, data.low, data.close, data.volume, fastperiod=5, slowperiod=21)
@@ -36,7 +38,8 @@ def Kchart(CodeId):
     ADOs = ((ADOSC-ADOSC.mean())/ADOSC.std()).round(2)
     ADs = ((AD-AD.mean())/AD.std()).round(2)
     Vol = ((data.volume-data.volume.min())/(data.volume.max()-data.volume.min())*3).round(2)
-
+    dd.volume = Vol
+    d = np.array(dd[['open', 'close','volume']])
 
     # 绘制ADOSC
     ADOSC_line = (
@@ -64,25 +67,25 @@ def Kchart(CodeId):
             .add_xaxis(xaxis_data=data.date.tolist())
             .add_yaxis(
                 series_name="Volumn",
-                yaxis_data=Vol.tolist(),
+                yaxis_data=d[:,2].tolist(),
                 xaxis_index=2,
                 yaxis_index=2,
                 label_opts=opts.LabelOpts(is_show=False),
-                itemstyle_opts=opts.ItemStyleOpts(
-                    color=JsCode(
-                        """
-                            function(params) {
-                                var colorList;
-                                if (params.data >= 0) {
-                                colorList = '#ef232a';
-                                } else {
-                                colorList = '#14b143';
-                                }
-                                return colorList;
-                            }
-                            """
-                    )
-                ),
+                # itemstyle_opts=opts.ItemStyleOpts(
+                # color=JsCode(
+                #         """
+                #     function(params) {
+                #         var colorList;
+                #         if (params.data[1] > params.data[0]) {
+                #             colorList = '#ef232a';
+                #         } else {
+                #             colorList = '#14b143';
+                #         }
+                #         return colorList;
+                #     }
+                #     """
+                #     )
+                # ),
             )
             .set_global_opts(
                 xaxis_opts=opts.AxisOpts(
@@ -127,7 +130,7 @@ def Kchart(CodeId):
     )
 
     MACD_bar = (
-            Bar(init_opts=opts.InitOpts(theme=ThemeType.DARK))
+            Bar()
             .add_xaxis(xaxis_data=data.date.tolist())
             .add_yaxis(
                 series_name="MACD",
@@ -138,16 +141,16 @@ def Kchart(CodeId):
                 itemstyle_opts=opts.ItemStyleOpts(
                     color=JsCode(
                         """
-                            function(params) {
-                                var colorList;
-                                if (params.data >= 0) {
-                                colorList = '#ef232a';
-                                } else {
-                                colorList = '#14b143';
-                                }
-                                return colorList;
+                        function(params) {
+                            var colorList;
+                            if (params.data >= 0) {
+                            colorList = '#ef232a';
+                            } else {
+                            colorList = '#14b143';
                             }
-                            """
+                            return colorList;
+                        }
+                        """
                     )
                 ),
             )
@@ -226,6 +229,12 @@ def Kchart(CodeId):
                     ),
                     opts.DataZoomOpts(is_show=False, xaxis_index=[0, 2], range_end=100),
                 ],
+                # 三个图的 axis 连在一块
+                # axispointer_opts=opts.AxisPointerOpts(
+                # is_show=True,
+                # link=[{"xAxisIndex": "all"}],
+                # label=opts.LabelOpts(background_color="#777"),
+                # ),
             )
     )
 

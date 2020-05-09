@@ -2,25 +2,26 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>My-pyecharts</title>
-    <script src="https://github.com/pyecharts/pyecharts-assets/blob/master/assets/jquery.min.js"></script>
-    <script type="text/javascript" src="https://github.com/pyecharts/pyecharts-assets/blob/master/assets/echarts.min.js"></script>
+    <title>Stock</title>
+    <script src="/jquery.min.js"></script>
+    <script type="text/javascript" src="/echarts.min.js"></script>
 </head>
 <body>
-    <div id="grid" style="width:1000px; height:600px;"></div>
+    <div id="grid" style="width:1250px; height:900px;"></div>
     <script>
+        var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'}); 
+        //Canvsa SVG vintage dark macarons infographic shine roma
         $(
-            function () {
-                var chart = echarts.init(document.getElementById('grid'), 'white', {renderer: 'canvas'});
+        function () {
                 $.ajax({
-                    type: "GET",
-                    url: "/gridChart",
-                    dataType: 'json',
-                    success: function (result) {
-                        chart.setOption(result);
-                    }
-                });
-            }
+                type: "GET",
+                url: "/gridChart",
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+            });
+        }
         )
     </script>
 </body>
