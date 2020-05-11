@@ -1,7 +1,23 @@
 {% extends "layout.html" %}
 {% block title %}
-About us
+mytab
 {% endblock %}
 {% block content %}
-<p>About page for the Visual Studio Code Flask tutorial.</p> 
+<div id="grid" style="width:1320px; height:800px;"></div>
+<script>
+    var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'}); 
+    //Canvsa SVG vintage dark macarons infographic shine roma
+    $(
+    function () {
+            $.ajax({
+            type: "GET",
+            url: "/tabChart",
+            dataType: 'json',
+            success: function (result) {
+                chart.setOption(result);
+            }
+        });
+    }
+    )
+</script>
 {% endblock %}

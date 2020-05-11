@@ -27,8 +27,18 @@ def contact():
 
 @app.route("/gridChart")
 def gridChart():
-    c = Kpro.Kchart('603535')
+    c = Kpro.Kchart('600015')
     return c.dump_options_with_quotes()
+
+@app.route("/tabChart")
+def tabChart():
+    c = mytab.tab()
+    return c.render_embed()
+
+@app.route("/test/<codeID>")
+def test(codeID):
+    c = Kpro.Kchart(codeID)
+    return c.render_embed()
 
 @app.route("/api/data")
 def get_data():

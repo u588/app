@@ -18,8 +18,7 @@ def Kchart(CodeId):
     df = Stock
     df.reset_index(inplace=True)
     data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
-    dd = data
-    
+      
 
     # 数据计算
     ADOSC = tb.ADOSC(data.high, data.low, data.close, data.volume, fastperiod=5, slowperiod=21)
@@ -38,8 +37,8 @@ def Kchart(CodeId):
     ADOs = ((ADOSC-ADOSC.mean())/ADOSC.std()).round(2)
     ADs = ((AD-AD.mean())/AD.std()).round(2)
     Vol = ((data.volume-data.volume.min())/(data.volume.max()-data.volume.min())*3).round(2)
-    dd.volume = Vol
-    d = np.array(dd[['open', 'close','volume']])
+ 
+    d = np.array(data[['open', 'close']]).tolist()
 
     # 绘制ADOSC
     ADOSC_line = (
@@ -67,25 +66,38 @@ def Kchart(CodeId):
             .add_xaxis(xaxis_data=data.date.tolist())
             .add_yaxis(
                 series_name="Volumn",
-                yaxis_data=d[:,2].tolist(),
+                yaxis_data=Vol.tolist(),
                 xaxis_index=2,
                 yaxis_index=2,
                 label_opts=opts.LabelOpts(is_show=False),
-                # itemstyle_opts=opts.ItemStyleOpts(
-                # color=JsCode(
-                #         """
-                #     function(params) {
-                #         var colorList;
-                #         if (params.data[1] > params.data[0]) {
-                #             colorList = '#ef232a';
-                #         } else {
-                #             colorList = '#14b143';
-                #         }
-                #         return colorList;
-                #     }
-                #     """
-                #     )
-                # ),
+                itemstyle_opts=opts.ItemStyleOpts(
+                color=JsCode(
+
+                    """
+                function(params) {
+                    var colorList;
+                    if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
+                        colorList = '#ef232a';
+                    } else {
+                        colorList = '#14b143';
+                    }
+                    return colorList;
+                }
+                """
+
+                    #     """
+                    # function(params) {
+                    #     var colorList;
+                    #     if (d[params.dataIndex][0] > d[params.dataIndex][1]) {
+                    #         colorList = '#ef232a';
+                    #     } else {
+                    #         colorList = '#14b143';
+                    #     }
+                    #     return colorList;
+                    # }
+                    # """
+                    )
+                ),
             )
             .set_global_opts(
                 xaxis_opts=opts.AxisOpts(
@@ -300,6 +312,8 @@ def Kchart(CodeId):
     # 图合并到一张图表中
     grid_chart = Grid(opts.InitOpts(js_host='/',page_title=Stock.name[0], width="1300px", height="900px"))
 
+     # demo 中的代码也是用全局变量传的
+    grid_chart.add_js_funcs("var barData = {}".format(d))
 
     # K线图和 MA5 的折线图
     grid_chart.add(

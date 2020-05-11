@@ -10,7 +10,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 
 # get Data
-CodeId='603501'
+CodeId='600011'
 name = CodeId
 StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
 Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
@@ -36,6 +36,7 @@ ADOs = ((ADOSC-ADOSC.mean())/ADOSC.std()).round(2)
 ADs = ((AD-AD.mean())/AD.std()).round(2)
 Vol = ((data.volume-data.volume.min())/(data.volume.max()-data.volume.min())*3).round(2)
 
+d = np.array(data[['open', 'close']]).tolist()
 
 # 绘制ADOSC
 ADOSC_line = (
@@ -69,18 +70,19 @@ Vol_bar = (
             label_opts=opts.LabelOpts(is_show=False),
             itemstyle_opts=opts.ItemStyleOpts(
                 color=JsCode(
+
                     """
-                        function(params) {
-                            var colorList;
-                            if (params.data >= 0) {
-                              colorList = '#ef232a';
-                            } else {
-                              colorList = '#14b143';
-                            }
-                            return colorList;
-                        }
-                        """
-                )
+                function(params) {
+                    var colorList;
+                    if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
+                        colorList = '#ef232a';
+                    } else {
+                        colorList = '#14b143';
+                    }
+                    return colorList;
+                }
+                   """
+              )
             ),
         )
         .set_global_opts(
@@ -290,6 +292,8 @@ overlap_kline_line = kline.overlap(kline_line)
 # 图合并到一张图表中
 grid_chart = Grid(opts.InitOpts(js_host='/',page_title=Stock.name[0], width="1200px", height="900px"))
 
+# demo 中的代码也是用全局变量传的
+grid_chart.add_js_funcs("var barData = {}".format(d))
 
 # K线图和 MA5 的折线图
 grid_chart.add(
