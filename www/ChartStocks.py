@@ -36,6 +36,8 @@ ADOs = ((ADOSC-ADOSC.mean())/ADOSC.std()).round(2)
 ADs = ((AD-AD.mean())/AD.std()).round(2)
 Vol = ((data.volume-data.volume.min())/(data.volume.max()-data.volume.min())*3).round(2)
 
+data.color = data.open - data.close
+
 d = np.array(data[['open', 'close']]).tolist()
 
 # 绘制ADOSC

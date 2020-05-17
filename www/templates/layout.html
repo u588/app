@@ -14,15 +14,17 @@
             <a href="{{ url_for('about') }}" class="navbar-item">About</a>
             <a href="{{ url_for('contact') }}" class="navbar-item">专业画图</a>
         </div>
-
+        {% block div %}
+        {% endblock %}
+        <div class="content" style="width:400px;float:left">
         {% block content %}
         {% endblock %}
+        </div>
 
-        <div class="body-content">
-
+        <div class="footer" style="clear:both;text-align:center">
             <hr/>
             <footer>
-                <p>© 2020</p>
+                <p>Copyright © 2020</p>
             </footer>
         </div>
     </body>

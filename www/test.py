@@ -18,7 +18,7 @@ def index():
     c = mytab.tab()
     b = mytable.table()
     e = Kpro.Kchart('002194')
-    return e.render_embed()
+    return c.render_embed()
     
 
 if __name__ == "__main__":

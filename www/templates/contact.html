@@ -2,22 +2,106 @@
 {% block title %}
 专业画图
 {% endblock %}
-{% block content %}
-        <div id="grid" style="width:1320px; height:800px;"></div>
-        <script>
-            var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'}); 
-            //Canvsa SVG vintage dark macarons infographic shine roma
-            $(
-            function () {
-                    $.ajax({
-                    type: "GET",
-                    url: "/gridChart",
-                    dataType: 'json',
-                    success: function (result) {
-                        chart.setOption(result);
-                    }
-                });
+
+{% block div %}
+<div class="menu" style="width:90px;float:left">
+    <select id="selDate" onchange="dateSelect();">
+        <option value="">请选择日期</option>
+        </select>
+</div> 
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+        type:"get",
+        url:'/datetime', //后台应该返回一个JSONArray之类的数组数据 
+        dataType: 'json', //[{"id":"001",name":"test"},{"id":"002","name":"test2"}] 
+        success:function(userList){
+            var unitObj=document.getElementById("selDate"); //页面上的<html:select>元素
+            if(userList!=null){ //后台传回来的select选项
+                for(var i=0;i<userList.length;i++){
+                    //遍历后台传回的结果，一项项往select中添加option
+                    unitObj.options.add(new Option(userList[i].datetime,userList[i].datetime));
+                }
             }
-            )
-        </script>
+        },
+        error:function(){
+            J.alert('Error');
+        }
+    })
+})
+</script>
+
+<div class="menu" style="width:90px;float:left">
+    <select id="selStock" onchange="stockSelect();">
+        <option value="">请选择股票</option>
+        </select>
+</div> 
+
+<script>
+    function dateSelect(){
+        var date=$("#selDate").find("option:selected").text();
+        var url= "/getStock/"+date
+        $("#selStock").empty();
+        $(document).ready(function () {
+       
+            $.ajax({
+            type:"get",
+            url:url, //后台应该返回一个JSONArray之类的数组数据 
+            dataType: 'json', //[{"id":"001",name":"test"},{"id":"002","name":"test2"}] 
+            success:function(userList){
+                var unitObj=document.getElementById("selStock"); //页面上的<html:select>元素
+                unitObj.options.add(new Option("请选择股票",''));
+                if(userList!=null){ //后台传回来的select选项
+                    for(var i=0;i<userList.length;i++){
+                        //遍历后台传回的结果，一项项往select中添加option
+                        unitObj.options.add(new Option(userList[i].code,userList[i].code));
+                    }
+                }
+            },
+            error:function(){
+                J.alert('Error');
+                }
+            })
+        })
+    }
+</script>
+{% endblock %}  
+
+{% block content %}
+ 
+<div id="grid" style="width:1320px; height:800px;"></div>
+<script>
+    function stockSelect(){
+        var stockID=$("#selStock").find("option:selected").text();
+        var url = "/gridChart/"+stockID
+        var urldata = "/gridData/"+stockID
+        var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'});
+        //Canvsa SVG vintage dark macarons infographic shine roma
+        $(
+        function () {
+                $.ajax({
+                type: "GET",
+                url: urldata,
+                dataType: 'json',
+                success: function (result) {
+                    // var barData = result;
+                    chart.add_js_funcs("var barData = {}".format(result));
+                }
+            });
+         })
+
+        $(
+        function () {
+                $.ajax({
+                type: "GET",
+                url: url,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+            });
+        }
+    )}
+</script>
 {% endblock %}

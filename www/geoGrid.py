@@ -1,7 +1,8 @@
 from pyecharts import options as opts
-from pyecharts.charts import Bar, Grid, Line, Pie, Tab
+from pyecharts.charts import Bar, Grid, Line, Liquid, Page, Pie
+from pyecharts.commons.utils import JsCode
+from pyecharts.components import Table
 from pyecharts.faker import Faker
-import mytable
 
 
 def bar_datazoom_slider() -> Bar:
@@ -140,14 +141,101 @@ def grid_mutil_yaxis() -> Grid:
         bar, opts.GridOpts(pos_left="5%", pos_right="20%"), is_control_axis_index=True
     )
 
-def tab():
 
-    tab = Tab(js_host='/',page_title='TAB')
-    tab.add(mytable.table(), 'mytable')
-    tab.add(bar_datazoom_slider(), "bar-example")
-    tab.add(line_markpoint(), "line-example")
-    tab.add(pie_rosetype(), "pie-example")
-    tab.add(grid_mutil_yaxis(), "grid-example")
-    
-    return tab
+def liquid_data_precision() -> Liquid:
+    c = (
+        Liquid()
+        .add(
+            "lq",
+            [0.3254],
+            label_opts=opts.LabelOpts(
+                font_size=50,
+                formatter=JsCode(
+                    """function (param) {
+                        return (Math.floor(param.value * 10000) / 100) + '%';
+                    }"""
+                ),
+                position="inside",
+            ),
+        )
+        .set_global_opts(title_opts=opts.TitleOpts(title="Liquid-数据精度"))
+    )
+    return c
 
+
+def table_base() -> Table:
+    table = Table()
+
+    headers = ["City name", "Area", "Population", "Annual Rainfall"]
+    rows = [
+        ["Brisbane", 5905, 1857594, 1146.4],
+        ["Adelaide", 1295, 1158259, 600.5],
+        ["Darwin", 112, 120900, 1714.7],
+        ["Hobart", 1357, 205556, 619.5],
+        ["Sydney", 2058, 4336374, 1214.8],
+        ["Melbourne", 1566, 3806092, 646.9],
+        ["Perth", 5386, 1554769, 869.4],
+    ]
+    table.add(headers, rows).set_global_opts(
+        title_opts=opts.ComponentTitleOpts(title="Table")
+    )
+    return table
+
+def colBar():
+    color_function = """
+        function (params) {
+            if (params.value > 0 && params.value < 50) {
+                return 'red';
+            } else if (params.value > 50 && params.value < 100) {
+                return 'blue';
+            }
+            return 'green';
+        }
+        """
+    c = (
+        Bar()
+        .add_xaxis(Faker.choose())
+        .add_yaxis(
+            "商家A",
+            Faker.values(),
+            itemstyle_opts=opts.ItemStyleOpts(color=JsCode(color_function)),
+        )
+        .add_yaxis(
+            "商家B",
+            Faker.values(),
+            itemstyle_opts=opts.ItemStyleOpts(color=JsCode(color_function)),
+        )
+        .add_yaxis(
+            "商家C",
+            Faker.values(),
+            itemstyle_opts=opts.ItemStyleOpts(color=JsCode(color_function)),
+        )
+        .set_global_opts(title_opts=opts.TitleOpts(title="Bar-自定义柱状颜色"))
+        # .render("bar_custom_bar_color.html")
+    )
+    return c
+# def geoo():
+#     page = Page(layout=Page.DraggablePageLayout)
+#     page.add(
+#         bar_datazoom_slider(),
+#         line_markpoint(),
+#         pie_rosetype(),
+#         grid_mutil_yaxis(),
+#         liquid_data_precision(),
+#         table_base(),
+#     )
+#     return page
+
+
+def geoo():
+    grid = (
+        Grid()
+        # .add(bar_datazoom_slider(), grid_opts=opts.GridOpts(pos_top="0%", pos_left="50%"))
+        # .add(line_markpoint(), grid_opts=opts.GridOpts(pos_top='0%',pos_left="50%"))
+        .add(pie_rosetype(),grid_opts=opts.GridOpts(pos_top='20',pos_right="50%"))
+        # .add(grid_mutil_yaxis(),grid_opts=opts.GridOpts(pos_left="60%"))
+        # .add(liquid_data_precision(), grid_opts=opts.GridOpts(pos_left="60%"))
+        # .add(table_base(), grid_opts=opts.GridOpts(pos_left="60%"))
+        # .render("grid_geo_bar.html")
+    )
+    return grid

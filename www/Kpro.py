@@ -77,25 +77,13 @@ def Kchart(CodeId):
                 function(params) {
                     var colorList;
                     if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
-                        colorList = '#ef232a';
+                        colorList = 'red';
                     } else {
-                        colorList = '#14b143';
+                        colorList = 'green';
                     }
                     return colorList;
                 }
-                """
-
-                    #     """
-                    # function(params) {
-                    #     var colorList;
-                    #     if (d[params.dataIndex][0] > d[params.dataIndex][1]) {
-                    #         colorList = '#ef232a';
-                    #     } else {
-                    #         colorList = '#14b143';
-                    #     }
-                    #     return colorList;
-                    # }
-                    # """
+                      """
                     )
                 ),
             )
@@ -156,9 +144,9 @@ def Kchart(CodeId):
                         function(params) {
                             var colorList;
                             if (params.data >= 0) {
-                            colorList = '#ef232a';
+                            colorList = 'red';
                             } else {
-                            colorList = '#14b143';
+                            colorList = 'green';
                             }
                             return colorList;
                         }
@@ -229,7 +217,8 @@ def Kchart(CodeId):
                     max_="dataMax",
                 ),
                 yaxis_opts=opts.AxisOpts(
-                    is_scale=True, splitline_opts=opts.SplitLineOpts(is_show=True)
+                    is_scale=True, 
+                    splitline_opts=opts.SplitLineOpts(is_show=True)
                 ),
                 tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="line"),
                 datazoom_opts=[
@@ -337,3 +326,16 @@ def Kchart(CodeId):
     ),
     )
     return grid_chart
+
+
+def Kdata(CodeId):
+    # CodeId='603530'
+    name = CodeId
+    StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
+    Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
+    df = Stock
+    df.reset_index(inplace=True)
+    data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
+    d = data[['open','close']].to_json(orient='values')
+  
+    return d
