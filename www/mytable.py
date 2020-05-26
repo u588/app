@@ -13,6 +13,12 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/FindStocks')
 data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
 data = data.drop_duplicates(subset=['datetime', 'code'], keep='first')
 
+def filter(a,b):
+    data = data[(data.datetime>a) & (data.datetime<b)]
+    d = date.groupby(['code','name']).size()
+    return d
+
+
 def table():
     table = Table(js_host='/',page_title='DARK'  )
 
