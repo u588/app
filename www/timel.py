@@ -11,9 +11,10 @@ job = '10.3.18.56:5432'
 ip = job
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/FindStocks')
-data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
-data = data.drop_duplicates(subset=['datetime', 'code'], keep='first')
+
 def pie(date):
+    data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
+    data = data.drop_duplicates(subset=['datetime', 'code'], keep='first')  
     d = data.groupby('datetime').get_group(date)
     dd = d[['name', 'code']]
     c = (
