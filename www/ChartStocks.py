@@ -2,6 +2,9 @@ import talib as tb
 import tushare as ts
 import pandas as pd
 import numpy as np
+from sqlalchemy import create_engine
+job = '10.3.18.56:5432'
+ip = job
 
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
@@ -10,13 +13,17 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 
 # get Data
+eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
 CodeId='600011'
 name = CodeId
 StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
 Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
 df = Stock
 df.reset_index(inplace=True)
-data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
+data= pd.read_sql(CodeId, eng).tail(300)
+data.rename(columns={'vol':'volume','datetime':'date'}, inplace=True)
+data.date = data.date.str.replace(' 15:00','')
+# data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
 
 # 数据计算
 ADOSC = tb.ADOSC(data.high, data.low, data.close, data.volume, fastperiod=5, slowperiod=21)

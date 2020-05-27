@@ -10,7 +10,6 @@ import timel
 import getData
 
 
-
 app = Flask(__name__, 
                     static_url_path='/',
                     template_folder='templates',
@@ -46,7 +45,8 @@ def contact():
 @app.route("/gridChart/<codeID>")
 def gridChart(codeID):
     c = Kpro.Kchart(codeID)
-    return c.dump_options_with_quotes()
+    # return c.dump_options_with_quotes()
+    return c.render_embed()
 
 @app.route("/gridData/<codeID>")
 def gridData(codeID):

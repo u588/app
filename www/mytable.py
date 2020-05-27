@@ -15,7 +15,7 @@ data = data.drop_duplicates(subset=['datetime', 'code'], keep='first')
 
 def filter(a,b):
     data = data[(data.datetime>a) & (data.datetime<b)]
-    d = date.groupby(['code','name']).size()
+    d = data.groupby(['code','name']).size()
     return d
 
 
