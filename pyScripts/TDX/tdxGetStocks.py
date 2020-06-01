@@ -31,7 +31,7 @@ Cate = 9
 
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
-StockLists = pd.read_sql('StockLists', eng).code.tolist()
+StockLists = pd.read_sql('StocksList', eng).code.tolist()
 
 with api.connect('119.147.212.81', 7709):
     try:
