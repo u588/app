@@ -73,7 +73,7 @@ def Kchart(CodeId):
             .add_xaxis(xaxis_data=data.date.tolist())
             .add_yaxis(
                 series_name="Volumn",
-                yaxis_data=Vol.tolist(),
+                y_axis=Vol.tolist(),
                 xaxis_index=2,
                 yaxis_index=2,
                 label_opts=opts.LabelOpts(is_show=False),
@@ -141,7 +141,7 @@ def Kchart(CodeId):
             .add_xaxis(xaxis_data=data.date.tolist())
             .add_yaxis(
                 series_name="MACD",
-                yaxis_data=macd.tolist(),
+                y_axis=macd.tolist(),
                 xaxis_index=2,
                 yaxis_index=2,
                 label_opts=opts.LabelOpts(is_show=False),
