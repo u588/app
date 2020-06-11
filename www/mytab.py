@@ -1,20 +1,92 @@
 from pyecharts import options as opts
-from pyecharts.charts import Bar, Grid, Line, Pie, Tab
+from pyecharts.charts import Bar, Grid, Line, Pie, Tab, Timeline
 from pyecharts.faker import Faker
 import mytable
+from sqlalchemy import create_engine
+import pandas as pd
+
+from pyecharts.charts import WordCloud
 
 
-def bar_datazoom_slider() -> Bar:
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
+
+hs300Data = pd.read_sql('hs300', eng)
+zz500Data = pd.read_sql('zz500', eng)
+sz50Data = pd.read_sql('sz50', eng)
+strongData = pd.read_sql_table('Strong',eng)
+weakData = pd.read_sql_table('weak',eng)
+wcData = pd.concat([strongData, weakData], ignore_index=True)
+mkData = pd.read_sql('Market',eng)
+
+
+
+
+def wordCloud(d):
+    data= d.groupby(['code','exchange']).sum().round(2).reset_index()
+    data['name'] = data.code + data.exchange
     c = (
-        Bar()
-        .add_xaxis(Faker.days_attrs)
-        .add_yaxis("商家A", Faker.days_values)
-        .set_global_opts(
-            title_opts=opts.TitleOpts(title="Bar-DataZoom（slider-水平）"),
-            datazoom_opts=[opts.DataZoomOpts()],
+            WordCloud()
+            .add(series_name="热点分析", data_pair=[list(z) for z in zip(data.name,data.pct_chg)], word_size_range=[6, 66])
+            .set_global_opts(
+                title_opts=opts.TitleOpts(
+                    title="热点分析", title_textstyle_opts=opts.TextStyleOpts(font_size=23)
+                ),
+                tooltip_opts=opts.TooltipOpts(is_show=True),
+            )
+            # .render("basic_wordcloud.html")
         )
-    )
     return c
+
+def timeLine_wordCloud(d):
+    tl = Timeline()
+    date = d.drop_duplicates(subset=('date'), keep='first').date.to_list()
+    
+    
+    for i in date:  
+        data= d.groupby('date').get_group(i).groupby(['code','exchange']).sum().reset_index()
+        data['name'] = data.code + data.exchange
+        # data['date'] = i
+        # data = data[['date','name','pct_chg']]
+        c = (
+                WordCloud()
+                .add(series_name="热点分析", data_pair=[list(z) for z in zip(data.name,data.pct_chg)], word_size_range=[6, 66])
+                .set_global_opts(
+                    title_opts=opts.TitleOpts(
+                        title="热点分析", title_textstyle_opts=opts.TextStyleOpts(font_size=23)
+                    ),
+                    tooltip_opts=opts.TooltipOpts(is_show=True),
+                )
+                # .render("basic_wordcloud.html")
+        )
+        tl.add(c,"{}日期".format(i))
+    return tl
+
+def bar_datazoom_slider(dd) -> Bar:
+    tl = Timeline()
+    name_list = dd.loc[0][9:13].tolist()
+    dd = dd.drop(0)
+    d1s = dd[['date','sIndex','pe_lyr','pr_ttm','pb','pct_dv']]
+    d2s = dd[['date','sIndex','pe_lyr_ly','pr_ttm_ly','pb_ly']]
+    date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
+
+    for i in date:
+        d1 = d1s.groupby('date').get_group(i)
+        d2 = d2s.groupby('date').get_group(i)
+
+        c = (
+            Bar()
+            .add_xaxis(name_list)
+            for ii in d1.sIndex.tolist():
+                .add_yaxis(ii.strip()+'去年底', d2.loc[1].tolist()[2:],stack='1')
+                .add_yaxis(ii.strip(), d1.loc[1].tolist()[2:],stack='1')
+
+            .set_global_opts(
+                title_opts=opts.TitleOpts(title=""),
+                # datazoom_opts=[opts.DataZoomOpts()],
+            )
+        )
+        tl.add(c,"{}日期".format(i))
+    return tl
 
 
 def line_markpoint() -> Line:
@@ -36,28 +108,41 @@ def line_markpoint() -> Line:
     return c
 
 
-def pie_rosetype() -> Pie:
-    v = Faker.choose()
-    c = (
-        Pie()
-        .add(
-            "",
-            [list(z) for z in zip(v, Faker.values())],
-            radius=["30%", "75%"],
-            center=["25%", "50%"],
-            rosetype="radius",
-            label_opts=opts.LabelOpts(is_show=False),
+def pie_rosetype(d) -> Pie:
+    tl = Timeline()
+    date = d.drop_duplicates(subset=('date'), keep='first').date.to_list()
+
+    for i in date:
+        dd = d.groupby('date').get_group(i)
+        c = (
+            Pie()
+            .add(
+                "收盘",
+                [list(z) for z in zip(dd.code,dd.close)],
+                radius=["15%", "50%"],
+                center=["15%", "55%"],
+                rosetype="radius",
+                label_opts=opts.LabelOpts(is_show=False),
+            )
+            .add(
+                "日涨跌幅(%)",
+                [list(z) for z in zip(dd.code,dd.pct_chg)],
+                radius=["15%", "50%"],
+                center=["45%", "55%"],
+                rosetype="radius",
+            )
+            .add(
+                "贡献点数",
+                [list(z) for z in zip(dd.code,dd.contrib)],
+                radius=["15%", "50%"],
+                center=["75%", "55%"],
+                rosetype="radius",
+                label_opts=opts.LabelOpts(is_show=False),
+            )
+            .set_global_opts(title_opts=opts.TitleOpts(title=""))
         )
-        .add(
-            "",
-            [list(z) for z in zip(v, Faker.values())],
-            radius=["30%", "75%"],
-            center=["75%", "50%"],
-            rosetype="area",
-        )
-        .set_global_opts(title_opts=opts.TitleOpts(title="Pie-玫瑰图示例"))
-    )
-    return c
+        tl.add(c,"{}日期".format(i))
+    return tl
 
 
 def grid_mutil_yaxis() -> Grid:
@@ -140,14 +225,37 @@ def grid_mutil_yaxis() -> Grid:
         bar, opts.GridOpts(pos_left="5%", pos_right="20%"), is_control_axis_index=True
     )
 
+def timeline_pie():
+    attr = Faker.choose()
+    tl = Timeline()
+    for i in range(2015, 2020):
+        pie = (
+            Pie()
+            .add(
+                "商家A",
+                [list(z) for z in zip(attr, Faker.values())],
+                rosetype="radius",
+                radius=["30%", "55%"],
+            )
+            # .set_global_opts(title_opts=opts.TitleOpts("某商店{}年营业额".format(i)))
+        )
+        tl.add(pie, "{}年".format(i))
+    # tl.render("timeline_pie.html")
+    return tl
+
 def tab():
 
     tab = Tab(js_host='/',page_title='TAB')
     tab.add(mytable.table(), 'mytable')
-    tab.add(bar_datazoom_slider(), "bar-example")
+    tab.add(bar_datazoom_slider(mkData), "指数估值")
     tab.add(line_markpoint(), "line-example")
-    tab.add(pie_rosetype(), "pie-example")
+    tab.add(pie_rosetype(hs300Data), "沪深300贡献TOP10")
+    tab.add(pie_rosetype(zz500Data), "中正500贡献TOP10")
+    tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
     tab.add(grid_mutil_yaxis(), "grid-example")
+    tab.add(timeline_pie(), "grid-example")
+    tab.add(wordCloud(wcData),'市场强弱板块')
+    tab.add(timeLine_wordCloud(wcData),'分时市场强弱板块')
     
     return tab
 
