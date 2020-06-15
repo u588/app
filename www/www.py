@@ -8,6 +8,7 @@ import Kpro
 import geoGrid
 import timel
 import griRada
+import getData
 
 
 app = Flask(__name__, 
@@ -48,10 +49,11 @@ def gridChart(codeID):
     # return c.dump_options_with_quotes()
     return c.render_embed()
 
-@app.route("/gridRada/<Date>")
-def gridRada(Date):
-    c = griRada.grid(Date)
-    return c.render_embed()
+@app.route("/gridRada/")
+def gridRada():
+    c = griRada.grid()
+    c.save_resize_html(c.render("/home/ts/app/www/static/11.html"),  cfg_file="/home/ts/app/www/static/chart_config.json", dest="/home/ts/app/www/templates/gridRada.html")
+    return render_template("gridRada.html")
 
 @app.route('/test')
 def test1():
