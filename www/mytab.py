@@ -1,5 +1,5 @@
 from pyecharts import options as opts
-from pyecharts.charts import Bar, Grid, Line, Pie, Tab, Timeline
+from pyecharts.charts import Bar, Grid, Line, Pie, Tab, Timeline ,Radar
 from pyecharts.faker import Faker
 import mytable
 from sqlalchemy import create_engine
@@ -19,6 +19,90 @@ wcData = pd.concat([strongData, weakData], ignore_index=True)
 mkData = pd.read_sql('Market',eng)
 
 
+def raDarIndex(dd):
+    tl = Timeline()
+    dd = dd.drop(0)
+    d1s = dd[['date','sIndex','chg','pct_chg','vol','pct_vol','yChg','pct_yChg']]
+
+    date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
+
+    for i in date:
+        d1 = d1s.groupby('date').get_group(i).reset_index(drop=True)
+
+
+        c_schema = [
+            {"name": "日涨跌", "max": 100,  "min": -100},
+            {"name": "日涨跌幅(%)", "max": 10, "min": -10},
+            {"name": "成交额较昨日增减(亿元)", "max": 500, "min":-500},
+            {"name": "成交额较昨日增减(%)", "max": 20,"min": -20},
+            {"name": "今年以来涨跌", "max": 1000,"min": -500},
+            {"name": "今年以来涨跌幅(%)", "max": 20,"min": -20},
+        ]
+        c = Radar()
+        c.add_schema(schema=c_schema, shape="circle",center=['25%', '40%'], radius=100)
+        # c.add_schema(schema=c_schema, shape="circle",center=['50%', '40%'], radius=100)
+        for j in range(0,10):
+            c.add(d1.loc[j][1].strip(), [d1.loc[j].tolist()[2:]], is_selected=False,
+                    areastyle_opts=opts.AreaStyleOpts(opacity=0.1),
+                     linestyle_opts=opts.LineStyleOpts(width=2), )
+            c.set_series_opts(label_opts=opts.LabelOpts(is_show=True))
+            c.set_global_opts(title_opts=opts.TitleOpts(title=""))        
+        tl.add(c,"{}日期".format(i))    
+    return tl
+
+
+def raDar(dd):
+    tl = Timeline()
+    dd = dd.drop(0)
+    d1s = dd[['date','sIndex','pe_lyr','pr_ttm','pb','pct_dv']]
+    d2s = dd[['date','sIndex','pe_lyr_ly','pr_ttm_ly','pb_ly']]
+    date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
+
+    for i in date:
+        d1 = d1s.groupby('date').get_group(i).reset_index(drop=True)
+        d2 = d2s.groupby('date').get_group(i).reset_index(drop=True)
+
+        c_schema = [
+            {"name": "静态市盈率", "max": 30, "min": 5},
+            {"name": "滚动市盈率", "max": 30, "min": 5},
+            {"name": "市净率", "max": 5, "min": 0},
+            {"name": "股息率", "max": 8},
+        ]
+
+        c = (
+            Radar()
+            .add_schema(schema=c_schema, shape="circle")
+            .add(d2.loc[0][1].strip()+'去年底', [d2.loc[0].tolist()[2:]],is_selected=True,color="#b3e4a1",
+                    areastyle_opts=opts.AreaStyleOpts(opacity=0.3),
+                     linestyle_opts=opts.LineStyleOpts(width=2),)
+            .add(d1.loc[0][1].strip(), [d1.loc[0].tolist()[2:]], is_selected=True,
+                  linestyle_opts=opts.LineStyleOpts(width=2),)
+            .add(d2.loc[1][1].strip()+'去年底', [d2.loc[1].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[1][1].strip(), [d1.loc[1].tolist()[2:]], is_selected=False)
+            .add(d2.loc[2][1].strip()+'去年底', [d2.loc[2].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[2][1].strip(), [d1.loc[2].tolist()[2:]], is_selected=False)
+            .add(d2.loc[3][1].strip()+'去年底', [d2.loc[3].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[3][1].strip(), [d1.loc[3].tolist()[2:]], is_selected=False)
+            .add(d2.loc[4][1].strip()+'去年底', [d2.loc[4].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[4][1].strip(), [d1.loc[4].tolist()[2:]], is_selected=False)
+            .add(d2.loc[5][1].strip()+'去年底', [d2.loc[5].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[5][1].strip(), [d1.loc[5].tolist()[2:]], is_selected=False)
+            .add(d2.loc[6][1].strip()+'去年底', [d2.loc[6].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[6][1].strip(), [d1.loc[6].tolist()[2:]], is_selected=False)
+            .add(d2.loc[7][1].strip()+'去年底', [d2.loc[7].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[7][1].strip(), [d1.loc[7].tolist()[2:]], is_selected=False)
+            .add(d2.loc[8][1].strip()+'去年底', [d2.loc[8].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[8][1].strip(), [d1.loc[8].tolist()[2:]], is_selected=False)
+            .add(d2.loc[9][1].strip()+'去年底', [d2.loc[9].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[9][1].strip(), [d1.loc[9].tolist()[2:]], is_selected=False)
+            .add(d2.loc[10][1].strip()+'去年底', [d2.loc[10].tolist()[2:]], is_selected=False, color="#b3e4a1")
+            .add(d1.loc[10][1].strip(), [d1.loc[10].tolist()[2:]], is_selected=False)
+            .set_series_opts(label_opts=opts.LabelOpts(is_show=True))
+            .set_global_opts(title_opts=opts.TitleOpts(title=""))
+            # .render("radar_air_quality.html")
+        )
+        tl.add(c,"{}日期".format(i))    
+    return tl
 
 
 def wordCloud(d):
@@ -70,41 +154,37 @@ def bar_datazoom_slider(dd) -> Bar:
     date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
 
     for i in date:
-        d1 = d1s.groupby('date').get_group(i)
-        d2 = d2s.groupby('date').get_group(i)
+        d1 = d1s.groupby('date').get_group(i).reset_index(drop=True)
+        d2 = d2s.groupby('date').get_group(i).reset_index(drop=True)
 
         c = (
             Bar()
             .add_xaxis(name_list)
-            for ii in d1.sIndex.tolist():
-                .add_yaxis(ii.strip()+'去年底', d2.loc[1].tolist()[2:],stack='1')
-                .add_yaxis(ii.strip(), d1.loc[1].tolist()[2:],stack='1')
-
-            .set_global_opts(
-                title_opts=opts.TitleOpts(title=""),
-                # datazoom_opts=[opts.DataZoomOpts()],
-            )
+            .set_global_opts(title_opts=opts.TitleOpts(title=""),)
         )
+
+        for j in range(0,10):
+            c.add_yaxis(d2.loc[j][1].strip()+'去年底', d2.loc[j].tolist()[2:],stack=str(j))
+            c.add_yaxis(d1.loc[j][1].strip(), d1.loc[j].tolist()[2:],stack=str(j))            
         tl.add(c,"{}日期".format(i))
     return tl
 
 
-def line_markpoint() -> Line:
+def line_markpoint(dd) -> Line:
+
+    dd = dd.drop(0)
+    d1s = dd[['date','sIndex','pe_lyr','pr_ttm','pb','pct_dv']]
+    # d2s = dd[['date','sIndex','pe_lyr_ly','pr_ttm_ly','pb_ly']]
+    d1g = d1s.groupby('sIndex')
+    inName = d1g.head(1).sIndex.tolist()
+    date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
     c = (
         Line()
-        .add_xaxis(Faker.choose())
-        .add_yaxis(
-            "商家A",
-            Faker.values(),
-            markpoint_opts=opts.MarkPointOpts(data=[opts.MarkPointItem(type_="min")]),
-        )
-        .add_yaxis(
-            "商家B",
-            Faker.values(),
-            markpoint_opts=opts.MarkPointOpts(data=[opts.MarkPointItem(type_="max")]),
-        )
-        .set_global_opts(title_opts=opts.TitleOpts(title="Line-MarkPoint"))
+        .add_xaxis(date)
+        .set_global_opts(title_opts=opts.TitleOpts(title=""))
     )
+    for i in range(0,10):
+        c.add_yaxis(inName[i], d1g.get_group(inName[i]).pe_lyr.tolist(),is_smooth=True)
     return c
 
 
@@ -248,7 +328,7 @@ def tab():
     tab = Tab(js_host='/',page_title='TAB')
     tab.add(mytable.table(), 'mytable')
     tab.add(bar_datazoom_slider(mkData), "指数估值")
-    tab.add(line_markpoint(), "line-example")
+    tab.add(line_markpoint(mkData), "静态市盈率")
     tab.add(pie_rosetype(hs300Data), "沪深300贡献TOP10")
     tab.add(pie_rosetype(zz500Data), "中正500贡献TOP10")
     tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
@@ -256,6 +336,8 @@ def tab():
     tab.add(timeline_pie(), "grid-example")
     tab.add(wordCloud(wcData),'市场强弱板块')
     tab.add(timeLine_wordCloud(wcData),'分时市场强弱板块')
+    tab.add(raDar(mkData),"RaDar指数估值")
+    tab.add(raDarIndex(mkData),"RaDar指数")
     
     return tab
 
