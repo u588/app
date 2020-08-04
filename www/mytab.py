@@ -332,12 +332,12 @@ def tab():
     tab.add(pie_rosetype(hs300Data), "沪深300贡献TOP10")
     tab.add(pie_rosetype(zz500Data), "中正500贡献TOP10")
     tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
-    tab.add(grid_mutil_yaxis(), "grid-example")
-    tab.add(timeline_pie(), "grid-example")
+    # tab.add(grid_mutil_yaxis(), "grid-example")
+    # tab.add(timeline_pie(), "grid-example")
     tab.add(wordCloud(wcData),'市场强弱板块')
     tab.add(timeLine_wordCloud(wcData),'分时市场强弱板块')
-    tab.add(raDar(mkData),"RaDar指数估值")
-    tab.add(raDarIndex(mkData),"RaDar指数")
+    # tab.add(raDar(mkData),"RaDar指数估值")
+    # tab.add(raDarIndex(mkData),"RaDar指数")
     
     return tab
 
