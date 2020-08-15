@@ -15,7 +15,7 @@ zz500Data = pd.read_sql('zz500', eng)
 sz50Data = pd.read_sql('sz50', eng)
 strongData = pd.read_sql_table('Strong',eng)
 weakData = pd.read_sql_table('weak',eng)
-wcData = pd.concat([strongData, weakData], ignore_index=True)
+wcData = pd.concat([strongData, weakData], ignore_index=True).sort_values(by=['date']).reset_index(drop=True)
 mkData = pd.read_sql('Market',eng)
 
 
@@ -334,8 +334,11 @@ def tab():
     tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
     # tab.add(grid_mutil_yaxis(), "grid-example")
     # tab.add(timeline_pie(), "grid-example")
-    tab.add(wordCloud(wcData),'市场强弱板块')
-    tab.add(timeLine_wordCloud(wcData),'分时市场强弱板块')
+    tab.add(wordCloud(wcData.tail(1010)),'55日市场强弱板块')
+    tab.add(wordCloud(wcData.tail(420)),'21日市场强弱板块')
+    tab.add(wordCloud(wcData.tail(100)),'5日市场强弱板块')
+    tab.add(wordCloud(wcData.tail(60)),'3日市场强弱板块')
+    tab.add(timeLine_wordCloud(wcData.tail(420)),'21日内分时市场强弱板块')
     # tab.add(raDar(mkData),"RaDar指数估值")
     # tab.add(raDarIndex(mkData),"RaDar指数")
     
