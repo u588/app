@@ -9,6 +9,7 @@ import geoGrid
 import timel
 import griRada
 import getData
+import detailChart
 
 
 app = Flask(__name__, 
@@ -42,6 +43,16 @@ def about():
 @app.route("/contact/")
 def contact():
     return render_template("contact.html")
+
+@app.route("/detail/")
+def detail():
+    return render_template("detail.html")
+
+@app.route("/detailChart/<codeID>")
+def detailChart(codeID):
+    c = detailChart.tablel(codeID)
+    # return c.dump_options_with_quotes()
+    return c.render_embed()
 
 @app.route("/gridChart/<codeID>")
 def gridChart(codeID):

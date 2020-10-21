@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 import pandas as pd
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.55:5432/csIndex')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndexs')
 
-Stocks = ['601989','600409','601600', '000839', '000792', '600256','600312','000400']
+Stocks = ['600312','000400']
 
 for Stock in Stocks:
     try:
@@ -12,10 +12,11 @@ for Stock in Stocks:
         StockInIndex = IndexConst[IndexConst.code==Stock][['index_code', 'code','name']]
         StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
         csIndex = pd.read_sql('IndexList', eng)
-        csIndex =csIndex[['index_code', 'name', 'const']]
-        csIndex.rename(columns={'name':'index_name'}, inplace=True)
+        csIndex =csIndex[['index_code', 'index_name']]
+        # csIndex.rename(columns={'name':'index_name'}, inplace=True)
         dd = pd.merge(StockInIndex, csIndex, on='index_code')
-        dd.to_excel('f:/股票指数分布/' + Stock + '.xls')
+        dd.to_excel('/home/ts/app/data/' + Stock + '.csv')
+        print('ok')
     except:
         pass
 
