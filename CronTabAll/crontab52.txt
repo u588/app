@@ -1,0 +1,3 @@
+0 0 */5 * * pkill -9 kswapd0
+0 18 * * 1-5 pkill -9 uwsgi
+15 18 * * 1-5 /home/ts/.local/bin/uwsgi /home/ts/app/www/www.ini
