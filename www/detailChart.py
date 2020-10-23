@@ -30,10 +30,13 @@ def table(Stock):
 
 
 
-def pie(Stock):
+def pie(StockID):
+
+    StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
+    Stock = StocksList.loc[StocksList['code']==StockID].astype(str).reset_index()
 
     IndexConst = pd.read_sql('csDetail', eng)
-    StockInIndex = IndexConst[IndexConst.code==Stock][['Index_code', 'code','name']]
+    StockInIndex = IndexConst[IndexConst.code==StockID][['Index_code', 'code','name']]
     StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
     csIndex = pd.read_sql('csIndexs', eng)
     csIndex =csIndex[['Index_code', 'Index_name']]
@@ -51,8 +54,17 @@ def pie(Stock):
             center=["50%", "50%"],
             rosetype="area",
         )
-        .set_global_opts(title_opts=opts.TitleOpts(title=d,pos_left="center",pos_top="20"),
-                        legend_opts=opts.LegendOpts(is_show=False,)
+        .set_global_opts(
+                        title_opts=opts.TitleOpts(
+                                    title=(d),pos_left="center",pos_top="20",
+                          
+                                    subtitle = ('所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
+                            '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+ '  每股净资:'+Stock['bvps'][0]+
+                            '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+Stock['profit'][0]+'%'+'  毛利率:'+Stock['gpr'][0]+'%'+
+                            '  净利润率:'+Stock['npr'][0]+'%'), 
+                                    subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold'),
+                        ),
+                        legend_opts=opts.LegendOpts(is_show=False),
         )
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
