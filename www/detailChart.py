@@ -7,7 +7,8 @@ from pyecharts import options as opts
 from pyecharts.options import ComponentTitleOpts
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndexs')
+# eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndexs')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 
 def table(Stock):
     IndexConst = pd.read_sql('IndexConst', eng)
@@ -31,25 +32,28 @@ def table(Stock):
 
 def pie(Stock):
 
-    IndexConst = pd.read_sql('IndexConst', eng)
-    StockInIndex = IndexConst[IndexConst.code==Stock][['index_code', 'code','name']]
+    IndexConst = pd.read_sql('csDetail', eng)
+    StockInIndex = IndexConst[IndexConst.code==Stock][['Index_code', 'code','name']]
     StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
-    csIndex = pd.read_sql('IndexList', eng)
-    csIndex =csIndex[['index_code', 'index_name']]
+    csIndex = pd.read_sql('csIndexs', eng)
+    csIndex =csIndex[['Index_code', 'Index_name']]
     # csIndex.rename(columns={'name':'index_name'}, inplace=True)
-    data = pd.merge(StockInIndex, csIndex, on='index_code')  
+    data = pd.merge(StockInIndex, csIndex, on='Index_code')  
 
-    dd = data[['index_name', 'index_code']]
+    dd = data[['Index_name', 'Index_code']]
     d = data.stock_name[0]+" : " + data.stock_code[0]
     c = (
         Pie()
         .add(
             "",
-            [list(z) for z in zip(dd.index_name, dd.index_code)],
-            radius=["30%", "75%"],
-            center=["50%", "60%"],
+            [list(z) for z in zip(dd.Index_name, dd.Index_code)],
+            radius=["25%", "70%"],
+            center=["50%", "50%"],
             rosetype="area",
         )
-        .set_global_opts(title_opts=opts.TitleOpts(title=d))
+        .set_global_opts(title_opts=opts.TitleOpts(title=d,pos_left="center",pos_top="20"),
+                        legend_opts=opts.LegendOpts(is_show=False,)
+        )
+        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
     return c

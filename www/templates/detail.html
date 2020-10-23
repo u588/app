@@ -32,7 +32,7 @@
 })
 </script>
 
-<div class="menu" style="width:90px;float:left">
+<div class="menu1" style="width:90px;float:right">
     <select id="selStock" onchange="stockSelect();">
         <option value="">请选择股票</option>
         </select>
@@ -70,7 +70,7 @@
 
 {% block content %}
  
-<div id="grid" style="width:1320px; height:800px;"></div>
+<div id="grid" style="width:1200px; height:800px;"></div>
 <script>
     function stockSelect(){
         var stockID=$("#selStock").find("option:selected").text();
