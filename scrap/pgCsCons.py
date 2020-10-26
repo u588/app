@@ -14,7 +14,6 @@ def getData(codeID):
     url = "http://www.csindex.com.cn/zh-CN/indices/index-detail/"+codeID
     r = requests.get(url, headers=header)
     html= etree.HTML(r.content)
-    # urlD = html.xpath("//ul[@class='download clearfix mb-10']//li/a/@href")[2]
     urlD = html.xpath("//ul[@class='download clearfix mb-10']//li/a[contains(text(),'成份列表')]")[0].xpath("@href")[0]
     r = requests.get(urlD, headers=header)
     a = pd.read_excel(r.content,index_col=None, header=None,skiprows=1,dtype={1:object,4:object})[[1,2,4,5]]
@@ -26,7 +25,7 @@ IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
 
 for codeID in IndexLists:
     try:
-        getData(codeID).to_sql('csDetail', eng , if_exists='append')
+        getData(codeID).to_sql('csIndexCons', eng , if_exists='append')
         time.sleep(random.randint(1,3))
         print(codeID + 'Saved !')
     except:

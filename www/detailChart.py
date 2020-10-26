@@ -7,7 +7,6 @@ from pyecharts import options as opts
 from pyecharts.options import ComponentTitleOpts
 
 
-# eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndexs')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 
 def table(Stock):
@@ -16,7 +15,7 @@ def table(Stock):
     StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
     csIndex = pd.read_sql('IndexList', eng)
     csIndex =csIndex[['index_code', 'index_name']]
-    # csIndex.rename(columns={'name':'index_name'}, inplace=True)
+
     data = pd.merge(StockInIndex, csIndex, on='index_code')  
 
     table = Table(js_host='/',page_title='DARK'  )
@@ -40,7 +39,7 @@ def pie(StockID):
     StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
     csIndex = pd.read_sql('csIndexs', eng)
     csIndex =csIndex[['Index_code', 'Index_name']]
-    # csIndex.rename(columns={'name':'index_name'}, inplace=True)
+
     data = pd.merge(StockInIndex, csIndex, on='Index_code')  
 
     dd = data[['Index_name', 'Index_code']]
