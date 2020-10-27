@@ -34,7 +34,7 @@ def pie(StockID):
     StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
     Stock = StocksList.loc[StocksList['code']==StockID].astype(str).reset_index()
 
-    IndexConst = pd.read_sql('csDetail', eng)
+    IndexConst = pd.read_sql('csIndexCons', eng)
     StockInIndex = IndexConst[IndexConst.code==StockID][['Index_code', 'code','name']]
     StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
     csIndex = pd.read_sql('csIndexs', eng)

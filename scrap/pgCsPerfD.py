@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 import requests
-import re
+
 from lxml import etree
 import pandas as pd
 import random
@@ -26,10 +26,17 @@ IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
 
 for codeID in IndexLists:
     try:
-        getData(codeID).to_sql(codeID, eng , if_exists='replace')
-        time.sleep(random.randint(1,3))
-        print(codeID + 'Saved !')
+        Data = getData(codeID).tail(1)
+        DayUp = Data.reset_index().tail(1)['Date'].to_list()[0]
+        Day = pd.read_sql(codeID, eng)['Date'].to_list()[0]
+
+        if DayUp > Day:
+            Data.to_sql(codeID, eng , if_exists='append')
+            time.sleep(random.randint(1,3))
+            print(codeID + 'Updated !')
+        else:
+            pass
     except:
-        print('Not Save!'+ codeID)
+        print('Not Updated ! '+ codeID)
         pass
-print(' == 指数行情 All Saved ! == ')
+print(' == 指数行情 All Updated ! == ')
