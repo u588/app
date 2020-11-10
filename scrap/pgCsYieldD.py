@@ -25,9 +25,16 @@ IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
 
 for codeID in IndexLists:
     try:
-        getData(codeID).to_sql('csYield', eng , if_exists='append')
-        time.sleep(random.randint(1,3))
-        print(codeID + 'Saved !')
+        Data = getData(codeID).tail(1)
+        DayUp = Data.reset_index().tail(1)['Date'].to_list()[0]
+        Day = pd.read_sql(codeID, eng)['Date'].to_list()[0]
+
+        if DayUp > Day:        
+            getData(codeID).to_sql('csYield', eng , if_exists='append')
+            time.sleep(random.randint(1,3))
+            print(codeID + 'Saved !')
+        else:
+            pass
     except:
         print('Not Save!'+ codeID)  
         pass
