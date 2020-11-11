@@ -29,6 +29,6 @@ for codeID in IndexLists:
         time.sleep(random.randint(1,3))
         print(codeID + 'Saved !')
     except:
-        print('Not Save!'+ codeID)
+        print('Not Save!'+ codeID)  
         pass
 print(' == 指数收益率 All Saved ! == ')
