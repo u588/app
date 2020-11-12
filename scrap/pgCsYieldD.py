@@ -27,7 +27,7 @@ for codeID in IndexLists:
     try:
         Data = getData(codeID).tail(1)
         DayUp = Data.reset_index().tail(1)['Date'].to_list()[0]
-        Day = pd.read_sql(codeID, eng)['Date'].to_list()[0]
+        Day = pd.read_sql('csYield', eng)['Date'].to_list()[0]
 
         if DayUp > Day:        
             getData(codeID).to_sql('csYield', eng , if_exists='append')
