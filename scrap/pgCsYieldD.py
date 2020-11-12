@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 import requests
-import re
 from lxml import etree
 import pandas as pd
 import random
@@ -22,20 +21,19 @@ def getData(codeID):
     return a
 
 IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
+D = pd.DataFrame(columns=['Index_code', 'Index_name','Date','Yie1M','Yie3M','YieToNow', 'Yie1Y','Yie3Y', 'Yie5Y','2016','2017','2018','2019'])
+D.set_index('Index_code', inplace=True)
 
 for codeID in IndexLists:
     try:
-        Data = getData(codeID).tail(1)
-        DayUp = Data.reset_index().tail(1)['Date'].to_list()[0]
-        Day = pd.read_sql('csYield', eng)['Date'].to_list()[0]
-
-        if DayUp > Day:        
-            getData(codeID).to_sql('csYield', eng , if_exists='append')
-            time.sleep(random.randint(1,3))
-            print(codeID + 'Saved !')
-        else:
-            pass
+        Da = getData(codeID)
+        time.sleep(random.randint(1,3))
+        D =D.append(Da)
+        print(codeID + 'Saved !')
     except:
         print('Not Save!'+ codeID)  
         pass
-print(' == 指数收益率 All Saved ! == ')
+
+D.to_sql('csYield', eng , if_exists='replace')
+print(' == 指数收益率 All Saved ! == ')    
+

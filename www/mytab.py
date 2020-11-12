@@ -9,6 +9,7 @@ from pyecharts.charts import WordCloud
 
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
+engCs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 
 hs300Data = pd.read_sql('hs300', eng)
 zz500Data = pd.read_sql('zz500', eng)
@@ -17,7 +18,7 @@ strongData = pd.read_sql_table('Strong',eng)
 weakData = pd.read_sql_table('weak',eng)
 wcData = pd.concat([strongData, weakData], ignore_index=True).sort_values(by=['date']).reset_index(drop=True)
 mkData = pd.read_sql('Market',eng)
-
+csData = pd.read_sql('csYield', engCs)
 
 def raDarIndex(dd):
     tl = Timeline()
@@ -111,6 +112,23 @@ def wordCloud(d):
     c = (
             WordCloud()
             .add(series_name="热点分析", data_pair=[list(z) for z in zip(data.name,data.pct_chg)], word_size_range=[6, 66])
+            .set_global_opts(
+                title_opts=opts.TitleOpts(
+                    title="热点分析", title_textstyle_opts=opts.TextStyleOpts(font_size=23)
+                ),
+                tooltip_opts=opts.TooltipOpts(is_show=True),
+            )
+            # .render("basic_wordcloud.html")
+        )
+    return c
+
+
+def csWordCloud(d,yie):
+    data = d.sort_values(by=yie).head(25).append(d.sort_values(by=yie).tail(25))[['Index_code','Index_name', yie]].reset_index()
+    data['name'] = data.Index_name + '-' + data.Index_code
+    c = (
+            WordCloud()
+            .add(series_name="热点分析", data_pair=[list(z) for z in zip(data.Index_name,data[yie])], word_size_range=[8, 70])
             .set_global_opts(
                 title_opts=opts.TitleOpts(
                     title="热点分析", title_textstyle_opts=opts.TextStyleOpts(font_size=23)
@@ -326,18 +344,28 @@ def timeline_pie():
 def tab():
 
     tab = Tab(js_host='/',page_title='TAB')
-    tab.add(mytable.table(), 'mytable')
+    # tab.add(mytable.table(), 'mytable')
     tab.add(bar_datazoom_slider(mkData), "指数估值")
     tab.add(line_markpoint(mkData), "静态市盈率")
-    tab.add(pie_rosetype(hs300Data), "沪深300贡献TOP10")
-    tab.add(pie_rosetype(zz500Data), "中正500贡献TOP10")
-    tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
+    # tab.add(pie_rosetype(hs300Data), "沪深300贡献TOP10")
+    # tab.add(pie_rosetype(zz500Data), "中正500贡献TOP10")
+    # tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
     # tab.add(grid_mutil_yaxis(), "grid-example")
     # tab.add(timeline_pie(), "grid-example")
     tab.add(wordCloud(wcData.tail(1010)),'55日市场强弱板块')
     tab.add(wordCloud(wcData.tail(420)),'21日市场强弱板块')
     tab.add(wordCloud(wcData.tail(100)),'5日市场强弱板块')
     tab.add(wordCloud(wcData.tail(60)),'3日市场强弱板块')
+    tab.add(csWordCloud(csData, 'Yie1M'),'cs1月市场强弱板块')
+    tab.add(csWordCloud(csData, 'Yie3M'),'cs3月市场强弱板块')
+    tab.add(csWordCloud(csData, 'YieToNow'),'cs至今市场强弱板块')
+    tab.add(csWordCloud(csData, 'Yie1Y'),'cs1年市场强弱板块')
+    tab.add(csWordCloud(csData, 'Yie3Y'),'cs3年市场强弱板块')
+    tab.add(csWordCloud(csData, 'Yie5Y'),'cs5年市场强弱板块')
+    tab.add(csWordCloud(csData, '2016'),'2016年市场强弱板块')
+    tab.add(csWordCloud(csData, '2017'),'2017年市场强弱板块')
+    tab.add(csWordCloud(csData, '2018'),'2018年市场强弱板块')
+    tab.add(csWordCloud(csData, '2019'),'2019年市场强弱板块')
     tab.add(timeLine_wordCloud(wcData.tail(420)),'21日内分时市场强弱板块')
     # tab.add(raDar(mkData),"RaDar指数估值")
     # tab.add(raDarIndex(mkData),"RaDar指数")
