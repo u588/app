@@ -202,7 +202,7 @@ def line_markpoint(dd) -> Line:
         .set_global_opts(title_opts=opts.TitleOpts(title=""))
     )
     for i in range(0,10):
-        c.add_yaxis(inName[i], d1g.get_group(inName[i]).pe_lyr.tolist(),is_smooth=True)
+        c.add_yaxis(inName[i], d1g.get_group(inName[i]).pe_lyr.tolist(),is_smooth=True, label_opts=opts.LabelOpts(is_show=False),)
     return c
 
 
