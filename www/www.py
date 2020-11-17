@@ -10,6 +10,7 @@ import timel
 import griRada
 import getData
 import detailChart
+import csIndexPie
 
 
 app = Flask(__name__, 
@@ -100,6 +101,11 @@ def getStock(dateID):
 @app.route("/tl/<dateID>")
 def tlChart(dateID):
     c = timel.pie(dateID)
+    return c.dump_options_with_quotes()
+
+@app.route("/csPie/<dateID>")
+def csPieChart(dateID):
+    c = csIndexPie.pie(dateID)
     return c.dump_options_with_quotes()
 
 @app.route("/test/<codeID>")

@@ -1,7 +1,40 @@
 {% extends "layout.html" %}
 {% block title %}
-主页 
+市场强弱
 {% endblock %}
+
+{% block div %}
+<div class="menu" style="width:90px;float:left">
+    <select id="Sel" onchange="checkSelect();">
+        <option value="">请选择周期</option>
+        <option value="3D">3D</option>
+        <option value="5D">5D</option>
+        <option value="21D">21D</option>
+        <option value="55D">55D</option>
+        </select>
+</div> 
+
+{% endblock %}  
+
 {% block content %}
-<p>Home page for the Visual Studio Code Flask tutorial.</p>
+<div id="grid" style="width:1320px; height:700px;"></div>
+<script>
+    function checkSelect(){
+        var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'}); 
+        var val=$("#Sel").find("option:selected").text();
+        var url = "/csPie/"+val
+        //Canvsa SVG vintage dark macarons infographic shine roma
+        $(
+        function () {
+                $.ajax({
+                type: "GET",
+                url: url ,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+            });
+        })
+    }
+</script>
 {% endblock %}

@@ -10,13 +10,13 @@ from pyecharts.options import ComponentTitleOpts
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 
 def table(Stock):
-    IndexConst = pd.read_sql('IndexConst', eng)
-    StockInIndex = IndexConst[IndexConst.code==Stock][['index_code', 'code','name']]
+    IndexConst = pd.read_sql('csIndexCons', eng)
+    StockInIndex = IndexConst[IndexConst.code==Stock][['Index_code', 'code','name']]
     StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
     csIndex = pd.read_sql('IndexList', eng)
-    csIndex =csIndex[['index_code', 'index_name']]
+    csIndex =csIndex[['Index_code', 'Index_name']]
 
-    data = pd.merge(StockInIndex, csIndex, on='index_code')  
+    data = pd.merge(StockInIndex, csIndex, on='Index_code')  
 
     table = Table(js_host='/',page_title='DARK'  )
     headers = data.columns.tolist()
