@@ -76,9 +76,9 @@
         var stockID=$("#selStock").find("option:selected").text();
         var url = "/detChart/"+stockID
         var url1 = "/gridChart/"+stockID
-        // var urldata = "/gridData/"+stockID
+
         var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'});
-        //Canvsa SVG vintage dark macarons infographic shine roma
+
 
         $(
         function () {
