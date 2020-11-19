@@ -11,6 +11,9 @@ import griRada
 import getData
 import detailChart
 import csIndexPie
+import getCsIndex
+import getCsStock
+import csIndexChart
 
 
 app = Flask(__name__, 
@@ -67,6 +70,12 @@ def gridChart(codeID):
     # return c.dump_options_with_quotes()
     return c.render_embed()
 
+@app.route("/indexChart/<codeID>")
+def indexChart(codeID):
+    c = csIndexChart.Kchart(codeID)
+    return c.dump_options_with_quotes()
+    # return c.render_embed()
+
 @app.route("/gridRada/")
 def gridRada():
     c = griRada.grid()
@@ -107,6 +116,16 @@ def tlChart(dateID):
 def csPieChart(dateID):
     c = csIndexPie.pie(dateID)
     return c.dump_options_with_quotes()
+
+@app.route("/getIndex/<dateID>")
+def getIndex(dateID):
+    c = getCsIndex.csIndexData(dateID)
+    return c
+
+@app.route("/getCsStocks/<dateID>")
+def getCsStocks(dateID):
+    c = getCsStock.getStock(dateID)
+    return c
 
 @app.route("/test/<codeID>")
 def test(codeID):
