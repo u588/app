@@ -1,8 +1,11 @@
+from datetime import datetime
 from flask import Flask, render_template, redirect, request
+from jinja2 import Markup, Environment, FileSystemLoader
 
 import mytab
 import mytable
 import Kpro
+import geoGrid
 import timel
 import griRada
 import getData
@@ -79,6 +82,11 @@ def gridRada():
     c.save_resize_html(c.render("/home/ts/app/www/static/11.html"),  cfg_file="/home/ts/app/www/static/chart_config.json", dest="/home/ts/app/www/templates/gridRada.html")
     return render_template("gridRada.html")
 
+@app.route('/test')
+def test1():
+    c = geoGrid.colBar()
+    return c.dump_options_with_quotes()
+
 @app.route("/tabChart")
 def tabChart():
     c = mytab.tab()
@@ -118,6 +126,15 @@ def getIndex(dateID):
 def getCsStocks(dateID,ID):
     c = getCsStock.getStock(dateID,ID)
     return c
+
+@app.route("/test/<codeID>")
+def test(codeID):
+    c = Kpro.Kchart(codeID)
+    return c.render_embed()
+
+@app.route("/api/data")
+def get_data():
+    return app.send_static_file("data.json")
 
 if __name__ == '__main__':
     app.run()

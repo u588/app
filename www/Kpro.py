@@ -3,9 +3,8 @@ import tushare as ts
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
-job = '10.3.18.56:5432'
-ip = job
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
 
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
@@ -15,8 +14,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 # get Data
 def Kchart(CodeId):
-    # CodeId='603530'
-    name = CodeId
+
     StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
     Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
     df = Stock
@@ -205,7 +203,7 @@ def Kchart(CodeId):
             .set_global_opts(
                 legend_opts=opts.LegendOpts(pos_top='7%',is_show=True),
                 title_opts=opts.TitleOpts(
-                    title=(CodeId+' : '+Stock.name[0]), 
+                    title=(CodeId+' : '+Stock.name[0]), pos_left="center",
                     subtitle=(
                             '所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
                             '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+'  每股净资:'+Stock['bvps'][0]+

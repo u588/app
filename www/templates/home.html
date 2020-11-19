@@ -57,7 +57,9 @@
 <script>
     function stockSelect(){
         var date=$("#selIndex").find("option:selected").text();
-        var url= "/getCsStocks/"+date
+        var da=$("#selCyc").find("option:selected").text();
+        // var url= "/getCsStocks/"+date
+        var url= "/getCsStocks/"+date+"/"+da//多参数传递
         $("#selStock").empty();
         $(document).ready(function () {
        
