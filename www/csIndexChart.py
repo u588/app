@@ -71,21 +71,21 @@ def Kchart(CodeId):
                 xaxis_index=2,
                 yaxis_index=2,
                 label_opts=opts.LabelOpts(is_show=False),
-                itemstyle_opts=opts.ItemStyleOpts(
-                color=JsCode(
+                itemstyle_opts=opts.ItemStyleOpts( color='red'
+                # color=JsCode(
 
-                    """
-                function(params) {
-                    var colorList;
-                    if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
-                        colorList = 'red';
-                    } else {
-                        colorList = 'green';
-                    }
-                    return colorList;
-                }
-                      """
-                    )
+                #     """
+                # function(params) {
+                #     var colorList;
+                #     if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
+                #         colorList = 'red';
+                #     } else {
+                #         colorList = 'green';
+                #     }
+                #     return colorList;
+                # }
+                #       """
+                #     )
                 ),
             )
             .set_global_opts(
@@ -139,20 +139,24 @@ def Kchart(CodeId):
                 xaxis_index=2,
                 yaxis_index=2,
                 label_opts=opts.LabelOpts(is_show=False),
-                itemstyle_opts=opts.ItemStyleOpts(
-                    color=JsCode(
-                        """
-                        function(params) {
-                            var colorList;
-                            if (params.data >= 0) {
-                            colorList = 'red';
-                            } else {
-                            colorList = 'green';
-                            }
-                            return colorList;
-                        }
-                        """
-                    )
+                itemstyle_opts=opts.ItemStyleOpts( color='red'
+
+                    # color=JsCode(
+                    #     "function(x){return colorList(if(x>=0){colorList='red';}else{colorList='green';})}"
+                       
+                    #     # """
+                    #     # function(params) {
+                    #     #     var colorList;
+                    #     #     if (params >= 0) {
+                    #     #     colorList = 'red';
+                    #     #     } else {
+                    #     #     colorList = 'green';
+                    #     #     }
+                    #     #     return colorList;
+                    #     # }
+                    #     # """
+                   
+                    # )
                 ),
             )
             .set_global_opts(

@@ -27,22 +27,3 @@ for stockID in StockLists:
         pass
 
 print('All Saved !! ')
-
-    # try:
-    #     pd.read_sql(stockID,eng)
-
-    # except:
-    #     try:
-    #         a = stockFina.getFina(stockID)
-    #         b = pd.read_excel('ccl.xls')
-    #         m = pd.merge(b,a,how='outer')
-    #         m.iloc[1] = m.columns.values
-    #         m.columns = m.iloc[0]
-    #         m.drop(0, implace=True)
-    #         m.to_sql(stockID, eng, if_exists='replace')
-    #         print(stockID, 'Saved to sql !')
-    #         time.sleep(random.randint(1,3))
-    #     except:
-    #         print('Not Save! '+stockID)
-    #         pass
-        
