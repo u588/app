@@ -14,7 +14,7 @@ tradeDate = datetime.datetime.today().strftime('%Y%m%d')
 try:
 	MoneyFlow = pro.moneyflow_hsgt(trade_date=tradeDate)
 	MoneyFlow.set_index(['trade_date'], inplace=True)
-	pd.io.sql.to_sql(MoneyFlow, 'HsgtFlow', eng, if_exists='append')
+	pd.io.sql.to_sql(MoneyFlow, 'tsHsgtFlow', eng, if_exists='append')
 except:
 	pass
 #	if i>1:
