@@ -19,6 +19,7 @@ for stockID in StockLists:
         m.iloc[1] = m.columns.values
         m.columns = m.iloc[0]
         m.drop(0, inplace=True)
+        m.set_index('date', inplace=True)        
         m.to_sql(stockID, eng, if_exists='replace')
         # print(stockID, 'Saved to sql !')
         time.sleep(random.randint(1,3))
