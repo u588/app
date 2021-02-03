@@ -8,6 +8,9 @@ import random
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
+engSm = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockManagers')
+engSa = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockAffs')
+engAm = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/AffManagers')
 ll = pd.read_sql('StocksList', engs).code.tolist()
 sl = pd.read_sql('StocksDetail', eng).code.tolist()
 StockLists = list(set(ll)-set(sl))
@@ -16,12 +19,12 @@ StockLists = list(set(ll)-set(sl))
 for stockID in StockLists:
     try:
         stockDetail.getDetail(stockID).to_sql('StocksDetail', eng, if_exists='append')
-        stockDetail.getManag(stockID).to_sql('StocksManags', eng, if_exists='append')
+        stockDetail.getManag(stockID).to_sql(stockID, engSm, if_exists='append')
         a,b=stockDetail.getAff(stockID)
-        a.to_sql('StocksAffs', eng, if_exists='append')
+        a.to_sql(stockID, engSa, if_exists='append')
         b['code'] = stockID
         bb = b.reset_index().set_index('code')
-        bb.to_sql('AffManags', eng, if_exists='append')
+        bb.to_sql(stockID, engAm, if_exists='append')
         # print(stockID, 'Saved to sql !')
         time.sleep(random.randint(1,3))
 
