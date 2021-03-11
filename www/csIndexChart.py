@@ -17,10 +17,9 @@ def Kchart(CodeId):
     IndexCodeId = csIndexList.loc[csIndexList['Index_name']==CodeId]['Index_code'].to_list()[0]
 
     data= pd.read_sql(IndexCodeId, eng).tail(500)
+    data = data.fillna(method='bfill', limit=3,axis=1)
     data.rename(columns={'Vol':'volume','Date':'date','High':'high','Low':'low','Open':'open','Close':'close'}, inplace=True)
-
-      
-
+   
     # 数据计算
     ADOSC = tb.ADOSC(data.high, data.low, data.close, data.volume, fastperiod=5, slowperiod=21)
     AD = tb.AD(data.high, data.low, data.close, data.volume)
@@ -37,7 +36,7 @@ def Kchart(CodeId):
     #数据正规化
     ADOs = ((ADOSC-ADOSC.mean())/ADOSC.std()).round(2)
     ADs = ((AD-AD.mean())/AD.std()).round(2)
-    Vol = ((data.volume-data.volume.min())/(data.volume.max()-data.volume.min())*3).round(2)
+    Vol = ((data.volume-data.volume.min())/(data.volume.max()-data.volume.min())*3).astype('float64').round(2)
  
     d = np.array(data[['open', 'close']]).tolist()
 
