@@ -1,15 +1,16 @@
-from datetime import datetime
 from flask import Flask, render_template, redirect, request
-from jinja2 import Markup, Environment, FileSystemLoader
 
 import mytab
 import mytable
 import Kpro
-import geoGrid
 import timel
 import griRada
 import getData
 import detailChart
+import csIndexPie
+import getCsIndex
+import getCsStock
+import csIndexChart
 
 
 app = Flask(__name__, 
@@ -66,16 +67,17 @@ def gridChart(codeID):
     # return c.dump_options_with_quotes()
     return c.render_embed()
 
+@app.route("/indexChart/<codeID>")
+def indexChart(codeID):
+    c = csIndexChart.Kchart(codeID)
+    return c.dump_options_with_quotes()
+    # return c.render_embed()
+
 @app.route("/gridRada/")
 def gridRada():
     c = griRada.grid()
     c.save_resize_html(c.render("/home/ts/app/www/static/11.html"),  cfg_file="/home/ts/app/www/static/chart_config.json", dest="/home/ts/app/www/templates/gridRada.html")
     return render_template("gridRada.html")
-
-@app.route('/test')
-def test1():
-    c = geoGrid.colBar()
-    return c.dump_options_with_quotes()
 
 @app.route("/tabChart")
 def tabChart():
@@ -102,14 +104,20 @@ def tlChart(dateID):
     c = timel.pie(dateID)
     return c.dump_options_with_quotes()
 
-@app.route("/test/<codeID>")
-def test(codeID):
-    c = Kpro.Kchart(codeID)
-    return c.render_embed()
+@app.route("/csPie/<dateID>")
+def csPieChart(dateID):
+    c = csIndexPie.pie(dateID)
+    return c.dump_options_with_quotes()
 
-@app.route("/api/data")
-def get_data():
-    return app.send_static_file("data.json")
+@app.route("/getIndex/<dateID>")
+def getIndex(dateID):
+    c = getCsIndex.csIndexData(dateID)
+    return c
+
+@app.route("/getCsStocks/<dateID>/<ID>")
+def getCsStocks(dateID,ID):
+    c = getCsStock.getStock(dateID,ID)
+    return c
 
 if __name__ == '__main__':
     app.run()

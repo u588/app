@@ -75,12 +75,14 @@
     function stockSelect(){
         var stockID=$("#selStock").find("option:selected").text();
         var url = "/detChart/"+stockID
-        // var urldata = "/gridData/"+stockID
+        var url1 = "/gridChart/"+stockID
+
         var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'});
-        //Canvsa SVG vintage dark macarons infographic shine roma
+
 
         $(
         function () {
+                window.open(url1,'_blank')
                 $.ajax({
                 type: "GET",
                 url: url,
@@ -88,13 +90,11 @@
                 success: function (result) {
                     chart.setOption(result);
                 }
+                
             });
         }
     )
-    // $(
-    //     function () {
-    //             window.open(url,'_blank')
-    //      })
      }
 </script>
 {% endblock %}
+
