@@ -5,7 +5,7 @@ import sys
 import os
 
 
-d = u2.connect('192.168.124.9')
+d = u2.connect('10.3.68.66')
 
 d.press('power')
 d.swipe_ext("right")
@@ -17,7 +17,7 @@ d(resourceId="com.android.keyguard:id/key3").click()
 d(resourceId="com.android.keyguard:id/key9").click()
 d(resourceId="com.android.keyguard:id/key4").click()
 
- d.app_start('com.alibaba.android.rimet')
+d.app_start('com.alibaba.android.rimet')
 d(resourceId="com.alibaba.android.rimet:id/home_bottom_tab_text", text="工作台").click()
 d(text="考勤打卡").click()
 d(text="统计").click()
