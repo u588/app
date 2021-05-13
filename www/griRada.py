@@ -11,7 +11,7 @@ allDate = d1s.drop_duplicates('date').date.tolist()
 
 def grid():
     page = Page(js_host='/',page_title='',layout=Page.DraggablePageLayout, interval=1)
-    inNames = d1s.sIndex.drop_duplicates().tolist()
+    inNames = ['上证指数', '上证180', '上证50', '沪深300',  '上证380', '红利指数', '中证红利', '中证500']
     for j,inName in enumerate(inNames):
         dd = d1s.groupby('sIndex').get_group(inName).reset_index(drop=True)
         tl = Timeline(opts.InitOpts(width="650px", height="500px"))

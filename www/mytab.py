@@ -182,7 +182,7 @@ def bar_datazoom_slider(dd) -> Bar:
             .set_global_opts(title_opts=opts.TitleOpts(title=""),)
         )
 
-        for j in range(0,10):
+        for j in range(0,8):
             c.add_yaxis(d2.loc[j][1].strip()+'去年底', d2.loc[j].tolist()[2:],stack=str(j))
             c.add_yaxis(d1.loc[j][1].strip(), d1.loc[j].tolist()[2:],stack=str(j))            
         tl.add(c,"{}日期".format(i))
