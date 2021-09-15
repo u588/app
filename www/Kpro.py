@@ -5,6 +5,8 @@ import numpy as np
 from sqlalchemy import create_engine
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
+engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockFina')
+engB = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockBas')
 
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
@@ -15,8 +17,12 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 # get Data
 def Kchart(CodeId):
 
-    StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
-    Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
+    # StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
+    StocksList = pd.read_sql('StocksDetail', engB)
+    Stock = StocksList.loc[StocksList['code']==CodeId]
+    Stock.fillna('--', inplace=True)
+    StockF = pd.read_sql(CodeId, engF).tail(1)
+    StockF.fillna('----', inplace=True)
     df = Stock
     df.reset_index(inplace=True)
     data= pd.read_sql(CodeId, eng).tail(500)
@@ -201,14 +207,14 @@ def Kchart(CodeId):
                 ),
             )
             .set_global_opts(
-                legend_opts=opts.LegendOpts(pos_top='7%',is_show=True),
+                legend_opts=opts.LegendOpts(pos_top='10%',is_show=True),
                 title_opts=opts.TitleOpts(
                     title=(CodeId+' : '+Stock.name[0]), pos_left="center",
-                    subtitle=(
-                            '所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
-                            '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+'  每股净资:'+Stock['bvps'][0]+
-                            '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+Stock['profit'][0]+'%'+'  毛利率:'+Stock['gpr'][0]+'%'+
-                            '  净利润率:'+Stock['npr'][0]+'%'), 
+                    subtitle=(StockF['date'].tolist()[0]+
+                            '  所属行业: '+Stock['icLev1'].tolist()[0]+'、'+Stock['icLev3'].tolist()[0]+  '  地域: '+Stock['regi'].tolist()[0]+'  控股股东: '+Stock['cSH'].tolist()[0]+Stock['cSHr'].tolist()[0]+'  最终控住人: '+Stock['ucSH'].tolist()[0]+Stock['ucSHr'].tolist()[0]+
+                            '  注册资本: '+Stock['regCap'].tolist()[0]+ '  雇员人数： '+Stock['empNum'].tolist()[0] +"\n" + "\n"+ '  净利润:'+str(round(int(StockF['nProfit'].tolist()[0])/100000000, 2))+'亿元'+'  每股收益:'+StockF['eps'].tolist()[0]+'  每股净资:'+StockF['bps'].tolist()[0]+
+                            '  每股分配利润:'+StockF['undist_profit_ps'].tolist()[0]+'  收入同比:'+StockF['tr_yoy'].tolist()[0]+'  净利润同比:'+StockF['nProfit_yoy'].tolist()[0]+'  毛利率:'+StockF['gProfit_margin'].tolist()[0]+
+                            '  净利润率:'+StockF['nProfit_margin'].tolist()[0]+'  净资产收益率:'+StockF['roe'].tolist()[0]+'  资产负债率:'+StockF['debt_to_assets'].tolist()[0]), 
                     subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold')
                 ),
                 xaxis_opts=opts.AxisOpts(
@@ -312,7 +318,7 @@ def Kchart(CodeId):
     # K线图和 MA5 的折线图
     grid_chart.add(
     overlap_kline_line,
-    grid_opts=opts.GridOpts(pos_left="3%", pos_right="1%", height="60%"),
+    grid_opts=opts.GridOpts(pos_left="3%", pos_right="1%", pos_top="8%",height="58%"),
     )
 
     # Volumn 柱状图
@@ -327,7 +333,7 @@ def Kchart(CodeId):
     grid_chart.add(
     Overlap_MACD_DIF,
     grid_opts=opts.GridOpts(
-        pos_left="3%", pos_right="1%", pos_top="82%", height="14%"
+        pos_left="3%", pos_right="1%", pos_top="82%", height="12%"
     ),
     )
     return grid_chart

@@ -57,11 +57,11 @@ def pie(StockID):
                         title_opts=opts.TitleOpts(
                                     title=(d),pos_left="center",pos_top="20",
                           
-                                    subtitle = ('所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
-                            '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+ '  每股净资:'+Stock['bvps'][0]+
-                            '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+Stock['profit'][0]+'%'+'  毛利率:'+Stock['gpr'][0]+'%'+
-                            '  净利润率:'+Stock['npr'][0]+'%'), 
-                                    subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold'),
+                        #             subtitle = ('所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
+                        #     '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+ '  每股净资:'+Stock['bvps'][0]+
+                        #     '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+Stock['profit'][0]+'%'+'  毛利率:'+Stock['gpr'][0]+'%'+
+                        #     '  净利润率:'+Stock['npr'][0]+'%'), 
+                        #             subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold'),
                         ),
                         legend_opts=opts.LegendOpts(is_show=False),
         )

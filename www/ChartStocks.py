@@ -14,10 +14,14 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 # get Data
 eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
+engF = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/StockFina')
+
 CodeId='600011'
 name = CodeId
+
 StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
 Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
+StockF = pd.read_sql(CodeId, engF).tail(1)
 df = Stock
 df.reset_index(inplace=True)
 data= pd.read_sql(CodeId, eng).tail(300)
@@ -206,11 +210,11 @@ kline = (
             legend_opts=opts.LegendOpts(pos_top='7%',is_show=True),
             title_opts=opts.TitleOpts(
                   title=(CodeId+' : '+Stock.name[0]), 
-                  subtitle=(
+                  subtitle=('报告期： '+StockF['date'].tolist()+
                         '所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
                         '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+'  每股净资:'+Stock['bvps'][0]+
-                        '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+Stock['profit'][0]+'%'+'  毛利率:'+Stock['gpr'][0]+'%'+
-                        '  净利润率:'+Stock['npr'][0]+'%'), 
+                        '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+StockF['nProfit_yoy'].tolist()+'%'+'  毛利率:'+StockF['gPorfit_margin'].tolist()+'%'+
+                        '  净利润率:'+StockF['roe'].tolist()[0]+'%'), 
                    subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold')
             ),
             xaxis_opts=opts.AxisOpts(
