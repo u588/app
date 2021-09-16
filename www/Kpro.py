@@ -19,10 +19,10 @@ def Kchart(CodeId):
 
     # StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
     StocksList = pd.read_sql('StocksDetail', engB)
-    Stock = StocksList.loc[StocksList['code']==CodeId]
-    Stock.fillna('--', inplace=True)
-    StockF = pd.read_sql(CodeId, engF).tail(1)
-    StockF.fillna('----', inplace=True)
+    St = StocksList.loc[StocksList['code']==CodeId]
+    Stock = St.fillna('--')
+    StF = pd.read_sql(CodeId, engF).tail(1)
+    StockF = StF.fillna('----')
     df = Stock
     df.reset_index(inplace=True)
     data= pd.read_sql(CodeId, eng).tail(500)
@@ -211,10 +211,12 @@ def Kchart(CodeId):
                 title_opts=opts.TitleOpts(
                     title=(CodeId+' : '+Stock.name[0]), pos_left="center",
                     subtitle=(StockF['date'].tolist()[0]+
-                            '  所属行业: '+Stock['icLev1'].tolist()[0]+'、'+Stock['icLev3'].tolist()[0]+  '  地域: '+Stock['regi'].tolist()[0]+'  控股股东: '+Stock['cSH'].tolist()[0]+Stock['cSHr'].tolist()[0]+'  最终控住人: '+Stock['ucSH'].tolist()[0]+Stock['ucSHr'].tolist()[0]+
-                            '  注册资本: '+Stock['regCap'].tolist()[0]+ '  雇员人数： '+Stock['empNum'].tolist()[0] +"\n" + "\n"+ '  净利润:'+str(round(int(StockF['nProfit'].tolist()[0])/100000000, 2))+'亿元'+'  每股收益:'+StockF['eps'].tolist()[0]+'  每股净资:'+StockF['bps'].tolist()[0]+
-                            '  每股分配利润:'+StockF['undist_profit_ps'].tolist()[0]+'  收入同比:'+StockF['tr_yoy'].tolist()[0]+'  净利润同比:'+StockF['nProfit_yoy'].tolist()[0]+'  毛利率:'+StockF['gProfit_margin'].tolist()[0]+
-                            '  净利润率:'+StockF['nProfit_margin'].tolist()[0]+'  净资产收益率:'+StockF['roe'].tolist()[0]+'  资产负债率:'+StockF['debt_to_assets'].tolist()[0]), 
+                            '  所属行业: '+Stock['icLev1'].tolist()[0]+'、'+Stock['icLev3'].tolist()[0]+  '    地域: '+Stock['regi'].tolist()[0]+'    控股股东: '+Stock['cSH'].tolist()[0]+' '+Stock['cSHr'].tolist()[0]+
+                            '    最终控住人: '+Stock['ucSH'].tolist()[0]+' '+Stock['ucSHr'].tolist()[0]+'    注册资本: '+Stock['regCap'].tolist()[0]+ '    雇员人数：'+Stock['empNum'].tolist()[0] +"\n" + "\n"+
+                            '收益: '+StockF['eps'].tolist()[0]+'  净资: '+StockF['bps'].tolist()[0]+'  资本公积金: '+StockF['capital_rese_ps'].tolist()[0]+'  未分利润 :'+StockF['undist_profit_ps'].tolist()[0]+'  经营现金流: '+StockF['ocfps'].tolist()[0]+
+                            '  总收入: '+str(round(float(StockF['totalRevenue'].tolist()[0])/100000000, 2))+'亿元'+'  总收入同比: '+StockF['tr_yoy'].tolist()[0]+
+                            '  净利润: '+str(round(float(StockF['nProfit'].tolist()[0])/100000000, 2))+'亿元'+'  净利润同比: '+StockF['nProfit_yoy'].tolist()[0]+
+                            '  毛利率: '+StockF['gProfit_margin'].tolist()[0]+'  净利率: '+StockF['nProfit_margin'].tolist()[0]+'  净资收益率: '+StockF['roe'].tolist()[0]+'  产权比: '+StockF['debt_to_eqt'].tolist()[0]+'  资产负债率: '+StockF['debt_to_assets'].tolist()[0]), 
                     subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold')
                 ),
                 xaxis_opts=opts.AxisOpts(
