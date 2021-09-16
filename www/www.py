@@ -57,7 +57,7 @@ def detChart(codeID):
 
 @app.route("/detaChart/<codeID>")
 def detaChart(codeID):
-    c = detailChart.pie(codeID)
+    c = detailChart.line(codeID)
     # return c.dump_options_with_quotes()
     return c.render_embed()
 
