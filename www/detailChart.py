@@ -1,3 +1,6 @@
+import re
+from pyecharts.charts.composite_charts.grid import Grid
+from pyecharts.options.global_options import InitOpts
 from sqlalchemy import create_engine
 import pandas as pd
 import numpy as np
@@ -27,12 +30,12 @@ def line(StockID) -> Line:
     # inName = d1g.head(1).sIndex.tolist()
     date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
     c = (
-        Line()
+        Line(opts.InitOpts(page_title='财务分析',width="1300px", height="600px"))
         .add_xaxis(date)
-        .set_global_opts(title_opts=opts.TitleOpts(title=""))
+        .set_global_opts(legend_opts=opts.LegendOpts(type_='scroll',orient='vertical',pos_right='0%',pos_top='10%',is_show=True),title_opts=opts.TitleOpts(title=StockID, pos_left="center",pos_top="5"),)
     )
     for i, n in enumerate(d.tolist()[1:]):
-        c.add_yaxis(d.tolist()[1:][i], d1s[d1s.columns[i+1]].tolist(),is_smooth=True, label_opts=opts.LabelOpts(is_show=False),)
+        c.add_yaxis(d.tolist()[1:][i], d1s[d1s.columns[i+1]].tolist(),is_smooth=True, label_opts=opts.LabelOpts(is_show=False),is_selected=False)
     return c
 
 
@@ -75,3 +78,5 @@ def pie(StockID):
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
     return c
+
+
