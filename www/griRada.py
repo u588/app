@@ -4,8 +4,10 @@ from sqlalchemy import create_engine
 import pandas as pd
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
-mkData = pd.read_sql('Market',eng)
-dd = mkData.drop(0)
+
+Data = pd.read_sql('Market',eng)
+dd =  Data.drop(Data[(Data.date<'2021-03-01')].index)
+# dd = mkData.drop(0)
 d1s = dd[['date','sIndex','chg','pct_chg','vol','pct_vol','yChg','pct_yChg']]
 allDate = d1s.drop_duplicates('date').date.tolist()
 

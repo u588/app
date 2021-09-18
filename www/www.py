@@ -11,6 +11,7 @@ import csIndexPie
 import getCsIndex
 import getCsStock
 import csIndexChart
+import test
 
 
 app = Flask(__name__, 
@@ -118,6 +119,13 @@ def getIndex(dateID):
 def getCsStocks(dateID,ID):
     c = getCsStock.getStock(dateID,ID)
     return c
+
+@app.route("/te/<ID>")
+def te(ID):
+    c = test.test(ID)
+    return c.render_embed()
+
+
 
 if __name__ == '__main__':
     app.run()

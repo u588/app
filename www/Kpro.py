@@ -7,17 +7,100 @@ from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
 engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockFina')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockBas')
+engFn = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
 
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
 from pyecharts.commons.utils import JsCode
 from pyecharts.charts import Kline, Line, Bar, Grid
 
+def iBar(StockID):
+
+    rData = pd.read_sql(StockID, engFn).tail(330).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    r = rData.astype(float).reset_index()
+
+    c = (
+        Bar()
+        .add_xaxis(xaxis_data=r.date.tolist(),)
+        .add_yaxis(
+            series_name="inFlow",
+            y_axis=r.inflow.tolist(),
+            xaxis_index=2,
+            yaxis_index=2,
+            label_opts=opts.LabelOpts(is_show=False),
+            itemstyle_opts=opts.ItemStyleOpts(
+                color=JsCode(
+                    """
+                    function(params) {
+                        var colorList;
+                        if (params.data >= 0) {
+                        colorList = 'red';
+                        } else {
+                        colorList = 'green';
+                        }
+                        return colorList;
+                    }
+                    """
+                )
+            ),
+        )
+        .set_global_opts(
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                grid_index=2,
+                axislabel_opts=opts.LabelOpts(is_show=False),
+            ),
+            yaxis_opts=opts.AxisOpts(
+                grid_index=2,
+                split_number=4,
+                axisline_opts=opts.AxisLineOpts(is_on_zero=False),
+                axistick_opts=opts.AxisTickOpts(is_show=False),
+                splitline_opts=opts.SplitLineOpts(is_show=False),
+                axislabel_opts=opts.LabelOpts(is_show=True),
+            ),
+            legend_opts=opts.LegendOpts(pos_top='58%',is_show=True),
+        )
+    )
+    return c
+
+
+def sBar(StockID) -> Bar:
+
+    rData = pd.read_sql(StockID, engFn).tail(330).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    r = rData.astype(float).reset_index()
+
+    c = (
+        Bar()
+        .add_xaxis(r.date.tolist())
+        .set_global_opts(
+            xaxis_opts=opts.AxisOpts(
+                type_="category",
+                grid_index=2,
+                axislabel_opts=opts.LabelOpts(is_show=False),
+            ),
+            yaxis_opts=opts.AxisOpts(
+                grid_index=2,
+                split_number=4,
+                axisline_opts=opts.AxisLineOpts(is_on_zero=False),
+                axistick_opts=opts.AxisTickOpts(is_show=False),
+                splitline_opts=opts.SplitLineOpts(is_show=False),
+                axislabel_opts=opts.LabelOpts(is_show=True),
+            ),
+            legend_opts=opts.LegendOpts(pos_top='48%',is_show=True),
+        )
+       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='bEqu',y_axis=r['bEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='red'), )
+       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='mEqu',y_axis=r['mEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='yellow'),)
+       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='sEqu',y_axis=r['sEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='gray'),)
+
+    )   
+
+    return c
+
 
 # get Data
 def Kchart(CodeId):
 
-    # StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
+
     StocksList = pd.read_sql('StocksDetail', engB)
     St = StocksList.loc[StocksList['code']==CodeId]
     Stock = St.fillna('--')
@@ -25,7 +108,7 @@ def Kchart(CodeId):
     StockF = StF.fillna('----')
     df = Stock
     df.reset_index(inplace=True)
-    data= pd.read_sql(CodeId, eng).tail(500)
+    data= pd.read_sql(CodeId, eng).tail(330)
     data.rename(columns={'vol':'volume','datetime':'date'}, inplace=True)
     data.date = data.date.str.replace(' 15:00','')
     # data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
@@ -242,6 +325,8 @@ def Kchart(CodeId):
                         is_show=True, xaxis_index=[0, 1], pos_top="97%", range_end=100
                     ),
                     opts.DataZoomOpts(is_show=False, xaxis_index=[0, 2], range_end=100),
+                    opts.DataZoomOpts(is_show=False, xaxis_index=[0, 3], range_end=100),
+                    opts.DataZoomOpts(is_show=False, xaxis_index=[0, 4], range_end=100),
                 ],
                 # 三个图的 axis 连在一块
                 # axispointer_opts=opts.AxisPointerOpts(
@@ -320,14 +405,14 @@ def Kchart(CodeId):
     # K线图和 MA5 的折线图
     grid_chart.add(
     overlap_kline_line,
-    grid_opts=opts.GridOpts(pos_left="3%", pos_right="1%", pos_top="8%",height="58%"),
+    grid_opts=opts.GridOpts(pos_left="4%", pos_right="2%", pos_top="8%",height="36%"),
     )
 
     # Volumn 柱状图
     grid_chart.add(
     Overlap_ADOSC_Vol,
     grid_opts=opts.GridOpts(
-        pos_left="3%", pos_right="1%", pos_top="71%", height="10%"
+        pos_left="4%", pos_right="2%", pos_top="71%", height="10%"
     ),
     )
 
@@ -335,20 +420,11 @@ def Kchart(CodeId):
     grid_chart.add(
     Overlap_MACD_DIF,
     grid_opts=opts.GridOpts(
-        pos_left="3%", pos_right="1%", pos_top="82%", height="12%"
+        pos_left="4%", pos_right="2%", pos_top="82%", height="12%"
     ),
     )
+
+    grid_chart.add(sBar(CodeId), grid_opts=opts.GridOpts(pos_left="4%", pos_right="2%", pos_top="47%",height="12%"), )    
+    grid_chart.add(iBar(CodeId), grid_opts=opts.GridOpts(pos_left="4%", pos_right="2%", pos_top="60%",height="10%"), ) 
+
     return grid_chart
-
-
-def Kdata(CodeId):
-    # CodeId='603530'
-    name = CodeId
-    StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
-    Stock = StocksList.loc[StocksList['code']==CodeId].astype(str)
-    df = Stock
-    df.reset_index(inplace=True)
-    data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
-    d = data[['open','close']].to_json(orient='values')
-  
-    return d

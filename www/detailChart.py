@@ -12,6 +12,7 @@ from pyecharts.options import ComponentTitleOpts
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 engD = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockFina')
+engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
 
 def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD).fillna('0').applymap(lambda x : x.replace('%', ''))
