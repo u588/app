@@ -16,6 +16,10 @@ def iBar(StockID):
     rData = pd.read_sql(StockID, engFn).tail(500).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     r = rData.astype(float).reset_index()
 
+    ema3 = tb.EMA(r.inflow, timeperiod=3)
+    ema5 = tb.EMA(r.inflow, timeperiod=5)
+    ema21 = tb.EMA(r.inflow, timeperiod=21)
+
     c = (
         Bar()
         .add_xaxis(xaxis_data=r.date.tolist())
@@ -58,7 +62,57 @@ def iBar(StockID):
             legend_opts=opts.LegendOpts(pos_top='95%',is_show=True),
         )
     )
-    return c
+
+    kline_line = (
+    Line()
+    .add_xaxis(xaxis_data=r.date.tolist())
+    .add_yaxis(
+        series_name="EMA3",
+        y_axis=ema3,
+        xaxis_index=2,
+        yaxis_index=2,
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=0.5),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    .add_yaxis(
+        series_name="EMA5",
+        y_axis=ema5,
+        xaxis_index=2,
+        yaxis_index=2,
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=0.5),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    .add_yaxis(
+        series_name="EMA21",
+        y_axis=ema21,
+        xaxis_index=2,
+        yaxis_index=2,
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=1,width=2),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    .set_global_opts(
+        xaxis_opts=opts.AxisOpts(
+            type_="category",
+            grid_index=1,
+            axislabel_opts=opts.LabelOpts(is_show=False),
+        ),
+        yaxis_opts=opts.AxisOpts(
+            grid_index=1,
+            split_number=3,
+            axisline_opts=opts.AxisLineOpts(is_on_zero=False),
+            axistick_opts=opts.AxisTickOpts(is_show=False),
+            splitline_opts=opts.SplitLineOpts(is_show=False),
+            axislabel_opts=opts.LabelOpts(is_show=True),
+        ),
+    )
+    )
+
+    overlap_Bar = c.overlap(kline_line)
+
+    return overlap_Bar
 
 
 def sBar(StockID) -> Bar:

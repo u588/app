@@ -19,6 +19,10 @@ def iBar(StockID):
     rData = pd.read_sql(StockID, engFn).tail(330).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     r = rData.astype(float).reset_index()
 
+    ema3 = tb.EMA(r.inflow, timeperiod=3).round()
+    ema5 = tb.EMA(r.inflow, timeperiod=5).round()
+    ema21 = tb.EMA(r.inflow, timeperiod=21).round()
+
     c = (
         Bar()
         .add_xaxis(xaxis_data=r.date.tolist(),)
@@ -61,7 +65,57 @@ def iBar(StockID):
             legend_opts=opts.LegendOpts(pos_top='58%',is_show=True),
         )
     )
-    return c
+
+    kline_line = (
+    Line()
+    .add_xaxis(xaxis_data=r.date.tolist())
+    .add_yaxis(
+        series_name="iEMA3",
+        y_axis=ema3,
+        xaxis_index=2,
+        yaxis_index=2,
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=0.5),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    .add_yaxis(
+        series_name="iEMA5",
+        y_axis=ema5,
+        xaxis_index=2,
+        yaxis_index=2,
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=0.5),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    .add_yaxis(
+        series_name="iEMA21",
+        y_axis=ema21,
+        xaxis_index=2,
+        yaxis_index=2,
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=1,width=2),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    .set_global_opts(
+        xaxis_opts=opts.AxisOpts(
+            type_="category",
+            grid_index=1,
+            axislabel_opts=opts.LabelOpts(is_show=False),
+        ),
+        yaxis_opts=opts.AxisOpts(
+            grid_index=1,
+            split_number=3,
+            axisline_opts=opts.AxisLineOpts(is_on_zero=False),
+            axistick_opts=opts.AxisTickOpts(is_show=False),
+            splitline_opts=opts.SplitLineOpts(is_show=False),
+            axislabel_opts=opts.LabelOpts(is_show=True),
+        ),
+    )
+    )
+
+    overlap_Bar = c.overlap(kline_line)
+
+    return overlap_Bar
 
 
 def sBar(StockID) -> Bar:
@@ -89,7 +143,7 @@ def sBar(StockID) -> Bar:
             legend_opts=opts.LegendOpts(pos_top='48%',is_show=True),
         )
        .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='bEqu',y_axis=r['bEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='red'), )
-       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='mEqu',y_axis=r['mEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='yellow'),)
+       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='mEqu',y_axis=r['mEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='pink'),)
        .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='sEqu',y_axis=r['sEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='gray'),)
 
     )   
@@ -397,7 +451,7 @@ def Kchart(CodeId):
 
 
     # 图合并到一张图表中
-    grid_chart = Grid(opts.InitOpts(js_host='/',page_title=Stock.name[0], width="1500px", height="900px"))
+    grid_chart = Grid(opts.InitOpts(js_host='/',page_title=Stock.name[0], width="1900px", height="900px"))
 
      # demo 中的代码也是用全局变量传的
     grid_chart.add_js_funcs("var barData = {}".format(d))
