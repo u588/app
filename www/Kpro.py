@@ -16,7 +16,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 def iBar(StockID):
 
-    rData = pd.read_sql(StockID, engFn).tail(330).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    rData = pd.read_sql(StockID, engFn).tail(320).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     r = rData.astype(float).reset_index()
 
     ema3 = tb.EMA(r.inflow, timeperiod=3).round()
@@ -25,12 +25,12 @@ def iBar(StockID):
 
     c = (
         Bar()
-        .add_xaxis(xaxis_data=r.date.tolist(),)
+        .add_xaxis(xaxis_data=r.date.tolist())
         .add_yaxis(
             series_name="inFlow",
             y_axis=r.inflow.tolist(),
-            xaxis_index=2,
-            yaxis_index=2,
+            # xaxis_index=1,
+            # yaxis_index=1,
             label_opts=opts.LabelOpts(is_show=False),
             itemstyle_opts=opts.ItemStyleOpts(
                 color=JsCode(
@@ -51,12 +51,12 @@ def iBar(StockID):
         .set_global_opts(
             xaxis_opts=opts.AxisOpts(
                 type_="category",
-                grid_index=2,
+                # grid_index=2,
                 axislabel_opts=opts.LabelOpts(is_show=False),
             ),
             yaxis_opts=opts.AxisOpts(
-                grid_index=2,
-                split_number=4,
+                # grid_index=2,
+                split_number=3,
                 axisline_opts=opts.AxisLineOpts(is_on_zero=False),
                 axistick_opts=opts.AxisTickOpts(is_show=False),
                 splitline_opts=opts.SplitLineOpts(is_show=False),
@@ -72,8 +72,8 @@ def iBar(StockID):
     .add_yaxis(
         series_name="iEMA3",
         y_axis=ema3,
-        xaxis_index=2,
-        yaxis_index=2,
+        # xaxis_index=2,
+        # yaxis_index=2,
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=0.5),
         label_opts=opts.LabelOpts(is_show=False),
@@ -81,8 +81,8 @@ def iBar(StockID):
     .add_yaxis(
         series_name="iEMA5",
         y_axis=ema5,
-        xaxis_index=2,
-        yaxis_index=2,
+        # xaxis_index=3,
+        # yaxis_index=3,
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=0.5),
         label_opts=opts.LabelOpts(is_show=False),
@@ -90,8 +90,8 @@ def iBar(StockID):
     .add_yaxis(
         series_name="iEMA21",
         y_axis=ema21,
-        xaxis_index=2,
-        yaxis_index=2,
+        # xaxis_index=4,
+        # yaxis_index=4,
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=1,width=2),
         label_opts=opts.LabelOpts(is_show=False),
@@ -99,11 +99,11 @@ def iBar(StockID):
     .set_global_opts(
         xaxis_opts=opts.AxisOpts(
             type_="category",
-            grid_index=1,
+            # grid_index=12,
             axislabel_opts=opts.LabelOpts(is_show=False),
         ),
         yaxis_opts=opts.AxisOpts(
-            grid_index=1,
+            # grid_index=12,
             split_number=3,
             axisline_opts=opts.AxisLineOpts(is_on_zero=False),
             axistick_opts=opts.AxisTickOpts(is_show=False),
@@ -120,7 +120,7 @@ def iBar(StockID):
 
 def sBar(StockID) -> Bar:
 
-    rData = pd.read_sql(StockID, engFn).tail(330).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    rData = pd.read_sql(StockID, engFn).tail(320).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     r = rData.astype(float).reset_index()
 
     c = (
@@ -129,12 +129,12 @@ def sBar(StockID) -> Bar:
         .set_global_opts(
             xaxis_opts=opts.AxisOpts(
                 type_="category",
-                grid_index=2,
+                # grid_index=2,
                 axislabel_opts=opts.LabelOpts(is_show=False),
             ),
             yaxis_opts=opts.AxisOpts(
-                grid_index=2,
-                split_number=4,
+                # grid_index=2,
+                split_number=3,
                 axisline_opts=opts.AxisLineOpts(is_on_zero=False),
                 axistick_opts=opts.AxisTickOpts(is_show=False),
                 splitline_opts=opts.SplitLineOpts(is_show=False),
@@ -142,9 +142,9 @@ def sBar(StockID) -> Bar:
             ),
             legend_opts=opts.LegendOpts(pos_top='48%',is_show=True),
         )
-       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='bEqu',y_axis=r['bEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='red'), )
-       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='mEqu',y_axis=r['mEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='pink'),)
-       .add_yaxis(xaxis_index=2,yaxis_index=2,series_name='sEqu',y_axis=r['sEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='gray'),)
+       .add_yaxis(series_name='bEqu',y_axis=r['bEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='red'), )
+       .add_yaxis(series_name='mEqu',y_axis=r['mEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='pink'),)
+       .add_yaxis(series_name='sEqu',y_axis=r['sEqu'].tolist(),stack='大中小单',label_opts=opts.LabelOpts(is_show=False),itemstyle_opts=opts.ItemStyleOpts(color='gray'),)
 
     )   
 
@@ -162,7 +162,7 @@ def Kchart(CodeId):
     StockF = StF.fillna('----')
     df = Stock
     df.reset_index(inplace=True)
-    data= pd.read_sql(CodeId, eng).tail(330)
+    data= pd.read_sql(CodeId, eng).tail(320)
     data.rename(columns={'vol':'volume','datetime':'date'}, inplace=True)
     data.date = data.date.str.replace(' 15:00','')
     # data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
