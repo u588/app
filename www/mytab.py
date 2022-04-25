@@ -346,8 +346,8 @@ def tab():
 
     tab = Tab(js_host='/',page_title='TAB')
     # tab.add(mytable.table(), 'mytable')
-    tab.add(bar_datazoom_slider(mkData), "指数估值")
-    tab.add(line_markpoint(mkData), "静态市盈率")
+    # tab.add(bar_datazoom_slider(mkData), "指数估值")
+    # tab.add(line_markpoint(mkData), "静态市盈率")
     # tab.add(pie_rosetype(hs300Data), "沪深300贡献TOP10")
     # tab.add(pie_rosetype(zz500Data), "中正500贡献TOP10")
     # tab.add(pie_rosetype(sz50Data), "上证50贡献TOP10")
@@ -356,7 +356,12 @@ def tab():
     tab.add(csWordCloud(csIndexsData,'3D'),'3日市场强弱板块')
     tab.add(csWordCloud(csIndexsData,'5D'),'5日市场强弱板块')
     tab.add(csWordCloud(csIndexsData,'21D'),'21日市场强弱板块')
-    tab.add(csWordCloud(csIndexsData,'55D'),'55日市场强弱板块')
+    tab.add(csWordCloud(csIndexsData,'55D'),'55日市场强弱板块')    
+    # tab.add(timeLine_wordCloud(wcData.tail(60)),'3日内分时市场强弱板块')
+    # tab.add(timeLine_wordCloud(wcData.tail(100)),'5日内分时市场强弱板块')
+    tab.add(timeLine_wordCloud(wcData.tail(420)),'21日内分时市场强弱板块')
+    # tab.add(timeLine_wordCloud(wcData.tail(1000)),'55日内分时市场强弱板块')
+
     tab.add(csWordCloud(csData, 'Yie1M'),'cs1月市场强弱板块')
     tab.add(csWordCloud(csData, 'Yie3M'),'cs3月市场强弱板块')
     tab.add(csWordCloud(csData, 'YieToNow'),'cs至今市场强弱板块')
@@ -367,7 +372,7 @@ def tab():
     # tab.add(csWordCloud(csData, '2017'),'2017年市场强弱板块')
     # tab.add(csWordCloud(csData, '2018'),'2018年市场强弱板块')
     # tab.add(csWordCloud(csData, '2019'),'2019年市场强弱板块')
-    tab.add(timeLine_wordCloud(wcData.tail(420)),'21日内分时市场强弱板块')
+
     # tab.add(raDar(mkData),"RaDar指数估值")
     # tab.add(raDarIndex(mkData),"RaDar指数")
     

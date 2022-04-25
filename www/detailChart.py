@@ -18,7 +18,7 @@ def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD).fillna('0').applymap(lambda x : x.replace('%', ''))
     d = Data[['date','nProfit','nProfit_yoy','totalRevenue','tr_yoy','eps', 'bps','capital_rese_ps', 'undist_profit_ps', 'ocfps', 'nProfit_margin', 
     'gProfit_margin', 'roe', 'debt_to_eqt', 'debt_to_assets']].loc[0]
-    dd = Data.loc[1:].set_index('date').astype(float).round(2)
+    dd = Data.loc[1:].tail(61).set_index('date').astype(float).round(2)
     dd['nProfit'] = (dd['nProfit']/100000000).round(2)
     dd['dtnProfit'] = (dd['dtnProfit']/100000000).round(2)
     dd['totalRevenue'] = (dd['totalRevenue']/100000000).round(2)
@@ -31,9 +31,9 @@ def line(StockID) -> Line:
     # inName = d1g.head(1).sIndex.tolist()
     date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
     c = (
-        Line(opts.InitOpts(page_title='财务分析',width="1300px", height="600px"))
+        Line(opts.InitOpts(page_title='财务分析',width="1330px", height="600px"))
         .add_xaxis(date)
-        .set_global_opts(legend_opts=opts.LegendOpts(type_='scroll',orient='vertical',pos_right='0%',pos_top='10%',is_show=True),title_opts=opts.TitleOpts(title=StockID, pos_left="center",pos_top="5"),)
+        .set_global_opts(legend_opts=opts.LegendOpts(type_='scroll',orient='vertical',pos_right='-1%',pos_top='10%',is_show=True),title_opts=opts.TitleOpts(title=StockID, pos_left="center",pos_top="5"),)
     )
     for i, n in enumerate(d.tolist()[1:]):
         c.add_yaxis(d.tolist()[1:][i], d1s[d1s.columns[i+1]].tolist(),is_smooth=True, label_opts=opts.LabelOpts(is_show=False),is_selected=False)
