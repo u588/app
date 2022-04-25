@@ -125,7 +125,8 @@ def wordCloud(d):
 
 
 def csWordCloud(d,yie):
-    data = d.sort_values(by=yie).head(25).append(d.sort_values(by=yie).tail(25))[['Index_code','Index_name', yie]].reset_index()
+    # data = d.sort_values(by=yie).head(25).append(d.sort_values(by=yie).tail(25))[['Index_code','Index_name', yie]].reset_index()
+    data = pd.concat([d.sort_values(by=yie).head(25) , d.sort_values(by=yie).tail(25)[['Index_code','Index_name', yie]].reset_index()])
     data['name'] = data.Index_name + '-' + data.Index_code
     c = (
             WordCloud()
@@ -344,7 +345,7 @@ def timeline_pie():
 
 def tab():
 
-    tab = Tab(js_host='/',page_title='TAB')
+    tab = Tab(js_host='/',page_title='板块分析')
     # tab.add(mytable.table(), 'mytable')
     # tab.add(bar_datazoom_slider(mkData), "指数估值")
     # tab.add(line_markpoint(mkData), "静态市盈率")

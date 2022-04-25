@@ -22,7 +22,8 @@ def getStock(Code,ID):
             dd['PCB'] = DD['PCB'].sum().round(2)
             dd.reset_index(drop=True, inplace =True)
 
-            d = d.append(dd[['code','PCB']])
+            # d = d.append(dd[['code','PCB']])
+            d = pd.concat([d, dd[['code','PCB']]])
         except:
             pass
 
