@@ -1,9 +1,10 @@
 from pytdx.hq import TdxHq_API
+from pytdx.exhq import TdxExHq_API
 import pandas as pd
 from sqlalchemy import create_engine
 from pytdx.config.hosts import hq_hosts
 
-
+eapi =  TdxExHq_API()
 api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
