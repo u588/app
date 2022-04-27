@@ -451,7 +451,7 @@ def Kchart(CodeId):
 
 
     # 图合并到一张图表中
-    grid_chart = Grid(opts.InitOpts(js_host='/',page_title=Stock.name[0], width="1900px", height="900px"))
+    grid_chart = Grid(opts.InitOpts(js_host='/',page_title=Stock.name[0]+' : '+Stock.code[0], width="1900px", height="900px"))
 
      # demo 中的代码也是用全局变量传的
     grid_chart.add_js_funcs("var barData = {}".format(d))
