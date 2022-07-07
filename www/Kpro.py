@@ -16,7 +16,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 def iBar(StockID):
 
-    rData = pd.read_sql(StockID, engFn).tail(320).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    rData = pd.read_sql(StockID, engFn).tail(610).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     r = rData.astype(float).reset_index()
 
     ema3 = tb.EMA(r.inflow, timeperiod=3).round()
@@ -120,7 +120,7 @@ def iBar(StockID):
 
 def sBar(StockID) -> Bar:
 
-    rData = pd.read_sql(StockID, engFn).tail(320).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    rData = pd.read_sql(StockID, engFn).tail(610).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     r = rData.astype(float).reset_index()
 
     c = (
@@ -162,7 +162,7 @@ def Kchart(CodeId):
     StockF = StF.fillna('----')
     df = Stock
     df.reset_index(inplace=True)
-    data= pd.read_sql(CodeId, eng).tail(320)
+    data= pd.read_sql(CodeId, eng).tail(610)
     data.rename(columns={'vol':'volume','datetime':'date'}, inplace=True)
     data.date = data.date.str.replace(' 15:00','')
     # data = ts.get_k_data(code=CodeId, ktype='D', autype='qfq').tail(250)
