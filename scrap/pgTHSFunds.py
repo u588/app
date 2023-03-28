@@ -42,13 +42,22 @@ def getFunds(stockID):
 
 for stockID in StockLists:
     try:
-        # if stockID >'002669':
-        getFunds(stockID).to_sql(stockID, eng, if_exists='append')
-        # print(stockID, 'Saved to sql !')
+        Data = getFunds(stockID)
+        DayUp = Data.reset_index()['date'].to_list()[0]
+        Day = pd.read_sql(stockID,eng).tail(1)['date'].to_list()[0]
         time.sleep(random.randint(1,3))
-        # else:
-        #     pass
+        # if stockID >'002669':
+
+        if DayUp > Day:
+            Data.to_sql(stockID, eng , if_exists='append')
+            
+            print(stockID + 'Updated !')
+        else:
+            print('Not Save! '+stockID)
+            pass        
+
     except:
-        print('Not Save! '+stockID)
+        Data.to_sql(stockID, eng , if_exists='append')
+        
         pass
 print('All saved !')

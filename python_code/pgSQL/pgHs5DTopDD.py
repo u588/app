@@ -1,0 +1,22 @@
+﻿from sqlalchemy import create_engine
+import tushare as ts
+import pandas as pd
+import datetime
+import time
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/MarkCap')
+
+
+dateToday = datetime.datetime.today().strftime('%Y-%m-%d')
+
+try:
+	top10 = ts.cap_tops()
+	top10['timestamp'] = dateToday
+	top10.set_index(['timestamp'], inplace=True)
+	pd.io.sql.to_sql(top10, 'Hs5DTop', eng, if_exists='append')
+except:
+	pass
+#	if i>1:
+#	   break 
+
+print (' == 5日个股上榜统计 ==')

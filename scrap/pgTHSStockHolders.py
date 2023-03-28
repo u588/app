@@ -10,6 +10,7 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockH
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
 
 StockLists = pd.read_sql('StocksList', engs).code.tolist()
+random.shuffle(StockLists)
 
 for stockID in StockLists:
     try:

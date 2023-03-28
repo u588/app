@@ -3,30 +3,34 @@ import requests
 from lxml import etree
 import pandas as pd
 import random
+import json
 import time
 
-header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',}
+#header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',}
+header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67',}
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 
 def getData(codeID):
     
-    url = "http://www.csindex.com.cn/zh-CN/indices/index-detail/"+codeID
-    r = requests.get(url, headers=header)
-    html= etree.HTML(r.content)
-    urlD = html.xpath("//ul[@class='download clearfix mb-10']//li/a[contains(text(),'收益率')]")[0].xpath("@href")[0]
-    r = requests.get(urlD, headers=header)
-    a = pd.read_excel(r.content,index_col=None, header=None,skiprows=1, dtype={0:object})
-    a.columns=['Index_code', 'Index_name','Date','Yie1M','Yie3M','YieToNow', 'Yie1Y','Yie3Y', 'Yie5Y','2016','2017','2018','2019']
+    url = "https://www.csindex.com.cn/csindex-home/perf/get-index-yield-item/"+codeID
+    data = requests.get(url, headers=header)
+    Ddata = json.loads(data.text)['data']
+    pdData = pd.DataFrame(Ddata, index=[0])[['indexCode', 'indexNameCn','endDate','oneMonth','threeMonth','thisYear', 'oneYear', 'threeYear', 'fiveYear']]
+    a = pdData
+    a.columns=['Index_code', 'Index_name','Date','Yie1M','Yie3M','YieToNow', 'Yie1Y','Yie3Y', 'Yie5Y']
     a.set_index('Index_code',inplace=True)
     return a
 
 IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
-D = pd.DataFrame(columns=['Index_code', 'Index_name','Date','Yie1M','Yie3M','YieToNow', 'Yie1Y','Yie3Y', 'Yie5Y','2016','2017','2018','2019'])
+random.shuffle(IndexLists)
+D = pd.DataFrame(columns=['Index_code', 'Index_name','Date','Yie1M','Yie3M','YieToNow', 'Yie1Y','Yie3Y', 'Yie5Y'])
 D.set_index('Index_code', inplace=True)
+
 
 for codeID in IndexLists:
     try:
         Da = getData(codeID)
+        
         time.sleep(random.randint(1,3))
         D =D.append(Da)
         print(codeID + 'Saved !')

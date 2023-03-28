@@ -14,12 +14,12 @@ while is_holiday(datetime.date.today()):
 print('................................................................................')
 print('  <1> ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+' Cron Being !')
 try:
-    d = u2.connect('10.3.69.9')
+    d = u2.connect('10.3.68.9')
 
     time.sleep(random.randint(0,12)*60)
     print('  <2> ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+' Random Time End !')
 
-    d = u2.connect('10.3.69.9')
+    d = u2.connect('10.3.68.9')
     print('  <3> ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' U2 connented !')
     d.unlock()
     d.sleep(10)

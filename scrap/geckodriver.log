@@ -1,0 +1,30 @@
+1629794234651	geckodriver	INFO	Listening on 127.0.0.1:56529
+1629794464424	geckodriver	INFO	Listening on 127.0.0.1:41637
+1629794464429	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilewoEspv"
+restorecon: SELinux: Could not get canonical path for /home/ts/.mozilla/firefox/* restorecon: No such file or directory.
+Error: no DISPLAY environment variable specified
+1629794608394	geckodriver	INFO	Listening on 127.0.0.1:47733
+1629794608401	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileUHkLj4"
+Error: no DISPLAY environment variable specified
+1629794921156	geckodriver	INFO	Listening on 127.0.0.1:59053
+1629794921160	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilebvplV2"
+Error: no DISPLAY environment variable specified
+1629795052027	geckodriver	INFO	Listening on 127.0.0.1:45337
+1629795052034	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileP2lQx9"
+[GFX1-]: glxtest: libEGL missing
+[GFX1-]: glxtest: GLX extension missing
+[GFX1-]: glxtest: libEGL missing
+1629795055373	Marionette	INFO	Marionette enabled
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new Error("", "(unknown module)"))
+1629795059307	Marionette	INFO	Listening on port 45865
+1629795059370	Marionette	WARN	TLS certificate errors will be ignored for this session
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+geckodriver: error: Found argument '--websocket-port' which wasn't expected, or isn't valid in this context
+
+USAGE:
+    geckodriver --port <PORT>
+
+For more information try --help
+
