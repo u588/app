@@ -1,9 +1,11 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
-engs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
-StockLists = pd.read_sql('StocksList', engs).code.tolist()
+# eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
+# engs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
+
+StockLists = pd.read_sql('csIndexs', eng).Index_code.tolist()
 
 for i, CodeID in enumerate(StockLists):
     print('Index', i, '/', len(StockLists))
