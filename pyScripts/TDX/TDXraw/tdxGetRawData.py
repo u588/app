@@ -32,6 +32,12 @@ while start < 99000:
 df[['category','market','code','name']].to_excel('/home/ts/tdxRawMark.xlsx')
 
 
+
+api.to_df(api.get_instrument_bars(9, 62, "000809", 0, 100))
+
+
+
+
 # ===================== 标准接口 ======================
 
 
@@ -61,8 +67,24 @@ while start < 30000:
 
 df = api.to_df(api.get_security_list(0, 0))
 df.drop(index=df.index, inplace=True)
-start = 517
-while start < 30000:
+start = 0
+while start < 20000:
     df1 = api.to_df(api.get_security_list(0, start))
     start = start + 1000
     df = pd.concat([df,df1])
+
+
+
+# 数据处理
+df[df.duplicated()]
+df[df.drop_duplicates(subset=['',''])]
+
+
+
+#====================== Reader ==================
+
+from pytdx.reader import BlockReader
+
+BlockReader().get_df("D:/new_tdx/T0002/hq_cache/block_fg.dat").to_excel('F:/FinaDataRaw/TDXdata/App_hq_cache/fgRaw.xlsx')
+
+pd.read_excel('F:/FinaDataRaw/TDXdata/App_hq_cache/zsRaw.xlsx',dtype={'code':'object'})
