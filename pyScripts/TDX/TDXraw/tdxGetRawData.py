@@ -88,3 +88,91 @@ from pytdx.reader import BlockReader
 BlockReader().get_df("D:/new_tdx/T0002/hq_cache/block_fg.dat").to_excel('F:/FinaDataRaw/TDXdata/App_hq_cache/fgRaw.xlsx')
 
 pd.read_excel('F:/FinaDataRaw/TDXdata/App_hq_cache/zsRaw.xlsx',dtype={'code':'object'})
+
+
+
+# ===================== re =======================
+import re
+import pandas as pd
+
+f = open('j:/tdxRawData/shm.txt', 'r',encoding='utf-8')
+
+ls = f.readlines()
+n = len(ls)
+i = 0
+f.close
+l = []
+while i < n :
+    
+    try:
+        # ll = re.findall('[3,0][0-9]{5}.{25}', ls[i]) 
+        ll = re.findall('[8,,6,0][0-9]{5}.{25}', ls[i])
+        ## 深圳 3，0开头， 上海 0，8，6开头
+        i = i+1
+        l = l+ll
+    except:
+        pass
+
+n = len(l)
+i=0
+
+lns = []
+lcs = []
+
+while i < n:
+    try:
+        ln = l[i].split()
+        # lc = l[i].split()
+        i = i+1
+        print(i)
+        lns = lns + ln
+        # lcs = lcs + lc
+    except:
+        pass         
+
+df = pd.DataFrame(columns=['code','name'])
+
+n = len(lns)
+i = 0
+
+while i< n:
+    try:
+        df.loc[i,'code'] = lns[i]
+        df.loc[i, 'name'] = lns[i+1]
+        print(i)
+        i = i+2
+    except:
+        pass
+
+
+
+
+
+
+
+
+
+
+
+#=================================
+
+while i < n:
+   
+    try:
+        ln = re.findall('[0-9]{6}', l[i])
+        lc = re.findall('[\u4e00-\u9fa5].{6}|[*ST].{6}|[ST].{6}',l[i])
+        i=i+1
+        lns = lns + ln
+        lcs = lcs + lc 
+    except:
+        pass
+
+
+
+
+
+
+
+
+re.findall('[3,0][0-9]{5}.{25}', ls[21])
+re.findall('[\u4e00-\u9fa5].{6}',l[280])
