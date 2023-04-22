@@ -5,14 +5,14 @@ Cons = pd.read_excel('F:/FinaDataRaw/TDXdata/App_hq_cache/tdxIndexCons1.xlsx', d
 
 
 
-IndexNames = Indexs.Index_name.tolist()
+IndexNames = Indexs.IndexName.tolist()
 
 for i, index in enumerate(IndexNames):
     print('Index', i, '/', len(IndexNames))
     try:
-        Cons.loc[Cons['Index_name']==index, 'Index_Code']= Indexs.Index_code[i]
+        Cons.loc[Cons['IndexName']==index, 'IndexCode']= Indexs.IndexCode[i]
         print(index)
-        print(Indexs.Index_code[i],'merged !')        
+        print(Indexs.IndexCode[i],'merged !')        
     except:
         pass
 
@@ -25,7 +25,7 @@ IndexNames = Indexs.bname.tolist()
 for i, index in enumerate(IndexNames):
     print('Index', i, '/', len(IndexNames))
     try:
-        Cons.loc[Cons['Index_name']==index, 'Index_name']= Indexs.aname[i]
+        Cons.loc[Cons['IndexName']==index, 'IndexName']= Indexs.aname[i]
         print(index)
         print(Indexs.Index_code[i],'merged !')        
     except:
