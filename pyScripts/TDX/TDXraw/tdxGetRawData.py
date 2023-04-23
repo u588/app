@@ -24,7 +24,7 @@ gzIndexs = api.to_df(api.get_instrument_info(98600, 100)).tail(14)
 start = 0
 df = api.to_df(api.get_instrument_info(0, 1))
 df.drop(index=df.index, inplace=True)
-while start < 99000:
+while start <= 99000:
     df1 = api.to_df(api.get_instrument_info(start, 500))
     start = start + 500
     df = pd.concat([df,df1])
