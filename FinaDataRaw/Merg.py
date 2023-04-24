@@ -33,4 +33,16 @@ for i, index in enumerate(IndexNames):
 
 
 
+s = pd.read_excel('f:/tdxrawdata/ok/stockscode.xlsx',dtype={'StockCode':'object'})
+c = pd.read_excel('f:/tdxrawdata/ok/tdxindexcons.xlsx',dtype={'StockCode':'object','StockName':'object'})
+
+n = s.shape[0]
+while i < n :
+    try:
+        c.loc[c.StockCode == s.loc[i][1] , 'StockName'] = s.loc[i][4]
+        i = i+1
+    except:
+        i = i+1
+        pass
+    print(i)
 
