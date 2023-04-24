@@ -11,7 +11,7 @@ api = TdxHq_API(heartbeat=True)
 home = '10.145.254.55:5432'
 job = '10.3.18.56:5432'
 ip = job
-Cate = 9
+
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
 """
     [1] :招商证券深圳行情 (119.147.212.81:7709)
@@ -28,36 +28,71 @@ Cate = 9
 """
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxIndexs')
+eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxIndex')
 
 
-IndexLists = pd.read_sql('IndexList', eng)['index_code'].tolist()
+tdxIndexs = pd.read_sql('tdxIndexs', eng)
+sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
+sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
+zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
 
 with api.connect('119.147.212.81', 7709):
-    try:
-        for i, IndexCode in enumerate(IndexLists):
+    IndexLists=sh.IndexCode.to_list()   
+    for i, IndexCode in enumerate(IndexLists):
+        try:                
             print('Index', i, '/', len(IndexLists))
             IndexData = pd.DataFrame(columns=['open', 'close', 'high', 'low', 'vol', 'amount', 'year', 'month', 'day', 'hour', 'minute', 'datetime', 'up_count', 'down_count'])
-            if IndexCode[:2] == '39':
-                start = 5000
-                while start >= 0:
-                    df = api.to_df(api.get_index_bars(Cate, 0, IndexCode, start, 500))
-                    start = start - 500
-                    IndexData = IndexData.append(df)
+            start = 5000
+            while start >= 0:
+                df = api.to_df(api.get_index_bars(9, 1, IndexCode, start, 500))
+                start = start - 500
+                IndexData = pd.concat([IndexData,df])
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            # print(IndexCode,'saved to sql !')
 
-                IndexData.set_index('datetime', inplace=True)
-                IndexData.to_sql(IndexCode, eng, if_exists='replace')
-                print(IndexCode,'saved to sql !')
+        except:
+            print(IndexCode, 'no saved to sql !' )
+            pass
+        
+    IndexLists=sz.IndexCode.to_list()   
+    for i, IndexCode in enumerate(IndexLists):
+        try:                
+            print('Index', i, '/', len(IndexLists))
+            IndexData = pd.DataFrame(columns=['open', 'close', 'high', 'low', 'vol', 'amount', 'year', 'month', 'day', 'hour', 'minute', 'datetime', 'up_count', 'down_count'])
+            start = 5000
+            while start >= 0:
+                df = api.to_df(api.get_index_bars(9, 0, IndexCode, start, 500))
+                start = start - 500
+                IndexData = pd.concat([IndexData,df])
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            # print(IndexCode,'saved to sql !')
 
-            else:
-                start = 5000
-                while start >= 0:
-                    df = api.to_df(api.get_index_bars(Cate, 1, IndexCode, start, 500))
-                    start = start - 500
-                    IndexData = IndexData.append(df)
+        except:
+            print(IndexCode, 'no saved to sql !' )
+            pass
+        
 
-                IndexData.set_index('datetime', inplace=True)
-                IndexData.to_sql(IndexCode, eng, if_exists='replace')
-                print(IndexCode,'saved to sql !')
-    except:
-        pass
+with eapi.connect('119.147.212.81', 7727):
+    IndexLists=zz.IndexCode.to_list()   
+    for i, IndexCode in enumerate(IndexLists):
+        try:                
+            print('Index', i, '/', len(IndexLists))
+            IndexData = pd.DataFrame(columns=['open', 'close', 'high', 'low', 'vol', 'amount', 'year', 'month', 'day', 'hour', 'minute', 'datetime', 'up_count', 'down_count'])
+            start = 5000
+            while start >= 0:
+                df = api.to_df(api.get_instrument_bars(9, 62, IndexCode, start, 500))
+                start = start - 500
+                IndexData = pd.concat([IndexData,df])
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            # print(IndexCode,'saved to sql !')
+
+        except:
+            print(IndexCode, 'no saved to sql !' )
+            pass
+        
