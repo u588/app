@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='site.css')}}" />
+        <script src="/jquery.min.js"></script>
+        <script type="text/javascript" src="/echarts.min.js"></script>
+    </head>
+
+    <body>
+        <div class="navbar">
+            <a href="{{ url_for('home') }}" class="navbar-brand">周期精选</a>
+            <a href="{{ url_for('about') }}" class="navbar-item">每日精选</a>
+            <!-- <a href="{{ url_for('detail') }}" class="navbar-item">详情</a> -->
+            <!-- <a href="{{ url_for('contact') }}" class="navbar-item">专业画图</a> -->
+            <a href="{{ url_for('tabChart') }}" class="navbar-item" target="_blank" title="板块分析">板块分析</a>
+            <!-- <a href="{{ url_for('gridRada') }}" class="navbar-item" target="_blank" title="指数雷达">指数雷达</a> -->
+        </div>
+        {% block div %}
+        {% endblock %}
+        <div class="content" style="width:400px;float:left">
+        {% block content %}
+        {% endblock %}
+        </div>
+
+        <div class="footer" style="clear:both;text-align:center">
+            <hr/>
+            <footer>
+                <p>Copyright © 2022</p>
+            </footer>
+        </div>
+    </body>
+</html>

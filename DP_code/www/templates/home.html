@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block title %}
+周期精选
+{% endblock %}
+
+{% block div %}
+<div class="menu" style="width:90px;float:left">
+    <select id="selCyc" onchange="cycSelect();cycChart();">
+        <option value="">请选择周期</option>
+        <option value="3D">3D</option>
+        <option value="5D">5D</option>
+        <option value="21D">21D</option>
+        <option value="55D">55D</option>
+        </select>
+</div> 
+
+<div class="menu1" style="width:90px;float:left">
+    <select id="selIndex" onchange="stockSelect();indexChart();">
+        <option value="">请选择指数</option>
+        </select>
+</div> 
+
+<script>
+    function cycSelect(){
+        var date=$("#selCyc").find("option:selected").text();
+        var url= "/getIndex/"+date
+        $("#selIndex").empty();
+        $(document).ready(function () {
+       
+            $.ajax({
+            type:"get",
+            url:url, 
+            dataType: 'json', 
+            success:function(userList){
+                var unitObj=document.getElementById("selIndex");
+                unitObj.options.add(new Option("请选择指数",''));
+                if(userList!=null){ 
+                    for(var i=0;i<userList.length;i++){
+                        unitObj.options.add(new Option(userList[i].Index_name,userList[i].Index_name));
+                    }
+                }
+            },
+            error:function(){
+                J.alert('Error');
+                }
+            })
+        })
+    }
+</script>
+
+<div class="menu2" style="width:90px;float:right">
+    <select id="selStock" onchange="stockChart()">
+        <option value="">请选择股票</option>
+        </select>
+</div> 
+
+<script>
+    function stockSelect(){
+        var date=$("#selIndex").find("option:selected").text();
+        var da=$("#selCyc").find("option:selected").text();
+        // var url= "/getCsStocks/"+date
+        var url= "/getCsStocks/"+date+"/"+da//多参数传递
+        $("#selStock").empty();
+        $(document).ready(function () {
+       
+            $.ajax({
+            type:"get",
+            url:url, 
+            dataType: 'json', 
+            success:function(userList){
+                var unitObj=document.getElementById("selStock");
+                unitObj.options.add(new Option("请选择股票",''));
+                if(userList!=null){
+                    for(var i=0;i<userList.length;i++){
+                        unitObj.options.add(new Option(userList[i].code,userList[i].code));
+                    }
+                }
+            },
+            error:function(){
+                J.alert('Error');
+                }
+            })
+        })
+    }
+</script>
+
+{% endblock %}  
+
+{% block content %}
+<div id="grid" style="width:1000px; height:800px;"></div>
+<script>
+    function cycChart(){
+        var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'}); 
+        chart.clear();
+        var val=$("#selCyc").find("option:selected").text();
+        var url = "/csPie/"+val
+        $(
+        function () {
+                $.ajax({
+                type: "GET",
+                url: url ,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+            });
+        })
+    }
+    
+    function indexChart(){
+        var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'}); 
+        chart.clear();
+        var val=$("#selIndex").find("option:selected").text();
+        var url = "/indexChart/"+val
+
+        $(
+        function () {
+                $.ajax({
+                type: "GET",
+                url: url ,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+            });
+        })
+    }
+
+    function stockChart(){
+        var stockID=$("#selStock").find("option:selected").text();
+        var url = "/detChart/"+stockID
+        var url1 = "/gridChart/"+stockID
+        var url2 = "/detaChart/"+stockID
+
+        var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'});
+        chart.clear();
+
+
+        $(
+        function () {
+                window.open(url1,'_blank')
+                $.ajax({
+                type: "GET",
+                url: url,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+                
+            });
+        }
+    )   
+
+    $(
+        function () {
+                window.open(url2,'_blank')
+                $.ajax({
+                type: "GET",
+                url: url,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+                
+            });
+        }
+    )     
+        
+}
+
+</script>
+{% endblock %}

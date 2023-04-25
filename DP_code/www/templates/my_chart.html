@@ -1,0 +1,29 @@
+{% import 'macro' as macro %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>My-pyecharts</title>
+    <script src="/jquery.min.js"></script>
+    <script type="text/javascript" src="/echarts.min.js"></script>
+</head>
+<body>
+    <div id="bar" style="width:1000px; height:600px;"></div>
+    <!-- <script>
+        $(
+            function () {
+                var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
+                $.ajax({
+                    type: "GET",
+                    url: "/barChart",
+                    dataType: 'json',
+                    success: function (result) {
+                        chart.setOption(result);
+                    }
+                });
+            }
+        )
+    </script> -->
+    {{ macro.render_chart_content(chart) }}
+</body>
+</html>
