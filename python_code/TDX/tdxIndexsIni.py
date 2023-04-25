@@ -2,33 +2,56 @@ from pytdx.hq import TdxHq_API
 from pytdx.exhq import TdxExHq_API
 import pandas as pd
 from sqlalchemy import create_engine
-from pytdx.config.hosts import hq_hosts
+
 
 eapi =  TdxExHq_API()
 api = TdxHq_API()
-api = TdxHq_API(heartbeat=True)
+# api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
-home = '10.145.254.55:5432'
-job = '10.3.18.56:5432'
-ip = job
 
-#category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
-"""
-    [1] :招商证券深圳行情 (119.147.212.81:7709)
-    [2] :华泰证券(南京电信) (221.231.141.60:7709)
-    [3] :华泰证券(上海电信) (101.227.73.20:7709)
-    [4] :华泰证券(上海电信二) (101.227.77.254:7709)
-    [5] :华泰证券(深圳电信) (14.215.128.18:7709)
-    [6] :华泰证券(武汉电信) (59.173.18.140:7709)
-    [7] :华泰证券(天津联通) (60.28.23.80:7709)
-    [8] :华泰证券(沈阳联通) (218.60.29.136:7709)
-    [9] :华泰证券(南京联通) (122.192.35.44:7709)
-    [10] :华泰证券(南京联通) (122.192.35.44:7709)
 
 """
+category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
+============== 7709 ============
+HostName01=深圳双线主站1
+IPAddress01=110.41.147.114
+HostName04=深圳双线主站4
+IPAddress04=47.113.94.204
+
+HostName07=上海双线主站1
+IPAddress07=124.70.176.52
+HostName08=上海双线主站2
+IPAddress08=47.100.236.28
+
+HostName13=北京双线主站1
+IPAddress13=121.36.54.217
+HostName15=北京双线主站3
+IPAddress15=123.249.15.60
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxIndex')
+============= 7727 ================
+182.175.240.157
+
+
+HostName01=扩展市场深圳双线1
+IPAddress01=112.74.214.43
+HostName02=扩展市场深圳双线2
+IPAddress02=120.25.218.6
+
+HostName08=扩展市场上海双线1
+IPAddress08=106.14.95.149
+HostName09=扩展市场上海双线2
+IPAddress09=47.102.108.214
+
+HostName12=扩展市场广州双线1
+IPAddress12=116.205.143.214
+HostName13=扩展市场广州双线2
+IPAddress13=124.71.223.19
+
+"""
+
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
 
 
 tdxIndexs = pd.read_sql('tdxIndexs', eng)
@@ -36,7 +59,7 @@ sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
 
-with api.connect('119.147.212.81', 7709):
+with api.connect('110.41.147.114', 7709):
     IndexLists=sh.IndexCode.to_list()   
     for i, IndexCode in enumerate(IndexLists):
         try:                
@@ -50,7 +73,7 @@ with api.connect('119.147.212.81', 7709):
             IndexData.dropna(thresh=6, inplace=True)
             IndexData.set_index('datetime', inplace=True)
             IndexData.to_sql(IndexCode, eng, if_exists='replace')
-            # print(IndexCode,'saved to sql !')
+            print(IndexCode,'saved to sql !')
 
         except:
             print(IndexCode, 'no saved to sql !' )
@@ -69,30 +92,31 @@ with api.connect('119.147.212.81', 7709):
             IndexData.dropna(thresh=6, inplace=True)
             IndexData.set_index('datetime', inplace=True)
             IndexData.to_sql(IndexCode, eng, if_exists='replace')
-            # print(IndexCode,'saved to sql !')
+            print(IndexCode,'saved to sql !')
 
         except:
             print(IndexCode, 'no saved to sql !' )
             pass
         
 
-with eapi.connect('119.147.212.81', 7727):
+with eapi.connect('182.175.240.157', 7727):
     IndexLists=zz.IndexCode.to_list()   
     for i, IndexCode in enumerate(IndexLists):
         try:                
             print('Index', i, '/', len(IndexLists))
-            IndexData = pd.DataFrame(columns=['open', 'close', 'high', 'low', 'vol', 'amount', 'year', 'month', 'day', 'hour', 'minute', 'datetime', 'up_count', 'down_count'])
+            IndexData = pd.DataFrame(columns=['open', 'high', 'low', 'close', 'position', 'trade','price', 'year', 'month', 'day', 'hour', 'minute', 'datetime', 'amount'])
             start = 5000
             while start >= 0:
-                df = api.to_df(api.get_instrument_bars(9, 62, IndexCode, start, 500))
+                df = eapi.to_df(eapi.get_instrument_bars(9, 62, IndexCode, start, 500))
                 start = start - 500
                 IndexData = pd.concat([IndexData,df])
             IndexData.dropna(thresh=6, inplace=True)
             IndexData.set_index('datetime', inplace=True)
             IndexData.to_sql(IndexCode, eng, if_exists='replace')
-            # print(IndexCode,'saved to sql !')
+            print(IndexCode,'saved to sql !')
 
         except:
             print(IndexCode, 'no saved to sql !' )
             pass
         
+print(' == 通达信 指数 行情初始化完成 ! ==')
