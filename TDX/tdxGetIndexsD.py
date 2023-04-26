@@ -76,8 +76,10 @@ with api.connect('119.147.212.81', 7709):
                 IndexData.to_sql(IndexCode, eng, if_exists='append')
                 print(IndexCode,'saved to sql !')
             else:
+                print(IndexCode,'nosaved to sql')
                 pass
         except:
+            print(IndexCode,'except !!')
             pass
 
     IndexLists=sz.IndexCode.to_list()     
@@ -95,8 +97,10 @@ with api.connect('119.147.212.81', 7709):
                 IndexData.to_sql(IndexCode, eng, if_exists='append')
                 print(IndexCode,'saved to sql !')
             else:
+                print(IndexCode,'nosaved to sql')
                 pass
         except:
+            print(IndexCode,'except !!')
             pass
       
 
@@ -117,8 +121,10 @@ with eapi.connect('182.175.240.157', 7727):
                 IndexData.to_sql(IndexCode, eng, if_exists='append')
                 print(IndexCode,'saved to sql !')
             else:
+                print(IndexCode,'nosaved to sql')
                 pass
         except:
+            print(IndexCode,'except !!')
             pass
 
 
