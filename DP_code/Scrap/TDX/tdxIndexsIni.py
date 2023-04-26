@@ -70,7 +70,7 @@ with api.connect('110.41.147.114', 7709):
                 df = api.to_df(api.get_index_bars(9, 1, IndexCode, start, 500))
                 start = start - 500
                 IndexData = pd.concat([IndexData,df])
-            IndexData.dropna(thresh=6, inplace=True)
+            # IndexData.dropna(thresh=6, inplace=True)
             IndexData.set_index('datetime', inplace=True)
             IndexData.to_sql(IndexCode, eng, if_exists='replace')
             print(IndexCode,'saved to sql !')
@@ -89,7 +89,7 @@ with api.connect('110.41.147.114', 7709):
                 df = api.to_df(api.get_index_bars(9, 0, IndexCode, start, 500))
                 start = start - 500
                 IndexData = pd.concat([IndexData,df])
-            IndexData.dropna(thresh=6, inplace=True)
+            # IndexData.dropna(thresh=6, inplace=True)
             IndexData.set_index('datetime', inplace=True)
             IndexData.to_sql(IndexCode, eng, if_exists='replace')
             print(IndexCode,'saved to sql !')
@@ -110,7 +110,7 @@ with eapi.connect('182.175.240.157', 7727):
                 df = eapi.to_df(eapi.get_instrument_bars(9, 62, IndexCode, start, 500))
                 start = start - 500
                 IndexData = pd.concat([IndexData,df])
-            IndexData.dropna(thresh=6, inplace=True)
+            # IndexData.dropna(thresh=6, inplace=True)
             IndexData.set_index('datetime', inplace=True)
             IndexData.to_sql(IndexCode, eng, if_exists='replace')
             print(IndexCode,'saved to sql !')
