@@ -10,6 +10,7 @@ from pyecharts.charts import WordCloud
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
 engCs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+engcs = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
 
 hs300Data = pd.read_sql('hs300', eng)
 zz500Data = pd.read_sql('zz500', eng)
@@ -18,7 +19,8 @@ strongData = pd.read_sql_table('Strong',eng)
 weakData = pd.read_sql_table('weak',eng)
 wcData = pd.concat([strongData, weakData], ignore_index=True).sort_values(by=['date']).reset_index(drop=True)
 mkData = pd.read_sql('Market',eng)
-csData = pd.read_sql('csYield', engCs)
+csData = pd.read_sql('csYield', engcs)
+csData.rename(columns={'Index_code':'IndexCode','Index_name':'IndexName'}, inplace = True)
 tdxIndexsData = pd.read_sql('tdxIndexsData', engCs)
 
 def raDarIndex(dd):
@@ -126,11 +128,11 @@ def wordCloud(d):
 
 def csWordCloud(d,yie):
     # data = d.sort_values(by=yie).head(25).append(d.sort_values(by=yie).tail(25))[['Index_code','Index_name', yie]].reset_index()
-    data = pd.concat([d.sort_values(by=yie).head(25) , d.sort_values(by=yie).tail(25)[['Index_code','Index_name', yie]].reset_index()])
-    data['name'] = data.Index_name + '-' + data.Index_code
+    data = pd.concat([d.sort_values(by=yie).head(25) , d.sort_values(by=yie).tail(25)[['IndexCode','IndexName', yie]].reset_index()])
+    data['name'] = data.IndexName + '-' + data.IndexCode
     c = (
             WordCloud()
-            .add(series_name="热点分析", data_pair=[list(z) for z in zip(data.Index_name,data[yie])], word_size_range=[8, 70])
+            .add(series_name="热点分析", data_pair=[list(z) for z in zip(data.IndexName,data[yie])], word_size_range=[8, 70])
             .set_global_opts(
                 title_opts=opts.TitleOpts(
                     title="热点分析", title_textstyle_opts=opts.TextStyleOpts(font_size=23)

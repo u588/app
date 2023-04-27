@@ -42,10 +42,11 @@ def line(StockID) -> Line:
 
 def pie(StockID):
 
-    StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
-    Stock = StocksList.loc[StocksList['code']==StockID].astype(str).reset_index()
+    # StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':'object'})
+    StocksList = pd.read_sql('StocksCode', dtype={'StockCode':'object'})
+    Stock = StocksList.loc[StocksList['StockCode']==StockID].astype(str).reset_index()
 
-    IndexConst = pd.read_sql('tdxIndexCons', eng)
+    IndexConst = pd.read_sql('IndexCons', eng)
     StockInIndex = IndexConst[IndexConst.StockCode==StockID][['IndexCode', 'StockCode','StockName']]
     # StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
     csIndex = pd.read_sql('tdxIndexs', eng)
