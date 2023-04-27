@@ -10,9 +10,9 @@ from pyecharts import options as opts
 from pyecharts.options import ComponentTitleOpts
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex').connect()
-engD = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockFina').connect()
-engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds').connect()
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+engD = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockFina')
+engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
 
 def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD).fillna('0').applymap(lambda x : x.replace('%', ''))
@@ -45,21 +45,21 @@ def pie(StockID):
     StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':object})
     Stock = StocksList.loc[StocksList['code']==StockID].astype(str).reset_index()
 
-    IndexConst = pd.read_sql('csIndexCons', eng)
-    StockInIndex = IndexConst[IndexConst.code==StockID][['Index_code', 'code','name']]
-    StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
-    csIndex = pd.read_sql('csIndexs', eng)
-    csIndex =csIndex[['Index_code', 'Index_name']]
+    IndexConst = pd.read_sql('tdxIndexCons', eng)
+    StockInIndex = IndexConst[IndexConst.StockCode==StockID][['IndexCode', 'StockCode','StockName']]
+    # StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
+    csIndex = pd.read_sql('tdxIndexs', eng)
+    csIndex =csIndex[['IndexCode', 'IndexName']]
 
-    data = pd.merge(StockInIndex, csIndex, on='Index_code')  
+    data = pd.merge(StockInIndex, csIndex, on='IndexCode')  
 
-    dd = data[['Index_name', 'Index_code']]
-    d = data.stock_name[0]+" : " + data.stock_code[0]
+    dd = data[['IndexName', 'IndexCode']]
+    d = data.StockName[0]+" : " + data.StockCode[0]
     c = (
         Pie()
         .add(
             "",
-            [list(z) for z in zip(dd.Index_name, dd.Index_code)],
+            [list(z) for z in zip(dd.IndexName, dd.IndexCode)],
             radius=["25%", "70%"],
             center=["50%", "50%"],
             rosetype="area",

@@ -1,25 +1,26 @@
 from sqlalchemy import create_engine
 import pandas as pd
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 engT = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
-IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
+IndexLists = pd.read_sql('tdxIndexs', eng).IndexCode.to_list()
 
 
 def getStock(Code,ID):
-    D = pd.read_sql('csIndexCons',eng)
+    D = pd.read_sql('tdxIndexCons',eng)
     d = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
     n = int(ID[0])
-    Data = D.loc[D['Index_name']== Code].reset_index(drop=True)
-    StockLists = Data['code'].to_list()
+    Data = D.loc[D['IndexName']== Code].reset_index(drop=True)
+    StockLists = Data['StockCode'].to_list()
     for Stock in StockLists:
         try:
                 
-            DD = pd.read_sql(Stock, engT).tail(n)
-            DD['PCB'] = ((DD.close-DD.open)/DD.open*100).round(2)
-            dd = DD.head(1)[['open','close']]
-            dd['code'] = Stock
-            dd['PCB'] = DD['PCB'].sum().round(2)
+            DD = pd.read_sql(Stock, engT)
+            dd = d = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
+
+
+            dd['code'] = [Stock] 
+            dd['PCB'] = [(DD.close.pct_change(1)*100).tail(n).sum().round(2)]
             dd.reset_index(drop=True, inplace =True)
 
             # d = d.append(dd[['code','PCB']])
