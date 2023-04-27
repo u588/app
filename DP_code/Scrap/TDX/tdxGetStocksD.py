@@ -5,6 +5,12 @@ import tushare as ts
 from sqlalchemy import create_engine
 from pytdx.config.hosts import hq_hosts
 
+import datetime
+from chinese_calendar import is_holiday
+import sys
+while is_holiday(datetime.date.today()):
+    sys.exit(0)
+
 
 api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)

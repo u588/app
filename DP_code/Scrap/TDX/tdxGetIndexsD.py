@@ -3,6 +3,13 @@ from pytdx.exhq import TdxExHq_API
 import pandas as pd
 from sqlalchemy import create_engine
 
+import datetime
+from chinese_calendar import is_holiday
+import sys
+while is_holiday(datetime.date.today()):
+    sys.exit(0)
+
+
 
 eapi =  TdxExHq_API()
 api = TdxHq_API()

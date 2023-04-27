@@ -1,13 +1,13 @@
 import uiautomator2 as u2
-import sys
-from chinese_calendar import is_holiday
 import time
-import datetime
 import random
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 
+import datetime
+from chinese_calendar import is_holiday
+import sys
 while is_holiday(datetime.date.today()):
     sys.exit(0)
 
