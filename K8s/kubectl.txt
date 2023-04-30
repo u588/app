@@ -1,0 +1,19 @@
+查看版本的详细信息：
+kubectl version --client --output=yaml
+
+更新 apt 包索引，并安装使用 Kubernetes apt 仓库所需要的包：
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+
+下载 Google Cloud 公开签名秘钥：
+sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg /
+https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+添加 Kubernetes apt 仓库：
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] /
+https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+更新 apt 包索引，使之包含新的仓库并安装 kubectl：
+sudo apt-get update
+sudo apt-get install -y kubectl
+

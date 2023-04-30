@@ -1,0 +1,126 @@
+ netsh interface ip set dns name='111.61.77.88' source=static addr=111.11.1.1
+ 
+tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://hub-mirror.c.163.com/"]
+}
+EOF
+
+
+
+ #添加加载的内核模块
+
+tee /etc/modules-load.d/containerd.conf<<EOF
+overlay
+br_netfilter
+EOF
+
+#加载内核模块
+modprobe overlay && modprobe br_netfilter
+
+
+#设置并应用内核参数
+tee /etc/sysctl.d/kubernetes.conf<<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOFsysctl --system
+
+加k8s源 
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
+cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+
+安装所需附件
+apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+
+#生成containerd的配置文件
+containerd config default | tee /etc/containerd/config.toml >/dev/null 2>&1
+
+#修改cgroup Driver为systemd
+sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
+#将镜像源设置为阿里云 google_containers 镜像源
+sed -i 's/k8s.gcr.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.toml
+systemctl daemon-reload
+systemctl start containerd
+systemctl enable containerd.service
+
+
+关闭Swap
+swapoff -a   # 临时关闭
+# sed -ri 's/.*swap.*/#&/' /etc/fstab  
+
+
+安装
+apt -y install kubeadm kubelet kubectl # 按最新的来玩# 固定版本不更新(暂时如此，免得出幺蛾子)
+apt-mark hold kubelet kubeadm kubectl 
+systemctl enable kubelet.service   # 加入环境变量
+echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
+source /etc/profile
+
+在所有节点上运行如下命令来配置 Containerd：
+$ containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+在所有节点上设置 cgroupdriver 为 systemd，编辑 /etc/containerd/config.toml 文件，找到
+ [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options] 部分，添加一行内容：SystemdCgroup = true
+
+cat > /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+
+systemctl daemon-reload
+systemctl restart docker
+
+
+
+
+master server初始化 (node不需要走init)
+
+kubeadm init --apiserver-advertise-address=10.3.18.66 --pod-network-cidr=10.145.254.0/24 \--image-repository registry.aliyuncs.com/google_containers
+
+kubeadm init \
+
+--control-plane-endpoint=k8s-master-66 \
+--image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
+--cri-socket=unix:///var/run/containerd/containerd.sock \
+--pod-network-cidr=10.145.254.0/24 \
+--v=5
+
+
+--apiserver-advertise-address=10.3.18.66 \
+
+
+
+--image-repository [registry.cn-hangzhou.aliyuncs.com/](http://registry.cn-hangzhou.aliyuncs.com/)google_containers \
+
+
+
+
+
+
+kubeadm init    \
+--image-repository registry.aliyuncs.com/google_containers     \
+--apiserver-advertise-address=10.3.18.66    \
+--apiserver-bind-port 6443 \
+--service-cidr=10.3.18.0/24     \
+--pod-network-cidr=172.16.16.0/24  \
+--cri-socket=unix:///var/run/containerd/containerd.sock 
+ --ignore-preflight-errors=all
+
+
+
+ kubeadm join 10.3.18.66:6443 --token xshch1.lgw48j114d0w5phx \
+     --discovery-token-ca-cert-hash sha256:2d568805d985b1c19e1d8ee3a9ee1703744a4c4a044044a5d6f4fced82a25730
+
+
+生成 token
+kubeadm token create --print-join-command
