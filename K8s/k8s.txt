@@ -77,6 +77,16 @@ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
+cat > /etc/docker/daemon.json <<EOF
+{
+  "registry-mirrors": ["https://hub-mirror.c.163.com/"]
+  ,"exec-opts": ["native.cgroupdriver=systemd"]
+}
+EOF
+
+
+
+
 systemctl daemon-reload
 systemctl restart docker
 
