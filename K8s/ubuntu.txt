@@ -1,0 +1,15 @@
+============ 磁盘调整 =============
+
+1、200G的硬盘，安装完后发现只有不足100G可用
+2、fdisk查看明明有个198GB
+3、发现有99G，25344没有分配
+    lvm
+    vgdisplay -v
+      lvm --> Free PE/Size
+ 4、分配并退出
+    lvm > lvextend -l+25344 /dev/mapper/ubuntu--vg-ubuntu--lv
+        > quit
+5、使调整生效，看看是ext还是xfs的文件系统
+    df -lhT
+    ext4 -->  resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+    xfs -->   xfs_growfs /dev/mapper/ubuntu--vg-ubuntu--lv

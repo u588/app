@@ -1,0 +1,9 @@
+tar zxvf harbor-online-installer-v2.3.5.tgz
+
+cp harbor.yml.tmpl  harbor.yml
+
+
+./install.sh 
+--with-trivy：启用Trivy镜像漏洞扫描插件；
+--with-chartmuseum：启用Helm Chart组件；
+--with-notary : 如果启用安全加密端口https可添加该参数

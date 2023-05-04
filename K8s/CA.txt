@@ -1,0 +1,60 @@
+openssl genrsa -out ca.key 4096
+
+openssl req -x509 -new -nodes -sha512 -days 3650 \
+ -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=10.3.18.63" \
+ -key ca.key \
+ -out ca.crt
+
+ openssl genrsa -out 10.3.18.63.key 4096
+
+ openssl req -sha512 -new \
+    -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=10.3.18.63" \
+    -key 10.3.18.63.key \
+    -out 10.3.18.63.csr
+
+cat > v3.ext <<-EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @Harbor
+
+[Harbor]
+DNS.1=10.3.18.63
+DNS.2=yourdomain
+DNS.3=hostname
+EOF
+
+
+openssl x509 -req -sha512 -days 3650 \
+    -extfile v3.ext \
+    -CA ca.crt -CAkey ca.key -CAcreateserial \
+    -in 10.3.18.63.csr \
+    -out 10.3.18.63.crt
+
+
+cp yourdomain.com.crt /data/cert/
+cp yourdomain.com.key /data/cert/
+
+
+openssl x509 -inform PEM -in 10.3.18.63.crt -out 10.3.18.63.cert
+
+
+cp 10.3.18.63.cert /etc/docker/certs.d/10.3.18.63/
+cp 10.3.18.63.key /etc/docker/certs.d/10.3.18.63/
+cp ca.crt /etc/docker/certs.d/10.3.18.63/
+
+
+If you mapped the default nginx port 443 to a different port, 
+create the folder /etc/docker/certs.d/yourdomain.com:port,
+ or /etc/docker/certs.d/harbor_IP:port
+
+
+systemctl restart docker
+
+
+/etc/docker/certs.d/
+    └── yourdomain.com:port
+       ├── yourdomain.com.cert  <-- Server certificate signed by CA
+       ├── yourdomain.com.key   <-- Server key signed by CA
+       └── ca.crt               <-- Certificate authority that signed the registry certificate
