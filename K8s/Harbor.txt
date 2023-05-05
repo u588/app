@@ -7,3 +7,31 @@ cp harbor.yml.tmpl  harbor.yml
 --with-trivy：启用Trivy镜像漏洞扫描插件；
 --with-chartmuseum：启用Helm Chart组件；
 --with-notary : 如果启用安全加密端口https可添加该参数
+
+
+配置开机自启：
+/usr/bin/docker-compose -f /data/harbor/docker-compose.yml up -d 
+
+
+tee /etc/systemd/system/harbor.service <<-'EOF'
+[Unit]
+Description=Harbor
+After=docker.service systemd-networkd.service systemd-resolved.service
+Requires=docker.service
+Documentation=http://github.com/vmware/harbor
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/docker-compose -f /data/harbor/docker-compose.yml up
+ExecStop=/usr/bin/docker-compose -f /data/harbor/docker-compose.yml down
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+systemctl daemon-reload
+systemctl start harbor
+systemctl enable harbor

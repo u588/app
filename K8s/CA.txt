@@ -1,17 +1,83 @@
-openssl genrsa -out ca.key 4096
+总得来说这些文件都与X.509证书和密钥文件有关，从文件编码上分，只有两大类：
 
-openssl req -x509 -new -nodes -sha512 -days 3650 \
- -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=10.3.18.63" \
- -key ca.key \
- -out ca.crt
+PEM格式：使用Base64 ASCII进行编码的纯文本格式
+DER格式：二机制格式
+而CRT, CER，KEY这几种证书和密钥文件，它们都有自己的schema，在存储为物理文件时，既可以是PEM格式，也可以DER格式
+CER：一般用于windows的证书文件格式
+CRT：一般用于Linux的证书，包含公钥和主体信息
+KEY：一般用于密钥，特别是私钥
 
- openssl genrsa -out 10.3.18.63.key 4096
+PEM与DER的相互转换
+pem-->der : openssl x509 -outform der -in .pem -out .der
+der-->pem : openssl x509 -inform der -in .der -out .crt
 
+csr Certificate Signing Request，即证书签名请求文件
+把CSR文件提交给证书颁发机构后，证书颁发机构使用其根证书私钥签名就生成了证书公钥文件，也就是颁发给用户的证书。
+
+crt cert cer 一般Linux使用.crt后缀，.cer是windows后缀
+
+
+
+
+
+一、生成CA证书私钥
+    openssl genrsa -aes128 -passout pass:syslog6^ -out ca_private.key 2048
+
+二、生成CA证书请求文件（有效期20年）
+    openssl req -new -key ca_private.key -pass:syslog6^ -out ca_req.csr -days 7300
+    查看证书请求文件内容：
+        openssl req -text -in ca_req.crt -noout
+
+三、生成CA根证书
+    openssl x509 -req -in ca_req.csr -singkey ca_private.key -out ca_root.crt -days 7300 -passin pass:syslog6^
+
+四、生成服务端的证书私钥
+    openssl genrsa -aes128 -passout pass:syslog6^ -out server_private.key 2048
+
+五、生成服务端的待签名证书(有效期1年)
+    openssl req -new -key server_private.key -passin pass:syslog6^ -out server_req.csr -day 365
+
+六、使用CA根证书对服务端证书签名
+    给服务端使用的证书签名，获取服务端证书server.crt
+    openssl x509 -req -in server_req.csr -day 356 \
+    -CAkey ca_private.key -CA ca_root.crt -CAcreateserial \
+    -out server.crt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+一、生成CA证书私钥
+openssl genrsa -out ca_private.key 4096
+
+二、生成CA根证书
+openssl req -x509 -new -nodes -sha512 -days 7300 \
+ -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=k8s-harbor-63" \
+ -key ca_private.key \
+ -out ca_root.crt
+
+三、生成服务端的证书私钥
+ openssl genrsa -out k8s-harbor-63.key 4096
+
+四、生成服务端的待签名证书(有效期10年)
  openssl req -sha512 -new \
-    -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=10.3.18.63" \
-    -key 10.3.18.63.key \
-    -out 10.3.18.63.csr
+    -subj "/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=k8s-harbor-63" \
+    -key k8s-harbor-63.key \
+    -out server_req.csr -day 3600
 
+
+五、使用CA根证书对服务端证书签名
+ 生成附加文件
 cat > v3.ext <<-EOF
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
@@ -20,29 +86,31 @@ extendedKeyUsage = serverAuth
 subjectAltName = @Harbor
 
 [Harbor]
-DNS.1=10.3.18.63
-DNS.2=yourdomain
-DNS.3=hostname
+DNS=k8s-harbor
+IP=10.3.18.63
 EOF
 
-
+ 生成服务器证书
 openssl x509 -req -sha512 -days 3650 \
     -extfile v3.ext \
-    -CA ca.crt -CAkey ca.key -CAcreateserial \
-    -in 10.3.18.63.csr \
-    -out 10.3.18.63.crt
+    -CA ca_root.crt -CAkey ca_private.key -CAcreateserial \
+    -in server_req.csr \
+    -out k8s-harbor-63.crt
+
+
 
 
 cp yourdomain.com.crt /data/cert/
 cp yourdomain.com.key /data/cert/
 
 
-openssl x509 -inform PEM -in 10.3.18.63.crt -out 10.3.18.63.cert
+证书转换 docker daemon .crt CA认证，.cert客户端认证。
+openssl x509 -inform PEM -in k8s-harbor-63.crt -out k8s-harbor-63.cert
 
 
-cp 10.3.18.63.cert /etc/docker/certs.d/10.3.18.63/
-cp 10.3.18.63.key /etc/docker/certs.d/10.3.18.63/
-cp ca.crt /etc/docker/certs.d/10.3.18.63/
+cp k8s-harbor-63.cert /etc/docker/certs.d/k8s-harbor-63/
+cp k8s-harbor-63.key /etc/docker/certs.d/k8s-harbor-63/
+cp ca_root.crt /etc/docker/certs.d/k8s-harbor-63/
 
 
 If you mapped the default nginx port 443 to a different port, 
