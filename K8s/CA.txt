@@ -126,3 +126,7 @@ systemctl restart docker
        ├── yourdomain.com.cert  <-- Server certificate signed by CA
        ├── yourdomain.com.key   <-- Server key signed by CA
        └── ca.crt               <-- Certificate authority that signed the registry certificate
+
+
+
+cat u588.pub >> authorized_keys
