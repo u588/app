@@ -1,0 +1,9 @@
+1、dockerfile制作
+docker build -f dockerfile  -t dockerimagesname:v1 
+
+2、容器制作
+docker ps -a
+docker commit 容器  镜像
+
+
+

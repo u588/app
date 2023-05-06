@@ -1,0 +1,23 @@
+uwsgi
+0 18 * * 1-5 pkill -9 uwsgi
+15 18 * * 1-5 uwsgi /home/www.ini
+
+
+scrape
+20 20 * * 1-5 python3.9 /home/app/pgTHSFunds.py
+00 20 * * 1-5 python3.9 /home/app/pgCssmDaily.py
+00 03 * * 2-6 python3.9 /home/TDX/iniTDXIndexsData.py
+00 06 1-7 * 7 python3.9 /home/app/pgCsCons.py
+00 10 1-7 5,9,11 7 python3.9 /home/app/pgTHSStockFina.py
+00 01 * * 6 python3.9 /home/app/pgCsYieldD.py
+00 00 20 1,4,7,10 * python3.9 /home/app/pgTHSStockHolders.py
+00 00 15 3,6,9 * python3.9 /home/app/pgTHSStockBas.py
+
+00 17 * * 1-5 python3.9 /home/TDX/tdxGetIndexsD.py
+02 19 * * 1-5 python3.9 /home/pgSQL/FindStocks.py
+26 01 * * 6   python3.9 /home/pgSQL/GetStockLists.py
+12 18 * * 1-5 python3.9 /home/pgSQL/tdxGetStocksD.py
+51 21 * * 1-5 python3.9 /home/pgSQL/pgHsgtTopD.py
+10 22 * * 1-5 python3.9 /home/pgSQL/pgHsgtFlowD.py
+40 22 * * 1-5 python3.9 /home/pgSQL/tsInstList.py
+10 23 * * 1-5 python3.9 /home/pgSQL/tsTopList.py

@@ -1,0 +1,13 @@
+一、查看和修改Linux的时区
+    date -R
+
+    CentOS : tzselect
+    Debian : timeconfig
+
+    cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+
+
+二、apt源
+    deb http://mirrors.163.com/debian/ bookworm main non-free-firmware 
+    deb http://mirrors.163.com/debian/ bookworm-backports  main non-free-firmware
+    deb http://mirrors.163.com/debian/ bookworm-updates main non-free-firmware

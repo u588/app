@@ -1,0 +1,26 @@
+apt install pip
+
+mkdir ~/.pip 
+cat > ~/.pip/pip.conf <<EOF
+    [global]
+    index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+    [install]
+    trusted-host = https://pypi.tuna.tsinghua.edu.cn
+EOF
+
+TA-Lib包安装
+apt install libpq-dev python-dev
+
+wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+$ tar -xzf ta-lib-0.4.0-src.tar.gz
+$ cd ta-lib/
+$ ./configure --prefix=/usr
+$ make
+$ sudo make install
+
+
+环境依赖包部署
+    pip freeze > requirements.txt
+
+    pip install -r pip-uwsgi.txt
+

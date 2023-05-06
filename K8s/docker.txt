@@ -9,3 +9,182 @@ add-apt-repository "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/
 
 
  apt-get install docker-ce docker-ce-cli containerd.io
+
+
+
+1 使用vi编辑/etc/timezone，把timezone文件的内容更改为：Asia/Shanghai；
+2 拷贝/usr/share/zoneinfo/Asia/Shanghai替换/etc/localtime，命令:
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://hub-mirror.c.163.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+
+
+
+
+
+
+/etc/docker/daemon.json
+https://pee6w651.mirror.aliyuncs.com
+
+apt-get install software-properties-common
+curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg | sudo apt-key add -
+curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
+add-apt-repository "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+
+apt-get install docker-ce
+
+
+docker search 10.3.18.51:5000
+
+curl -XGET http://10.3.18.51:5000/v2/_catalog
+
+docker commit -m "163.com" -a "king365" 72b624312240 mydebian:v1
+docker tag mydebian:v1 10.3.18.51:5000/mydebian:v1
+
+
+
+
+
+
+/etc/docker/daemon.json
+{
+        "registry-mirrors":["http://hub-mirror.c.163.com"],
+
+       "insecure-registries":["10.3.18.51:5000"],
+	"data-root":"/home/data/docker"
+	
+}
+
+
+systemctl restart docker.service
+
+docker pull portainer/portainer-ce
+
+
+docker run -itd -v /home/registry:/var/lib/registry -p 5000:5000 --restart=always --name registry registry:latest
+docker run -d -p 1688:1688 --restart=always --name KMS-Server mikolatero/vlmcsd
+
+docker run -d -p 11111:4444 -p 7900:7900 --name selenium --shm-size="2g" selenium/standalone-chrome:110.0 --restart=always
+To see what is happening inside the container, head to http://10.3.18.65:7900/?autoconnect=1&resize=scale&password=secret
+docker run -d -p 4444:4444 --shm-size="2g" selenium/standalone-edge:4.8.1-20230306
+
+
+
+
+docker run --name nginx -d -p 80:80 -v /home/nginx/conf/default.conf:/etc/nginx/conf.d/defualt.conf -v /home/nginx/assets:/home -v /home/nginx/log:/var/log/nginx e1237841938b
+
+
+
+docker run --name prometheus -p 9091:9090 -v /home/prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml bitnami/prometheus:2.43.0
+docker run --name snmp-exporter -p 9116:9116 prom/snmp-exporter:v0.21.0
+
+docker run -p 9113:9113 --name nginx-exporter bitnami/nginx-exporter:0.11.0 -nginx.scrape-uri http://10.3.18.65/status/stub_status bitnami/nginx-exporter:0.11.0
+docker run -e DATA_SOURCE_NAME="postgresql://sa:11111111@10.3.18.56:5432/postgres?sslmode=disable" --name postgres-exporter -p 9187:9187 bitnami/postgres-exporter:0.12.0
+
+docker run -d --name=grafana -p 3000:3000 grafana/grafana:9.4.7
+
+docker run --name TDXscrape  -v /home/python_code:/home debain11py:v1
+docker run --name uwsgiTDX -itd -p 3031:3031 -v /home/new:/home 6bf743fdf434   
+
+
+docker run -d -p 9000:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --name portainer portainer/portainer-ce 
+
+
+docker network create kibana_network
+
+docker run -d -p 9200:9200 --name elasticsearch --net kibana_network elasticsearch:8.7.0
+
+docker run -d -p 5601:5601 --name kibana --net=kibana_network   -e KIBANA_ELASTICSEARCH_URL=elasticsearch kibana:8.7.0
+
+
+docker run -d --name elasticsearch --net kibana_network -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:8.7.0
+
+
+docker run --name Neo4j_Enterprise  --publish=7575:7474 --publish=7687:7687 neo4j:5.7.0
+
+docker run -itd --name=HugeGraph -p 18080:8080  -v /home/hugegraph/conf:/hugegraph/conf hugegraph/hugegraph
+docker run -itd --name=Huge.fe -p 8088:8088 hugegraph/hubble
+
+
+global:
+  scrape_interval: 15s
+  scrape_timeout:   5s
+
+scrape_configs:
+
+  - job_name: prometheus
+    static_configs:
+    - targets: ["10.3.18.65:9091"]
+      labels: 
+       instance: prometheus
+
+  - job_name: nginx
+    static_configs:
+    - targets: ["10.3.18.65:9113"]
+      labels: 
+       instance: nginx-exporter
+
+  - job_name: postgres
+    static_configs:
+    - targets: ["10.3.18.65:9187"]
+      labels: 
+       instance: postgres-exporter
+
+  - job_name: snmp
+    static_configs:
+    - targets: ["10.3.18.65:9116"]
+      labels: 
+       instance: snmp-exporter
+
+
+  - job_name: docker
+    static_configs:
+    - targets: 
+         - "10.3.18.51:9323"
+         - "10.3.18.65:9323" 
+      labels: 
+       instance: docker
+
+
+
+
+
+
+
+
+lsblk -f
+
+mount -t iso9660 /dev/sr0/media
+mkdir /mnt/cdrom
+mount /dev/sr0 /mnt/cdrom
+cd /mnt/cdrom
+./install
+
+
+deb https://mirrors.163.com/debian/ bullseye main non-free contrib
+
+deb https://mirrors.163.com/debian-security/ bullseye-security main
+
+deb https://mirrors.163.com/debian/ bullseye-updates main non-free contrib
+
+deb https://mirrors.163.com/debian/ bullseye-backports main non-free contrib
+
+
+# step 1: 安装必要的一些系统工具
+sudo apt-get update
+sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common
+# step 2: 安装GPG证书
+curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg | sudo apt-key add -
+# Step 3: 写入软件源信息
+sudo add-apt-repository "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/debian $(lsb_release -cs) stable"
+# Step 4: 更新并安装Docker-CE
+sudo apt-get -y update
+sudo apt-get -y install docker-c
