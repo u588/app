@@ -45,6 +45,8 @@ crt cert cer 一般Linux使用.crt后缀，.cer是windows后缀
 
 
 
+========= node crictl pull 认证问题  ================
+    /etc/containerd/config.toml 
 
 
 

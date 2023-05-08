@@ -35,3 +35,30 @@ EOF
 systemctl daemon-reload
 systemctl start harbor
 systemctl enable harbor
+
+
+============== Docker 连接 harbor ======================
+
+/etc/docker/daemon.json
+{
+   "insecure-registries":["10.3.18.51:5000","10.3.18.63:443"]
+	
+}
+
+docker login 10.3.18.64:443
+
+
+
+==================== k8s containerd  Crictl 连接 harbor ==================
+/etc/containerd/config.toml
+
+[plugins."io.containerd.grpc.v1.cri".registry]
+  [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+      endpoint = ["https://bqr1dr1n.mirror.aliyuncs.com"]
+  [plugins."io.containerd.grpc.v1.cri".registry.configs]
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.k8s.local".tls]
+      insecure_skip_verify = true
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.k8s.local".auth]
+      username = "admin"
+      password = "Harbor12345"

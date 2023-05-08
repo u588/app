@@ -134,3 +134,8 @@ kubeadm init    \
 
 生成 token
 kubeadm token create --print-join-command
+
+
+======================= containerd 配置  ========================
+/etc/containerd/config.toml -------->  [plugins."io.containerd.grpc.v1.cri"]  -->
+             sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"

@@ -1,0 +1,39 @@
+1: Prerequisites
+    Run docker context to verify that your Docker client supports contexts.
+
+ You will also need one of the following:
+    a. Docker Swarm cluster
+    b. Single-engine Docker node
+    c. Kubernetes cluste
+
+2: A context is a combination of several properties. These include:
+    a. Name
+    b. Endpoint configuration
+    c. TLS info
+    d. Orchestrator
+
+--> docker context ls 
+    * active context
+
+context结构 --> docker context inspect default
+
+3: Create a new context
+    docker context create k8s-master-66 \
+  --default-stack-orchestrator=kubernetes \
+  --kubernetes config-file=/home/ts/.kube/config \
+  --docker host=unix:///var/run/docker.sock
+
+4: Use a different context
+    docker context use k8s-master-66
+
+
+/lib/systemd/system/docker.service  ++  -H tcp://0.0.0.0:2375
+
+3: Create a new context
+    docker context create docker-server-65 \
+  --default-stack-orchestrator=Single-engine \
+  --docker host=tcp://10.3.18.65:2375
+
+  docker context create k8s-harbor-63 \
+  --description "Harbor-Docker" \
+  --docker "host=tcp://10.3.18.63:443,ca=/home/ts/ca_root.crt,cert=/home/ts/k8s-harbor-63.cert,key=/home/ts/k8s-harbor-63.key"

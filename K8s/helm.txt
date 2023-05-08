@@ -4,3 +4,10 @@ wget https://get.helm.sh/helm-v3.11.3-linux-amd64.tar.gz
 tar -zxvf helm-v3.0.0-linux-amd64.tar.gz
 mv linux-amd64/helm /usr/local/bin/helm
 
+
+============== k8s-master-61 添加repo 
+helm repo add --ca-file /data/cert/ca_root.crt /
+ --cert-file /data/cert/k8s-harbor-63.cert /
+  --key-file /data/cert/k8s-harbor-63.key    /
+  --username ts --password 123@Syslog /
+  test  https://10.3.18.63:443/chartrepo/docker

@@ -8,6 +8,15 @@
 
 
 二、apt源
+ debian:
     deb http://mirrors.163.com/debian/ bookworm main non-free-firmware 
     deb http://mirrors.163.com/debian/ bookworm-backports  main non-free-firmware
     deb http://mirrors.163.com/debian/ bookworm-updates main non-free-firmware
+
+ ubuntu:
+    deb http://mirrors.163.com/ubuntu/ lunar  main restricted universe multiverse
+    deb http://mirrors.163.com/ubuntu/ lunar-security main restricted universe multiverse
+    deb http://mirrors.163.com/ubuntu/ lunar-updates main restricted universe multiverse
+    deb http://mirrors.163.com/ubuntu/ lunar-proposed main restricted universe multiverse
+    deb http://mirrors.163.com/ubuntu/ lunar-backports main restricted universe multiverse
+    deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu lunar stable
