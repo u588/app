@@ -32,11 +32,6 @@ sudo systemctl restart docker
 
 
 
-
-
-/etc/docker/daemon.json
-https://pee6w651.mirror.aliyuncs.com
-
 apt-get install software-properties-common
 curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg | sudo apt-key add -
 curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
@@ -45,7 +40,7 @@ add-apt-repository "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/
 apt-get install docker-ce
 
 
-docker search 10.3.18.51:5000
+
 
 curl -XGET http://10.3.18.51:5000/v2/_catalog
 
@@ -59,9 +54,9 @@ docker tag mydebian:v1 10.3.18.51:5000/mydebian:v1
 
 /etc/docker/daemon.json
 {
-        "registry-mirrors":["http://hub-mirror.c.163.com"],
 
-       "insecure-registries":["10.3.18.51:5000","10.3.18.63:443"],
+  "registry-mirrors":["http://hub-mirror.c.163.com"],
+  "insecure-registries":["10.3.18.51:5000","10.3.18.63:443"],
 	"data-root":"/home/data/docker"
 	
 }
