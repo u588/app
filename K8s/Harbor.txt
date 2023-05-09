@@ -52,13 +52,29 @@ docker login 10.3.18.64:443
 ==================== k8s containerd  Crictl 连接 harbor ==================
 /etc/containerd/config.toml
 
-[plugins."io.containerd.grpc.v1.cri".registry]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
-      endpoint = ["https://bqr1dr1n.mirror.aliyuncs.com"]
-  [plugins."io.containerd.grpc.v1.cri".registry.configs]
-    [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.k8s.local".tls]
-      insecure_skip_verify = true
-    [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.k8s.local".auth]
-      username = "admin"
-      password = "Harbor12345"
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      config_path = ""
+
+      [plugins."io.containerd.grpc.v1.cri".registry.auths]
+
+      [plugins."io.containerd.grpc.v1.cri".registry.configs]
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."10.3.18.63".tls]
+          insecure_skip_verify = false
+          ca_file = "/etc/containerd/k8s-harbor-63.crt"
+          cert_file = "/etc/containerd/k8s-harbor-63.cert"
+          key_file = "/etc/containerd/k8s-harbor-63.key"
+        [plugins."io.containerd.grpc.v1.cri".registry.configs."10.3.18.63".auth]
+          username = "ts"
+          password = "123@Syslog"
+
+      [plugins."io.containerd.grpc.v1.cri".registry.headers]
+
+      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
+        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."10.3.18.63"]
+          endpoint = ["http://10.3.18.63"]
+
+    [plugins."io.containerd.grpc.v1.cri".x509_key_pair_streaming]
+      tls_cert_file = ""
+      tls_key_file = ""
+
+
