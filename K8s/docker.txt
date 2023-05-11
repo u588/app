@@ -1,4 +1,16 @@
-=============== ===============
+=============== Docker 本地国内 ===============
+registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.1.1
+                          |
+                          |
+                          v 
+registry.aliyuncs.com/google_containers/kube-webhook-certgen:v1.1.1
+
+
+
+
+
+
+
   /lib/systemd/system/docker.service
 
   ~/.docker/contexts/meta/
@@ -188,3 +200,18 @@ sudo add-apt-repository "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/l
 # Step 4: 更新并安装Docker-CE
 sudo apt-get -y update
 sudo apt-get -y install docker-c
+
+
+
+
+========== pgadmin4 ====
+
+
+docker run -p 80:80 \
+    --name pgAdmin \
+    -e 'PGADMIN_DEFAULT_EMAIL=admin@163.com' \
+    -e 'PGADMIN_DEFAULT_PASSWORD=syslog6^' \
+    -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True' \
+    -e 'PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"' \
+    -e 'PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10' \
+    -d dpage/pgadmin4

@@ -13,3 +13,29 @@
     df -lhT
     ext4 -->  resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
     xfs -->   xfs_growfs /dev/mapper/ubuntu--vg-ubuntu--lv
+
+
+apt install cri-tools
+crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock
+cat /etc/crictl.yaml
+
+
+================ 网络 =============
+vi /etc/netplan/00-installer-config.yaml
+netplan apply
+
+
+deb https://mirrors.aliyun.com/ubuntu/ lunar main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+
+deb https://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+
+deb https://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+
+
+# deb https://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+# deb-src https://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+
+deb https://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse

@@ -1,12 +1,5 @@
  netsh interface ip set dns name='111.61.77.88' source=static addr=111.11.1.1
  
-tee /etc/docker/daemon.json <<-'EOF'
-{
-  "registry-mirrors": ["https://hub-mirror.c.163.com/"]
-}
-EOF
-
-
 
  #添加加载的内核模块
 
@@ -26,27 +19,19 @@ net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 EOFsysctl --system
 
-加k8s源 
+
+安装所需附件
+apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+
+
+
+加k8s国内源 
 curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
 cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
 deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF
 
 
-安装所需附件
-apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-
-#生成containerd的配置文件
-containerd config default | tee /etc/containerd/config.toml >/dev/null 2>&1
-
-#修改cgroup Driver为systemd
-sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-
-#将镜像源设置为阿里云 google_containers 镜像源
-sed -i 's/k8s.gcr.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.toml
-systemctl daemon-reload
-systemctl start containerd
-systemctl enable containerd.service
 
 
 关闭Swap
@@ -54,20 +39,10 @@ swapoff -a   # 临时关闭
 # sed -ri 's/.*swap.*/#&/' /etc/fstab  
 
 
-安装
-apt -y install kubeadm kubelet kubectl # 按最新的来玩# 固定版本不更新(暂时如此，免得出幺蛾子)
-apt-mark hold kubelet kubeadm kubectl 
-systemctl enable kubelet.service   # 加入环境变量
-echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
-source /etc/profile
-
-在所有节点上运行如下命令来配置 Containerd：
-$ containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
-在所有节点上设置 cgroupdriver 为 systemd，编辑 /etc/containerd/config.toml 文件，找到
- [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options] 部分，添加一行内容：SystemdCgroup = true
 
 cat > /etc/docker/daemon.json <<EOF
 {
+  "registry-mirrors": ["https://hub-mirror.c.163.com/"]，
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
   "log-opts": {
@@ -77,65 +52,110 @@ cat > /etc/docker/daemon.json <<EOF
 }
 EOF
 
-cat > /etc/docker/daemon.json <<EOF
-{
-  "registry-mirrors": ["https://hub-mirror.c.163.com/"]
-  ,"exec-opts": ["native.cgroupdriver=systemd"]
-}
-EOF
-
-
-
-
 systemctl daemon-reload
 systemctl restart docker
 
+============ container runtimes .txt =========
 
+
+apt -y install kubeadm kubelet kubectl # 按最新的来玩# 固定版本不更新(暂时如此，免得出幺蛾子)
+apt-mark hold kubelet kubeadm kubectl 
+systemctl enable kubelet.service   # 加入环境变量
+echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
+source /etc/profile
+
+
+======================= containerd 配置  ========================
+在所有节点上运行如下命令来配置 Containerd：
+$ containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+sed -i 's/k8s.gcr.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.toml
+#修改cgroup Driver为systemd
+sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
+在所有节点上设置 cgroupdriver 为 systemd，编辑 /etc/containerd/config.toml 文件，找到
+ [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options] 部分，添加一行内容：SystemdCgroup = true
+/etc/containerd/config.toml -------->  [plugins."io.containerd.grpc.v1.cri"]  -->
+             sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9
+
+systemctl daemon-reload
+systemctl start containerd
+systemctl enable containerd.service
 
 
 master server初始化 (node不需要走init)
 
-kubeadm init --apiserver-advertise-address=10.3.18.66 --pod-network-cidr=10.145.254.0/24 \--image-repository registry.aliyuncs.com/google_containers
-
 kubeadm init \
-
 --control-plane-endpoint=k8s-master-66 \
---image-repository registry.cn-hangzhou.aliyuncs.com/google_containers \
---cri-socket=unix:///var/run/containerd/containerd.sock \
---pod-network-cidr=10.145.254.0/24 \
---v=5
-
-
---apiserver-advertise-address=10.3.18.66 \
-
-
-
---image-repository [registry.cn-hangzhou.aliyuncs.com/](http://registry.cn-hangzhou.aliyuncs.com/)google_containers \
-
-
-
-
-
-
-kubeadm init    \
---image-repository registry.aliyuncs.com/google_containers     \
 --apiserver-advertise-address=10.3.18.66    \
 --apiserver-bind-port 6443 \
---service-cidr=10.3.18.0/24     \
---pod-network-cidr=172.16.16.0/24  \
---cri-socket=unix:///var/run/containerd/containerd.sock 
- --ignore-preflight-errors=all
+--service-cidr=192.168.0.0/16     \
+--pod-network-cidr=172.16.0.0/16  \
+--cri-socket=unix:///var/run/containerd/containerd.sock \
+--image-repository registry.cn-hangzhou.aliyuncs.com/google_containers
 
 
 
- kubeadm join 10.3.18.66:6443 --token xshch1.lgw48j114d0w5phx \
-     --discovery-token-ca-cert-hash sha256:2d568805d985b1c19e1d8ee3a9ee1703744a4c4a044044a5d6f4fced82a25730
+============= 网络设置  ---> calico.txt ==========
+
+============ 加入集群 ========
+
+kubeadm join k8s-master-66:6443 --token 8ov80x.8fur4idpg6vfhd9u \
+        --discovery-token-ca-cert-hash sha256:118c9ebef0ddc9b45e9eedbd37ea88b388ae55441b7a9fac268630a23584b920
+
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
 
 
 生成 token
 kubeadm token create --print-join-command
 
 
-======================= containerd 配置  ========================
-/etc/containerd/config.toml -------->  [plugins."io.containerd.grpc.v1.cri"]  -->
-             sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"
+============= 配置更改 ================
+https://kubernetes.io/zh-cn/docs/tasks/administer-cluster/kubeadm/kubeadm-reconfigure/
+应用集群配置更改
+kubectl edit cm -n kube-system kubeadm-config
+
+https://kubernetes.io/zh-cn/docs/reference/setup-tools/kubeadm/kubeadm-upgrade/
+执行upgrade --> kubeadm upgrade node phase kubelet-confi
+
+应用 kubelet 配置更改
+kubectl edit cm -n kube-system kubelet-config
+一次执行一个节点的这些更改，以允许正确地重新安排工作负载。
+
+应用 kube-proxy 配置更改
+kubectl edit cm -n kube-system kube-proxy
+反映 kube-proxy 的更改
+kubectl get po -n kube-system | grep kube-prox
+kubectl delete po -n kube-system <pod-name>
+
+应用 CoreDNS 配置更改
+kubectl edit deployment -n kube-system coredns
+kubectl edit service -n kube-system kube-dns
+
+反映 CoreDNS 的更改
+kubectl get po -n kube-system | grep coredns
+kubectl delete po -n kube-system <pod-name>
+
+持久化重新配置
+kubectl edit no <node-name>
+kubectl patch no <node-name> --patch-file <patch-file>
+
+================= k8s 集群重置 ==========
+1 : master node ----> kubeadm reset
+2 : master kubeadm init
+    calico init --> calico.txt
+
+
+3 : master ---> cp admin.conf /home/ts/k8s/kube/config
+
+4 : u23-code-52  -->  scp ts@10.3.18.66:/home/ts/k8s/kube/config /home/ts/.kube/
+
+
+
+================= 便利环境 ==============
+apt install bash-completion
+source <(kubectl completion bash) # 在 bash 中设置当前 shell 的自动补全，要先安装 bash-completion 包。
+echo "source <(kubectl completion bash)" >> ~/.bashrc # 在你的 bash shell 中永久地添加自动补全

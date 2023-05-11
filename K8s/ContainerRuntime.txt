@@ -1,0 +1,10 @@
+https://kubernetes.io/zh-cn/docs/setup/production-environment/container-runtimes/#cri-versions
+
+1 : Containerd --> containerd.txt(k8s-node-62)
+https://github.com/containerd/containerd/blob/main/docs/getting-started.md
+apt install containerd
+
+2 : Docker Engine 需要 cri-dockerd 适配器来将 Docker Engine 与 Kubernetes 集成 ---> XXX(k8s-node-61)
+apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+

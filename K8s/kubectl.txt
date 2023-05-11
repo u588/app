@@ -17,3 +17,8 @@ https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.l
 sudo apt-get update
 sudo apt-get install -y kubectl
 
+
+https://kubernetes.io/zh-cn/docs/reference/kubectl/cheatsheet/
+============ Kubectl 自动补全 ============
+source <(kubectl completion bash) # 在 bash 中设置当前 shell 的自动补全，要先安装 bash-completion 包。
+echo "source <(kubectl completion bash)" >> ~/.bashrc # 在你的 bash shell 中永久地添加自动补全
