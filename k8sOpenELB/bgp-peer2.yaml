@@ -1,0 +1,28 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: BgpPeer
+metadata:
+  name: bgp-peer
+spec:
+  conf:
+    peerAs: 100
+    neighborAddress: 192.168.168.2
+    # neighborInterface: 
+  afiSafis:
+    - config:
+        family:
+          afi: AFI_IP
+          safi: SAFI_UNICAST
+        enabled: true
+      addPaths:
+        config:
+          sendMax: 10
+  ebgpMultihop:
+    enabled: true
+    multihopTtl: 50
+  transport:
+    passiveMode: false
+    remoteAddress: 192.168.168.2
+    remotePort: 179
+  # nodeSelector:
+  #   matchLabels:
+  #     openelb.kubesphere.io/rack: leaf1

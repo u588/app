@@ -1,0 +1,10 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: BgpConf
+metadata:
+  name: default
+spec:
+  as: 101
+  families: [4]
+  listenAddresses: [10.3.18.61]
+  listenPort: 179
+  routerId: 10.3.18.61

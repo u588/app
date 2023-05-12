@@ -1,0 +1,121 @@
+
+Controller --> Identity service, Image service, Placement service
+Compute    --> Networking service agent 
+Block Storage --> 
+
+
+================ 网络 =============
+vi /etc/netplan/00-installer-config.yaml
+netplan apply
+
+hostnamectl set-hostname  xxx
+
+
+1: The archive enablement described here needs to be done on all nodes that run OpenStack services.
+
+    Archive Enablement: 
+        add-apt-repository cloud-archive:antelope
+        apt install nova-compute
+        apt install python3-openstackclient
+        apt install apache2
+
+
+================ master ============
+Message queue
+    apt install rabbitmq-server
+    rabbitmqctl add_user openstack syslog6^
+查看凭据    rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+
+ * node name: 'rabbitmqcli-393-rabbit@os-master-86'
+ * effective user's home directory: /var/lib/rabbitmq
+ * Erlang cookie hash: egKmxKdVbOMJw3HqzeK7MQ==
+
+
+Memcached
+    apt install memcached python3-memcache
+    -->/etc/memcached.conf  -l 10.145.254.86
+    service memcached restart
+
+
+Etcd
+    apt install etcd
+     /etc/default/etcd  -->  
+
+ETCD_NAME="os-master-86"
+ETCD_DATA_DIR="/var/lib/etcd"
+ETCD_INITIAL_CLUSTER_STATE="new"
+ETCD_INITIAL_CLUSTER_TOKEN="etcd-os-master-86"
+ETCD_INITIAL_CLUSTER="os-master-86=http://10.145.254.86:2380"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://10.145.254.86:2380"
+ETCD_ADVERTISE_CLIENT_URLS="http://10.145.254.86:2379"
+ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+ETCD_LISTEN_CLIENT_URLS="http://10.145.254.86:2379"
+
+systemctl enable etcd
+systemctl restart etcd
+
+keystone
+    apt install keystone
+    /etc/keystone/keystone.conf -->
+      [database]  
+        connection = postgresql+psycopg2://sa:11111111@10.145.254.56/keystone
+      [token]
+        provider = fernet
+
+    su -s /bin/sh -c "keystone-manage db_sync" keystone
+    keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+    keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+
+keystone-manage bootstrap --bootstrap-password syslog6^ \
+  --bootstrap-admin-url http://10.3.18.86:5000/v3/ \
+  --bootstrap-internal-url http://10.145.254.86:5000/v3/ \
+  --bootstrap-public-url http://10.3.18.86:5000/v3/ \
+  --bootstrap-region-id Os-86
+
+/etc/apache2/apache2.conf --> ServerName os-master-86
+service apache2 restart
+
+export OS_USERNAME=admin
+export OS_PASSWORD=syslog6^
+export OS_PROJECT_NAME=admin
+export OS_USER_DOMAIN_NAME=Default
+export OS_PROJECT_DOMAIN_NAME=Default
+export OS_AUTH_URL=http://10.3.18.86:5000/v3
+export OS_IDENTITY_API_VERSION=3
+
+
+Image service
+    apt install glance
+    /etc/glance/glance-api.conf  -->
+    [database]
+        connection = postgresql+psycopg2://sa:11111111@10.145.254.56/glance
+    [keystone_authtoken]
+        www_authenticate_uri = http://controller:5000
+        auth_url = http://controller:5000
+        memcached_servers = controller:11211
+        auth_type = password
+        project_domain_name = Default
+        user_domain_name = Default
+        project_name = service
+        username = glance
+        password = syslog6^
+
+    [paste_deploy]
+        flavor = keystone
+
+    [glance_store]
+        stores = file,http
+        default_store = file
+        filesystem_store_datadir = /var/lib/glance/images/      
+
+    [oslo_limit]
+        auth_url = http://controller:5000
+        auth_type = password
+        user_domain_id = default
+        username = MY_SERVICE
+        system_scope = all
+        password = MY_PASSWORD
+        endpoint_id = ENDPOINT_ID
+        region_name = RegionOne    
+
+    

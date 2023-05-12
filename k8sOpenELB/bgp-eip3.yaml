@@ -1,0 +1,21 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: Eip
+metadata:
+    name: bgp-eip
+    # annotations:
+    #   eip.openelb.kubesphere.io/is-default-eip: "true"
+spec:
+    address: 10.8.8.0/24
+    # protocol: bgp
+#     # interface: eth0
+#     disable: false
+# status:
+#     occupied: false
+#     usage: 1
+#     poolSize: 10
+#     # used: 
+#       # "10.3.18.160": "default/test-svc"
+#     firstIP: 10.3.18.160
+#     lastIP: 10.3.18.179
+#     ready: true
+#     v4: true
