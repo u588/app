@@ -1,3 +1,6 @@
+https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
+
+
 下载calico.yaml文件
 
 查看需要下载的calico镜像文件
@@ -5,8 +8,8 @@ $ grep image calico.yaml   # 查看需要的镜像文件
 
 
 下载这些calico镜像文件
-docker pull docker.io/calico/cni:v3.24.3
-
+docker pull docker.io/calico/cni:v3.25.1
+docker pull calico/cni:release-v3.26
 
 安装calico插件
 kubectl apply -f calico.yaml  # 再运行一下yaml文件
@@ -16,3 +19,5 @@ cat > /etc/NetworkManager/conf.d/calico.conf <<EOF
 [keyfile]
 unmanaged-devices=interface-name:cali*;interface-name:tunl*
 EOF
+
+https://github.com/projectcalico/calico/tree/master/calicoctl

@@ -88,7 +88,7 @@ kubeadm init \
 --control-plane-endpoint=k8s-master-66 \
 --apiserver-advertise-address=10.3.18.66    \
 --apiserver-bind-port 6443 \
---service-cidr=192.168.0.0/16     \
+--service-cidr=10.8.0.0/16     \
 --pod-network-cidr=172.16.0.0/16  \
 --cri-socket=unix:///var/run/containerd/containerd.sock \
 --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers
