@@ -88,19 +88,19 @@ kubeadm init \
 --control-plane-endpoint=k8s-master-66 \
 --apiserver-advertise-address=10.3.18.66    \
 --apiserver-bind-port 6443 \
---service-cidr=10.8.0.0/16     \
+--service-cidr=10.88.0.0/16     \
 --pod-network-cidr=172.16.0.0/16  \
 --cri-socket=unix:///var/run/containerd/containerd.sock \
 --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers
 
-
+export KUBECONFIG=/etc/kubernetes/admin.conf
 
 ============= 网络设置  ---> calico.txt ==========
 
 ============ 加入集群 ========
 
-kubeadm join k8s-master-66:6443 --token 8ov80x.8fur4idpg6vfhd9u \
-        --discovery-token-ca-cert-hash sha256:118c9ebef0ddc9b45e9eedbd37ea88b388ae55441b7a9fac268630a23584b920
+kubeadm join k8s-master-66:6443 --token fcf22m.hs379pa84f69v5yi \
+        --discovery-token-ca-cert-hash sha256:88c545a706087321e0e4f6a3e1f409e743d886b4a7d8551053001f3a0c1da04a
 
 
   mkdir -p $HOME/.kube
@@ -149,7 +149,7 @@ kubectl patch no <node-name> --patch-file <patch-file>
     calico init --> calico.txt
 
 
-3 : master ---> cp admin.conf /home/ts/k8s/kube/config
+3 : master ---> cp /etc/kubernetes/admin.conf /home/ts/k8s/kube/config
 
 4 : u23-code-52  -->  scp ts@10.3.18.66:/home/ts/k8s/kube/config /home/ts/.kube/
 

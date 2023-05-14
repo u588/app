@@ -1,0 +1,8 @@
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: rr-to-pix
+spec:
+  peerIP: 192.168.168.2
+  nodeSelector: route-reflector == 'true'
+  asNumber: 100

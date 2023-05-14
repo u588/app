@@ -1,0 +1,14 @@
+apiVersion: projectcalico.org/v3
+kind: Node
+metadata:
+  creationTimestamp: null
+  name: k8s-master-66
+  labels:
+    route-reflector: true
+spec:
+  bgp:
+    ipv4Address: 10.3.18.66/24
+    routeReflectorClusterID: 224.0.0.1
+  orchRefs:
+  - nodeName: k8s-master-66
+    orchestrator: k8s
