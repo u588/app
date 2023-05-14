@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demotest1
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: demotest1
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: demotest1
+    spec:
+      containers:
+      - name: demotest1
+        image: docker pull opcache/devops-go-sample:hello1
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+---
+ 
+apiVersion: v1
+kind: Service
+metadata:
+  name: demotest1
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - name: http-test1
+      port: 8080
+      protocol: TCP
+      nodePort: 8080
+    - name: http-test2
+      port: 8081
+      protocol: TCP
+      nodePort: 8081
+  selector:
+    app: demotest1
