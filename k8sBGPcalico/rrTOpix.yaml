@@ -6,3 +6,5 @@ spec:
   peerIP: 192.168.168.2
   nodeSelector: route-reflector == 'true'
   asNumber: 100
+  ttlSecurity: 50
+  keepOriginalNextHop: true

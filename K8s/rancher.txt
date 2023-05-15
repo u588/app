@@ -1,0 +1,3 @@
+docker run --name rancher --privileged -d --restart=unless-stopped -p 88:80 -p 89:443 rancher/rancher:v2.7-head 
+
+passwd cyKElEerPlTQHa0H

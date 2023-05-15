@@ -8,3 +8,15 @@ spec:
   asNumber: 101
   serviceClusterIPs:
     - cidr: 10.88.0.0/16
+  # serviceExternalIPs:
+  # - cidr: 10.33.192.0/18
+  # listenPort: 179
+  # bindMode: NodeIP
+  # communities:
+  # - name: bgp-large-community
+  #   value: 64517:300:100
+  # prefixAdvertisements:
+  # - cidr: 10.33.0.0/17
+  #   communities:
+  #   - bgp-large-community
+  #   - 64517:120
