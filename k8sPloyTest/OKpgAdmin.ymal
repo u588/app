@@ -15,7 +15,12 @@ spec:
       containers:
       - name: pgadmin4
         image: 10.3.18.63/docker/pgadmin4:v7.1
-        # args: ["-e 'PGADMIN_DEFAULT_EMAIL=admin@163.com' -e 'PGADMIN_DEFAULT_PASSWORD=syslog6^'"]
+        env:
+          - name: PGADMIN_DEFAULT_EMAIL
+            value: admin@163.com
+          - name: PGADMIN_DEFAULT_PASSWORD
+            value: syslog6^
+        # args: ["-e 'PGADMIN_DEFAULT_EMAIL=admin@163.com' ", "-e 'PGADMIN_DEFAULT_PASSWORD=syslog6^'"]
         ports:
           - containerPort: 80
 ---
@@ -25,7 +30,8 @@ metadata:
    name: pg-svc
    namespace: default
 spec:
-   type: NodePort
+   type: ClusterIP
+   clusterIP: 10.88.1.2
    selector:
       app: pgadmin4
    ports:
