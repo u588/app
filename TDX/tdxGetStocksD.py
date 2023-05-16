@@ -77,7 +77,7 @@ StockLists =  pd.read_sql('StocksList', eng).code.tolist()
 
 with api.connect('180.153.18.170', 7709):
     for i, StockCode in enumerate(StockLists):
-        #print('Index', i, '/', len(StockLists))
+        # print('Index', i, '/', len(StockLists))
         StockData = pd.DataFrame(columns=['open', 'close', 'high', 'low', 'vol', 'amount', 'year', 'month', 'day', 'hour', 'minute', 'datetime'])
 
         if StockCode[:1] == '6':
@@ -85,7 +85,7 @@ with api.connect('180.153.18.170', 7709):
         else:
             nn = 0
 
-        StockData = api.to_df(api.get_security_bars(Cate, nn, StockCode, 0, 2))
+        StockData = api.to_df(api.get_security_bars(Cate, nn, StockCode, 0,6))
         if StockData.empty:
             pass
         else:
@@ -97,7 +97,7 @@ with api.connect('180.153.18.170', 7709):
                     StockData.to_sql(StockCode, eng, if_exists='append')
                     #print(StockCode,'saved to sql !')
                 else:
-                    #print(StockCode,'pass !')
+                    print(StockCode,'pass !')
                     pass
 
             except:

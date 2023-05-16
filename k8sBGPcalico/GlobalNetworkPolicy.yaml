@@ -1,0 +1,24 @@
+# GlobalNetworkPolicy that selects the same set of pods as your Kubernetes Service.
+#  Add rules that allow host endpoints to access the service ports.
+
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-nodes-svc-a
+spec:
+  selector: k8s-svc == 'svc-a'
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        selector: k8s-role == 'node'
+      destination:
+        ports: [80, 443]
+    - action: Allow
+      protocol: UDP
+      source:
+        selector: k8s-role == 'node'
+      destination:
+        ports: [80, 443]

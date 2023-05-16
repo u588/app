@@ -1,0 +1,17 @@
+# Without this rule, normal pod-to-pod traffic is blocked because the policy applies to forwarded traffic.
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-to-pods
+spec:
+  selector: k8s-role == 'node'
+  types:
+  - Ingress
+  applyOnForward: true
+  preDNAT: true
+  ingress:
+   # Allow traffic forwarded to pods
+  - action: Allow
+    destination:
+      nets:
+      - 172.16.0.0/16  #Pod CIDR

@@ -17,7 +17,7 @@ SL = pd.DataFrame(columns=['code'])
 for i,Stock in enumerate(StocksList):
     try:
         data = pd.read_sql(Stock, eng).tail(150)
-        # print(Stock, i, '/', len(StocksList))
+        print(Stock, i, '/', len(StocksList))
         data['ADOSC'] = tb.ADOSC(data.high, data.low, data.close, data.vol, fastperiod=3, slowperiod=11).round(2)
         data['ema5'] = tb.EMA(data.close, timeperiod=5).round(2)
         data['ema21'] = tb.EMA(data.close, timeperiod=21).round(2)
@@ -29,7 +29,7 @@ for i,Stock in enumerate(StocksList):
         d0 = d.loc[0]
         d1 = d.loc[1]
         if dd.ADO>=0 and dd.ema5>dd.ema21>dd.kama55>dd.kama144 and dd.high>=d1.high>=d0.high and dd.close>d1.close>d0.close and dd.low>d1.low>d0.low and dd.close>d1.close>d0.close:
-            # print('Find'+ Stock)
+            print('Find'+ Stock)
             SL.loc[i]=Stock
         else:
             pass

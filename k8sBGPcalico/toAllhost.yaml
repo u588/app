@@ -1,0 +1,23 @@
+# add rules that allow specific host traffic including Kubernetes and Calico.
+#  Without this rule, normal host traffic is blocked.
+
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-traffic-hostendpoints
+spec:
+  selector: k8s-role == 'node'
+  types:
+  - Ingress
+  # Allow traffic to the node (not nodePorts, TCP) (not nodePorts, TCP)
+  - action: Allow
+    protocol: TCP
+    destination:
+      selector: k8s-role == 'node'
+      notPorts: ["30000:32767"]  #nodePort range
+  # Allow traffic to the node (not nodePorts, TCP) (not nodePorts, UDP)
+  - action: Allow
+    protocol: UDP
+    destination:
+      selector: k8s-role == 'node'
+      notPorts: ["30000:32767"]  #nodePort range
