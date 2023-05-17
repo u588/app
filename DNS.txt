@@ -1,0 +1,15 @@
+205.251.199.75
+
+https://whois.aliyun.com/ --> raw.githubusercontent.com
+
+DNS   	DNS1：DNS1.P01.NSONE.NET 198.51.44.1
+        DNS2：DNS2.P01.NSONE.NET 198.51.45.1
+        DNS3：DNS3.P01.NSONE.NET 198.51.44.65
+        DNS4：DNS4.P01.NSONE.NET 198.51.45.65
+        DNS5：NS-1411.AWSDNS-48.ORG
+        DNS6：NS-181.AWSDNS-22.COM
+        DNS7：NS-1867.AWSDNS-41.CO.UK 205.251.199.75
+        DNS8：NS-596.AWSDNS-10.NET  205.251.194.84
+
+nslookup NS-596.AWSDNS-10.NET --> IP 205.251.194.84
+nslookup raw.githubusercontent.com 205.251.194.84

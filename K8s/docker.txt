@@ -1,3 +1,12 @@
+============ Docker Command ========
+#导出一个已经创建的容器导到一个文件
+docker export -o 文件名.tar 容器id
+#将文件导入为镜像
+docker import 文件名.tar 镜像名:镜像标签
+
+镜像打包 docker save 源包 >   .tar 
+
+
 =============== Docker 本地国内 ===============
 registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.1.1
                           |

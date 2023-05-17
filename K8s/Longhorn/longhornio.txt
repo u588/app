@@ -1,0 +1,28 @@
+all master node
+
+apt install nfs-common open-iscsi
+
+vim /etc/iscsi/iscsid.conf
+
+node.startup = automatic 
+##node.startup = manual #记得关闭这个
+node.session.auth.authmethod = CHAP#启用CHAP
+node.session.auth.username = redhat #用户名
+node.session.auth.password = redhat #密码
+
+
+kubectl apply -f longhorn.yaml
+
+create an Ingress to allow external traffic to reach the Longhorn UI.
+
+USER=admin; PASSWORD=syslog6^; echo "${USER}:$(openssl passwd -stdin -apr1 <<< ${PASSWORD})" >> auth
+kubectl -n longhorn-system create secret generic basic-auth --from-file=auth
+
+
+kubectl -n longhorn-system apply -f longhorn-ingress.yml
+
+查看 kubectl -n longhorn-system get secret basic-auth -o yaml
+    kubectl -n longhorn-system get ingress
+
+查看服务
+    kubectl -n longhorn-system get svc
