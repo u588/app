@@ -1,0 +1,16 @@
+https://github.com/rancher/rancher/releases
+ rancher-images.txt
+ rancher-save-images.sh
+ rancher-load-images.sh
+
+ 1: Collect the cert-manager image
+
+ sort -u rancher-images.txt -o rancher-images.txt
+ chmod +x rancher-save-images.sh
+ ./rancher-save-images.sh --image-list ./rancher-images.txt
+
+
+ 2: Populate the private registry
+
+ chmod +x rancher-load-images.sh
+ ./rancher-load-images.sh --image-list ./rancher-images.txt --registry <REGISTRY.YOURDOMAIN.COM:PORT>

@@ -1,0 +1,156 @@
+=================== 基础环境准备 =============
+关闭selinux,firewalld及swap分区(在五台设备上执行）
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+systemctl disable firewalld
+swapoff -a
+reboot
+注：swapoff -a 为临时关闭swap分区。永久关闭swap分区，vi /etc/fstab  注释swap分区一行
+
+
+修改/etc/hosts文件，增加如下三行（五台设备）
+cat <<EOF >> /etc/hosts
+192.168.3.101 master1
+192.168.3.102 master2
+192.168.3.103 master3
+192.168.3.104 node1
+192.168.3.105 node2
+EOF
+
+配置命令补全及vim工具（五台设备执行）
+dnf install -y wget bash-completion 
+
+配置时间同步（五台设备执行）
+apt install -y chrony
+
+更改  /etc/chrony.conf  配置文件
+
+将pool 2.pool.ntp.org iburst
+
+改为
+
+server ntp1.aliyun.com iburst
+server ntp2.aliyun.com iburst
+server ntp1.tencent.com iburst
+server ntp2.tencent.com iburs
+
+systemctl enable --now chronyd
+chronyc sources
+ 
+for host in { master1 master2 master3 node1 node2 };do ssh $host  date;done
+
+
+
+
+
+
+修改内核参数（五台设备上执行）
+modprobe br_netfilter
+lsmod | grep br_netfilter
+ 
+cat > /etc/sysctl.d/k8s.conf <<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+ 
+sysctl -p /etc/sysctl.d/k8s.conf
+
+
+安装依整包及配置docker源、k8s源
+
+apt install -y  device-mapper-persistent-data lvm2 ipvsadm net-tools
+yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+sed -i 's+download.docker.com+mirrors.aliyun.com/docker-ce+' /etc/yum.repos.d/docker-ce.repo
+ 
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
+ 
+dnf makecache
+
+
+开启Ipvs 五台设备
+lsmod|grep ip_vs
+modprobe -- ip_vs
+modprobe -- ip_vs_rr
+modprobe -- ip_vs_wrr
+modprobe -- ip_vs_sh
+ 
+lsmod|grep ip_vs
+ 
+modprobe br_netfilter
+echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+
+
+安装containerd
+apt install -y containerd
+生成默认配置文件 
+containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+containerd config default > /etc/containerd/config.toml
+
+sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.toml
+sed -i "s#k8s.gcr.io/pause#registry.cn-hangzhou.aliyuncs.com/google_containers/pause#g"  /etc/containerd/config.toml
+
+配置镜像加速
+sed -i '/registry.mirrors]/a\ \ \ \ \ \ \ \ [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]' /etc/containerd/config.toml
+sed -i '/registry.mirrors."docker.io"]/a\ \ \ \ \ \ \ \ \ \ endpoint = ["https://0x3urqgf.mirror.aliyuncs.com"]' /etc/containerd/config.toml
+
+
+
+启动containerd
+systemctl enable --now containerd.service
+systemctl status containerd.service
+
+下载镜像（五台设备）
+ctr  image pull docker.io/rancher/k3s:v1.25.9+k3s1
+
+
+单master安装如下
+
+curl –sfL \
+     https://rancher-mirror.oss-cn-beijing.aliyuncs.com/k3s/k3s-install.sh | \
+     INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION="v1.25.9+k3s1" sh -s - \
+     --system-default-registry "registry.cn-hangzhou.aliyuncs.com"
+
+
+
+
+填加node
+master  --> cat /var/lib/rancher/k3s/server/node-token
+K10f8b5ff71a813b14e956f4d77ccb51417b2ceb904990595e47877a90ab37d8896::server:039f921d3b1342cd92797fb569eccfcd
+
+两台node节点执行
+curl -sfL https://rancher-mirror.oss-cn-beijing.aliyuncs.com/k3s/k3s-install.sh | \
+INSTALL_K3S_MIRROR=cn K3S_URL=https://k3s-master-81:6443 \
+K3S_TOKEN=K10f8b5ff71a813b14e956f4d77ccb51417b2ceb904990595e47877a90ab37d8896::server:039f921d3b1342cd92797fb569eccfcd sh -
+
+数据库配置
+create database k3s
+--datastore-endpoint="postgres://数据库账号:数据库密码@数据库连接地址:数据库端口//数据库名称" 
+
+
+curl –sfL \
+     https://rancher-mirror.oss-cn-beijing.aliyuncs.com/k3s/k3s-install.sh | \
+     INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION="v1.25.9+k3s1" sh -s - \
+     --system-default-registry "registry.cn-hangzhou.aliyuncs.com" \
+    --datastore-endpoint="postgres://sa:11111111@10.145.254.56:5432/k3s"
+
+安装高可用集群
+
+=========== 环境 =============
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+ 
+$ vi ~/.bash_profile 
+export KUBECONFIG=~/.kube/config
+$ source ~/.bash_profile
+

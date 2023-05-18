@@ -22,7 +22,7 @@ cat /etc/crictl.yaml
 
 ================ 网络 =============
 vi /etc/netplan/00-installer-config.yaml
-netplan apply
+netplan apply  
 
 
 deb https://mirrors.aliyun.com/ubuntu/ lunar main restricted universe multiverse

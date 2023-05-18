@@ -1,0 +1,69 @@
+KMS激活服务器 10.88.1.8
+/tmp/binaries/Linux/intel/static/
+./vlmcsd-x64-musl-static
+netstat -lnp  port 1688
+
+
+slmgr /ipk WX4NM-KYWYW-QJJR4-XV3QB-6VM33
+
+slmgr.vbs -upk 删除key
+slmgr.vbs -ipk WX4NM-KYWYW-QJJR4-XV3QB-6VM33
+slmgr.vbs -skms 10.88.1.8
+slmgr.vbs -ato
+slmgr.vbs -dlv
+slmgr.vbs -dli
+
+
+slmgr -xpr 过期时间
+slmgr -dlv 服务器信息
+
+############################# Windows Server ######################################
+Windows Server 2022 Datacente           WX4NM-KYWYW-QJJR4-XV3QB-6VM33
+Windows Server 2022 Standard            VDYBN-27WPP-V4HQT-9VMD4-VMK7H
+
+Windows Server 2016 RTM Datacenter      CB7KF-BWN84-R7R2Y-793K2-8XDDG
+Windows Server 2016 RTM Standard        WC2BQ-8NRM3-FDDYY-2BFGV-KHKQY
+
+Windows Server 2012 R2 Server Standard  D2N9P-3P6X9-2R39C-7RTCD-MDVJX
+Windows Server 2012 R2 Datacenter       W3GGN-FT8W3-Y4M27-J84CP-Q3VJ9
+
+Windows Server 2008 R2 Standard         YC6KT-GKW9T-YTKYR-T4X34-R7VHC
+Windows Server 2008 R2 Enterprise       489J6-VHDMP-X63PK-3K798-CPX3Y
+Windows Server 2008 R2 Datacenter       74YFP-3QFB3-KQT8W-PMXWJ-7M648
+
+############################# Windows ########################################
+Windows 11 Professional VK7JG-NPHTM-C97JM-9MPGT-3V66T
+Windows 11 Home         YTMG3-N6DKC-DKB77-7M9GH-8HVX7
+
+Windows 10 Professional   W269N-WFGWX-YVC9B-4J6C9-T83GX
+
+
+Windows 10 Enterprise   NPPR9-FWDCX-D2C8J-H872K-2YT43
+Windows 11 Enterprise 
+
+----------------------------Office-------------------------------------------------
+roduct	GVLK
+Office LTSC 专业增强版 2021	   FXYTK-NJJ8C-GB6DW-3DYQT-6F7TH
+Office LTSC 标准版 2021	           KDX7X-BNVR8-TXXGX-4Q7Y8-78VT3
+Project Professional 2021	   FTNWT-C6WBT-8HMGF-K9PRX-QV9H8
+Project Standard 2021	           J2JDC-NJCYY-9RGQ4-YXWMH-T3D4T
+Visio LTSC Professional 2021	  KNH8D-FGHT4-T8RK3-CTDYJ-K2HT4
+Visio LTSC Standard 2021	  MJVNY-BYWPY-CWV6J-2RKRT-4M8QG
+Access LTSC 2021	          WM8YG-YNGDD-4JHDC-PG3F4-FC4T4
+Excel LTSC 2021	                  NWG3X-87C9K-TC7YY-BC2G7-G6RVC
+Outlook LTSC 2021	           C9FM6-3N72F-HFJXB-TM3V9-T86R9
+PowerPoint LTSC 2021	          TY7XF-NFRBR-KJ44C-G83KF-GX27K
+Publisher LTSC 2021	         2MW9D-N4BXM-9VBPG-Q7W6M-KFBGQ
+Skype for Business LTSC 2021	  HWCXN-K3WBT-WJBKY-R8BD9-XK29P
+Word LTSC 2021	                  TN8H9-M34D3-Y64V9-TR72V-X79KV
+
+
+SQL Server 2016 Enterprise Edition 企业版序列号：MDCJV-3YX8N-WG89M-KV443-G8249
+
+SQL Server 2016 Enterprise Core Edition 企业核心板序列号：TBR8B-BXC4Y-298NV-PYTBY-G3BCP
+
+SQL Server 2016 Standard Edition 标准版序列号：B9GQY-GBG4J-282NY-QRG4X-KQBCR
+
+SQL Server 2016 Web Edition序列号：BXJTY-X3GNH-WHTHG-8V3XK-T8243
+
+
