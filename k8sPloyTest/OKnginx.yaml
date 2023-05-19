@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: 10.3.18.63/docker/nginx:v1
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          name: conf
+        - mountPath: /home 
+          name: home
+        - mountPath: /var/log/nginx
+          name: log
+      volumes:
+      - name: conf
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/nginx/conf
+          readOnly: true
+      - name: home
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/nginx/assets
+          readOnly: true
+      - name: log
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/nginx/log
+          readOnly: false   
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: nginx-svc
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.88.8.8
+   selector:
+      app: nginx
+   ports:
+   - name: nginx-http
+     protocol: TCP
+     port: 80
+     targetPort: 80

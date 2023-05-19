@@ -1,3 +1,5 @@
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/air-gapped-helm-cli-install/publish-images
+
 https://github.com/rancher/rancher/releases
  rancher-images.txt
  rancher-save-images.sh
