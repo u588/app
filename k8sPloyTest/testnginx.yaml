@@ -1,25 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tdxuwsgi-deployment
+  name: testnginx-deployment
 spec:
   selector:
     matchLabels:
-      app: tdxuwsgi
+      app: testnginx
   replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
   template:
     metadata:
       labels:
-        app: tdxuwsgi
+        app: testnginx
     spec:
       containers:
-      - name: tdxuwsgi
-        image: 10.3.18.63/docker/tdx-uwsgi:v1
-        # ports:
-        # - containerPort: 3031
-        volumeMounts:
-        - mountPath: /home 
-          name: uhome
       - name: nginx
         image: 10.3.18.63/docker/nginx:v1
         ports:
@@ -33,11 +26,6 @@ spec:
           name: log
 
       volumes:
-      - name: uhome
-        nfs:
-          server: 10.145.254.55
-          path: /home/nfsroot/www
-          readOnly: false
       - name: conf
         nfs:
           server: 10.145.254.55
@@ -58,15 +46,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-   name: tdxuwsgi-svc
+   name: testnginx-svc
    namespace: default
 spec:
    type: ClusterIP
    clusterIP: 10.88.8.8
    selector:
-      app: tdxuwsgi
+      app: testnginx
    ports:
-   - name: tdxuwsgi-server
+   - name: testnginx-server
      protocol: TCP
      port: 80
      targetPort: 80

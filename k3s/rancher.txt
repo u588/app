@@ -15,4 +15,4 @@ https://github.com/rancher/rancher/releases
  2: Populate the private registry
 
  chmod +x rancher-load-images.sh
- ./rancher-load-images.sh --image-list ./rancher-images.txt --registry <REGISTRY.YOURDOMAIN.COM:PORT>
+ ./rancher-load-images.sh --image-list ./rancher-images.txt --registry 10.3.18.63:443

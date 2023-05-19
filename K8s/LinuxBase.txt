@@ -1,3 +1,9 @@
+ps pkill --> apt install procps
+
+
+
+
+
 一、查看和修改Linux的时区
     date -R
 
