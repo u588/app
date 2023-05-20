@@ -1,17 +1,18 @@
+https://github.com/goharbor/harbor/releases/tag/v2.8.1
+2.7版本支持helmChart 2.8已经移除支持
+
+================ 安装 ==================
+
 tar zxvf harbor-online-installer-v2.3.5.tgz
-
 cp harbor.yml.tmpl  harbor.yml
-
 
 ./install.sh 
 --with-trivy：启用Trivy镜像漏洞扫描插件；
 --with-chartmuseum：启用Helm Chart组件；
 --with-notary : 如果启用安全加密端口https可添加该参数
 
-
 配置开机自启：
 /usr/bin/docker-compose -f /data/harbor/docker-compose.yml up -d 
-
 
 tee /etc/systemd/system/harbor.service <<-'EOF'
 [Unit]
@@ -30,7 +31,6 @@ ExecStop=/usr/bin/docker-compose -f /data/harbor/docker-compose.yml down
 [Install]
 WantedBy=multi-user.target
 EOF
-
 
 systemctl daemon-reload
 systemctl start harbor
@@ -80,3 +80,20 @@ docker login 10.3.18.64:443
       tls_key_file = ""
 
 
+=================== k3s 连接  ======================
+新建
+/etc/rancher/k3s/registries.yaml
+
+mirrors:
+  docker.io:
+    endpoint:
+      - "https://10.3.18.63"
+configs:
+  "10.3.18.63":
+    auth:
+      username: ts
+      password: 123@Syslog 
+    tls:
+      cert_file: /etc/rancher/k3s/k8s-harbor-63.cert
+      key_file:  /etc/rancher/k3s/k8s-harbor-63.key
+      ca_file:  /etc/rancher/k3s/k8s-harbor-63.crt

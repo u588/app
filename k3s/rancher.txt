@@ -1,5 +1,8 @@
 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/air-gapped-helm-cli-install/publish-images
 
+===================== 离线安装 =======================
+
+https://ranchermanager.docs.rancher.com/pages-for-subheaders/air-gapped-helm-cli-install
 https://github.com/rancher/rancher/releases
  rancher-images.txt
  rancher-save-images.sh
@@ -16,3 +19,52 @@ https://github.com/rancher/rancher/releases
 
  chmod +x rancher-load-images.sh
  ./rancher-load-images.sh --image-list ./rancher-images.txt --registry 10.3.18.63:443
+
+
+ 
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm fetch rancher-latest/rancher
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm fetch jetstack/cert-manager --version v1.12.0
+curl -L -o cert-manager-crd.yaml https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.crds.yaml
+
+============= Install Rancher ===================
+kubectl create namespace cert-manager
+kubectl apply -f cert-manager-crd.yaml
+
+helm install cert-manager ./cert-manager-v1.12.0.tgz \
+    --namespace cert-manager \
+    --set image.repository=quay.io/jetstack/cert-manager-controller \
+    --set webhook.image.repository=quay.io/jetstack/cert-manager-webhook \
+    --set cainjector.image.repository=quay.io/jetstack/cert-manager-cainjector \
+    --set startupapicheck.image.repository=quay.io/jetstack/cert-manager-ctl
+
+=================== CA ================
+kubectl create namespace cattle-system
+
+kubectl -n cattle-system create secret generic tls-ca \
+  --from-file=cacerts.pem=/home/ts/ca_root.crt
+
+helm install rancher ./rancher-2.7.3.tgz \
+    --namespace cattle-system \
+    --set global.cattle.psp.enabled=false \
+    --set hostname=k3s-master-81 \
+    --set rancherImage=10.3.18.63/rancher/rancher \
+    --set ingress.tls.source=secret \
+    --set privateCA=true \
+    --set systemDefaultRegistry=10.3.18.63 \
+    --set useBundledSystemChart=true
+
+
+https://k3s-master-81/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
+```
+
+To get just the bootstrap password on its own, run:
+
+```
+kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}'
+```
+https://10.3.18.81/dashboard/?setup=$x8wp4gb7m554jlp6x4mqt774n79x2zqbszsrkqxv9qdtmrdpjhgmwd
+
+7LnrvNyZZaCt0DVE

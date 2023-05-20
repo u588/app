@@ -43,7 +43,8 @@ add-apt-repository "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/
 
 sudo tee /etc/docker/daemon.json <<-'EOF'
 {
-  "registry-mirrors": ["https://hub-mirror.c.163.com"]
+  "registry-mirrors": ["https://hub-mirror.c.163.com"],
+  "insecure-registries":["10.3.18.63:443"]
 }
 EOF
 sudo systemctl daemon-reload

@@ -43,3 +43,8 @@ context结构 --> docker context inspect default
   docker context create k8s-harbor-63 \
   --description "Harbor-Docker" \
   --docker "host=tcp://10.3.18.63:443,ca=/home/ts/ca_root.crt,cert=/home/ts/k8s-harbor-63.cert,key=/home/ts/k8s-harbor-63.key"
+
+
+  docker context create k8s-harbor-63 \
+  --description "Harbor-Docker" \
+  --docker "host=tcp://10.3.18.63:443,ca=/home/ts/k8s-harbor-63.crt,cert=/home/ts/k8s-harbor-63.cert,key=/home/ts/k8s-harbor-63.key"
