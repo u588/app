@@ -1,0 +1,85 @@
+https://k8s-docs.netlify.app/en/docs/setup/production-environment/windows/user-guide-windows-nodes/
+
+
+============== sshd =================
+设置开机启动
+Set-Service sshd -StartupType Automatic
+Set-Service ssh-agent -StartupType Automatic
+
+启动服务
+Start-Service sshd
+Start-Service ssh-agent
+
+
+https://learn.microsoft.com/zh-cn/virtualization/windowscontainers/samples?tabs=Application-frameworks
+
+https://github.com/containerd/containerd/releases/
+https://github.com/containerd/containerd/blob/main/docs/getting-started.md#installing-containerd-on-windows
+
+containerd-1.4.4-windows-amd64.tar.gz
+cri-containerd-1.7.0-windows-amd64.tar.gz
+cri-containerd-cni-1.7.0-windows-amd64.tar.gz
+
+#install
+tar xvf containerd-1.4.4-windows-amd64.tar.gz
+mkdir -force "C:\Program Files\containerd"
+mv ./bin/* "C:\Program Files\containerd"
+
+containerd.exe config default | Out-File config.toml -Encoding ascii
+
+
+Add-MpPreference -ExclusionProcess "$Env:ProgramFiles\containerd\containerd.exe"
+.\containerd.exe --register-service
+Start-Service containerd
+
+
+https://dl.k8s.io/v1.27.1/kubernetes-node-windows-amd64.tar.gz
+
+https://kubernetes.io/docs/concepts/windows/user-guide/
+
+https://learn.microsoft.com/zh-cn/training/modules/orchestrate-containers-windows-server-using-kubernetes/5-create-kubernetes-cluster-windows
+
+https://v1-22.docs.kubernetes.io/zh/docs/tasks/administer-cluster/kubeadm/adding-windows-nodes/
+=================== 加入 Windows 工作节点 ===========
+安装 containerD
+curl.exe -LO https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/Install-Containerd.ps1
+.\Install-Containerd.ps1
+
+说明：
+要安装特定版本的 containerD，使用参数 -ContainerDVersion指定版本。
+ .\Install-Containerd.ps1 -ContainerDVersion 1.4.1
+
+说明：
+如果你在 Windows 节点上使用了与 Ethernet 不同的接口（例如 "Ethernet0 2"），使用参数 -netAdapterName 指定名称。
+ .\Install-Containerd.ps1 -netAdapterName "以太网"
+
+.\Install-Containerd.ps1 -ContainerDVersion 1.4.1 -netAdapterName "以太网"
+  Set-ExecutionPolicy -ExecutionPolicy UNRESTRICTED --> Y
+
+安装 wins，kubelet 和 kubeadm
+curl.exe -LO https://raw.githubusercontent.com/kubernetes-sigs/sig-windows-tools/master/kubeadm/scripts/PrepareNode.ps1
+https://github.com/kubernetes-sigs/sig-windows-tools/releases/download/v0.1.6/PrepareNode.ps1
+.\PrepareNode.ps1 -KubernetesVersion v1.27.1 -ContainerRuntime containerD
+
+
+
+
+Set parameter "DependOnService" for service "kubelet"
+目录: C:\var\log
+ C:\var\lib\kubelet\etc
+ C:\etc\kubernetes
+  C:\var\lib\kubelet\etc\kubernetes
+
+
+
+
+
+kubeadm join k8s-master-66:6443 --token g94xu9.s5ltr4cv217y0d8r --discovery-token-ca-cert-hash sha256:88c545a706087321e0e4f6a3e1f409e743d886b4a7d8551053001f3a0c1da04a
+
+
+将 Kubernetes config 文件从 K8S-M 复制到 K8S-W 以将工作器节点添加到群集
+
+
+
+
+

@@ -1,0 +1,16 @@
+ 创建一个特定的服务帐户
+    kubectl create serviceaccount  console -n kube-system
+    kubectl create clusterrolebinding console --clusterrole=cluster-admin --serviceaccount=kube-system:console  -n kube-system
+
+提取与控制台服务帐户关联的令牌秘密名称
+    kubectl get  serviceaccount console -n kube-system -o jsonpath='{.secrets[0].name}'
+    #写入okd-web-console-install.yaml
+    console serviceaccount token: console-token-rzws  
+
+ 创建--->  okd-web-console-install.yaml
+
+ 创建部署服务
+    kubectl create -f okd-web-console-install.yaml
+
+部署成功后, 浏览器访问
+    

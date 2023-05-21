@@ -1,0 +1,53 @@
+https://blog.csdn.net/xhredeem/article/details/127623925
+============== Master ============
+
+第一步：查看当前集群集群版本
+   kubectl get node
+
+第二步：使节点不可被调度并驱逐节点上的pod
+    kubectl  cordon  master
+    kubectl  drain  master --ignore-daemonsets
+
+第三步：查看apt仓库kubeadm 所有版本，根据需要下载相关版本
+    apt list kubeadm -a
+
+第四步：查看可升级版本及需要的镜像
+    kubeadm upgrade plan
+    kubeadm  config  images list
+
+第五步：拉取镜像并升级
+    bash upgrade.sh
+    kubeadm  upgrade  apply  v1.xx.x  --etcd-upgrade=false
+
+第六步：安装对应kubelet kubectl版本，并重启
+    apt -y install  kubectl-1.xx.x kubelet-1.xx.x
+    systemctl daemon-reload
+    systemctl  restart  kubelet.service
+
+第七步：取消节点不可被调度
+    kubectl  uncordon  master
+
+第八步： 查看master 节点已升级成功
+    kubectl get nodes
+
+
+============= node ===============
+
+第一步：master上使node节点不可被调度
+@master    kubectl  drain  node  --ignore-daemonsets
+
+第二步：node 节点安装需要升级版本的kubeadm 、kubelet、kubectl
+@node apt -y install kubeadm-1.xx.x kubelet-1.xx.x kubectl-1.xx.x
+
+第三步：master节点更新 node
+@master kubeadm upgrade node
+
+第四步：重启kubelet
+@node systemctl  daemon-reload
+      systemctl  restart  kubelet.service
+
+第五步：取消节点不可调度
+@master kubectl  uncordon  node
+
+第六步：查看第一个node节点升级成功
+@master kubectl get nodes

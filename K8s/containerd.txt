@@ -43,3 +43,4 @@ image-endpoint: "unix:///var/run/containerd/containerd.sock"
 
 /var/lib/kubelet/kubeadm-flags.env
 KUBELET_KUBEADM_ARGS="--cgroup-driver=systemd --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
+
