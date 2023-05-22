@@ -1,0 +1,1 @@
+https://www.okd.io/guides/upi-sno/#architecture-this-refers-to-a-full-high-availability-cluster

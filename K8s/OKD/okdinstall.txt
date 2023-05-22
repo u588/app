@@ -1,3 +1,6 @@
+ https://www.okd.io/installation/#plan-your-installation
+ 
+ 
  创建一个特定的服务帐户
     kubectl create serviceaccount  console -n kube-system
     kubectl create clusterrolebinding console --clusterrole=cluster-admin --serviceaccount=kube-system:console  -n kube-system
