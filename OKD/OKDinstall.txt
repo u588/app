@@ -1,5 +1,84 @@
+/var/www/html/os
+https://blog.csdn.net/justlpf/article/details/128001413
+
+
 odk4.5安装
 https://blog.csdn.net/weixin_42507440/article/details/117513347
+
+mkdir -p /opt/registry/{auth,certs,data}
+cd /opt/registry/certs
+
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key \
+-subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
+
+openssl req -newkey rsa:2048 -nodes -keyout server.key \
+-subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.tdc.io" -out server.csr
+
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:registry.tdc.io,DNS:www.tdc.io") \
+-days 3650 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+
+
+
+openssl req -subj '/CN=registry.tdc.io/O=TDC LTD./C=CN' \
+-new -newkey rsa:2048 -days 3650 -nodes -x509 -req  -extfile <(printf "subjectAltName=DNS:registry.tdc.io,DNS:www.tdc.io") \
+-keyout server.key -out server.crt
+
+
+
+
+
+1. 生成 CA 根证书
+openssl genrsa -out root.key 2048
+openssl ecparam -genkey -name secp384r1 -out root.key
+openssl req -new -x509 -days 3650 -key root.key -out root.pem
+
+2 修改配置
+cp /etc/ssl/openssl.cnf ./keys/
+vim ./keys/openssl.cnf  
+……
+[CA_default]
+# 打开copy_extensions的注释
+copy_extensions = copy
+……
+[ req ]
+# 将req_extensions的注释打开
+req_extensions = v3_req # The extensions to add to a certificate request
+……
+[ v3_req ]
+# 添加subjectAltName 
+subjectAltName = @alt_names
+# 文件末尾添加. www.p-pp.cn 和 *.p-pp.cn 代表允许的ServerName
+[alt_names]
+DNS.1 = www.tdc.io
+DNS.2 = *.tdc.io
+
+3 生成服务端证书
+openssl genpkey -algorithm RSA -out server.key
+openssl req -new -nodes -key server.key -out server.csr -days 3650 \
+-subj "/C=cn/ST=SH/L=SH/OU=SRE/O=TST/CN=www.tdc.io" -config ./openssl.cnf -extensions v3_req
+
+openssl x509 -req -days 3650 -in server.csr -out server.pem \
+-CA root.pem -CAkey root.key -CAcreateserial -extfile ./openssl.cnf -extensions v3_req
+
+默认信任证书路径
+cp /opt/registry/certs/server.crt /etc/pki/ca-trust/source/anchors/
+
+update-ca-trust extract
+
+生成镜像仓库密钥
+htpasswd -bBc /opt/registry/auth/htpasswd admin admin
+echo -n 'admin:admin' | base64 -w0
+vi /root/pull-secret.json
+
+{
+    "auths":{
+        "registry.tdc.io:5000":{
+            "auth":"YWRtaW46YWRtaW4=",
+            "email":"king365@163.com"
+        }
+    }
+}
 
 
 podman run --name example-registry -p 5000:5000 \
@@ -9,24 +88,65 @@ podman run --name example-registry -p 5000:5000 \
      -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
      -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
      -v /opt/registry/certs:/certs:z \
-     -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.crt \
-     -e REGISTRY_HTTP_TLS_KEY=/certs/server.key \
+     -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.key \
+     -e REGISTRY_HTTP_TLS_KEY=/certs/server.crt \
      -d docker.io/library/registry
 
 
 
-oc adm -a /root/pull-secret.json release mirror \
+
+===================== 无证书服务 ================================
+
+
+podman run --name example-registry -p 5000:5000 \
+     -v /opt/registry/data:/var/lib/registry:z \
+     -d docker.io/library/registry
+
+oc adm  release mirror \
+      --insecure=true \
      --from=quay.io/openshift/okd:4.12.0-0.okd-2023-04-16-041331 \
      --to=registry.tdc.io:5000/openshift/okd \
      --to-release-image=registry.tdc.io:5000/openshift/okd:4.12.0-0.okd-2023-04-16-041331
 
+curl https://registry.tdc.io:5000/v2/_catalog
+# 没有拉取镜像是空的，拉取完后有内容
+{"repositories":["openshift/okd"]}
+
+# 查看所有镜像tag
+curl http://registry.tdc.io:5000/v2/openshift/okd/tags/list
+
+wget https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/32.20200715.3.0/x86_64/fedora-coreos-32.20200715.3.0-metal.x86_64.raw.xz.sig
 
 
 
 
+To use the new mirrored repository to install, add the following section to the install-config.yaml:
+
+imageContentSources:
+- mirrors:
+  - registry.tdc.io:5000/openshift/okd
+  source: quay.io/openshift/okd
+- mirrors:
+  - registry.tdc.io:5000/openshift/okd
+  source: quay.io/openshift/okd-content
 
 
 
+
+To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
+
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: example
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - registry.tdc.io:5000/openshift/okd
+    source: quay.io/openshift/okd
+  - mirrors:
+    - registry.tdc.io:5000/openshift/okd
+    source: quay.io/openshift/okd-content
 
 
 
@@ -75,6 +195,8 @@ firewall-cmd --reload
 
 ---> dnsmasq.txt
 /usr/sbin/dnsmasq --conf-file=/etc/dnsmasq.conf
+
+
 
 
 
