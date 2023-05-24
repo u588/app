@@ -1,0 +1,24 @@
+apiVersion: v1
+baseDomain: tdc.io
+compute:
+  - hyperthreading: Enabled
+    name: worker
+    replicas: 0 # Must be set to 0 for User Provisioned Installation as worker nodes will be manually deployed.
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: lab # Cluster name
+networking:
+  clusterNetwork:
+  - cidr: 10.18.0.0/16
+    hostPrefix: 24
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  none: {}
+fips: false
+pullSecret:  '{"auths":{"registry.tdc.io:5000": {"auth": "YWRtaW46YWRtaW4=","email": "king365@msn.com"}}}'
+sshKey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEDB2OwljoWNMhL1qkfTtWPJ4mhCuovM8CUwsU9atSRq root@okd-server-90'

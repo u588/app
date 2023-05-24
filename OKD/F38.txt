@@ -43,11 +43,17 @@ nmcli device show
    
     cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
 
+================= firewall ============
+https://www.cnblogs.com/jackadam/p/9483381.html
+
+
 
 /etc/hosts
 10.3.18.90 okd-server-90
 10.3.18.91 okd-master-91
 10.3.18.92 okd-master-92
-10.3.18.93 okd-node-93
-10.3.18.94 okd-node-94
+10.3.18.93 okd-master-93
+10.3.18.94 okd-bootstrap-94
 10.3.18.95 okd-node-95
+10.3.18.96 okd-node-96
+

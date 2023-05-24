@@ -45,19 +45,63 @@ crt cert cer 一般Linux使用.crt后缀，.cer是windows后缀
 
 
 
+================= 使用SAN证书 ==============
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key \
+-subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
+
+openssl req -newkey rsa:2048 -nodes -keyout server.key \
+-subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=*.tdc.io" -out server.csr
+
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:tdc.io,DNS:www.tdc.io") \
+-days 3650 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+
+
+
+1. 生成 CA 根证书
+openssl genrsa -out root.key 2048
+openssl ecparam -genkey -name secp384r1 -out root.key
+openssl req -new -x509 -days 3650 -key root.key -out root.pem
+
+2 修改配置
+cp /etc/ssl/openssl.cnf ./keys/
+vim ./keys/openssl.cnf  
+……
+[CA_default]
+# 打开copy_extensions的注释
+copy_extensions = copy
+……
+[ req ]
+# 将req_extensions的注释打开
+req_extensions = v3_req # The extensions to add to a certificate request
+……
+[ v3_req ]
+# 添加subjectAltName 
+subjectAltName = @alt_names
+# 文件末尾添加. www.p-pp.cn 和 *.p-pp.cn 代表允许的ServerName
+[alt_names]
+DNS.1 = www.tdc.io
+DNS.2 = *.tdc.io
+
+3 生成服务端证书
+openssl genpkey -algorithm RSA -out server.key
+openssl req -new -nodes -key server.key -out server.csr -days 3650 \
+-subj "/C=cn/ST=SH/L=SH/OU=SRE/O=TST/CN=www.tdc.io" -config ./openssl.cnf -extensions v3_req
+
+openssl x509 -req -days 3650 -in server.csr -out server.pem \
+-CA root.pem -CAkey root.key -CAcreateserial -extfile ./openssl.cnf -extensions v3_req
+
+自建 CA 中心
+/opt/registry/certs/server.crt 
+
+默认信任证书路径
+/etc/pki/ca-trust/source/anchors/server.crt
+
+update-ca-trust extract
+
+
 ========= node crictl pull 认证问题  ================
     /etc/containerd/config.toml 
-
-
-
-
-
-
-
-
-
-
-
 
 一、生成CA证书私钥
 openssl genrsa -out ca_private.key 4096

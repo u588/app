@@ -1,0 +1,73 @@
+# Configuration file for dnsmasq.
+
+port=53
+
+# The following two options make you a better netizen, since they
+# tell dnsmasq to filter out queries which the public DNS cannot
+# answer, and which load the servers (especially the root servers)
+# unnecessarily. If you have a dial-on-demand link they also stop
+# these requests from bringing up the link unnecessarily.
+
+#strict-order
+
+# Never forward plain names (without a dot or domain part)
+domain-needed
+# Never forward addresses in the non-routed address spaces.
+bogus-priv
+
+no-poll
+
+#user=dnsmasq
+#group=dnsmasq
+
+#bind-interfaces
+
+no-hosts
+# Include all files in /etc/dnsmasq.d except RPM backup files
+conf-dir=/etc/dnsmasq.d,.rpmnew,.rpmsave,.rpmorig
+
+# If a DHCP client claims that its name is "wpad", ignore that.
+# This fixes a security hole. see CERT Vulnerability VU#598349
+#dhcp-name-match=set:wpad-ignore,wpad
+#dhcp-ignore-names=tag:wpad-ignore
+
+local-service
+interface=ens16
+domain=tdc.io
+
+expand-hosts
+
+address=/bootstrap.tdc.io/10.3.18.94
+host-record=bootstrap.tdc.io,10.3.18.94
+
+address=/okd-master-91.tdc.io/10.3.18.91
+host-record=okd-master-91.tdc.io,10.3.18.91
+
+address=/okd-master-92.tdc.io/10.3.18.92
+host-record=okd-master-92.tdc.io,10.3.18.92
+
+address=/okd-master-93.tdc.io/10.3.18.93
+host-record=okd-master-93.tdc.io,10.3.18.93
+
+address=/okd-node-95.tdc.io/10.3.18.95
+host-record=okd-node-95.tdc.io,10.3.18.95
+
+address=/okd-node-96.tdc.io/10.3.18.96
+host-record=okd-node-96.tdc.io,10.3.18.96
+
+address=/api.tdc.io/10.3.18.90
+host-record=api.tdc.io,10.3.18.90
+address=/api-int.tdc.io/10.3.18.90
+host-record=api-int.tdc.io,10.3.18.90
+
+address=/etcd-0.tdc.io/10.3.18.91
+address=/etcd-1.tdc.io/10.3.18.92
+address=/etcd-2.tdc.io/10.3.18.93
+address=/.apps.tdc.io/10.3.18.90
+
+srv-host=_etcd-server-ssl._tcp,etcd-0.tdc.io,2380
+srv-host=_etcd-server-ssl._tcp,etcd-1.tdc.io,2380
+srv-host=_etcd-server-ssl._tcp,etcd-2.tdc.io,2380
+
+address=/oauth-openshift.apps.tdc.io/10.3.18.90
+address=/console-openshift-console.apps.tdc.io/10.3.18.90

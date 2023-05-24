@@ -1,1 +1,82 @@
+odk4.5安装
+https://blog.csdn.net/weixin_42507440/article/details/117513347
+
+
+podman run --name example-registry -p 5000:5000 \
+     -v /opt/registry/data:/var/lib/registry:z \
+     -v /opt/registry/auth:/auth:z \
+     -e "REGISTRY_AUTH=htpasswd" \
+     -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+     -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+     -v /opt/registry/certs:/certs:z \
+     -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.crt \
+     -e REGISTRY_HTTP_TLS_KEY=/certs/server.key \
+     -d docker.io/library/registry
+
+
+
+oc adm -a /root/pull-secret.json release mirror \
+     --from=quay.io/openshift/okd:4.12.0-0.okd-2023-04-16-041331 \
+     --to=registry.tdc.io:5000/openshift/okd \
+     --to-release-image=registry.tdc.io:5000/openshift/okd:4.12.0-0.okd-2023-04-16-041331
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 https://www.okd.io/guides/upi-sno/#architecture-this-refers-to-a-full-high-availability-cluster
+https://docs.okd.io/4.12/installing/installing_bare_metal/installing-bare-metal-network-customizations.html
+
+============ haproxy ===========
+https://www.bookstack.cn/read/okd-4.12-en/0667e9858abc2f48.md
+配置测试 
+/usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -c
+
+	
+If you are using HAProxy as a load balancer and SELinux is set to enforcing,
+you must ensure that the HAProxy service can bind to the configured TCP port by running 
+--> setsebool -P haproxy_connect_any=1.
+
+firewall-cmd --permanent --zone=FedoraServer --add-port=8080/tcp
+firewall-cmd --reload
+
+================ dnsmasq ================
+firewall-cmd --list-all
+systemctl stop systemd-resolved
+firewall-cmd --permanent --zone=FedoraServer --add-service=dns
+firewall-cmd --reload
+
+---> dnsmasq.txt
+/usr/sbin/dnsmasq --conf-file=/etc/dnsmasq.conf
+
+
+
+
+
