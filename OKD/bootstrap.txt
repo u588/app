@@ -1,0 +1,21 @@
+开始启动boostrap节点，看到启动画面后快速按下 tab 键，进入 Kernel 参数配置页面，填写引导信息。
+
+ip=10.3.18.94::10.3.18.1:255.255.255.0:bootstrap:ens16:none nameserver=10.3.18.98 coreos.inst.install_dev=/dev/vda coreos.inst.image_url=http://10.3.18.98:88/install/fcos.raw.xz coreos.inst.ignition_url=http://10.3.18.98:88/ignition/bootstrap.ign
+
+
+
+ip=10.3.18.94::10.3.18.1:255.255.255.0:bootstrap:ens16:none \
+nameserver=10.3.18.98 \
+coreos.inst.install_dev=/dev/vda \
+coreos.inst.image_url=http://10.3.18.98:88/install/fcos.raw.xz \
+coreos.inst.ignition_url=http://10.3.18.98:88/ignition/(bootstrap.ign|master.ign|worker.ign ) 
+
+查看bootstrap引导日志
+openshift-install  wait-for bootstrap-complete --log-level=debug
+
+SSH连接到bootstrap节点
+ssh -i ~/.ssh/id_ed25519 core@10.3.18.94
+$ sudo -i
+
+查看bootstrap服务运行日志
+journalctl -b -f -u release-image.service -u bootkube.service

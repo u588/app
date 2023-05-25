@@ -1,18 +1,16 @@
 1 创建安装目录并复制配置文件
-mkdir -p /opt/openshift/
-cp /opt/okd-install/4.10.0/install-config.yaml /opt/openshift/
+okdinstall/
+  install-config.yaml
 
 2 生成 Kubernetes 清单
-cd /opt/openshift/
-openshift-install create manifests --dir=/opt/openshift
+openshift-install create manifests 
 
 3 修改 manifests/cluster-scheduler-02-config.yml 文件
 sed -i 's/mastersSchedulable: true/mastersSchedulable: False/
 
-
 ----------------------------------------------------
 4 创建 Ignition 配置文件
-openshift-install create ignition-configs --dir=/opt/openshift
+openshift-install create ignition-configs
 
 查看生成的相关配置文件
 root@bastion:/opt/openshift# tree
@@ -47,3 +45,5 @@ wget https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/38.20230
 mv fedora-coreos-38.20230430.3.1-metal.x86_64.raw.xz fcos.raw.xz
 mv fedora-coreos-38.20230430.3.1-metal.x86_64.raw.xz.sig fcos.xz.sig
 chmod -R a+rwx /usr/share/nginx/html/install
+
+

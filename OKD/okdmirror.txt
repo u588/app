@@ -74,9 +74,9 @@ cp ca.crt /etc/docker/certs.d/registry.tsdc.io:443/
 
 
 oc adm -a ./pull-secret.json release mirror \
-     --from=quay.io/openshift/okd:4.12.0-0.okd-2023-04-16-041331 \
+     --from=quay.io/openshift/okd:4.13.0-0.okd-2023-05-22-052007 \
      --to=registry.tsdc.io:443/openshift/okd \
-     --to-release-image=registry.tsdc.io:443/openshift/okd:4.12.0-0.okd-2023-04-16-041331
+     --to-release-image=registry.tsdc.io:443/openshift/okd:4.13.0-0.okd-2023-05-22-052007
 
 
 
