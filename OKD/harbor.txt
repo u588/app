@@ -1,3 +1,4 @@
+=================== CA ===================
 mkdir -p /opt/harbor/cert
 cd /opt/harbor/cert
  
@@ -25,6 +26,7 @@ subjectAltName = @alt_names
 DNS.1=registry.tsdc.io
 DNS.2=registry.tsdc
 DNS.3=registry
+IP.1=10.3.18.97
 EOF
  
 openssl x509 -req -sha512 -days 3650 \
@@ -48,3 +50,38 @@ cp registry.tsdc.io.key /etc/docker/certs.d/registry.tsdc.io:443/
 cp ca.crt /etc/docker/certs.d/registry.tsdc.io:443/
 
 ./install.sh --with-trivy  --with-chartmuseum
+
+================== 配置harbor开机自启动 ===================
+cat >/etc/systemd/system/harbor.service<<EOF
+[Unit]
+Description=Harbor
+After=docker.service systemd-networkd.service systemd-resolved.service
+Requires=docker.service
+Documentation=http://github.com/goharbor/harbor
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/local/bin/docker-compose -f /opt/harbor/docker-compose.yml up
+ExecStop=/usr/local/bin/docker-compose -f /opt/harbor/docker-compose.yml down
+[Install]
+WantedBy=multi-user.target
+EOF
+ 
+systemctl enable harbor
+
+
+
+#重启docker
+systemctl restart docker
+#停止Harbor
+docker-compose down -v
+#重启启动Harbor
+docker-compose up -d
+
+================ 重新配置Harbor ============
+bash ./prepare
+docker-compose down -v
+./install.sh --with-trivy  --with-chartmuseum
+docker-compose up -d
+

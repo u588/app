@@ -46,7 +46,7 @@ $TTL 1W
 ns1.tsdc.io.            IN A 10.3.18.98
 smtp.tsdc.io.           IN A 10.3.18.98
 ;
-registry.tsdc.io.       IN A 10.3.18.63
+registry.tsdc.io.       IN A 10.3.18.97
 api.okd.tsdc.io.       IN A 10.3.18.98
 api-int.okd.tsdc.io.   IN A 10.3.18.98
 server-98.okd.tscd.io  IN A 10.3.18.98

@@ -1,5 +1,8 @@
 https://blog.csdn.net/justlpf/article/details/128001413
 
+红帽网站注册账号 --> consle.redhad.com
+  u588@sina.com  1234567@uytrewq
+
 1 集群基本信息
     集群名称：okd   
     基本域名：tsdc.io
@@ -20,4 +23,8 @@ api.okd.tscd.io         10.3.18.98
 api-int.okd.tscd.io     10.3.18.98
 apps.okd.tscd.io        10.3.18.98
 
-registry--> k8s-harbor-63 10.3.18.63
+registry.tsdc.io  10.3.18.97
+
+
+
+------------- 安装操作节点 10.3.18.51 D12.Rancer.51 -----------------------

@@ -1,0 +1,110 @@
+https://blog.csdn.net/justlpf/article/details/128001413
+
+harbor手动创建一个项目名为openshift
+
+创建一个openshift临时安装目录
+ mkdir -p /opt/okd-install/4.10.0/
+ cd /opt/okd-install/4.10.0/
+
+
+ 红帽网站注册账号 --> consle.redhad.com --> 下载 pull-secret
+  u588@sina.com  1234567@uytrewq 
+
+mkdir -p /opt/okd-install/
+cd /opt/okd-install/
+
+下载 pull-secret --> pull-secret.txt
+转换为json格式
+apt install -y jq
+cat ./pull-secret.txt | jq . > pull-secret.json
+
+生成本地harbor镜像仓库base64位的加密口令
+echo -n 'ts:12345@Qwert' | base64 -w0
+
+创建harbor镜像仓库登录文件
+cat >pull-secret-local.json<<EOF
+{
+    "auths":{
+        "registry.tsdc.io:443":{
+            "auth":"dHM6MTIzNDVAUXdlcnQ=",
+            "email":"ts@163.com"
+        }
+    }
+}
+EOF
+
+将harbor镜像仓库登录文件内容追加到，最终
+
+cat > pull-secret.json <<EOF
+{
+  "auths": {
+    "cloud.openshift.com": {
+      "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYTQ3ZmNjODdkZjJlNDg3MWEzYzBjNTU4ODBlMDI4OTY6UkpaVFIySlZRQ0NTVlAyTFZMRTRLNjRTV1ZZT1ZPQTM0VldESVVKSEdEUzkzT0VRUDVJSUtHODZVNjc0QVJRUg==",
+      "email": "u588@sina.com"
+    },
+    "quay.io": {
+      "auth": "b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYTQ3ZmNjODdkZjJlNDg3MWEzYzBjNTU4ODBlMDI4OTY6UkpaVFIySlZRQ0NTVlAyTFZMRTRLNjRTV1ZZT1ZPQTM0VldESVVKSEdEUzkzT0VRUDVJSUtHODZVNjc0QVJRUg==",
+      "email": "u588@sina.com"
+    },
+    "registry.connect.redhat.com": {
+      "auth": "fHVoYy1wb29sLTkxYzBjMWFjLTczMDEtNGU2OC04NDc5LWEzNWI4YTdjYWQ5YjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSmhNbVV3WWpCaU9XRTRPV1kwWXpWa09XVTVPRE5qWlRnd016RTROVFpsWXlKOS5RdUtYN0RLd3ItLXhsTWMwMWM4d2FfaG5ZdEpoT2Z5SWN3YmgzYVkwbDlISHhMNE1jN2JjLVhicy01R1kyY3RfbS1XamdFcThRMlJVUUFLTjFrSFNDMXdDR3AycHItUll6bjZ2RHl4Y1owZklSWlFILUE3NFBpc0NLRUg5M3cwREZSME5TN2VFem9kdGtPaXhGaVNTdkIzTG94RHR4MEdERFpJVEJsemYwNXhGS0o1ZmFtVlYtSy1ERS02aFpJNm96WWlTcFFyXzRLQ3NPMHZlNXl3R1hBTTJzLUFVbDltSUxnYTllTEhDckt2NkROVzhKMldwdkhKNlhzWEV2V25TQVQ4d0hyazlCZ29ySklkdXBUcmNsajJNNkt5UGNlalBJSEFWbGZBZE1BdDRqeWkzQ0F2aDByc2JvWDdBMG9uRzZaSXBJSHVjWkZFekprR3FrR1BKbkl0dVVrSGtFSklvdGkzUGVGMmlUVDZJbFJLZGloTy0wM1cyeUZjaktuQW9rRWtDWHVsTUFDVEQtU0dubnhTRUl4dDV5Y25FcFc5eUE0cFhQUkw3X0trZXRDYlltUGI2Rm50TWp1UEJXeVdkVmlpdEp0TDNvTDlZVTUycXdKNnNtcEJiYmtmZllVRUFPVTFqVF9TSTlfTnd0MFcwWVFBdzFIejVvVnpEMVZYczZqMGRTVVh2TWVtQVZ0cFJORmotU3M2b2RYTHB6aXVhLXJ6V0tES3oxeG5Eb3lIMDhPc1VNMUxhYWk0Rmp0UDNRWngxSDlJQmZTY1c3TGdqOG96NTE2U0NEbjBvcnhmWW5rY05IeS1ZaHlLcUNENHBEazlDT0pyRlVQU0hmMm5sUFJ1RUg1NWtSV0lWNnZVYUNGWmNTenVUdmk5MkQzZ0FyMUdSR0lGNS1sWQ==",
+      "email": "u588@sina.com"
+    },
+    "registry.redhat.io": {
+      "auth": "fHVoYy1wb29sLTkxYzBjMWFjLTczMDEtNGU2OC04NDc5LWEzNWI4YTdjYWQ5YjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSmhNbVV3WWpCaU9XRTRPV1kwWXpWa09XVTVPRE5qWlRnd016RTROVFpsWXlKOS5RdUtYN0RLd3ItLXhsTWMwMWM4d2FfaG5ZdEpoT2Z5SWN3YmgzYVkwbDlISHhMNE1jN2JjLVhicy01R1kyY3RfbS1XamdFcThRMlJVUUFLTjFrSFNDMXdDR3AycHItUll6bjZ2RHl4Y1owZklSWlFILUE3NFBpc0NLRUg5M3cwREZSME5TN2VFem9kdGtPaXhGaVNTdkIzTG94RHR4MEdERFpJVEJsemYwNXhGS0o1ZmFtVlYtSy1ERS02aFpJNm96WWlTcFFyXzRLQ3NPMHZlNXl3R1hBTTJzLUFVbDltSUxnYTllTEhDckt2NkROVzhKMldwdkhKNlhzWEV2V25TQVQ4d0hyazlCZ29ySklkdXBUcmNsajJNNkt5UGNlalBJSEFWbGZBZE1BdDRqeWkzQ0F2aDByc2JvWDdBMG9uRzZaSXBJSHVjWkZFekprR3FrR1BKbkl0dVVrSGtFSklvdGkzUGVGMmlUVDZJbFJLZGloTy0wM1cyeUZjaktuQW9rRWtDWHVsTUFDVEQtU0dubnhTRUl4dDV5Y25FcFc5eUE0cFhQUkw3X0trZXRDYlltUGI2Rm50TWp1UEJXeVdkVmlpdEp0TDNvTDlZVTUycXdKNnNtcEJiYmtmZllVRUFPVTFqVF9TSTlfTnd0MFcwWVFBdzFIejVvVnpEMVZYczZqMGRTVVh2TWVtQVZ0cFJORmotU3M2b2RYTHB6aXVhLXJ6V0tES3oxeG5Eb3lIMDhPc1VNMUxhYWk0Rmp0UDNRWngxSDlJQmZTY1c3TGdqOG96NTE2U0NEbjBvcnhmWW5rY05IeS1ZaHlLcUNENHBEazlDT0pyRlVQU0hmMm5sUFJ1RUg1NWtSV0lWNnZVYUNGWmNTenVUdmk5MkQzZ0FyMUdSR0lGNS1sWQ==",
+      "email": "u588@sina.com"
+    },
+    "registry.tsdc.io:443":{
+        "auth":"dHM6MTIzNDVAUXdlcnQ=",
+        "email":"ts@163.com"
+    }
+  }
+}
+EOF
+================= 添加服务器信任(在需要使用harbor的服务器上) ===============
+cp ca.crt registry.tsdc.io.crt /usr/local/share/ca-certificates/
+
+debain -->  /usr/sbin/update-ca-certificates
+
+mkdir -p /etc/docker/certs.d/registry.tsdc.io:443
+cp registry.tsdc.io.cert /etc/docker/certs.d/registry.tsdc.io:443/
+cp registry.tsdc.io.key /etc/docker/certs.d/registry.tsdc.io:443/
+cp ca.crt /etc/docker/certs.d/registry.tsdc.io:443/
+
+
+
+oc adm -a ./pull-secret.json release mirror \
+     --from=quay.io/openshift/okd:4.12.0-0.okd-2023-04-16-041331 \
+     --to=registry.tsdc.io:443/openshift/okd \
+     --to-release-image=registry.tsdc.io:443/openshift/okd:4.12.0-0.okd-2023-04-16-041331
+
+
+
+================= 拉去镜像完成 =================
+
+imageContentSources:
+- mirrors:
+  - registry.tsdc.io:443/openshift/okd
+  source: quay.io/openshift/okd
+- mirrors:
+  - registry.tsdc.io:443/openshift/okd
+  source: quay.io/openshift/okd-content
+
+
+To use the new mirrored repository for upgrades, use the following to create an ImageContentSourcePolicy:
+
+apiVersion: operator.openshift.io/v1alpha1
+kind: ImageContentSourcePolicy
+metadata:
+  name: example
+spec:
+  repositoryDigestMirrors:
+  - mirrors:
+    - registry.tsdc.io:443/openshift/okd
+    source: quay.io/openshift/okd
+  - mirrors:
+    - registry.tsdc.io:443/openshift/okd
+    source: quay.io/openshift/okd-content
+
+
+

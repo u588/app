@@ -1,0 +1,88 @@
+1 为集群节点 SSH 访问生成密钥对 使用密钥对以core用户身份 SSH 进入 FCOS 节点
+--> 安装操作节点
+    [root@bastion ~]# ssh-keygen -t rsa -b 4096 -N '' -f ~/.ssh/id_rsa
+
+启动 ssh-agent 进程为后台任务
+    [root@bastion ~]# eval "$(ssh-agent -s)"
+将 SSH 私钥添加到 ssh-agent
+    [root@bastion ~]# ssh-add ~/.ssh/id_rsa
+查看生成的ssh公钥，后续需要复制到install-config.yaml文件的sshKey字段
+    [root@bastion ~]# cat /root/.ssh/id_rsa.pub
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGNL0cmNQsyMTFCSDZcGfvXuQVUwHLtkXzAAzn3Ze0gk u588@sina.com
+
+
+2 查看harbor CA证书信息，后续需要复制到install-config.yaml文件的additionalTrustBundle字段
+    [root@bastion ~]# cat /opt/harbor/cert/ca.crt
+
+3 查看harbor仓库登录密钥，使用jq将密钥压缩为一行，后续需要复制到install-config.yaml文件的pullSecret字段
+    root@bastion:~# cat /opt/okd-install/4.10.0/pull-secret.json|jq -c
+
+4 手动创建安装配置文件，必须命名为install-config.yaml
+cat > install-config.yaml <<EOF
+apiVersion: v1
+baseDomain: tsdc.io
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: okd
+networking:
+  clusterNetwork:
+  - cidr: 10.18.0.0/16
+    hostPrefix: 24
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  none: {}
+fips: false
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYTQ3ZmNjODdkZjJlNDg3MWEzYzBjNTU4ODBlMDI4OTY6UkpaVFIySlZRQ0NTVlAyTFZMRTRLNjRTV1ZZT1ZPQTM0VldESVVKSEdEUzkzT0VRUDVJSUtHODZVNjc0QVJRUg==","email":"u588@sina.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYTQ3ZmNjODdkZjJlNDg3MWEzYzBjNTU4ODBlMDI4OTY6UkpaVFIySlZRQ0NTVlAyTFZMRTRLNjRTV1ZZT1ZPQTM0VldESVVKSEdEUzkzT0VRUDVJSUtHODZVNjc0QVJRUg==","email":"u588@sina.com"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLTkxYzBjMWFjLTczMDEtNGU2OC04NDc5LWEzNWI4YTdjYWQ5YjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSmhNbVV3WWpCaU9XRTRPV1kwWXpWa09XVTVPRE5qWlRnd016RTROVFpsWXlKOS5RdUtYN0RLd3ItLXhsTWMwMWM4d2FfaG5ZdEpoT2Z5SWN3YmgzYVkwbDlISHhMNE1jN2JjLVhicy01R1kyY3RfbS1XamdFcThRMlJVUUFLTjFrSFNDMXdDR3AycHItUll6bjZ2RHl4Y1owZklSWlFILUE3NFBpc0NLRUg5M3cwREZSME5TN2VFem9kdGtPaXhGaVNTdkIzTG94RHR4MEdERFpJVEJsemYwNXhGS0o1ZmFtVlYtSy1ERS02aFpJNm96WWlTcFFyXzRLQ3NPMHZlNXl3R1hBTTJzLUFVbDltSUxnYTllTEhDckt2NkROVzhKMldwdkhKNlhzWEV2V25TQVQ4d0hyazlCZ29ySklkdXBUcmNsajJNNkt5UGNlalBJSEFWbGZBZE1BdDRqeWkzQ0F2aDByc2JvWDdBMG9uRzZaSXBJSHVjWkZFekprR3FrR1BKbkl0dVVrSGtFSklvdGkzUGVGMmlUVDZJbFJLZGloTy0wM1cyeUZjaktuQW9rRWtDWHVsTUFDVEQtU0dubnhTRUl4dDV5Y25FcFc5eUE0cFhQUkw3X0trZXRDYlltUGI2Rm50TWp1UEJXeVdkVmlpdEp0TDNvTDlZVTUycXdKNnNtcEJiYmtmZllVRUFPVTFqVF9TSTlfTnd0MFcwWVFBdzFIejVvVnpEMVZYczZqMGRTVVh2TWVtQVZ0cFJORmotU3M2b2RYTHB6aXVhLXJ6V0tES3oxeG5Eb3lIMDhPc1VNMUxhYWk0Rmp0UDNRWngxSDlJQmZTY1c3TGdqOG96NTE2U0NEbjBvcnhmWW5rY05IeS1ZaHlLcUNENHBEazlDT0pyRlVQU0hmMm5sUFJ1RUg1NWtSV0lWNnZVYUNGWmNTenVUdmk5MkQzZ0FyMUdSR0lGNS1sWQ==","email":"u588@sina.com"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLTkxYzBjMWFjLTczMDEtNGU2OC04NDc5LWEzNWI4YTdjYWQ5YjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSmhNbVV3WWpCaU9XRTRPV1kwWXpWa09XVTVPRE5qWlRnd016RTROVFpsWXlKOS5RdUtYN0RLd3ItLXhsTWMwMWM4d2FfaG5ZdEpoT2Z5SWN3YmgzYVkwbDlISHhMNE1jN2JjLVhicy01R1kyY3RfbS1XamdFcThRMlJVUUFLTjFrSFNDMXdDR3AycHItUll6bjZ2RHl4Y1owZklSWlFILUE3NFBpc0NLRUg5M3cwREZSME5TN2VFem9kdGtPaXhGaVNTdkIzTG94RHR4MEdERFpJVEJsemYwNXhGS0o1ZmFtVlYtSy1ERS02aFpJNm96WWlTcFFyXzRLQ3NPMHZlNXl3R1hBTTJzLUFVbDltSUxnYTllTEhDckt2NkROVzhKMldwdkhKNlhzWEV2V25TQVQ4d0hyazlCZ29ySklkdXBUcmNsajJNNkt5UGNlalBJSEFWbGZBZE1BdDRqeWkzQ0F2aDByc2JvWDdBMG9uRzZaSXBJSHVjWkZFekprR3FrR1BKbkl0dVVrSGtFSklvdGkzUGVGMmlUVDZJbFJLZGloTy0wM1cyeUZjaktuQW9rRWtDWHVsTUFDVEQtU0dubnhTRUl4dDV5Y25FcFc5eUE0cFhQUkw3X0trZXRDYlltUGI2Rm50TWp1UEJXeVdkVmlpdEp0TDNvTDlZVTUycXdKNnNtcEJiYmtmZllVRUFPVTFqVF9TSTlfTnd0MFcwWVFBdzFIejVvVnpEMVZYczZqMGRTVVh2TWVtQVZ0cFJORmotU3M2b2RYTHB6aXVhLXJ6V0tES3oxeG5Eb3lIMDhPc1VNMUxhYWk0Rmp0UDNRWngxSDlJQmZTY1c3TGdqOG96NTE2U0NEbjBvcnhmWW5rY05IeS1ZaHlLcUNENHBEazlDT0pyRlVQU0hmMm5sUFJ1RUg1NWtSV0lWNnZVYUNGWmNTenVUdmk5MkQzZ0FyMUdSR0lGNS1sWQ==","email":"u588@sina.com"},"registry.tsdc.io:443":{"auth":"dHM6MTIzNDVAUXdlcnQ=","email":"ts@163.com"}}}'
+sshKey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGNL0cmNQsyMTFCSDZcGfvXuQVUwHLtkXzAAzn3Ze0gk u588@sina.com'
+additionalTrustBundle: |
+    -----BEGIN CERTIFICATE-----
+    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
+    -----END CERTIFICATE-----
+imageContentSources:
+- mirrors:
+  - registry.tsdc.io:443/openshift/okd
+  source: quay.io/openshift/okd
+- mirrors:
+  - registry.tsdc.io:443/openshift/okd
+  source: quay.io/openshift/okd-content
+EOF
+
