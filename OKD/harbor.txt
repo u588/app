@@ -1,0 +1,50 @@
+mkdir -p /opt/harbor/cert
+cd /opt/harbor/cert
+ 
+openssl genrsa -out ca.key 4096
+ 
+openssl req -x509 -new -nodes -sha512 -days 3650 \
+ -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=Personal/CN=registry.tsdc.io" \
+ -key ca.key \
+ -out ca.crt
+ 
+openssl genrsa -out registry.tsdc.io.key 4096
+ 
+openssl req -sha512 -new \
+    -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=Personal/CN=registry.tsdc.io" \
+    -key registry.tsdc.io.key \
+    -out registry.tsdc.io.csr
+	
+cat > v3.ext <<-EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1=registry.tsdc.io
+DNS.2=registry.tsdc
+DNS.3=registry
+EOF
+ 
+openssl x509 -req -sha512 -days 3650 \
+    -extfile v3.ext \
+    -CA ca.crt -CAkey ca.key -CAcreateserial \
+    -in registry.tsdc.io.csr \
+    -out registry.tsdc.io.crt
+
+cp ca.crt registry.tsdc.io.crt /usr/local/share/ca-certificates/
+update-ca-certificates
+
+mkdir -p /data/cert/
+cp registry.tsdc.io.crt /data/cert/
+cp registry.tsdc.io.key /data/cert/
+
+openssl x509 -inform PEM -in registry.tsdc.io.crt -out registry.tsdc.io.cert
+ 
+mkdir -p /etc/docker/certs.d/registry.tsdc.io:443
+cp registry.tsdc.io.cert /etc/docker/certs.d/registry.tsdc.io:443/
+cp registry.tsdc.io.key /etc/docker/certs.d/registry.tsdc.io:443/
+cp ca.crt /etc/docker/certs.d/registry.tsdc.io:443/
+
+./install.sh --with-trivy  --with-chartmuseum

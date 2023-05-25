@@ -1,97 +1,81 @@
-# Global settings
-#---------------------------------------------------------------------
+systemctl enable haproxy 
+systemctl restart haproxy
+
+
+cat >/etc/haproxy/haproxy.cfg<<EOF
 global
-    maxconn     4000
-    log         /dev/log local0 info
-    chroot      /var/lib/haproxy
-    pidfile     /var/run/haproxy.pid
-    user        haproxy
-    group       haproxy
-    daemon
-
-    # turn on stats unix socket
-    stats socket /var/lib/haproxy/stats
-
-#---------------------------------------------------------------------
-# common defaults that all the 'listen' and 'backend' sections will
-# use if not designated in their block
-#---------------------------------------------------------------------
+  log         127.0.0.1 local2
+  maxconn     4000
+  daemon
 defaults
-    mode                    http
-    log                     global
-    option                  dontlognull
-    option http-server-close
-    option                  redispatch
-    retries                 3
-    timeout http-request    10s
-    timeout queue           1m
-    timeout connect         10s
-    timeout client          1m
-    timeout server          1m
-    timeout http-keep-alive 10s
-    timeout check           10s
-    maxconn                 3000
-
-# Enable HAProxy stats
-listen stats
-    bind :9000
-    stats uri /stats
-    stats refresh 10000ms
-
-# Kube API Server
-frontend k8s_api_frontend
-    bind :6443
-    default_backend k8s_api_backend
+  mode                    http
+  log                     global
+  option                  dontlognull
+  option http-server-close
+  option                  redispatch
+  retries                 3
+  timeout http-request    10s
+  timeout queue           1m
+  timeout connect         10s
+  timeout client          1m
+  timeout server          1m
+  timeout http-keep-alive 10s
+  timeout check           10s
+  maxconn                 3000
+frontend stats
+  bind *:1936
+  mode            http
+  log             global
+  maxconn 10
+  stats enable
+  stats hide-version
+  stats refresh 30s
+  stats show-node
+  stats show-desc Stats for openshift cluster 
+  stats auth admin:openshift
+  stats uri /stats
+frontend openshift-api-server
+    bind *:6443
+    default_backend openshift-api-server
     mode tcp
-
-backend k8s_api_backend
-    mode tcp
-    balance source
-    server      bootstrap 10.3.18.94:6443 check
-    server      okd-master-91 10.3.18.91:6443 check
-    server      okd-master-92 10.3.18.92:6443 check
-    server      okd-master-93 10.3.18.93:6443 check
-
-# OCP Machine Config Server
-frontend ocp_machine_config_server_frontend
-    mode tcp
-    bind :22623
-    default_backend ocp_machine_config_server_backend
-
-backend ocp_machine_config_server_backend
-    mode tcp
-    balance source
-    server      bootstrap 10.3.18.94:6443 check
-    server      okd-master-91 10.3.18.91:6443 check
-    server      okd-master-92 10.3.18.92:6443 check
-    server      okd-master-93 10.3.18.93:6443 check
-
-# OCP Ingress - layer 4 tcp mode for each. Ingress Controller will handle layer 7.
-frontend ocp_http_ingress_frontend
-    bind :80
-    default_backend ocp_http_ingress_backend
-    mode tcp
-
-backend ocp_http_ingress_backend
+    option tcplog
+backend openshift-api-server
     balance source
     mode tcp
-    server      okd-master-91 10.3.18.91:80 check
-    server      okd-master-92 10.3.18.92:80 check
-    server      okd-master-93 10.3.18.93:80 check
-    server      okd-node-95 10.3.18.95:80 check
-    server      okd-node-96 10.3.18.96:80 check
-
-frontend ocp_https_ingress_frontend
+    server bootstrap 10.3.18.94:6443 check 
+    server master-91 10.3.18.91:6443 check
+    server master-92 10.3.18.92:6443 check
+    server master-93 10.3.18.93:6443 check
+frontend machine-config-server
+    bind *:22623
+    default_backend machine-config-server
+    mode tcp
+    option tcplog
+backend machine-config-server
+    balance source
+    mode tcp
+    server bootstrap 10.3.18.94:22623 check
+    server master-91 10.3.18.91:22623 check
+    server master-92 10.3.18.92:22623 check
+    server master-93 10.3.18.93:22623 check
+frontend ingress-http
+    bind *:80
+    default_backend ingress-http
+    mode tcp
+    option tcplog
+backend ingress-http
+    balance source
+    mode tcp
+    server node-95 10.3.18.95:80 check
+    server node-96 10.3.18.96:80 check
+frontend ingress-https
     bind *:443
-    default_backend ocp_https_ingress_backend
+    default_backend ingress-https
     mode tcp
-
-backend ocp_https_ingress_backend
-    mode tcp
+    option tcplog
+backend ingress-https
     balance source
-    server      okd-master-91 10.3.18.91:443 check
-    server      okd-master-92 10.3.18.92:443 check
-    server      okd-master-93 10.3.18.93:443 check
-    server      okd-node-95 10.3.18.95:443 check
-    server      okd-node-96 10.3.18.96:443 check
-
+    mode tcp
+    server node-95 10.3.18.95:443 check
+    server node-96 10.3.18.96:443 check
+EOF

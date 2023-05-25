@@ -1,0 +1,23 @@
+https://blog.csdn.net/justlpf/article/details/128001413
+
+1 集群基本信息
+    集群名称：okd   
+    基本域名：tsdc.io
+    集群规格：3个maste节点，2个worker节点
+
+2 节点配置清单
+
+bastion.okd.tscd.io     10.3.18.90
+bootstrap.okd.tscd.io   10.3.18.94
+master-91.okd.tscd.io   10.3.18.91
+master-92.okd.tscd.io   10.3.18.92
+master-93.okd.tscd.io   10.3.18.93
+node-95.okd.tscd.io     10.3.18.95
+node-96.okd.tscd.io     10.3.18.96
+
+server-98.okd.tscd.io      10.3.18.98
+api.okd.tscd.io         10.3.18.98
+api-int.okd.tscd.io     10.3.18.98
+apps.okd.tscd.io        10.3.18.98
+
+registry--> k8s-harbor-63 10.3.18.63

@@ -1,0 +1,97 @@
+# Global settings
+#---------------------------------------------------------------------
+global
+    maxconn     4000
+    log         /dev/log local0 info
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    http
+    log                     global
+    option                  dontlognull
+    option http-server-close
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+# Enable HAProxy stats
+listen stats
+    bind :9000
+    stats uri /stats
+    stats refresh 10000ms
+
+# Kube API Server
+frontend k8s_api_frontend
+    bind :6443
+    default_backend k8s_api_backend
+    mode tcp
+
+backend k8s_api_backend
+    mode tcp
+    balance source
+    server      bootstrap 10.3.18.94:6443 check
+    server      okd-master-91 10.3.18.91:6443 check
+    server      okd-master-92 10.3.18.92:6443 check
+    server      okd-master-93 10.3.18.93:6443 check
+
+# OCP Machine Config Server
+frontend ocp_machine_config_server_frontend
+    mode tcp
+    bind :22623
+    default_backend ocp_machine_config_server_backend
+
+backend ocp_machine_config_server_backend
+    mode tcp
+    balance source
+    server      bootstrap 10.3.18.94:6443 check
+    server      okd-master-91 10.3.18.91:6443 check
+    server      okd-master-92 10.3.18.92:6443 check
+    server      okd-master-93 10.3.18.93:6443 check
+
+# OCP Ingress - layer 4 tcp mode for each. Ingress Controller will handle layer 7.
+frontend ocp_http_ingress_frontend
+    bind :80
+    default_backend ocp_http_ingress_backend
+    mode tcp
+
+backend ocp_http_ingress_backend
+    balance source
+    mode tcp
+    server      okd-master-91 10.3.18.91:80 check
+    server      okd-master-92 10.3.18.92:80 check
+    server      okd-master-93 10.3.18.93:80 check
+    server      okd-node-95 10.3.18.95:80 check
+    server      okd-node-96 10.3.18.96:80 check
+
+frontend ocp_https_ingress_frontend
+    bind *:443
+    default_backend ocp_https_ingress_backend
+    mode tcp
+
+backend ocp_https_ingress_backend
+    mode tcp
+    balance source
+    server      okd-master-91 10.3.18.91:443 check
+    server      okd-master-92 10.3.18.92:443 check
+    server      okd-master-93 10.3.18.93:443 check
+    server      okd-node-95 10.3.18.95:443 check
+    server      okd-node-96 10.3.18.96:443 check
+
