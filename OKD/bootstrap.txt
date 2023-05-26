@@ -10,6 +10,15 @@ coreos.inst.install_dev=/dev/vda \
 coreos.inst.image_url=http://10.3.18.98:88/install/fcos.raw.xz \
 coreos.inst.ignition_url=http://10.3.18.98:88/ignition/(bootstrap.ign|master.ign|worker.ign ) 
 
+
+-------------------- or ------------------
+sudo coreos-installer install --ignition-url=http://10.3.18.90:8080/ign/bootstrap.ign \
+--image_url=http://10.3.18.90:8080/os/coreos.raw.xz --insecure --insecure-ignition /dev/vda
+
+
+=========================================================
+
+
 查看bootstrap引导日志
 openshift-install  wait-for bootstrap-complete --log-level=debug
 
@@ -19,3 +28,16 @@ $ sudo -i
 
 查看bootstrap服务运行日志
 journalctl -b -f -u release-image.service -u bootkube.service
+
+
+==================== Reinstalling the OKD cluster ==================
+openshift-install destroy cluster
+
+installation_directory is the directory you specified when you ran 
+./openshift-install create cluster
+如果后续部署失败，需要清理bastion节点以下内容，重新执行上面步骤后再进行引导部署
+
+rm -rf /opt/openshift/*
+rm -rf /opt/openshift/.openshift_install*
+rm -rf /usr/share/nginx/html/ignition/*
+rm -rf ~/.kube/config
