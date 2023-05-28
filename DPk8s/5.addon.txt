@@ -1,0 +1,8 @@
+联网和网络策略
+https://www.tigera.io/project-calico/
+
+可视化管理
+https://kubevirt.io/user-guide/#/installation/installation
+
+基础设施--> 运行虚拟机的 add-on
+https://kubevirt.io/user-guide/#/installation/installation

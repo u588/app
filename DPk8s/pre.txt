@@ -1,3 +1,0 @@
-https://kubernetes.io/zh-cn/docs/setup/production-environment/container-runtimes/
-
-安装和配置先决条件

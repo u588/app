@@ -1,0 +1,93 @@
+https://github.com/containerd/containerd/blob/main/docs/getting-started.md
+
+https://github.com/containerd/containerd/releases
+
+https://github.com/containernetworking/plugins/releases
+
+=============== Containerd 管理工具 ========
+https://github.com/containerd/nerdctl/releases
+
+
+
+
+=========== 官网安装 ===========
+$ tar Cxzvf /usr/local containerd-1.6.2-linux-amd64.tar.gz
+bin/
+bin/containerd-shim-runc-v2
+bin/containerd-shim
+bin/ctr
+bin/containerd-shim-runc-v1
+bin/containerd
+bin/containerd-stress
+
+------- systemd  ---------
+https://raw.githubusercontent.com/containerd/containerd/main/containerd.service 
+ --> /usr/local/lib/systemd/system/containerd.service
+
+systemctl daemon-reload
+systemctl enable --now containerd
+
+
+---------  Installing runc ----------
+ https://github.com/opencontainers/runc/releases 
+ --> /usr/local/sbin/runc
+ $ install -m 755 runc.amd64 /usr/local/sbin/runc
+
+ -------- Installing CNI plugins -------
+  https://github.com/containernetworking/plugins/releases 
+  --> /opt/cni/bin
+$ mkdir -p /opt/cni/bin
+$ tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
+        ./
+        ./macvlan
+        ./static
+        ./vlan
+        ./portmap
+        ./host-local
+        ./vrf
+        ./bridge
+        ./tuning
+        ./firewall
+        ./host-device
+        ./sbr
+        ./loopback
+        ./dhcp
+        ./ptp
+        ./ipvlan
+        ./bandwidth
+
+
+====== Linux发行版安装 =========
+Debian : https://docs.docker.com/engine/install/debian/
+Fedora : https://docs.docker.com/engine/install/fedora/
+Ubuntu : https://docs.docker.com/engine/install/ubuntu/
+
+
+========== 配置 =============
+/run/containerd/containerd.sock
+/etc/containerd/config.toml
+
+The default configuration can be generated via -->
+    containerd config default > /etc/containerd/config.toml 
+sed -i 's/k8s.gcr.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.toml
+
+------- 配置 systemd cgroup 驱动 ---------
+在 /etc/containerd/config.toml 中设置
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  ...
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+    SystemdCgroup = true
+
+要确保 cri 没有出现在 /etc/containerd/config.toml 文件中 disabled_plugins 列表内
+
+ -------- 重载沙箱（pause）镜像 ----------
+ [plugins."io.containerd.grpc.v1.cri"]
+  sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"
+
+
+应用此更改，请确保重新启动 containerd  -------- > systemctl restart containerd
+
+
+
+
