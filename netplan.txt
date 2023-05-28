@@ -1,0 +1,21 @@
+
+cat > /etc/netplan/00-installer-config.yaml <<EOF
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens16:
+      addresses:
+      - "10.3.18.91/24"
+      nameservers:
+        addresses:
+        - 10.3.18.99
+        - 114.114.114.114
+        search: [k8s.tsdc.io, tsdc.io]
+      routes:
+      - to: "default"
+        via: "10.3.18.1"
+    ens17:
+      addresses:
+      - "10.145.254.91/24"
+EOF

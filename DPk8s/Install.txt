@@ -1,0 +1,22 @@
+
+1 集群基本信息
+    集群名称：k8s   
+    基本域名：tsdc.io
+    集群规格：3个maste节点，2个worker节点
+
+2 节点配置清单
+
+bastion.tsdc.io     10.3.18.51
+
+master-90.k8s.tsdc.io   10.3.18.90
+master-91.k8s.tsdc.io   10.3.18.91
+master-92.k8s.tsdc.io   10.3.18.92
+
+lb-93.tsdc.io       10.3.18.93
+lb-94.tscd.io       10.3.18.94
+
+node-95.k8s.tsdc.io     10.3.18.95
+node-96.k8s.tsdc.io     10.3.18.96
+node-98.k8s.tsdc.io     10.3.18.98
+
+registry.tsdc.io  10.3.18.97

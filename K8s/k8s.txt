@@ -33,6 +33,16 @@ EOF
 
 
 
+=========== ubuntu ===========
+apt-key list
+apt-key export DC6315A3| gpg --dearmour -o /etc/apt/trusted.gpg.d/aliyun.gpg
+cat curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg > /etc/apt/trusted.gpg.d/aliyunkube.gpg
+cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
+deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/aliyun.gpg] https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+apt-key del DC6315A3
+
+
 
 关闭Swap
 swapoff -a   # 临时关闭

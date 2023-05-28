@@ -22,7 +22,7 @@ bin/containerd-stress
 
 ------- systemd  ---------
 https://raw.githubusercontent.com/containerd/containerd/main/containerd.service 
- --> /usr/local/lib/systemd/system/containerd.service
+ --> /usr/lib/systemd/system/containerd.service
 
 systemctl daemon-reload
 systemctl enable --now containerd
@@ -66,25 +66,28 @@ Ubuntu : https://docs.docker.com/engine/install/ubuntu/
 ========== 配置 =============
 /run/containerd/containerd.sock
 /etc/containerd/config.toml
+mkdir /etc/containerd
 
 The default configuration can be generated via -->
     containerd config default > /etc/containerd/config.toml 
-sed -i 's/k8s.gcr.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.toml
+
+
 
 ------- 配置 systemd cgroup 驱动 ---------
 在 /etc/containerd/config.toml 中设置
-
+l
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
   ...
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
     SystemdCgroup = true
 
+sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 要确保 cri 没有出现在 /etc/containerd/config.toml 文件中 disabled_plugins 列表内
 
  -------- 重载沙箱（pause）镜像 ----------
  [plugins."io.containerd.grpc.v1.cri"]
   sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"
-
+sed -i 's/registry.k8s.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.tom
 
 应用此更改，请确保重新启动 containerd  -------- > systemctl restart containerd
 

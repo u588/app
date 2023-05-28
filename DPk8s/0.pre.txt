@@ -27,8 +27,13 @@ lsmod | grep overlay
 sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward 
 配置中被设置为 1
 
-
+============= 关闭Swap  =======
+swapoff -a   # 临时关闭
+sed -ri 's/.*swap.*/#&/' /etc/fstab  
 
 ================ cgroup 驱动  =============
 kubelet | containerd  将 systemd 用作 cgroup 驱动
     从 v1.22 开始，在使用 kubeadm 创建集群时,kubeadm 默认使用 systemd
+
+
+
