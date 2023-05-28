@@ -1,0 +1,21 @@
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/configuring_and_managing_networking/index?extIdCarryOver=true&sc_cid=701f2000001Css5AAC#getting-started-with-nmcli_configuring-and-managing-networking
+
+1: Verification
+    nmcli device status
+
+nmcli connection edit type ethernet con-name ens16
+
+nmcli> set connection.interface-name enp7s0
+nmcli> set ipv4.addresses 192.0.2.1/24
+nmcli> set ipv4.method manual
+nmcli> set ipv4.gateway 192.0.2.254
+nmcli> set ipv4.dns 192.0.2.200
+nmcli> set ipv4.dns-search example.com
+
+nmcli> save persistent
+Saving the connection with 'autoconnect=yes'. That might result in an immediate activation of the connection.
+Do you still want to save? (yes/no) [yes] yes
+nmcli> quit
+
+Verification
+nmcli device status

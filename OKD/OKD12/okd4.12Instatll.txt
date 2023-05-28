@@ -1,0 +1,115 @@
+
+https://docs.okd.io/4.12/welcome/index.html
+
+https://docs.okd.io/4.12/installing/installing_bare_metal/installing-bare-metal.html#installation-three-node-cluster_installing-bare-metal
+
+
+openshift-install coreos print-stream-json | grep '\.iso[^.]'
+
+"location": "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20221127.3.0/aarch64/fedora-coreos-37.20221127.3.0-live.aarch64.iso",
+"location": "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20221127.3.0/s390x/fedora-coreos-37.20221127.3.0-live.s390x.iso",
+"location": "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/37.20221127.3.0/x86_64/fedora-coreos-37.20221127.3.0-live.x86_64.iso",
+
+=====================  1  =============================
+
+cat > install-config.yaml <<EOF
+apiVersion: v1
+baseDomain: tsdc.io
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 3
+metadata:
+  name: okd
+networking:
+  clusterNetwork:
+  - cidr: 10.18.0.0/16
+    hostPrefix: 24
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  none: {}
+fips: false
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYTQ3ZmNjODdkZjJlNDg3MWEzYzBjNTU4ODBlMDI4OTY6UkpaVFIySlZRQ0NTVlAyTFZMRTRLNjRTV1ZZT1ZPQTM0VldESVVKSEdEUzkzT0VRUDVJSUtHODZVNjc0QVJRUg==","email":"u588@sina.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K29jbV9hY2Nlc3NfYTQ3ZmNjODdkZjJlNDg3MWEzYzBjNTU4ODBlMDI4OTY6UkpaVFIySlZRQ0NTVlAyTFZMRTRLNjRTV1ZZT1ZPQTM0VldESVVKSEdEUzkzT0VRUDVJSUtHODZVNjc0QVJRUg==","email":"u588@sina.com"},"registry.connect.redhat.com":{"auth":"fHVoYy1wb29sLTkxYzBjMWFjLTczMDEtNGU2OC04NDc5LWEzNWI4YTdjYWQ5YjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSmhNbVV3WWpCaU9XRTRPV1kwWXpWa09XVTVPRE5qWlRnd016RTROVFpsWXlKOS5RdUtYN0RLd3ItLXhsTWMwMWM4d2FfaG5ZdEpoT2Z5SWN3YmgzYVkwbDlISHhMNE1jN2JjLVhicy01R1kyY3RfbS1XamdFcThRMlJVUUFLTjFrSFNDMXdDR3AycHItUll6bjZ2RHl4Y1owZklSWlFILUE3NFBpc0NLRUg5M3cwREZSME5TN2VFem9kdGtPaXhGaVNTdkIzTG94RHR4MEdERFpJVEJsemYwNXhGS0o1ZmFtVlYtSy1ERS02aFpJNm96WWlTcFFyXzRLQ3NPMHZlNXl3R1hBTTJzLUFVbDltSUxnYTllTEhDckt2NkROVzhKMldwdkhKNlhzWEV2V25TQVQ4d0hyazlCZ29ySklkdXBUcmNsajJNNkt5UGNlalBJSEFWbGZBZE1BdDRqeWkzQ0F2aDByc2JvWDdBMG9uRzZaSXBJSHVjWkZFekprR3FrR1BKbkl0dVVrSGtFSklvdGkzUGVGMmlUVDZJbFJLZGloTy0wM1cyeUZjaktuQW9rRWtDWHVsTUFDVEQtU0dubnhTRUl4dDV5Y25FcFc5eUE0cFhQUkw3X0trZXRDYlltUGI2Rm50TWp1UEJXeVdkVmlpdEp0TDNvTDlZVTUycXdKNnNtcEJiYmtmZllVRUFPVTFqVF9TSTlfTnd0MFcwWVFBdzFIejVvVnpEMVZYczZqMGRTVVh2TWVtQVZ0cFJORmotU3M2b2RYTHB6aXVhLXJ6V0tES3oxeG5Eb3lIMDhPc1VNMUxhYWk0Rmp0UDNRWngxSDlJQmZTY1c3TGdqOG96NTE2U0NEbjBvcnhmWW5rY05IeS1ZaHlLcUNENHBEazlDT0pyRlVQU0hmMm5sUFJ1RUg1NWtSV0lWNnZVYUNGWmNTenVUdmk5MkQzZ0FyMUdSR0lGNS1sWQ==","email":"u588@sina.com"},"registry.redhat.io":{"auth":"fHVoYy1wb29sLTkxYzBjMWFjLTczMDEtNGU2OC04NDc5LWEzNWI4YTdjYWQ5YjpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSmhNbVV3WWpCaU9XRTRPV1kwWXpWa09XVTVPRE5qWlRnd016RTROVFpsWXlKOS5RdUtYN0RLd3ItLXhsTWMwMWM4d2FfaG5ZdEpoT2Z5SWN3YmgzYVkwbDlISHhMNE1jN2JjLVhicy01R1kyY3RfbS1XamdFcThRMlJVUUFLTjFrSFNDMXdDR3AycHItUll6bjZ2RHl4Y1owZklSWlFILUE3NFBpc0NLRUg5M3cwREZSME5TN2VFem9kdGtPaXhGaVNTdkIzTG94RHR4MEdERFpJVEJsemYwNXhGS0o1ZmFtVlYtSy1ERS02aFpJNm96WWlTcFFyXzRLQ3NPMHZlNXl3R1hBTTJzLUFVbDltSUxnYTllTEhDckt2NkROVzhKMldwdkhKNlhzWEV2V25TQVQ4d0hyazlCZ29ySklkdXBUcmNsajJNNkt5UGNlalBJSEFWbGZBZE1BdDRqeWkzQ0F2aDByc2JvWDdBMG9uRzZaSXBJSHVjWkZFekprR3FrR1BKbkl0dVVrSGtFSklvdGkzUGVGMmlUVDZJbFJLZGloTy0wM1cyeUZjaktuQW9rRWtDWHVsTUFDVEQtU0dubnhTRUl4dDV5Y25FcFc5eUE0cFhQUkw3X0trZXRDYlltUGI2Rm50TWp1UEJXeVdkVmlpdEp0TDNvTDlZVTUycXdKNnNtcEJiYmtmZllVRUFPVTFqVF9TSTlfTnd0MFcwWVFBdzFIejVvVnpEMVZYczZqMGRTVVh2TWVtQVZ0cFJORmotU3M2b2RYTHB6aXVhLXJ6V0tES3oxeG5Eb3lIMDhPc1VNMUxhYWk0Rmp0UDNRWngxSDlJQmZTY1c3TGdqOG96NTE2U0NEbjBvcnhmWW5rY05IeS1ZaHlLcUNENHBEazlDT0pyRlVQU0hmMm5sUFJ1RUg1NWtSV0lWNnZVYUNGWmNTenVUdmk5MkQzZ0FyMUdSR0lGNS1sWQ==","email":"u588@sina.com"},"registry.tsdc.io:443":{"auth":"dHM6MTIzNDVAUXdlcnQ=","email":"ts@163.com"}}}'
+sshKey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGNL0cmNQsyMTFCSDZcGfvXuQVUwHLtkXzAAzn3Ze0gk u588@sina.com'
+additionalTrustBundle: |
+    -----BEGIN CERTIFICATE-----
+    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
+    -----END CERTIFICATE-----
+imageContentSources:
+- mirrors:
+  - registry.tsdc.io:443/openshift/okd
+  source: quay.io/openshift/okd
+- mirrors:
+  - registry.tsdc.io:443/openshift/okd
+  source: quay.io/openshift/okd-content
+EOF
+
+==============  2  ===============
+./openshift-install create manifests
+
+===============  3  =================
+ ./openshift-install create ignition-configs
+.
+├── auth
+│   ├── kubeadmin-password
+│   └── kubeconfig
+├── bootstrap.ign
+├── master.ign
+├── metadata.json
+└── worker.ign
+
+=====================================================
+Installing FCOS and starting the OKD bootstrap process
+
+1: Obtain the SHA512 digest for each of your Ignition config files
+    sha512sum <installation_directory>/bootstrap.ign
+bootstrap.ign
+
+master.ign
+
+worker.ign
+
+
+2: Run the coreos-installer command and 
+sudo coreos-installer install \
+--copy-network \
+--ignition-url=http://10.3.18.98:88/ignition/<bootstrap|master|worker>.ign  /dev/vda \
+--ignition-hash=sha512-<digest>  
+--insecure
+--insecure-ignition

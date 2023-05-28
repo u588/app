@@ -5,7 +5,8 @@ okdinstall/
 2 生成 Kubernetes 清单
 openshift-install create manifests 
 
-3 修改 manifests/cluster-scheduler-02-config.yml 文件
+3 修改 manifests/cluster-scheduler-02-config.yml 文件 以防止将 Pod 调度到 Master Node，\
+如果仅安装三节点集群，可以跳过以下步骤以允许控制平面节点可调度。
 sed -i 's/mastersSchedulable: true/mastersSchedulable: False/
 
 ----------------------------------------------------

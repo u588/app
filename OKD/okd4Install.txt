@@ -1,3 +1,6 @@
+https://docs.openshift.com/container-platform/4.12/installing/installing_bare_metal/installing-restricted-networks-bare-metal.html
+
+https://docs.okd.io/4.12/welcome/index.html
 https://blog.csdn.net/justlpf/article/details/128001413
 
 红帽网站注册账号 --> consle.redhad.com
