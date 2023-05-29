@@ -1,9 +1,12 @@
 https://helm.sh/zh/docs/
+https://helm.sh/docs/intro/install/
 
-wget https://get.helm.sh/helm-v3.12.0-rc.1-linux-amd64.tar.gz
+
+wget https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+
 wget https://get.helm.sh/helm-v3.11.3-linux-amd64.tar.gz
 
-tar -zxvf helm-v3.0.0-linux-amd64.tar.gz
+tar -zxvf helm-
 mv linux-amd64/helm /usr/local/bin/helm
 
 
@@ -13,3 +16,6 @@ helm repo add --ca-file /data/cert/ca_root.crt /
   --key-file /data/cert/k8s-harbor-63.key    /
   --username ts --password 123@Syslog /
   test  https://10.3.18.63:443/chartrepo/docker
+
+
+helm repo add aliyun https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts

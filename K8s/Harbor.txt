@@ -1,4 +1,5 @@
 https://github.com/goharbor/harbor/releases/tag/v2.8.1
+https://github.com/goharbor/harbor/releases/download/v2.8.1/harbor-offline-installer-v2.8.1.tgz
 2.7版本支持helmChart 2.8已经移除支持
 
 ================ 安装 ==================
