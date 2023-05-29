@@ -1,3 +1,5 @@
+master > cpu 2core  ram 2G 
+All kubeadm kubelet kubectl
 
 1 集群基本信息
     集群名称：k8s   

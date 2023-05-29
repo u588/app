@@ -1,12 +1,20 @@
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises#install-calico-with-etcd-datastore
 
+https://docs.tigera.io/calico/latest/operations/troubleshoot/troubleshooting#configure-networkmanager
+
+
 下载calico.yaml文件
 
 查看需要下载的calico镜像文件
 $ grep image calico.yaml   # 查看需要的镜像文件 --> registry.cn-beijing.aliyuncs.com/dotbalo/cni:v3.25.1
                                                 ++ 
 
+https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/tigera-operator.yaml
+ https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/custom-resources.yaml
+>50
+https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico-typha.yaml
+<50 https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml
 
 下载这些calico镜像文件
 docker pull docker.io/calico/cni:v3.25.1
@@ -16,10 +24,10 @@ docker pull calico/cni:release-v3.26
 
 kubectl apply -f calico.yaml  # 再运行一下yaml文件
 
-
+mkdir /etc/NetworkManager/conf.d/
 cat > /etc/NetworkManager/conf.d/calico.conf <<EOF
 [keyfile]
-unmanaged-devices=interface-name:cali*;interface-name:tunl*
+unmanaged-devices=interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:vxlan-v6.calico;interface-name:wireguard.cali;interface-name:wg-v6.cali
 EOF
 
 ========== calicactl 下载 ========

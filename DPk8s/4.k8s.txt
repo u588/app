@@ -1,0 +1,39 @@
+
+
+apt -y install kubeadm kubelet kubectl # 按最新的来玩# 固定版本不更新(暂时如此，免得出幺蛾子)
+apt-mark hold kubelet kubeadm kubectl 
+systemctl enable kubelet.service   # 加入环境变量
+echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
+source /etc/profile
+
+
+============= init k8s ====================
+kubeadm init \
+--control-plane-endpoint=10.3.18.99 \
+--apiserver-advertise-address=10.3.18.90    \
+--apiserver-bind-port 6443 \
+--service-cidr=10.18.0.0/16     \
+--pod-network-cidr=172.18.0.0/16  \
+--cri-socket=unix:///var/run/containerd/containerd.sock \
+--image-repository registry.cn-hangzhou.aliyuncs.com/google_containers
+
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+
+
+============= 网络设置  ---> calico.txt ==========
+
+============ 加入集群 ========
+
+kubeadm join k8s-master-66:6443 --token fcf22m.hs379pa84f69v5yi \
+        --discovery-token-ca-cert-hash sha256:88c545a706087321e0e4f6a3e1f409e743d886b4a7d8551053001f3a0c1da04a
+
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+
+生成 token
+kubeadm token create --print-join-command

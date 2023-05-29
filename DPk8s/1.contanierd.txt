@@ -23,7 +23,7 @@ bin/containerd-stress
 ------- systemd  ---------
 https://raw.githubusercontent.com/containerd/containerd/main/containerd.service 
  --> /usr/lib/systemd/system/containerd.service
-
+cp containerd.service /usr/lib/systemd/system
 systemctl daemon-reload
 systemctl enable --now containerd
 
@@ -86,11 +86,29 @@ sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.t
 
  -------- 重载沙箱（pause）镜像 ----------
  [plugins."io.containerd.grpc.v1.cri"]
-  sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"
-sed -i 's/registry.k8s.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.tom
+  sandbox_image = "registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
+sed -i 's/registry.k8s.io/registry.aliyuncs.com\/google_containers/g' /etc/containerd/config.toml
 
 应用此更改，请确保重新启动 containerd  -------- > systemctl restart containerd
 
+cat > /etc/crictl.yaml <<EOF
+runtime-endpoint: "unix:///var/run/containerd/containerd.sock"
+EOF
+image-endpoint: "unix:///var/run/containerd/containerd.sock"
 
 
+
+
+/var/lib/kubelet/kubeadm-flags.env
+KUBELET_KUBEADM_ARGS="--cgroup-driver=systemd --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
+
+
+
+
+
+加k8s国内源 
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
+cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
 

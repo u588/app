@@ -1,0 +1,47 @@
+https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
+https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises#install-calico-with-etcd-datastore
+
+下载calico.yaml文件
+
+查看需要下载的calico镜像文件
+$ grep image calico.yaml   # 查看需要的镜像文件 --> registry.cn-beijing.aliyuncs.com/dotbalo/cni:v3.25.1
+                                                ++ 
+
+
+下载这些calico镜像文件
+docker pull docker.io/calico/cni:v3.25.1
+docker pull calico/cni:release-v3.26
+
+安装calico插件
+
+kubectl apply -f calico.yaml  # 再运行一下yaml文件
+
+
+cat > /etc/NetworkManager/conf.d/calico.conf <<EOF
+[keyfile]
+unmanaged-devices=interface-name:cali*;interface-name:tunl*
+EOF
+
+========== calicactl 下载 ========
+https://github.com/projectcalico/calicoctl/releases
+
+
+================ 删除calico ==============
+kubectl delete -f calico.yaml
+IPIP模式 --> modprobe -r ipip
+rm -rf /var/lib/cni/ && -rf /etc/cni/net.d/*
+
+systemctl restart kubelet
+
+
+
+=================== calico BGP  =====================
+
+calicoctl create -f - <<'EOF'
+apiVersion: projectcalico.org/v3
+kind: BGPConfiguration
+metadata:
+ name: default
+spec:
+ serviceClusterIPs: [10.88.0.0/16]
+EOF
