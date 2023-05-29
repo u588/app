@@ -31,6 +31,32 @@ sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables ne
 swapoff -a   # 临时关闭
 sed -ri 's/.*swap.*/#&/' /etc/fstab  
 
+apt install ipvsadm ipset -y
+
+cat <<EOF | sudo tee /etc/modules-load.d/ipvs.conf
+ip_vs
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+nf_conntrack
+EOF
+
+lsmod | grep -e ip_vs -e nf_conntrack
+cut -f1 -d " "  /proc/modules | grep -e ip_vs -e nf_conntrack
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ================ cgroup 驱动  =============
 kubelet | containerd  将 systemd 用作 cgroup 驱动
     从 v1.22 开始，在使用 kubeadm 创建集群时,kubeadm 默认使用 systemd

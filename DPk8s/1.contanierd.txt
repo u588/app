@@ -11,27 +11,7 @@ https://github.com/containerd/nerdctl/releases
 
 
 =========== 官网安装 ===========
-$ tar Cxzvf /usr/local containerd-1.6.2-linux-amd64.tar.gz
-bin/
-bin/containerd-shim-runc-v2
-bin/containerd-shim
-bin/ctr
-bin/containerd-shim-runc-v1
-bin/containerd
-bin/containerd-stress
-
-------- systemd  ---------
-https://raw.githubusercontent.com/containerd/containerd/main/containerd.service 
- --> /usr/lib/systemd/system/containerd.service
-cp containerd.service /usr/lib/systemd/system
-systemctl daemon-reload
-systemctl enable --now containerd
-
-
----------  Installing runc ----------
- https://github.com/opencontainers/runc/releases 
- --> /usr/local/sbin/runc
- $ install -m 755 runc.amd64 /usr/local/sbin/runc
+apt install containerd
 
  -------- Installing CNI plugins -------
   https://github.com/containernetworking/plugins/releases 
