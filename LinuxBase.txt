@@ -1,9 +1,5 @@
 ps pkill --> apt install procps
 
-
-
-
-
 一、查看和修改Linux的时区
     date -R
 
@@ -26,3 +22,10 @@ ps pkill --> apt install procps
     deb http://mirrors.163.com/ubuntu/ lunar-proposed main restricted universe multiverse
     deb http://mirrors.163.com/ubuntu/ lunar-backports main restricted universe multiverse
     deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu lunar stable
+
+
+============= 文件内容替换 ================
+分隔符（# | / : ）
+sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+sed -i 's#https://mirrors.aliyun.com#http://mirrors.163.com#g' /etc/apt/sources.list.d/original.list
+sed -i 's#http://mirrors.163.com#https://mirrors.aliyun.com#g' /etc/apt/sources.list.d/original.list

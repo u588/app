@@ -30,7 +30,7 @@ https://github.com/projectcalico/calicoctl/releases
 kubectl delete -f calico.yaml
 IPIP模式 --> modprobe -r ipip
 rm -rf /var/lib/cni/ && -rf /etc/cni/net.d/*
-
+/opt/cni/bin
 systemctl restart kubelet
 
 

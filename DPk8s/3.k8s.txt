@@ -7,6 +7,9 @@ echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
 source /etc/profile
 
 
+
+
+
 ============= init k8s ====================
 kubeadm init \
 --control-plane-endpoint=10.3.18.99 \
@@ -17,16 +20,20 @@ kubeadm init \
 --cri-socket=unix:///var/run/containerd/containerd.sock \
 --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers
 
-export KUBECONFIG=/etc/kubernetes/admin.conf
+mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
-
-============= 网络设置  ---> calico.txt ==========
 
 ============ 加入集群 ========
-
-kubeadm join k8s-master-66:6443 --token fcf22m.hs379pa84f69v5yi \
-        --discovery-token-ca-cert-hash sha256:88c545a706087321e0e4f6a3e1f409e743d886b4a7d8551053001f3a0c1da04a
+masters:
+kubeadm join 10.3.18.99:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
+        --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436 \
+        --control-plane
+nodes:
+kubeadm join 10.3.18.99:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
+        --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436
 
 
   mkdir -p $HOME/.kube
@@ -36,4 +43,5 @@ kubeadm join k8s-master-66:6443 --token fcf22m.hs379pa84f69v5yi \
 
 
 生成 token
+kubeadm token list
 kubeadm token create --print-join-command

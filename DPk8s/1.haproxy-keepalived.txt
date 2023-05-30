@@ -1,0 +1,134 @@
+https://github.com/kubernetes/kubeadm/blob/main/docs/ha-considerations.md#options-for-software-load-balancing
+
+============== 高可用配置 ==========
+1、安装
+apt -y install keepalived haproxy 
+
+============ haproxy =============
+cat > /etc/haproxy/haproxy.cfg <<'EOF'
+global
+  maxconn  2000
+  ulimit-n  16384
+  log  127.0.0.1 local0 err
+  stats timeout 30s
+
+defaults
+  log global
+  mode  http
+  option  httplog
+  timeout connect 5000
+  timeout client  50000
+  timeout server  50000
+  timeout http-request 15s
+  timeout http-keep-alive 15s
+
+frontend stats
+  bind *:1936
+  mode            http
+  log             global
+  maxconn 10
+  stats enable
+  stats hide-version
+  stats refresh 30s
+  stats show-node
+  stats show-desc Stats for openshift cluster
+  stats auth admin:syslog6^
+  stats uri /stats
+
+frontend api-server
+    bind *:6443
+    default_backend api-server
+    mode tcp
+    option tcplog
+backend api-server
+    balance source
+    mode tcp
+    server master-91 10.3.18.91:6443 check
+    server master-92 10.3.18.92:6443 check
+    server master-90 10.3.18.90:6443 check
+EOF
+
+
+
+============= keepalived ================
+cat > /etc/keepalived/keepalived.conf <<'EOF'
+! Configuration File for keepalived
+global_defs {
+    router_id 18.93 #随服务器变化
+script_user root
+    enable_script_security
+}
+vrrp_script chk_apiserver {
+    script "/etc/keepalived/check_apiserver.sh"
+    interval 5
+    weight -5
+    fall 2  
+    rise 1
+}
+vrrp_instance VI_1 {
+    state MASTER # MASTER | BACKUP
+    interface ens16
+    virtual_router_id 10
+    priority 101 # 主 100 从 110
+    authentication {
+        auth_type PASS
+        auth_pass 16618
+    }
+    virtual_ipaddress {
+        10.3.18.99
+    }
+    track_script {
+       chk_apiserver
+    }
+}
+EOF
+
+
+
+============ KeepAlived健康检查文件 ================
+(1)创建检查脚本
+cat > /etc/keepalived/check_apiserver.sh <<'EOF'
+#!/bin/bash
+
+err=0
+for k in $(seq 1 3)
+do
+    check_code=$(pgrep haproxy)
+    if [[ $check_code == "" ]]; then
+        err=$(expr $err + 1)
+        sleep 1
+        continue
+    else
+        err=0
+        break
+    fi
+done
+
+if [[ $err != "0" ]]; then
+    echo "systemctl stop keepalived"
+    /usr/bin/systemctl stop keepalived
+    exit 1
+else
+    exit 0
+fi
+EOF
+
+
+(2)添加执行权限
+chmod +x /etc/keepalived/check_apiserver.sh
+
+
+========== 启动服务 ===========
+(1)启动harproxy
+systemctl daemon-reload
+systemctl enable --now haproxy
+
+(2)启动keepalived
+systemctl enable --now keepalived
+systemctl status keepalived
+
+(3)查看VIP，如图所示
+ip a
+
+
+

@@ -1,3 +1,18 @@
+============== 优化  ==========
+- docker自动补全功能
+yum -y install bash-completion
+source /usr/share/bash-completion/bash_completion
+
+
+- kubectl 自动补全功能
+echo "source <(kubectl completion bash)" >> ~/.bashrc && source ~/.bashrc 
+
+
+
+
+
+
+
 联网和网络策略
 https://www.tigera.io/project-calico/
 
