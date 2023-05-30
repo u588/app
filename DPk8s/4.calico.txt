@@ -1,5 +1,56 @@
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart
-https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises#install-calico-with-etcd-datastore
+
+=================== Install Calico ===============
+wget https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/tigera-operator.yaml
+kubectl create -f tigera-operator.yaml
+
+wget https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/custom-resources.yaml
+kubectl create -f custom-resources.yaml
+
+
+
+--------------------- custom resource  --------------
+
+https://docs.tigera.io/calico/latest/reference/installation/api
+
+cat > calico-custom.yaml <<EOF
+apiVersion: operator.tigera.io/v1
+kind: Installation
+metadata:
+  name: default
+spec:
+  calicoNetwork:
+    ipPools:
+    - blockSize: 24
+      cidr: 172.18.0.0/16
+---
+apiVersion: operator.tigera.io/v1
+kind: APIServer
+metadata:
+  name: default
+spec: {}
+
+EOF
+
+kubectl create -f 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 下载calico.yaml文件
 

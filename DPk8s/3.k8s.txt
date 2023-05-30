@@ -27,8 +27,10 @@ mkdir -p $HOME/.kube
 
 
 ============ 加入集群 ========
+90 /etc/kubernetes/pki copyto 91 92
+modprobe br_netfilter
 masters:
-kubeadm join 10.3.18.99:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
+kubeadm join 10.3.18.90:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
         --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436 \
         --control-plane
 nodes:

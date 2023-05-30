@@ -19,7 +19,7 @@ bin/containerd
 bin/containerd-stress
 
 https://raw.githubusercontent.com/containerd/containerd/main/containerd.service -->
-/usr/lib/systemd/system/containerd.service
+cp containerd.service /usr/lib/systemd/system/containerd.service
 
 systemctl daemon-reload
 systemctl enable --now containerd
@@ -98,7 +98,7 @@ SystemdCgroup = false 改为 SystemdCgroup = true
 
 # sandbox_image = "k8s.gcr.io/pause:3.6"
 改为：
-sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.6"
+sandbox_image = "registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
 
 
 #启动

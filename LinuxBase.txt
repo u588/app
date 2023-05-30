@@ -29,3 +29,6 @@ ps pkill --> apt install procps
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 sed -i 's#https://mirrors.aliyun.com#http://mirrors.163.com#g' /etc/apt/sources.list.d/original.list
 sed -i 's#http://mirrors.163.com#https://mirrors.aliyun.com#g' /etc/apt/sources.list.d/original.list
+
+sed -i 's#http://mirrors.163.com#https://mirrors.aliyun.com#g' /etc/apt/sources.list
+sed -i 's#https://mirrors.aliyun.comm#http://mirrors.163.co#g' /etc/apt/sources.list

@@ -21,8 +21,10 @@ sed -ri '/^[^#]*swap/s@^@#@' /etc/fstab
 free -h
 
 3、所有节点同步时间
+tzselect
 手动同步时区和时间
-ln -svf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+apt install ntpdate -y
 ntpdate ntp.aliyun.com
 
 		- 定期任务同步("crontab -e")
@@ -99,8 +101,14 @@ ipt_REJECT
 ipip
 EOF
 
-(4)启动模块，如上图所示，这是Linux 3.10.X系列的内核模块，并不是我们需要的!
-lsmod | grep --color=auto -e ip_vs -e nf_conntrack
+(4)加k8s国内源 
+curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
+cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+
+mkdir /home/ts/k8s
+chmod -R 777 /home/ts/k8s
 
 ----------- 重启集群 --------------
 reboot
