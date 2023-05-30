@@ -27,6 +27,7 @@ mkdir -p $HOME/.kube
 
 
 ============ 加入集群 ========
+https://blog.csdn.net/hedao0515/article/details/130665761
 90 /etc/kubernetes/pki copyto 91 92
 modprobe br_netfilter
 masters:
