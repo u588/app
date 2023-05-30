@@ -32,3 +32,6 @@ sed -i 's#http://mirrors.163.com#https://mirrors.aliyun.com#g' /etc/apt/sources.
 
 sed -i 's#http://mirrors.163.com#https://mirrors.aliyun.com#g' /etc/apt/sources.list
 sed -i 's#https://mirrors.aliyun.comm#http://mirrors.163.co#g' /etc/apt/sources.list
+
+
+debian  /usr/sbin  /usr/local/sbin

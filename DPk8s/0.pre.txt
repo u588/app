@@ -23,6 +23,7 @@ free -h
 3、所有节点同步时间
 tzselect
 手动同步时区和时间
+export PATH=$/usr/local/sbin
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 apt install ntpdate -y
 ntpdate ntp.aliyun.com
@@ -106,6 +107,14 @@ curl -s https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add 
 cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
 deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF
+
+curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
+cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+apt-get update
+
+
 
 mkdir /home/ts/k8s
 chmod -R 777 /home/ts/k8s

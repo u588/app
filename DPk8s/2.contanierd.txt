@@ -21,14 +21,12 @@ bin/containerd-stress
 https://raw.githubusercontent.com/containerd/containerd/main/containerd.service -->
 cp containerd.service /usr/lib/systemd/system/containerd.service
 
-systemctl daemon-reload
-systemctl enable --now containerd
-
 -------------------- Step 2: Installing runc ---------------------------
 runc v.1.1.7:latest
 https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64 -->
 /usr/local/sbin/runc
 $ install -m 755 runc.amd64 /usr/local/sbin/runc
+$ install -m 755 runc.amd64 /usr/local/bin/runc
 
 --------------------- Step 3: Installing CNI plugins -----------------------
 https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
@@ -85,26 +83,26 @@ yum install -y containerd.io
 
 
 ==================  生成containerd的配置文件  ====================
+mkdir /etc/containerd 
 
-#创建目录
-mkdir /etc/containerd -p && containerd config default > /etc/containerd/config.toml
-#生成配置文件
 containerd config default > /etc/containerd/config.toml
-#编辑配置文件
-vim /etc/containerd/config.toml
------
-SystemdCgroup = false 改为 SystemdCgroup = true
 
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options] 
+    SystemdCgroup = false
 
-# sandbox_image = "k8s.gcr.io/pause:3.6"
-改为：
-sandbox_image = "registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
-
+[plugins."io.containerd.grpc.v1.cri"]
+  sandbox_image = "registry.k8s.io/pause:3.8"
+  
+--------------- chenge ----------------
+sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.toml
+sed -i 's#registry.k8s.io/pause:3.8#registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9#g' /etc/containerd/config.toml
 
 #启动
-systemctl enable --now  containerd
 
+systemctl enable --now  containerd
 systemctl status containerd
+
+
  
 #验证
 ctr version

@@ -1,6 +1,6 @@
 ============== 优化  ==========
 - docker自动补全功能
-yum -y install bash-completion
+apt -y install bash-completion
 source /usr/share/bash-completion/bash_completion
 
 

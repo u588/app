@@ -28,7 +28,7 @@ mkdir -p $HOME/.kube
 
 ============ 加入集群 ========
 https://blog.csdn.net/hedao0515/article/details/130665761
-90 /etc/kubernetes/pki copyto 91 92
+master ini  /etc/kubernetes/pki (sa.*| ca.* | front-proxy-ca* | admin.conf | ./etcd/ca.*) copyto master join
 modprobe br_netfilter
 masters:
 kubeadm join 10.3.18.90:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
@@ -37,12 +37,6 @@ kubeadm join 10.3.18.90:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
 nodes:
 kubeadm join 10.3.18.99:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
         --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436
-
-
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
 
 
 生成 token

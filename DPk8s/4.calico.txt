@@ -8,6 +8,16 @@ wget https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/cu
 kubectl create -f custom-resources.yaml
 
 
+---------------- debian ----------------- 
+cat > /etc/NetworkManager/conf.d/calico.conf <<EOF
+[keyfile]
+unmanaged-devices=interface-name:cali*;interface-name:tunl*;\
+interface-name:vxlan.calico;interface-name:vxlan-v6.calico;\
+interface-name:wireguard.cali;interface-name:wg-v6.cali
+EOF
+
+
+
 
 --------------------- custom resource  --------------
 
