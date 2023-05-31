@@ -110,8 +110,10 @@ runc -version
 
 
 
-
-
+cat > /etc/crictl.yaml <<EOF
+runtime-endpoint: "unix:///var/run/containerd/containerd.sock"
+image-endpoint: "unix:///var/run/containerd/containerd.sock"
+EOF
 
 
 
