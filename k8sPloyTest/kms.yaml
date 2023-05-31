@@ -27,7 +27,7 @@ metadata:
    namespace: default
 spec:
    type: ClusterIP
-   clusterIP: 10.88.1.8
+   clusterIP: 10.18.1.8
    selector:
       app: kms
    ports:

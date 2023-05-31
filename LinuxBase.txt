@@ -15,6 +15,14 @@ ps pkill --> apt install procps
     deb http://mirrors.163.com/debian/ bookworm-backports  main non-free-firmware
     deb http://mirrors.163.com/debian/ bookworm-updates main non-free-firmware
 
+    deb https://mirrors.aliyun.com/debian/ bookworm main non-free-firmware contrib
+    deb https://mirrors.aliyun.com/debian-security/ bookworm-security main
+    deb https://mirrors.aliyun.com/debian/ bookworm-updates main non-free-firmware contrib
+
+
+
+
+
  ubuntu:
     deb http://mirrors.163.com/ubuntu/ lunar  main restricted universe multiverse
     deb http://mirrors.163.com/ubuntu/ lunar-security main restricted universe multiverse

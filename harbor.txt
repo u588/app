@@ -1,0 +1,102 @@
+https://goharbor.io/docs/2.8.0/install-config/
+4CPU 8GB  Docker-Engine Docker-compose openssl
+
+=================== 生成证书  ===================
+mkdir -p /opt/harbor/cert
+cd /opt/harbor/cert
+ 
+openssl genrsa -out ca.key 4096
+ 
+openssl req -x509 -new -nodes -sha512 -days 3650 \
+ -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=CA/CN=tsdc.io" \
+ -key ca.key \
+ -out ca.crt
+ 
+openssl genrsa -out mirrors.tsdc.io.key 4096
+ 
+openssl req -sha512 -new \
+    -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=DC/CN=mirrors.tsdc.io" \
+    -key mirrors.tsdc.io.key \
+    -out mirrors.tsdc.io.csr
+	
+cat > v3.ext <<-EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1=mirrors.tsdc.io
+DNS.2=mirrors.tsdc
+DNS.3=mirrors
+IP.1=10.3.18.60
+EOF
+ 
+openssl x509 -req -sha512 -days 3650 \
+    -extfile v3.ext \
+    -CA ca.crt -CAkey ca.key -CAcreateserial \
+    -in mirrors.tsdc.io.csr \
+    -out mirrors.tsdc.io.crt
+
+openssl x509 -inform PEM -in mirrors.tsdc.io.crt -out mirrors.tsdc.io.cert
+# Docker守护程序将​​.crt​​​文件解释为CA证书，并将​​.cert​​文件解释为客户端证书。
+
+------------ 服务器使用证书 ----------------
+                 1.Harbor
+cp ca.crt mirrors.tsdc.io.crt /usr/local/share/ca-certificates/
+update-ca-certificates
+
+mkdir -p /data/cert/
+cp mirrors.tsdc.io.crt /data/cert/
+cp mirrors.tsdc.io.key /data/cert/
+ 
+mkdir -p /etc/docker/certs.d/mirrors.tsdc.io:443
+cp mirrors.tsdc.io.cert /etc/docker/certs.d/mirrors.tsdc.io:443/
+cp mirrors.tsdc.io.key /etc/docker/certs.d/mirrors.tsdc.io:443/
+cp ca.crt /etc/docker/certs.d/mirrors.tsdc.io:443/
+
+------------------- install --------------------
+tar zxvf harbor-offline-installer-v2.8.1.tgz
+cp harbor.yml.tmpl  harbor.yml
+cd ./harbor
+
+./install.sh 
+--with-trivy：启用Trivy镜像漏洞扫描插件；
+--with-chartmuseum：启用Helm Chart组件；
+--with-notary : 如果启用安全加密端口https可添加该参数
+./install.sh --with-trivy  --with-chartmuseum
+
+================== 配置harbor开机自启动 ===================
+cat >/etc/systemd/system/harbor.service<<EOF
+[Unit]
+Description=Harbor
+After=docker.service systemd-networkd.service systemd-resolved.service
+Requires=docker.service
+Documentation=http://github.com/goharbor/harbor
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/local/bin/docker-compose -f /opt/harbor/docker-compose.yml up
+ExecStop=/usr/local/bin/docker-compose -f /opt/harbor/docker-compose.yml down
+[Install]
+WantedBy=multi-user.target
+EOF
+ 
+systemctl enable harbor
+
+
+
+#重启docker
+systemctl restart docker
+#停止Harbor
+docker-compose down -v
+#重启启动Harbor
+docker-compose up -d
+
+================ 重新配置Harbor ============
+bash ./prepare
+docker-compose down -v
+./install.sh --with-trivy  --with-chartmuseum
+docker-compose up -d
+

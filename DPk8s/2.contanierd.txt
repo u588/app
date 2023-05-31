@@ -109,6 +109,9 @@ ctr version
 runc -version
 
 
+apt install cri-tools
+crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock
+cat /etc/crictl.yaml
 
 cat > /etc/crictl.yaml <<EOF
 runtime-endpoint: "unix:///var/run/containerd/containerd.sock"
