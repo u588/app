@@ -22,3 +22,4 @@ node-96.k8s.tsdc.io     10.3.18.96
 node-98.k8s.tsdc.io     10.3.18.98
 
 registry.tsdc.io  10.3.18.97
+mirrors.tsdc.io  10.3.18.60

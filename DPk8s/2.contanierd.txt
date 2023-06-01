@@ -94,19 +94,65 @@ containerd config default > /etc/containerd/config.toml
   sandbox_image = "registry.k8s.io/pause:3.8"
   
 --------------- chenge ----------------
+mkdir -p /etc/containerd/certs.d
 sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.toml
 sed -i 's#registry.k8s.io/pause:3.8#registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9#g' /etc/containerd/config.toml
+sed -i 's#config_path = ""#config_path = "/etc/containerd/certs.d/"#g' /etc/containerd/config.toml
 
 #启动
-
 systemctl enable --now  containerd
 systemctl status containerd
 
-
- 
 #验证
 ctr version
 runc -version
+scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /usr/local/share/ca-certificates/ca60.crt
+scp ts@10.3.18.52:/home/ts/RegCert97/ca.crt /usr/local/share/ca-certificates/ca97.crt
+update-ca-certificates
+
+---------------  use harbor ----------------
+配置containerd 不需重启 Containerd
+
+------ default Host Config for Docker ----
+mkdir -p /etc/containerd/certs.d/docker.io
+cat > /etc/containerd/certs.d/docker.io/hosts.toml <<EOF
+server = "https://docker.io"
+[host."http://hub-mirror.c.163.com"]
+  capabilities = ["pull"]
+  skip_verify = true
+EOF
+
+-------- Setup Default Mirror for All Registries ------------
+
+mkdir -p /etc/containerd/certs.d/mirrors.tsdc.io/
+scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /etc/containerd/certs.d/mirrors.tsdc.io
+cat > /etc/containerd/certs.d/mirrors.tsdc.io/hosts.toml <<EOF
+server = "https://mirrors.tsdc.io"
+[host."https://mirrors.tsdc.io"]
+capabilities = ["pull", "resolve","push"]
+ca = ["ca.crt"]
+EOF
+
+mkdir -p /etc/containerd/certs.d/10.3.18.60/
+scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /etc/containerd/certs.d/10.3.18.60
+cat > /etc/containerd/certs.d/10.3.18.60/hosts.toml <<EOF
+server = "https://10.3.18.60"
+[host."https://10.3.18.60"]
+capabilities = ["pull", "resolve","push"]
+ca = ["ca.crt"]
+EOF
+
+
+mkdir -p /etc/containerd/certs.d/10.3.18.97
+scp ts@10.3.18.52:/home/ts/RegCert97/ca.crt /etc/containerd/certs.d/10.3.18.97
+cat > /etc/containerd/certs.d/10.3.18.97/hosts.toml <<EOF
+server = "https://10.3.18.97"
+[host."https://10.3.18.97"]
+capabilities = ["pull"]
+ca = ["ca.crt"]
+EOF
+
+
 
 
 apt install cri-tools

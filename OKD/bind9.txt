@@ -47,6 +47,7 @@ ns1.tsdc.io.            IN A 10.3.18.99
 smtp.tsdc.io.           IN A 10.3.18.99
 ;
 registry.tsdc.io.       IN A 10.3.18.97
+mirrors.tsdc.io.       IN A 10.3.18.60
 
 lb-93.tsdc.io.  IN A 10.3.18.93
 lb-94.tsdc.io.  IN A 10.3.18.94
@@ -81,6 +82,7 @@ $TTL 1W
 94.18.3.10.in-addr.arpa. IN PTR lb-94.k8s.tsdc.io.
 51.18.3.10.in-addr.arpa. IN PTR bastion.tsdc.io.
 97.18.3.10.in-addr.arpa. IN PTR registry.tsdc.io.
+60.18.3.10.in-addr.arpa. IN PTR mirrors.tsdc.io.
  
 ;
 91.18.3.10.in-addr.arpa. IN PTR master-91.k8s.tsdc.io.
@@ -97,4 +99,7 @@ EOF
 chmod -R a+rwx /etc/bind
 chmod -R a+rwx /var/lib/bind/
 chmod -R a+rwx /var/cache/bind/
+
+systemctl restart named
+
 

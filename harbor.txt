@@ -5,19 +5,19 @@ https://goharbor.io/docs/2.8.0/install-config/
 mkdir -p /opt/harbor/cert
 cd /opt/harbor/cert
  
-openssl genrsa -out ca.key 4096
+openssl genrsa -out tsdc_root_CA.key 2048
  
 openssl req -x509 -new -nodes -sha512 -days 3650 \
- -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=CA/CN=tsdc.io" \
- -key ca.key \
- -out ca.crt
+ -subj "/C=CN/O=TsDigitCenter Inc/OU=www.tsdc.io/CN=TsDigitCenter Root CA 1" \
+ -key ctsdc_root_CA.key \
+ -out tsdc_root_CA.crt
  
-openssl genrsa -out mirrors.tsdc.io.key 4096
+openssl genrsa -out tsdc.io.key 2048
  
 openssl req -sha512 -new \
-    -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=DC/CN=mirrors.tsdc.io" \
-    -key mirrors.tsdc.io.key \
-    -out mirrors.tsdc.io.csr
+    -subj "/C=CN/ST=Beijing/L=Beijing/O=TSDC/OU=www.tsdc.io/CN=tsdc.io" \
+    -key tsdc.io.key \
+    -out tsdc.io.csr
 	
 cat > v3.ext <<-EOF
 authorityKeyIdentifier=keyid,issuer
@@ -26,8 +26,8 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
-DNS.1=mirrors.tsdc.io
-DNS.2=mirrors.tsdc
+DNS.1=tsdc.io
+DNS.2=tsdc
 DNS.3=mirrors
 IP.1=10.3.18.60
 EOF
@@ -35,13 +35,14 @@ EOF
 openssl x509 -req -sha512 -days 3650 \
     -extfile v3.ext \
     -CA ca.crt -CAkey ca.key -CAcreateserial \
-    -in mirrors.tsdc.io.csr \
-    -out mirrors.tsdc.io.crt
+    -in tsdc.io.csr \
+    -out tsdc.io.crt
 
-openssl x509 -inform PEM -in mirrors.tsdc.io.crt -out mirrors.tsdc.io.cert
+openssl x509 -inform PEM -in tsdc.io.crt -out tsdc.io.cert
 # Docker守护程序将​​.crt​​​文件解释为CA证书，并将​​.cert​​文件解释为客户端证书。
 
 ------------ 服务器使用证书 ----------------
+https://goharbor.io/docs/2.8.0/install-config/troubleshoot-installation/#https
                  1.Harbor
 cp ca.crt mirrors.tsdc.io.crt /usr/local/share/ca-certificates/
 update-ca-certificates
@@ -50,10 +51,11 @@ mkdir -p /data/cert/
 cp mirrors.tsdc.io.crt /data/cert/
 cp mirrors.tsdc.io.key /data/cert/
  
-mkdir -p /etc/docker/certs.d/mirrors.tsdc.io:443
-cp mirrors.tsdc.io.cert /etc/docker/certs.d/mirrors.tsdc.io:443/
-cp mirrors.tsdc.io.key /etc/docker/certs.d/mirrors.tsdc.io:443/
-cp ca.crt /etc/docker/certs.d/mirrors.tsdc.io:443/
+mkdir -p /etc/docker/cert.d/mirrors.tsdc.io
+cp /opt/harbor/cert/mirrors.tsdc.io.cert /etc/docker/certs.d/mirrors.tsdc.io
+
+systemctl restart docker
+
 
 ------------------- install --------------------
 tar zxvf harbor-offline-installer-v2.8.1.tgz
@@ -86,7 +88,6 @@ EOF
 systemctl enable harbor
 
 
-
 #重启docker
 systemctl restart docker
 #停止Harbor
@@ -95,8 +96,28 @@ docker-compose down -v
 docker-compose up -d
 
 ================ 重新配置Harbor ============
+卸载步骤
+docker rm -f $(docker ps -aq)
 bash ./prepare
 docker-compose down -v
 ./install.sh --with-trivy  --with-chartmuseum
 docker-compose up -d
 
+
+
+================== Harbor 使用  ================
+------------ Docker 客户 --------------
+客户端
+服务器CA 
+scp ts@10.3.18.52:/home/ts/RegCert97/ca.crt /usr/local/share/ca-certificates/
+update-ca-certificates
+
+mkdir -p /etc/docker/cert.d/10.3.18.97
+scp ts@10.3.18.52:/home/ts/RegCert97/registry.tsdc.io.cert /etc/docker/certs.d/10.3.18.97
+systemctl restart docker
+
+dns 10.3.18.99 Or /etc/hosts
+
+
+---------------- Containerd 客户 --------------------
+https://www.dqzboy.com/11582.html

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: kms
-        image: 10.3.18.63/docker/kms
+        image: 10.3.18.60/docker/kms
         ports:
         - containerPort: 1688
 
