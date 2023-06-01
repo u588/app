@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: neo4j
-  replicas: 2 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
   template:
     metadata:
       labels:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: 10.3.18.63/docker/neo4j
+        image: 10.3.18.60/docker/neo4j
         ports:
         - containerPort: 7474
         - containerPort: 7687
@@ -27,7 +27,7 @@ metadata:
    namespace: default
 spec:
    type: ClusterIP
-   clusterIP: 10.88.1.1
+   clusterIP: 10.18.1.1
    selector:
       app: neo4j
    ports:

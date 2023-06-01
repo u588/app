@@ -33,6 +33,9 @@ spec:
     ipPools:
     - blockSize: 24
       cidr: 172.18.0.0/16
+
+    linuxDataplane: 
+
 ---
 apiVersion: operator.tigera.io/v1
 kind: APIServer
@@ -43,6 +46,20 @@ spec: {}
 EOF
 
 kubectl create -f 
+
+
+===================== calicactl =================
+
+https://zhuanlan.zhihu.com/p/601763164
+curl -L https://github.com/projectcalico/calico/releases/download/v3.26.0/calicoctl-linux-amd64
+\ -o /usr/local/bin/calicoctl
+chmod +x /usr/local/bin/calicoctl
+
+export CALICO_DATASTORE_TYPE=kubernetes
+export CALICO_KUBECONFIG=~/.kube/config
+calicoctl get workloadendpoints -A
+calicoctl node status
+
 
 
 

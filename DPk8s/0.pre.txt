@@ -125,7 +125,7 @@ reboot
 检查支持ipvs的内核模块是否加载成功，如上图所示，支持了更多的内核参数。
 lsmod | grep --color=auto -e ip_vs -e nf_conntrack
 
-
+cut -f1 -d " "  /proc/modules | grep -e ip_vs -e nf_conntrack
 
 
 
