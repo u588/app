@@ -1,0 +1,48 @@
+
+================== use calicactl 配置网络 ======================
+
+
+
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: peer-to-rr
+spec:
+  nodeSelector: !has(route-reflector)
+  peerSelector: has(route-reflector)
+
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: rr-mesh
+spec:
+  nodeSelector: has(route-reflector)
+  peerSelector: has(route-reflector)
+
+
+--------------------
+    name: openwrt-peer
+spec:
+  peerIP: 10.31.254.253
+  keepOriginalNextHop: true
+  asNumber: 64512
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: tiny-unraid-peer
+spec:
+  peerIP: 10.31.100.100
+  keepOriginalNextHop: true
+  asNumber: 64516
+
+  -------------------------------
+
+10.31.188.1	tiny-cilium-master-188-1.k8s.tcinternal
+10.31.188.11	tiny-cilium-worker-188-11.k8s.tcinternal
+10.31.188.12	tiny-cilium-worker-188-12.k8s.tcinternal
+10.188.0.0/18	serviceSubnet
+10.31.254.251	BGP-Router(frr)
+10.189.0.0/16	PuerLB-BGP-IPpool
+其中PureLB的ASN是64515，路由器的ASN为64512

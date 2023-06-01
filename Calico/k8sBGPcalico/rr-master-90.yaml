@@ -1,0 +1,11 @@
+apiVersion: projectcalico.org/v3
+kind: Node
+metadata:
+  name: master-90.k8s.tsdc.io
+  labels:
+    route-reflector: "true"
+spec:
+  bgp:
+    ipv4Address: 10.3.18.90/24
+    routeReflectorClusterID: 224.0.0.1
+

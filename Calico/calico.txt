@@ -54,6 +54,8 @@ spec:
  serviceClusterIPs: [10.88.0.0/16]
 EOF
 
+================== use calicactl 配置网络 ======================
+
 
 ============  CNI-plugin =================
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/hardway/install-cni-plugin

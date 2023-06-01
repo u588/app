@@ -1,0 +1,30 @@
+apiVersion: projectcalico.org/v3
+kind: Node
+metadata:
+  annotations:
+    projectcalico.org/kube-labels: '{"beta.kubernetes.io/arch":"amd64","beta.kubernetes.io/os":"linux","kubernetes.io/arch":"amd64","kubernetes.io/hostname":"master-90.k8s.tsdc.io","kubernetes.io/os":"linux","node-role.kubernetes.io/control-plane":"","node.kubernetes.io/exclude-from-external-load-balancers":""}'
+  creationTimestamp: null
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: master-90.k8s.tsdc.io
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/control-plane: ""
+    node.kubernetes.io/exclude-from-external-load-balancers: ""
+  name: master-90.k8s.tsdc.io
+spec:
+  addresses:
+  - address: 10.145.254.90/24
+    type: CalicoNodeIP
+  - address: 10.3.18.90
+    type: InternalIP
+  bgp:
+    ipv4Address: 10.145.254.90/24
+    ipv4IPIPTunnelAddr: 172.18.66.0
+  orchRefs:
+  - nodeName: master-90.k8s.tsdc.io
+    orchestrator: k8s
+status:
+  podCIDRs:
+  - 172.18.0.0/24

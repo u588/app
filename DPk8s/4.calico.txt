@@ -62,7 +62,7 @@ calicoctl node status
 
 
 
-
+calicoctl get node k8s-master-66 --export -oyaml > rr01.yml
 
 
 
