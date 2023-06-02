@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: selenium
-  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod password secret
   template:
     metadata:
       labels:

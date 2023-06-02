@@ -1,2 +1,9 @@
 ============ calico 配置 =============
 kubectl edit ds calico-node -n calico-system
+
+----------- 1 DNS 问题 --------------
+sandbox: open /run/systemd/resolve/resolv.conf: no such file or directory
+apt -y install systemd-resolved
+systemctl enable systemd-resolved
+systemctl start systemd-resolved
+cat > /etc/systemd/resolve.conf
