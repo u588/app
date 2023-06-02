@@ -32,6 +32,15 @@ ps pkill --> apt install procps
     deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu lunar stable
 
 
+    deb https://mirrors.aliyun.com/ubuntu/ jammy  main restricted universe multiverse
+    deb https://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
+    deb https://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse
+    deb https://mirrors.aliyun.com/ubuntu/ jammy-proposed main restricted universe multiverse
+    deb https://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
+    deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu jammy stable
+
+
+
 ============= 文件内容替换 ================
 分隔符（# | / : ）
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml

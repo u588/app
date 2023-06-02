@@ -49,7 +49,7 @@ metadata:
    namespace: default
 spec:
    type: ClusterIP
-   clusterIP: 10.88.8.8
+   clusterIP: 10.18.8.8
    selector:
       app: nginx
    ports:

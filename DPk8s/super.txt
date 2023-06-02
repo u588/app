@@ -1,0 +1,2 @@
+============ calico 配置 =============
+kubectl edit ds calico-node -n calico-system

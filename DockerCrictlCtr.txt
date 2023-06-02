@@ -1,0 +1,32 @@
+============ Docker Command ========
+#导出一个已经创建的容器导到一个文件
+docker export -o 文件名.tar 容器id
+#将文件导入为镜像
+docker import 文件名.tar 镜像名:镜像标签
+
+镜像打包 docker save 源包 >   .tar 
+
+
+# 查看镜像
+ctr images list 或  ctr i ls
+如没有指定名称空间则需指定
+ctr namespaces list  或 ctr ns list
+ctr -n k8s.io images list
+
+
+# 拉取镜像
+ctr -n k8s.io images pull -k k8s.gcr.io/pause:3.2
+​
+# 导出镜像
+ctr -n k8s.io images export pause.tar k8s.gcr.io/pause:3.2
+
+
+ctr -n k8s.io images import xxx.tar
+
+
+tag  ctr -n k8s.io images tag new   源image
+
+================ 文件找东西 ================
+grep 'name' file1 > file2
+# 或者
+cat file1 | grep 'name' > file2

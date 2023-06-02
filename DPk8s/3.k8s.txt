@@ -27,6 +27,12 @@ mkdir -p $HOME/.kube
 
 
 ============ 加入集群 ========
+
+
+---------------- 有问题 ---------------
+需要  rm -rf /etc/containerd/config.toml 
+
+
 https://blog.csdn.net/hedao0515/article/details/130665761
 master ini  /etc/kubernetes/pki (sa.*| ca.* | front-proxy-ca* | admin.conf | ./etcd/ca.*) copyto master join
 modprobe br_netfilter
@@ -39,6 +45,18 @@ kubeadm join 10.3.18.99:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
         --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436
 
 
-生成 token
-kubeadm token list
+================ token 过期后加入集群 (24小时过期)======================
+kubeadm init phase upload-certs --upload-certs
+--> Using certificate key:  xxxxx
+
 kubeadm token create --print-join-command
+---> 生成node加入命令
+--------------- node -------------------
+kubeadm join 10.3.18.99:6443 --token i9cyya.o0ok8a32eax1rnlf \
+--discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436
+
+------------ master -----------------------
+kubeadm join 10.3.18.99:6443 --token i9cyya.o0ok8a32eax1rnlf \
+--discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436 \
+--control-plane \
+--certificate-key xxxxx

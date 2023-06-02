@@ -1,0 +1,11 @@
+apiVersion: purelb.io/v1
+kind: ServiceGroup
+metadata:
+  name: bgp-ippool
+  namespace: purelb
+spec:
+  local:
+    v4pool:
+      subnet: '10.88.0.0/16'
+      pool: '10.88.19.1-10.88.255.254'
+      aggregation: /32

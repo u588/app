@@ -9,6 +9,7 @@ kubectl create -f custom-resources.yaml
 
 
 ---------------- debian ----------------- 
+mkdir -p /etc/NetworkManager/conf.d
 cat > /etc/NetworkManager/conf.d/calico.conf <<EOF
 [keyfile]
 unmanaged-devices=interface-name:cali*;interface-name:tunl*;\
