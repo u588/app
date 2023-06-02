@@ -102,8 +102,13 @@ ipt_REJECT
 ipip
 EOF
 
-(4)加k8s国内源 
+(4)加载的内核模块
+cat > /etc/modules-load.d/containerd.conf<<EOF
+overlay
+br_netfilter
+EOF
 
+(5)加k8s国内源 
 
 curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
 cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
@@ -124,6 +129,11 @@ unmanaged-devices=interface-name:cali*;interface-name:tunl*;\
 interface-name:vxlan.calico;interface-name:vxlan-v6.calico;\
 interface-name:wireguard.cali;interface-name:wg-v6.cali
 EOF
+
+
+================ 安装 nfs 客户端 =============
+apt install nfs-common -y 
+
 
 ----------- 重启集群 --------------
 reboot
