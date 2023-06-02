@@ -70,11 +70,13 @@ sysctl --system
 apt  -y install ipvsadm ipset sysstat conntrack libseccomp2 
 
 (2)手动加载模块
-modprobe -- ip_vs
-modprobe -- ip_vs_rr
-modprobe -- ip_vs_wrr
-modprobe -- ip_vs_sh
-modprobe -- nf_conntrack
+modprobe  ip_vs
+modprobe  ip_vs_rr
+modprobe  ip_vs_wrr
+modprobe  ip_vs_sh
+modprobe  nf_conntrack
+modprobe  overlay
+modprobe  br_netfilter
 
 (3)创建要开机自动加载的模块配置文件
 cat > /etc/modules-load.d/ipvs.conf << 'EOF'
@@ -102,11 +104,14 @@ ipt_REJECT
 ipip
 EOF
 
-(4)加载的内核模块
-cat > /etc/modules-load.d/containerd.conf<<EOF
+cat > /etc/modules-load.d/k8s.conf <<EOF
 overlay
 br_netfilter
 EOF
+
+
+
+
 
 (5)加k8s国内源 
 

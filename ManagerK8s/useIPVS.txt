@@ -1,0 +1,19 @@
+IPVS：调度算法丰富：rr，wrr，lc，wlc，ip hash
+
+========= kubectl logs kube-proxy -n kube-system ==========
+查看k8s 运行模式 --> "Using iptables Proxier"
+
+========== service切换IPVS =========
+1
+    kubectl edit configmap kube-proxy -n kube-system
+     --> Kind: KubeProxyConfiguration
+         mode: "ipvs" <--
+
+2  删除节点原kube-proxy的pod，让k8s自己重建，则网络模式会被修改为ipvs
+kubectl  delete pods -n kube-system -l k8s-app=kube-proxy
+kubectl  get pods -n kube-system -l k8s-app=kube-proxy
+
+============== 查看ipvs的规则 ============
+apt install ipvsadm -y
+
+ipvsadm -L -n

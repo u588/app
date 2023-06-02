@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: tdxuwsgi
-  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  replicas: 2 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
   template:
     metadata:
       labels:
@@ -14,14 +14,14 @@ spec:
     spec:
       containers:
       - name: tdxuwsgi
-        image: 10.3.18.63/docker/tdx-uwsgi:v1
+        image: 10.3.18.60/docker/tdx-uwsgi:v1
         # ports:
         # - containerPort: 3031
         volumeMounts:
         - mountPath: /home 
           name: uhome
       - name: nginx
-        image: 10.3.18.63/docker/nginx:v1
+        image: 10.3.18.60/docker/nginx:v1
         ports:
         - containerPort: 80
         volumeMounts:
@@ -62,7 +62,7 @@ metadata:
    namespace: default
 spec:
    type: ClusterIP
-   clusterIP: 10.88.8.8
+   clusterIP: 10.18.8.8
    selector:
       app: tdxuwsgi
    ports:
