@@ -1,0 +1,15 @@
+https://docs.kubeshark.co/en/config
+
+
+helm repo add kubeshark https://helm.kubeshark.co
+
+helm install kubeshark kubeshark/kubeshark
+
+kubectl port-forward -n kubeshark service/kubeshark-hub 8898:80 &
+kubectl port-forward -n kubeshark service/kubeshark-front 8899:80
+
+helm install kubeshark kubeshark/kubeshark --set tap.proxy.host=0.0.0.0 
+
+
+------------------- Uninstall -------------
+helm uninstall kubeshark

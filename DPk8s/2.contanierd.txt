@@ -139,6 +139,7 @@ cat > /etc/containerd/certs.d/10.3.18.60/hosts.toml <<EOF
 server = "https://10.3.18.60"
 [host."https://10.3.18.60"]
 capabilities = ["pull", "resolve","push"]
+
 ca = ["ca.crt"]
 EOF
 

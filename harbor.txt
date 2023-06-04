@@ -121,3 +121,12 @@ dns 10.3.18.99 Or /etc/hosts
 
 ---------------- Containerd 客户 --------------------
 https://www.dqzboy.com/11582.html
+
+mkdir -p /etc/containerd/certs.d/10.3.18.60/
+scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /etc/containerd/certs.d/10.3.18.60
+cat > /etc/containerd/certs.d/10.3.18.60/hosts.toml <<EOF
+server = "https://10.3.18.60"
+[host."https://10.3.18.60"]
+capabilities = ["pull", "resolve","push"]
+ca = ["ca.crt"]
+EOF

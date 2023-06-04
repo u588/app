@@ -1,4 +1,21 @@
 ============ Docker Command ========
+停止所有运行中的容器
+docker stop`docker ps -a -q`
+-a : 显示所有的容器，包括未运行的。
+-q : 静默模式，只显示容器编号。
+
+删除所有容器
+docker rm `docker ps -a -q`
+
+删除无标签镜像
+docker rmi $(docker images -q -f dangling=true)
+
+删除所有镜像
+docker rmi `docker images -q`
+
+条件删除镜像
+docker rmi --force `docker images | grep 关键字 | awk '{print $3}'`
+
 #导出一个已经创建的容器导到一个文件
 docker export -o 文件名.tar 容器id
 #将文件导入为镜像

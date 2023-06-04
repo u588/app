@@ -1,0 +1,14 @@
+https://github.com/pekinglone/weave-scope
+
+
+
+
+--------------- plugins ----------
+
+https://github.com/weaveworks-plugins
+
+kubectl create -f https://raw.githubusercontent.com/weaveworks-plugins/scope-http-statistics/master/deployments/k8s-http-statistics.yaml
+
+kubectl create -f https://raw.githubusercontent.com/weaveworks-plugins/scope-traffic-control/master/deployments/k8s-traffic-control.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/weaveworks-plugins/scope-iowait/master/deployments/k8s-iowait.yaml
