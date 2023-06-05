@@ -3,16 +3,7 @@ helm install --name kubeapps --namespace kubeapps bitnami/kubeapps
 
 
 kubectl create serviceaccount kubeapps-operator -n kubeapps
-
 kubectl create clusterrolebinding kubeapps-operator --clusterrole=cluster-admin --serviceaccount=kubeapps:kubeapps-operator
-
 kubectl get clusterrolebinding.rbac.authorization.k8s.io kubeapps-operator -o yaml 
+kubectl create token kubeapps-operator -n kubeapps
 
- kubectl -n kubeapps get sa
-
- kubectl -n kubeapps get secrets
-
-kubectl create serviceaccount kubeapps-operator
- kubectl create clusterrolebinding kubeapps-operator --clusterrole=cluster-admin --serviceaccount=default:kubeapps-operator
- kubectl get secret $(kubectl get serviceaccount kubeapps-operator -o jsonpath='{range .secrets[*]}{.name}{"n"}{end}' | grep kubeapps-operator-token) -o jsonpath='{.data.token}' -o go-template='{{.data.token | base64decode}}' && echo
- kubectl get secret $(kubectl get serviceaccount kubeapps-operator -o jsonpath='{.secrets[].name}') -o jsonpath='{.data.token}' | base64 --decode
