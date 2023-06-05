@@ -1,3 +1,5 @@
+======================= vscode docker插件 远程连接  适用 ==================              
+
 docker client --> docker-ce-cli
 docker server --> /usr/lib/systemd/system/docker.service 
               --> + ExecStart=/usr/bin/dockerd -H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375
@@ -48,3 +50,8 @@ context结构 --> docker context inspect default
   docker context create k8s-harbor-63 \
   --description "Harbor-Docker" \
   --docker "host=tcp://10.3.18.63:443,ca=/home/ts/k8s-harbor-63.crt,cert=/home/ts/k8s-harbor-63.cert,key=/home/ts/k8s-harbor-63.key"
+
+
+    docker context create bastion-51 \
+  --default-stack-orchestrator=Single-engine \
+  --docker host=tcp://10.3.18.51:2375

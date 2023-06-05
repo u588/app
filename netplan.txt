@@ -6,7 +6,7 @@ network:
   ethernets:
     ens16:
       addresses:
-      - "10.3.18.98/24"
+      - "10.3.18.63/24"
       nameservers:
         addresses:
         - 10.3.18.99

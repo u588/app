@@ -36,10 +36,10 @@ sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables ne
 sandbox_image = "registry.aliyuncs.com/google_containers/pause:3.9"
 SystemdCgroup = true
 
-/etc/crictl.yaml
+cat > /etc/crictl.yaml <<EOF
 runtime-endpoint: "unix:///var/run/containerd/containerd.sock"
 image-endpoint: "unix:///var/run/containerd/containerd.sock"
-
+EOF
 
 cat > /var/lib/kubelet/kubeadm-flags.env <<EOF
 KUBELET_KUBEADM_ARGS="--cgroup-driver=systemd --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
