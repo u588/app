@@ -46,6 +46,19 @@ backend api-server
     server master-91 10.3.18.91:6443 check
     server master-92 10.3.18.92:6443 check
     server master-90 10.3.18.90:6443 check
+
+frontend http-in
+    bind *:80
+    default_backend http-servers
+    mode tcp
+
+backend http-servers
+    balance source
+    mode  tcp
+    server master-90 10.3.18.90:80 
+    server master-91 10.3.18.91:80 
+    server master-92 10.3.18.92:80 
+
 EOF
 
 

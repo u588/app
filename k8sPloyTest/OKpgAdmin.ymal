@@ -19,7 +19,13 @@ spec:
           - name: PGADMIN_DEFAULT_EMAIL
             value: admin@163.com
           - name: PGADMIN_DEFAULT_PASSWORD
-            value: syslog6^
+            value: '11111111'
+          - name: PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION
+            value: 'True'
+          # - name: PGADMIN_CONFIG_LOGIN_BANNER
+          #   value: "Authorised users only!"
+          # - name: PGADMIN_CONFIG_CONSOLE_LOG_LEVEL
+          #   value: '10'
         ports:
           - containerPort: 80
 ---
@@ -30,7 +36,7 @@ metadata:
    namespace: default
 spec:
    type: ClusterIP
-   clusterIP: 10.18.1.2
+   clusterIP: 10.88.1.2
    selector:
       app: pgadmin4
    ports:

@@ -85,7 +85,7 @@ with api.connect('180.153.18.170', 7709):
         else:
             nn = 0
 
-        StockData = api.to_df(api.get_security_bars(Cate, nn, StockCode, 0,6))
+        StockData = api.to_df(api.get_security_bars(Cate, nn, StockCode, 0,3))
         if StockData.empty:
             pass
         else:

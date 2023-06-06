@@ -1,8 +1,0 @@
-20 20 * * 1-5 python3 /home/ts/app/DaypgFunds.py
-00 20 * * 1-5 python3 /home/ts/app/pgsmDaily.py
-00 23 * * 1-5 python3 /home/ts/app/pgCsPerfD.py
-00 03 * * 2-6 python3 /home/ts/app/iniCsIndexsData.py
-00 06 1-7 * 7 python3 /home/ts/app/pgCsCons.py
-00 01 * * 6 python3 /home/ts/app/pgCsYieldD.py
-00 00 20 1,4,7,10 * python3 /home/ts/app/pgStockHolders.py
-#00 00 15 3,6,9 * python3 /home/ts/app/pgStockBas.py
