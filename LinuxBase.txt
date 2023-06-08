@@ -19,17 +19,19 @@ ps pkill --> apt install procps
     deb https://mirrors.aliyun.com/debian-security/ bookworm-security main
     deb https://mirrors.aliyun.com/debian/ bookworm-updates main non-free-firmware contrib
 
-
+    deb https://repo.huaweicloud.com/debian/ bookworm main non-free-firmware contrib
+    deb https://repo.huaweicloud.com/debian-security/ bookworm-security main
+    deb https://repo.huaweicloud.com/debian/ bookworm-updates main non-free-firmware contrib
 
 
 
  ubuntu:
-    deb http://mirrors.163.com/ubuntu/ lunar  main restricted universe multiverse
-    deb http://mirrors.163.com/ubuntu/ lunar-security main restricted universe multiverse
-    deb http://mirrors.163.com/ubuntu/ lunar-updates main restricted universe multiverse
-    deb http://mirrors.163.com/ubuntu/ lunar-proposed main restricted universe multiverse
-    deb http://mirrors.163.com/ubuntu/ lunar-backports main restricted universe multiverse
-    deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu lunar stable
+    deb http://repo.huaweicloud.com/ubuntu/ lunar  main restricted universe multiverse
+    deb http://repo.huaweicloud.com/ubuntu/ lunar-security main restricted universe multiverse
+    deb http://repo.huaweicloud.com/ubuntu/ lunar-updates main restricted universe multiverse
+    deb http://repo.huaweicloud.com/ubuntu/ lunar-proposed main restricted universe multiverse
+    deb http://repo.huaweicloud.com/ubuntu/ lunar-backports main restricted universe multiverse
+
 
 
     deb https://mirrors.aliyun.com/ubuntu/ jammy  main restricted universe multiverse

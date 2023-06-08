@@ -2,6 +2,7 @@
 
 apt -y install kubeadm kubelet kubectl # 按最新的来玩# 固定版本不更新(暂时如此，免得出幺蛾子)
 apt-mark hold kubelet kubeadm kubectl 
+(unhold)
 systemctl enable kubelet.service   # 加入环境变量
 echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
 source /etc/profile
