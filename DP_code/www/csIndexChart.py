@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
@@ -13,12 +13,12 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 # get Data
 def Kchart(CodeId):
 
-    csIndexList = pd.read_sql('csIndexs', eng)
-    IndexCodeId = csIndexList.loc[csIndexList['Index_name']==CodeId]['Index_code'].to_list()[0]
+    tdxIndexList = pd.read_sql('tdxIndexs', eng)
+    IndexCodeId = tdxIndexList.loc[tdxIndexList['IndexName']==CodeId]['IndexCode'].to_list()[0]
 
     data= pd.read_sql(IndexCodeId, eng).tail(500)
     data = data.fillna(method='bfill', limit=3,axis=1)
-    data.rename(columns={'Vol':'volume','Date':'date','High':'high','Low':'low','Open':'open','Close':'close'}, inplace=True)
+    data.rename(columns={'amount':'volume','datetime':'date'}, inplace=True)
    
     # 数据计算
     ADOSC = tb.ADOSC(data.high, data.low, data.close, data.volume, fastperiod=5, slowperiod=21)

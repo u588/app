@@ -37,18 +37,23 @@ def line(StockID) -> Line:
     )
     for i, n in enumerate(d.tolist()[1:]):
         c.add_yaxis(d.tolist()[1:][i], d1s[d1s.columns[i+1]].tolist(),is_smooth=True, label_opts=opts.LabelOpts(is_show=False),is_selected=False)
-    return c
+
+    grid_chart = Grid(opts.InitOpts(page_title='分析', width="1350px", height="600px"))
+
+    grid_chart.add(c, grid_opts=opts.GridOpts(border_width=0, pos_left="5%", pos_right="12%"),)
+
+    return grid_chart
 
 
 def pie(StockID):
 
-    # StocksList = pd.read_csv('/home/ts/app/data/StocksList.csv', dtype={'code':'object'})
-    StocksList = pd.read_sql('StocksCode', dtype={'StockCode':'object'})
+
+    StocksList = pd.read_sql('StocksCode', eng, dtype={'StockCode':'object'})
     Stock = StocksList.loc[StocksList['StockCode']==StockID].astype(str).reset_index()
 
     IndexConst = pd.read_sql('IndexCons', eng)
     StockInIndex = IndexConst[IndexConst.StockCode==StockID][['IndexCode', 'StockCode','StockName']]
-    # StockInIndex.rename(columns={'name':'stock_name','code':'stock_code'}, inplace=True)
+
     csIndex = pd.read_sql('tdxIndexs', eng)
     csIndex =csIndex[['IndexCode', 'IndexName']]
 
