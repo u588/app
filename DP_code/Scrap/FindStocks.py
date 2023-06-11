@@ -1,6 +1,6 @@
 import pandas as pd
 import talib as tb
-import shutil
+# import shutil
 import datetime
 from sqlalchemy import create_engine
 
@@ -17,7 +17,7 @@ SL = pd.DataFrame(columns=['code'])
 for i,Stock in enumerate(StocksList):
     try:
         data = pd.read_sql(Stock, eng).tail(150)
-        print(Stock, i, '/', len(StocksList))
+        # print(Stock, i, '/', len(StocksList))
         data['ADOSC'] = tb.ADOSC(data.high, data.low, data.close, data.vol, fastperiod=3, slowperiod=11).round(2)
         data['ema5'] = tb.EMA(data.close, timeperiod=5).round(2)
         data['ema21'] = tb.EMA(data.close, timeperiod=21).round(2)
