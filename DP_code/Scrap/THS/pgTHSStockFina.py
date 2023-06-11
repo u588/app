@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-import datetime
+# import datetime
 import pandas as pd
 import time
 import stockFina
@@ -22,10 +22,10 @@ for stockID in StockLists:
         m.drop(0, inplace=True)
         m.set_index('date', inplace=True)
         m.to_sql(stockID, eng, if_exists='replace')
-        print(stockID, 'Saved to sql !')
-        time.sleep(random.randint(2,10))
+        # print(stockID, 'Saved to sql !')
+        time.sleep(random.randint(0,2))
     except:
-        print('Not Save! '+stockID)
+        # print('Not Save! '+stockID)
         pass
 stockFina.web.close()
 print('All Saved !! ')

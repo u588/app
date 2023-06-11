@@ -1,8 +1,5 @@
 30 19 * * 1-5 python3 /home/FindStocks.py
 26 01 * * 6   python3 /home/GetStockLists.py
-37 07 * * 6   python3 /home/pgHsgtFlowD.py
-51 21 * * 1-5 python3 /home/pgHsgtTopD.py
-26 05 * * 6   python3 /home/pgHs5DTopDD.py
 
 15 16 * * 1-5 python3 /home/TDX/tdxGetStocksD.py
 30 17 * * 1-5 python3 /home/TDX/tdxGetIndexsD.py

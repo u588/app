@@ -19,7 +19,6 @@ def getFina(stockID):
     header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.38", "Cookie":"" , }
 #    header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36","Cookie": "v=A9EffRKlVNckLLjDWKpKSatd4NZoPkWw77LpxLNmzRi3Wv8Q-45VgH8C-ZBA",}
     header["Cookie"] = "v="+ v
-    
     url = 'http://basic.10jqka.com.cn/api/stock/export.php?export=main&type=report&code='+stockID
     r = requests.get(url, headers=header)
     a = pd.read_excel(r.content, skiprows=1).T.sort_index().replace('--', np.nan).reset_index()
