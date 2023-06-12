@@ -52,3 +52,5 @@ weak.pct_chg= a.pct_chg.astype(float)
 weak['date'] = tDate
 weak.exchange = 'sz'
 weak.set_index('date').to_sql('weak',eng,if_exists='append')
+
+print('每日板块信息 ok ! ')

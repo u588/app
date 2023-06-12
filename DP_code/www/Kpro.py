@@ -153,9 +153,7 @@ def sBar(StockID) -> Bar:
 
 # get Data
 def Kchart(CodeId):
-
-
-    StocksList = pd.read_sql('StocksDetail', engB)
+    StocksList = pd.read_sql('StocksDetail20236', engB)
     St = StocksList.loc[StocksList['code']==CodeId]
     Stock = St.fillna('--')
     StF = pd.read_sql(CodeId, engF).tail(1)

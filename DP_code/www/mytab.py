@@ -362,7 +362,7 @@ def tab():
     tab.add(csWordCloud(tdxIndexsData,'55D'),'55日市场强弱板块')    
     # tab.add(timeLine_wordCloud(wcData.tail(60)),'3日内分时市场强弱板块')
     # tab.add(timeLine_wordCloud(wcData.tail(100)),'5日内分时市场强弱板块')
-    tab.add(timeLine_wordCloud(wcData.tail(420)),'21日内分时市场强弱板块')
+    tab.add(timeLine_wordCloud(wcData.tail(420)),'cs21日内分时市场强弱板块')
     # tab.add(timeLine_wordCloud(wcData.tail(1000)),'55日内分时市场强弱板块')
 
     tab.add(csWordCloud(csData, 'Yie1M'),'cs1月市场强弱板块')
