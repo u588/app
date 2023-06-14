@@ -29,7 +29,7 @@ d.click(786, 2172)
 
 d.xpath('//android.widget.HorizontalScrollView').info['childCount']
 
-d.xpath('//android.widget.HorizontalScrollView/android.view.View[48]/android.view.View').info['contentDescription'] 
+d.xpath('//android.widget.HorizontalScrollView/android.view.View[1]/android.view.View').info['contentDescription'] 
 d.xpath('//android.widget.HorizontalScrollView/android.view.View[1]/android.view.View').info
 
 

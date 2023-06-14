@@ -8,13 +8,14 @@ import time
 import datetime
 import random
 import smtplib
+import pandas as pd
 from email.mime.text import MIMEText
 from email.header import Header
 
 #  adb tcpip 33333
 #  adb connect 10.3.68.9:33333
 #   python3 -m uiautomator2 init --addr :7912
-
+IndesLists = pd.read_excel('F:/GiteeApp/App/Data/TDXdata/tdxIndexs.xlsx')
 d = u2.connect('192.168.124.13')
 
 d.app_start('com.tdx.AndroidNew', stop=True)
