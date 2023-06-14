@@ -1,0 +1,10 @@
+adb pair xxx:xxx
+Enter pairing code:xxx
+ adb connect xxx:xxx
+
+USB安装等要开启
+
+python -m uiautomator2 init --addr :7912
+
+其他版本有问题
+pip install weditor==0.6.4 
