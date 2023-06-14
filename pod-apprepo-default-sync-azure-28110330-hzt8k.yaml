@@ -1,0 +1,139 @@
+
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 26de3a9bf9edf7034877d6e4dd7c364dc186d638343b25fb10d0d5306ede6f94
+    cni.projectcalico.org/podIP: ""
+    cni.projectcalico.org/podIPs: ""
+  creationTimestamp: "2023-06-13T01:30:00Z"
+  generateName: apprepo-default-sync-azure-28110330-
+  labels:
+    apprepositories.kubeapps.com/repo-name: azure
+    apprepositories.kubeapps.com/repo-namespace: default
+    batch.kubernetes.io/controller-uid: 8802af76-f353-4fff-80fa-8490792f6513
+    batch.kubernetes.io/job-name: apprepo-default-sync-azure-28110330
+    controller-uid: 8802af76-f353-4fff-80fa-8490792f6513
+    job-name: apprepo-default-sync-azure-28110330
+  name: apprepo-default-sync-azure-28110330-hzt8k
+  namespace: kubeapps
+  ownerReferences:
+  - apiVersion: batch/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Job
+    name: apprepo-default-sync-azure-28110330
+    uid: 8802af76-f353-4fff-80fa-8490792f6513
+  resourceVersion: "5926963"
+  uid: ba4c6394-ba2a-4ee7-9267-371a2c8adf0f
+spec:
+  containers:
+  - args:
+    - sync
+    - --database-url=kubeapps-postgresql:5432
+    - --database-user=postgres
+    - --database-name=assets
+    - --user-agent-comment=kubeapps/2.7.0
+    - --global-repos-namespace=kubeapps
+    - --namespace=default
+    - azure
+    - http://mirror.azure.cn/kubernetes/charts/
+    - helm
+    command:
+    - /asset-syncer
+    env:
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: postgres-password
+          name: kubeapps-postgresql
+    image: docker.io/bitnami/kubeapps-asset-syncer:2.7.0-scratch-r0
+    imagePullPolicy: IfNotPresent
+    name: sync
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-hrhhk
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: k8s-node-62
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: OnFailure
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-hrhhk
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2023-06-13T01:30:00Z"
+    reason: PodCompleted
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2023-06-13T01:30:04Z"
+    reason: PodCompleted
+    status: "False"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2023-06-13T01:30:04Z"
+    reason: PodCompleted
+    status: "False"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2023-06-13T01:30:00Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://2c43e0edbca44b9b149bc25a39eb8e5342e76fd747d8add46314bd2abe5e4c62
+    image: docker.io/bitnami/kubeapps-asset-syncer:2.7.0-scratch-r0
+    imageID: docker.io/bitnami/kubeapps-asset-syncer@sha256:95177b8b05f79b42b31807aed843ec2c69465f06fe50c3c7f97c717910863c98
+    lastState: {}
+    name: sync
+    ready: false
+    restartCount: 0
+    started: false
+    state:
+      terminated:
+        containerID: containerd://2c43e0edbca44b9b149bc25a39eb8e5342e76fd747d8add46314bd2abe5e4c62
+        exitCode: 0
+        finishedAt: "2023-06-13T01:30:03Z"
+        reason: Completed
+        startedAt: "2023-06-13T01:30:01Z"
+  hostIP: 10.3.18.62
+  phase: Succeeded
+  qosClass: BestEffort
+  startTime: "2023-06-13T01:30:00Z"
