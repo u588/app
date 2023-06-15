@@ -33,10 +33,3 @@ d.xpath('//android.widget.HorizontalScrollView/android.view.View[1]/android.view
 d.xpath('//android.widget.HorizontalScrollView/android.view.View[1]/android.view.View').info
 
 
-for elem in d.xpath("//android.widget.HorizontalScrollView").all():
-    print("Text:", elem.text)
-    # Dictionary eg: 
-    # {'index': '1', 'text': '999+', 'resource-id': 'com.netease.cloudmusic:id/qb', 'package': 'com.netease.cloudmusic', 'content-desc': '', 'checkable': 'false', 'checked': 'false', 'clickable': 'false', 'enabled': 'true', 'focusable': 'false', 'focused': 'false','scrollable': 'false', 'long-clickable': 'false', 'password': 'false', 'selected': 'false', 'visible-to-user': 'true', 'bounds': '[661,1444][718,1478]'}
-    print("Attrib:", elem.attrib)
-    # Coordinate eg: (100, 200)
-    print("Position:", elem.center())
