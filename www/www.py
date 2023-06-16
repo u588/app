@@ -125,6 +125,11 @@ def te(ID):
     c = test.test(ID)
     return c.render_embed()
 
+@app.route("/index/<codeID>")
+def index(codeID):
+    c = csIndexChart.Kchart(codeID)
+    return c.render_embed()
+
 
 
 if __name__ == '__main__':

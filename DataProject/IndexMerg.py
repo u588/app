@@ -10,3 +10,7 @@ tdx = pd.read_excel('G:/Gitee/App/Data/TDXdata/New/IndexsMergeRaw2023.xlsx', dty
 tdx.drop_duplicates(subset='IndexCode', keep='first', inplace=True)
 
 m1 = pd.merge(tdx, cs, on='IndexCode', how='outer')
+
+#NaN值处理
+
+tdx['Num'] = tdx.Num_x.fillna(tdx.Num_y)
