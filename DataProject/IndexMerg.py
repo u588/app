@@ -1,8 +1,8 @@
 import pandas as pd
 
 tdxB = pd.read_excel('G:/Gitee/StocksCode.xlsx', dtype={'StockCode':object, })
-tdx88 = pd.read_excel('G:/Gitee/20230617/keyindexs.xlsx', dtype={'IndexCode':object})
-tdxRaw = pd.read_excel('G:/Gitee/20230617/810880merged.xlsx', dtype={'IndexCode':object})
+tdx88 = pd.read_excel('G:/Gitee/App/Data/20230617/tdxIndexsOLD.xlsx', dtype={'IndexCode':object})
+tdxRaw = pd.read_excel('G:/Gitee/App/Data/20230617/TDXIndexsOK2023.xlsx', dtype={'IndexCode':object})
 
 
 tdxsz = pd.read_excel('G:/Gitee/App/Data/TDXdata/New/szIndexs.xlsx', dtype={'IndexCode':object})
