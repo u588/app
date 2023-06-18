@@ -1,7 +1,7 @@
 import json
 import re
 import pandas as pd
-a = open('G:/Gitee/880-881.json', 'r',encoding="utf-8").read()
+a = open('G:/Gitee/1.json', 'r',encoding="utf-8").read()
 data = json.loads(a)
 n = len(data)
 q = pd.DataFrame(['a','b','b']).T
@@ -23,18 +23,19 @@ while i < n:
 
 
 
-qq = q.loc[~((q[0]=='999999') & (q[1]=='399001'))].drop_duplicates(subset=[0,1,2,3], keep='first')
+qq = q.loc[~((q[0]=='999999') & (q[1]=='399001'))]
 qq = qq.loc[~((qq[0]=='399002'))]
 
 qq.reset_index(drop=True, inplace=True)
 qq.drop(0, inplace=True)
 
 n = 1
-while n <=2710:
+while n <=2790:
     if pd.isna(qq.loc[n][1]):
         qq.loc[n+1,['IndexCode']]= qq.loc[n, [0]][0]
     else:
         pass
+    print(str(n)+ ' ok !')
     n = n +1 
 
 qq.dropna(thresh=3, inplace=True)
@@ -45,8 +46,8 @@ IndexCons = pd.DataFrame(columns=['IndexCode', 'StockCode'])
 Indexs = pd.DataFrame(columns=['IndexCode', 'Num'])
 c = pd.Series()
 n=0
-IndexCode='880082'
-while n < 1676:
+IndexCode='395004'
+while n < 1379:
     while IndexCode == qq.loc[n]['IndexCode']:
         x = qq.loc[n].dropna()
         c = pd.concat([c,x])
