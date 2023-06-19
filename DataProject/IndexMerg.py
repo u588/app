@@ -9,7 +9,7 @@ tdxB = pd.read_excel('G:/Gitee/App/Data/2023TdxCs/tdxBolckIndexs2023.xlsx', dtyp
 
 tdxsz = pd.read_excel('G:/Gitee/App/Data/TDXdata/New/szIndexs.xlsx', dtype={'IndexCode':object})
 cs = pd.read_excel('G:/Gitee/App/Data/CSdata/csIndex2023.xlsx', dtype={'IndexCode':object})
-tdx = pd.read_excel('G:/Gitee/App/Data/2023TdxCs/tdxRaw-blkmerged.xlsx', dtype={'IndexCode':object})
+tdx = pd.read_excel('G:/Gitee/App/Data/2023TdxCs/FinalIndexs.xlsx', dtype={'IndexCode':object})
 
 tdx.drop_duplicates(subset='IndexCode', keep='first', inplace=True)
 
