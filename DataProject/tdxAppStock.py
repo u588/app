@@ -2,7 +2,7 @@ import json
 import re
 import pandas as pd
 
-a = open('D:/new_tdx/T0002/hq_cache/infoharbor_ex.code', 'r',encoding="GBK").read()
+a = open('D:/new_tdx/T0002/hq_cache/infoharbor_ex.code', 'r',encoding="GBK", errors='ignore').read()
 l = a.replace('\n','#').split('#')
 
 q = pd.DataFrame(['a','b']).T
