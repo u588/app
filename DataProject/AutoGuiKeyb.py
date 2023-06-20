@@ -4,7 +4,7 @@ import time
 import pandas as pd
 import re
 
-ind = pd.read_excel('g:/gitee/1.xlsx',dtype={'IndexCode':object})
+ind = pd.read_excel('g:/gitee/tdxAppAutoGui.xlsx',dtype={'IndexCode':object})
 indexs = ind['IndexCode'].to_list()
 time.sleep(5)
 for i in indexs:
@@ -12,7 +12,7 @@ for i in indexs:
         a = re.findall('\d', i)
         pyautogui.press(a)
         pyautogui.press('enter')
-        time.sleep(3)
+        time.sleep(1)
         print(i + 'ok !')
     except:
         pass
