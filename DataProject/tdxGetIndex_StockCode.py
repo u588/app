@@ -21,7 +21,7 @@ for l in DataStock:
     n = 0
     while n < len(l):
         try:
-            df = pd.DataFrame(re.sub(r'#+', '#', l[n].replace('\x00', '#')).split('#')[:2]).T
+            df = pd.DataFrame(re.sub(r'#+', '#', l[n].replace('\x00', '#').replace(' ','').replace('Ａ', 'A')).split('#')[:2]).T
             q = pd.concat([q, df])
             n = n + 1
             # print(str(n) + '  concat !')
@@ -37,7 +37,8 @@ qq.reset_index(drop=True, inplace=True)
 qq.drop(0, inplace=True)
 qq.dropna(inplace=True)
 qq.columns = ['StockCode', 'StockName'] 
-qq.sort_values(by = 'StockCode' ,ascending=True,ignore_index=True).set_index('StockCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxSocktsCode.xlsx')
+qq.sort_values(by = 'StockCode' ,ascending=True,ignore_index=True)\
+               .set_index('StockCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxSocktsCode.xlsx')
 print('=============> Stock ok !')
 
 DataIndex = [shIndex00, shIndex88, szIndex39]
@@ -47,7 +48,9 @@ for l in DataIndex:
     n = 0
     while n < len(l):
         try:
-            df = pd.DataFrame(re.sub(r'#+', '#', l[n].replace('\x00', '#')).split('#')[:2]).T
+            df = pd.DataFrame(re.sub(r'#+', '#',\
+                                     l[n].replace('\x00', '#').replace(' ','').replace('Ａ', 'A'))\
+                                     .split('#')[:2]).T
             q = pd.concat([q, df])
             n = n + 1
             # print(str(n) + '  concat !')
@@ -64,5 +67,6 @@ qq.reset_index(drop=True, inplace=True)
 qq.drop(0, inplace=True)
 qq.dropna(inplace=True)
 qq.columns = ['IndexCode', 'IndexName'] 
-qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True).set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsCode.xlsx')
+qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
+               .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsCode.xlsx')
 print('=========> Indexs OK ')
