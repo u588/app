@@ -20,13 +20,16 @@ while i < n:
     except:
         i = i + 1
         pass
-qq = q.loc[~((q[0]=='999999') & (q[1]=='399001'))]
+
+
+
+qq = q.loc[~((q[0]=='999999'))]
 
 qq = qq.drop_duplicates(subset=[0, 1, 2, 3,4],  keep='first').reset_index(drop=True).drop(0).dropna(thresh=2).reset_index(drop=True)
 
 IndexCons = pd.DataFrame(columns=['IndexCode', 'StockCode'])
 Indexs = pd.DataFrame(columns=['IndexCode', 'Num'])
-IndexCode = '881004'
+IndexCode = '399015'
 c = pd.Series()
 n = 0
 while n < qq.shape[0]:
@@ -52,64 +55,73 @@ while n < qq.shape[0]:
 
 
 
+ind = pd.read_excel('g:/gitee/tdxAppAutoGui.xlsx',dtype={'IndexCode':object})
+indexs = ind['IndexCode'].to_list()
+qqq = qq.reset_index(drop=True).drop(0)
+n = 0
+while n < 838:
+    if qqq.loc[n][0] in indexs :
+        qqq.loc[n+1,['IndexCode']]= qqq.loc[n][0]
+    else:
+        pass
+    print(str(n)+ ' ok !')
+    n = n +1 
+qqq.dropna(thresh=2, inplace=True)
 
 
 
 
 
 
+qq = q.loc[~((q[0]=='999999') & (q[1]=='399001'))]
+qq.drop_duplicates(subset=[0, 1, 2, 3,4],  keep='first', inplace=True)
 
 
+qq = qq.loc[~((qq[0]=='399002'))]
 
+qq.reset_index(drop=True, inplace=True)
+qq.drop(0, inplace=True)
 
+n = 1
+while n <=2790:
+    if pd.isna(qq.loc[n][1]):
+        qq.loc[n+1,['IndexCode']]= qq.loc[n, [0]][0]
+    else:
+        pass
+    print(str(n)+ ' ok !')
+    n = n +1 
 
+qq.dropna(thresh=3, inplace=True)
+qq.reset_index(drop=True, inplace=True)
+qq['IndexCode'] = qq['IndexCode'].fillna(method='ffill')
 
-# qq = q.loc[~((q[0]=='999999') & (q[1]=='399001'))]
-# qq.drop_duplicates(subset=[0, 1, 2, 3,4],  keep='first', inplace=True)
+IndexCons = pd.DataFrame(columns=['IndexCode', 'StockCode'])
+Indexs = pd.DataFrame(columns=['IndexCode', 'Num'])
+c = pd.Series()
+n=1
+IndexCode='399015'
+while n < qq.shape[0]:
+    while qq.loc[n].dropna().shape[0] > 2:
+        x = qq.loc[n].dropna()
+        c = pd.concat([c,x])
+        n = n + 1
+    c.drop_duplicates(inplace=True)
+    # c.drop(0, inplace=True)
+    c.reset_index(drop=True, inplace=True)
+    l = [IndexCode,len(c)]
+    dfl = pd.DataFrame(l).T
+    dfl.columns = ['IndexCode', 'Num']
+    Indexs = pd.concat([Indexs, dfl], ignore_index=True)
+    dfc = pd.DataFrame(c)
+    dfc.columns = ['StockCode']
+    dfc['IndexCode'] = IndexCode
+    IndexCons = pd.concat([IndexCons, dfc], ignore_index=True)
+    IndexCode = qq.loc[n][0]
+    c = pd.Series()
+    n = n + 1
+    print(str(n)+ "  ok !")
 
+Indexs['From'] = 'TDXGUI'
 
-# qq = qq.loc[~((qq[0]=='399002'))]
-
-# qq.reset_index(drop=True, inplace=True)
-# qq.drop(0, inplace=True)
-
-# n = 1
-# while n <=2790:
-#     if pd.isna(qq.loc[n][1]):
-#         qq.loc[n+1,['IndexCode']]= qq.loc[n, [0]][0]
-#     else:
-#         pass
-#     print(str(n)+ ' ok !')
-#     n = n +1 
-
-# qq.dropna(thresh=3, inplace=True)
-# qq.reset_index(drop=True, inplace=True)
-# qq['IndexCode'] = qq['IndexCode'].fillna(method='ffill')
-
-# IndexCons = pd.DataFrame(columns=['IndexCode', 'StockCode'])
-# Indexs = pd.DataFrame(columns=['IndexCode', 'Num'])
-# c = pd.Series()
-# n=0
-# IndexCode='395004'
-# while n < 1379:
-#     while IndexCode == qq.loc[n]['IndexCode']:
-#         x = qq.loc[n].dropna()
-#         c = pd.concat([c,x])
-#         n = n + 1
-#     c.drop_duplicates(inplace=True)
-#     c.drop(0, inplace=True)
-#     c.reset_index(drop=True, inplace=True)
-#     l = [IndexCode,len(c)]
-#     dfl = pd.DataFrame(l).T
-#     dfl.columns = ['IndexCode', 'Num']
-#     Indexs = pd.concat([Indexs, dfl], ignore_index=True)
-#     dfc = pd.DataFrame(c)
-#     dfc.columns = ['StockCode']
-#     dfc['IndexCode'] = IndexCode
-#     IndexCons = pd.concat([IndexCons, dfc], ignore_index=True)
-#     IndexCode = qq.loc[n]['IndexCode']
-#     c = pd.Series()
-#     print(str(n)+ "  ok !")
-
-
-
+Indexs.set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxGuiIndex.xlsx')
+IndexCons.set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxGuiIndexCons.xlsx')

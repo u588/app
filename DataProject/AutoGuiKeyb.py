@@ -12,7 +12,7 @@ for i in indexs:
         a = re.findall('\d', i)
         pyautogui.press(a)
         pyautogui.press('enter')
-        time.sleep(1)
+        time.sleep(5)
         print(i + 'ok !')
     except:
         pass
