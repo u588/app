@@ -3,6 +3,8 @@ import pandas as pd
 
 sh = open('D:/new_tdx/T0002/hq_cache/shm.tnf', 'r',encoding="GBK", errors='ignore').read()
 sz = open('D:/new_tdx/T0002/hq_cache/szm.tnf', 'r',encoding="GBK", errors='ignore').read()
+zz = pd.read_excel('D:/new_tdx/T0002/export/zzIndexs.xlsx', dtype={'IndexCode':object})
+
 
 shIndex00 = re.findall("00\d{4}.{30}", sh)
 shIndex88 = re.findall("88\d{4}.{30}", sh)
@@ -38,7 +40,7 @@ qq.drop(0, inplace=True)
 qq.dropna(inplace=True)
 qq.columns = ['StockCode', 'StockName'] 
 qq.sort_values(by = 'StockCode' ,ascending=True,ignore_index=True)\
-               .set_index('StockCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxSocktsCode.xlsx')
+               .set_index('StockCode').to_excel('G:/Gitee/App/tdxAppData/tdxSocktsCode.xlsx')
 print('=============> Stock ok !')
 
 DataIndex = [shIndex00, shIndex88, szIndex39]
@@ -67,6 +69,7 @@ qq.reset_index(drop=True, inplace=True)
 qq.drop(0, inplace=True)
 qq.dropna(inplace=True)
 qq.columns = ['IndexCode', 'IndexName'] 
+qq = pd.concat([qq, zz]).drop_duplicates(subset=('IndexCode')) 
 qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
-               .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsCode.xlsx')
+               .set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsCode.xlsx')
 print('=========> Indexs OK ')
