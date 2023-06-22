@@ -1,7 +1,7 @@
 import pandas as pd
 
-Indexs = pd.read_excel('F:/FinaDataRaw/TDXdata/tdxIndexs.xlsx', dtype={'Index_code':object})
-Cons = pd.read_excel('F:/FinaDataRaw/TDXdata/App_hq_cache/tdxIndexCons1.xlsx', dtype={'code':object})
+Indexs = pd.read_excel('G:/Gitee/App/tdxAppData/tdxIndexsCode.xlsx', dtype={'IndexCode':object})
+Cons = pd.read_excel('G:/Gitee/App/tdxAppData/tdxGuiIndexCons6221.xlsx', dtype={'IndexCode':object, 'StockCode':object})
 
 
 

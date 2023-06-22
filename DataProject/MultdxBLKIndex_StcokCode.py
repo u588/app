@@ -35,7 +35,7 @@ def MultiGetIndexCons(workers, jobs):
 if __name__ == '__main__':
  
     dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
-    dfi = pd.concat([dfi, MultiGetIndexCons(4,data)])
+    dfi = pd.concat([dfi, MultiGetIndexCons(5,data)])
 
     dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
     .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsConsBLK.xlsx')

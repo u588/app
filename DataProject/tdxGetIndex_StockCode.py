@@ -40,7 +40,7 @@ qq.drop(0, inplace=True)
 qq.dropna(inplace=True)
 qq.columns = ['StockCode', 'StockName'] 
 qq.sort_values(by = 'StockCode' ,ascending=True,ignore_index=True)\
-               .set_index('StockCode').to_excel('G:/Gitee/App/tdxAppData/tdxSocktsCode.xlsx')
+               .set_index('StockCode').to_excel('G:/Gitee/App/tdxAppData/tdxSocksCode.xlsx')
 print('=============> Stock ok !')
 
 DataIndex = [shIndex00, shIndex88, szIndex39]

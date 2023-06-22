@@ -29,12 +29,13 @@ data = [[dq,'地区'],[fg, '风格'], [gn, '概念'], [hy, '行业'], [zs, '指�
 dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
 for i in data:
     df = getCons(i[0], i[1])
+    print(i[1] + 'ok ! ')
     dfi = pd.concat([dfi, df])
 
 dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
-    .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsConsBLK.xlsx')
+    .set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsConsBLK.xlsx')
 
 dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
 dfs['Num'] = dfi.groupby('IndexCode').count()['IndexName'].reset_index(drop=True)
 dfs['From'] = 'TDXBLK'
-dfs.set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsBLK.xlsx')
+dfs.set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsBLK.xlsx')
