@@ -10,10 +10,6 @@ api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
 
-job = '10.145.254.56'
-ip = job
-Cate = 9
-
 
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
 """
@@ -72,7 +68,7 @@ Cate = 9
 """
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxStocks')
 StockLists =  pd.read_sql('StocksList', eng).code.tolist()
 
 with api.connect('180.153.18.170', 7709):
@@ -85,7 +81,7 @@ with api.connect('180.153.18.170', 7709):
         else:
             nn = 0
 
-        StockData = api.to_df(api.get_security_bars(Cate, nn, StockCode, 0,3))
+        StockData = api.to_df(api.get_security_bars(9, nn, StockCode, 0,7))
         if StockData.empty:
             pass
         else:

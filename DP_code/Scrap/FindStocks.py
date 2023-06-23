@@ -39,8 +39,8 @@ for i,Stock in enumerate(StocksList):
 print(' == 找到'+str(SL.shape[0])+'条符合条件记录！==')
 SS = pd.merge(df, SL , on='code')
 SS['datetime'] = Today
-SL.set_index('code').to_csv('/home/ts/FindStocks/'+today+'.txt',header=False)
 SS.set_index('datetime').to_sql('FindStocks', engS, if_exists='append')
+SL.set_index('code').to_csv('/home/ts/FindStocks/'+today+'.txt',header=False)
 #shutil.copyfile('E:/Data/'+today+'.txt','Z:/Data/'+today+'.txt')
 
 
