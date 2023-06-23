@@ -2,8 +2,9 @@ from sqlalchemy import create_engine
 import pandas as pd
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
-IndexLists = pd.read_sql('tdxIndexs', eng)
 
+Data = pd.read_sql('tdxIndexs', eng)
+IndexLists = Data.loc[~(Data.IndexSTL=='市场总览')]
 n = IndexLists.shape[0]
 i = 0
 D = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
