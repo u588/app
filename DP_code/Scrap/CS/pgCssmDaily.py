@@ -5,6 +5,13 @@ import numpy as np
 import json
 import pandas as pd
 
+import datetime
+from chinese_calendar import is_holiday
+import sys
+while is_holiday(datetime.date.today()):
+    sys.exit(0)
+
+
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
 #header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',}

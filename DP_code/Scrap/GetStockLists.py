@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 import tushare as ts
-import pandas  as pd
+# import pandas  as pd
 
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxStocks')
