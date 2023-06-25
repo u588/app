@@ -1,4 +1,8 @@
 import pandas as pd
+from sqlalchemy import create_engine
+
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxIndex')
 
 
 tdx88 = pd.read_excel('G:/Gitee/App/Data/2023TdxCs/csIndex2023.xlsx', dtype={'IndexCode':object})
@@ -23,6 +27,8 @@ m1[''] = m1.Num_x.fillna(m1.Num_y)
 
 m1.set_index('IndexCode').to_excel('g:/gitee/App/tdxAppData/mergIndex.xlsx')
 m1.to_excel('g:/gitee/20230617/810merged.xlsx')
+
+# tdx.set_index('IndexCode').to_sql('tdxIndexs', eng, if_exists='replace')
 
 #NaN值处理
 
