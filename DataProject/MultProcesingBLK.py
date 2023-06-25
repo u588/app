@@ -23,32 +23,36 @@ def getCons(data, STL):
 data = [[dq,'地区'],[fg, '风格'], [gn, '概念'], [hy, '行业'], [zs, '指数']]
 
 
-import pandas as pd
-import concurrent.futures
-
-def MultiGetIndexCons(workers, jobs):
-    with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
-        for task in jobs:
-            pool.submit(getCons, task[0], task[1])
+import multiprocessing
 
 
 if __name__ == '__main__':
  
     dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
 
-    result = []
-    result.append(MultiGetIndexCons(5,data))
+    pool  = multiprocessing.Pool(processes=5)
+    results = []
+    for i in [0, 1, 2,3,4]:
+        results.append(pool.apply_async(getCons, (data[i][0], data[i][1]) ))
+    pool.close()
+    pool.join()
     
-    for i in [0,1,2,3,4]:
-        dfi = pd.concat([dfi, result[i]])
-
+    for res in results:
+        dfi = pd.concat([dfi, res.get()])
+   
     dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
-    .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsConsBLK.xlsx')
+    .set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsConsBLK.xlsx')
 
     dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
-    dfs['Num'] = dfi.groupby('IndexCode').count()['IndexName'].reset_index(drop=True)
+    n = 0
+    while n < dfs.shape[0]:
+        dfs.loc[[n],['Num']] = len(dfi.groupby('IndexCode').groups[dfs.loc[n][0]])
+        n = n + 1
+        print(str(n) + '  ok !') 
+ 
     dfs['From'] = 'TDXBLK'
-    dfs.set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsBLK.xlsx')
-     
+    dfs.set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsBLK.xlsx')
+   
 
-    print('Index NormDescri finshed !')
+
+    print('========= Finshed !')
