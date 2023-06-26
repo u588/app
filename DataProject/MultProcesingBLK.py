@@ -51,7 +51,7 @@ if __name__ == '__main__':
         print(str(n) + '  ok !') 
  
     dfs['From'] = 'TDXBLK'
-    dfs.set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsBLK.xlsx')
+    dfs.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True).set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsBLK.xlsx')
    
 
 
