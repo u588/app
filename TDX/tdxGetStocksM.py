@@ -10,6 +10,8 @@ api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
 
+M  = 2
+
 
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
 """
@@ -81,7 +83,7 @@ with api.connect('180.153.18.170', 7709):
         else:
             nn = 0
 
-        StockData = api.to_df(api.get_security_bars(9, nn, StockCode, 0,7))
+        StockData = api.to_df(api.get_security_bars(9, nn, StockCode, 0, M))
         if StockData.empty:
             pass
         else:
