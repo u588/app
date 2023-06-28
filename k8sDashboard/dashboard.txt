@@ -17,3 +17,5 @@ metadata:
     kubernetes.io/service-account.name: dashboard-admin
 type: kubernetes.io/service-account-token
 EOF
+
+kubectl -n kube-system describe secrets dashboard-admin-secret
