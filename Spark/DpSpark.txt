@@ -18,3 +18,9 @@ export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
     --conf spark.executor.instances=3 \
     --conf spark.kubernetes.container.image=10.3.18.60/docker/spark/spark-py:v3.4.1 \
     local:///path/to/examples.jar
+
+
+kubectl create serviceaccount spark -n default
+kubectl create clusterrolebinding spark-cluster-admin --clusterrole=cluster-admin --serviceaccount=default:spark
+kubectl create token spark -n default
+./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.4.0 --master k8s://https://10.3.18.66:6443
