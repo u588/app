@@ -19,3 +19,5 @@ helm repo add --ca-file /data/cert/ca_root.crt /
 
 
 helm repo add aliyun https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
