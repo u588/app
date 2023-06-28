@@ -1,6 +1,19 @@
 ========== helm安装后 获得Token =======
 
 
-  kubectl create serviceaccount dashboard-admin -n kube-system
-  kubectl create clusterrolebinding dashboard-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin
-  kubectl create token dashboard-admin -n kube-system
+kubectl create serviceaccount dashboard-admin -n kube-system
+kubectl create clusterrolebinding dashboard-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin
+kubectl create token dashboard-admin -n kube-system
+
+
+--------------------- 手动长期有效的 API 令牌 ----------- 
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: kube-system
+  name: dashboard-admin-secret
+  annotations:
+    kubernetes.io/service-account.name: dashboard-admin
+type: kubernetes.io/service-account-token
+EOF
