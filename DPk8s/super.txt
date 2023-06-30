@@ -7,3 +7,7 @@ apt -y install systemd-resolved
 systemctl enable systemd-resolved
 systemctl start systemd-resolved
 cat > /etc/systemd/resolve.conf
+
+
+======== Pod 删除问题 ===========
+kubectl get replicasets --> 删除相应重构组 --> 删除pod
