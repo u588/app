@@ -1,0 +1,6 @@
+pip install PyArrow
+pip install grpcio
+pip install grpcio-status
+pip install protobuf
+
+
