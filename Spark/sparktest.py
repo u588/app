@@ -1,5 +1,11 @@
 from pyspark.sql import SparkSession
+import os
+os.environ["PYARROW_IGNORE_TIMEZONE"] = "1"
+import pyspark.pandas as ps
 
+
+
+gn = open('D:/new_tdx/T0002/export/概念板块.txt', 'r',encoding="GBK", errors='ignore').read()
 spark = SparkSession.builder.remote("sc://10.88.1.8:15002").getOrCreate()
 
 columns = ["id","name"]
