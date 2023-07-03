@@ -1,3 +1,6 @@
+https://spark.apache.org/docs/3.4.1/spark-connect-overview.html#content
+
+
 tar -zxvf spark-3.0.0-bin-hadoop2.7.tgz
 
 --> conf/
@@ -23,19 +26,10 @@ export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
 kubectl create serviceaccount spark -n default
 kubectl create clusterrolebinding spark-cluster-admin --clusterrole=cluster-admin --serviceaccount=default:spark
 kubectl create token spark -n default
-./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.4.1  --conf spark.driver.port=38715
+./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.4.1 
 
 
 
-./sbin/start-connect-server.sh --packages org.apache.spark:spark-connect_2.12:3.4.1 --master k8s://https://10.3.18.66:6443
-file:///opt/bitnami/spark/.ivy2/jars/org.apache.spark_spark-connect_2.12-3.4.1.jar
-
-
-
-
-
-
-========== token =============
 ========== 66 Token ===============
 eyJhbGciOiJSUzI1NiIsImtpZCI6InJDX29ERlZCUHJlYXI0OWJvZUZQdk5Tb2lVUTZDc0NKMzFOZmY4aFVSRUEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtYWRtaW4tc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImRhc2hib2FyZC1hZG1pbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjE3ZmE3MTExLWFmYTItNGU4Yi1hYmU2LTlkMzg2MWRjZDNlYSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpkYXNoYm9hcmQtYWRtaW4ifQ.MxMTlSMa4GpNFZnyTyrJwOh9_IjFm0Xa4a2I14k4BO5i-QE1_cVtZIJUHXV8bKk5tKyw9UUcCgetp-0-AKE4_h5Pwe5OcHrzwKY0cUpX3qKERvkdZ71q8RWPBID-P6VLsK5AlpZ24z8DAwhBJvSK-fKmyCf-KLt6o1ZFp0qj-MoWGmuwjFeDJRvwftHgxzj8E2Rt5vSfdgIHOmIITaIgGsxoqQqMo3QDKl4RDBLpnZQYleKNqI7U7DPK6fuJtajTrDPdbEiQq4i7B-bX_SooJzlNDN3HMxiezX559RXGNOo_YyAA2-yOU50oijQ_zW8bP-bv0AZn1MoP_oR5JLNVeQ
 kubectl -n kube-system describe secrets dashboard-admin-secret
@@ -62,3 +56,6 @@ Spark Command: /opt/bitnami/java/bin/java -cp /opt/bitnami/spark/conf/:/opt/bitn
 --class org.apache.spark.sql.connect.service.SparkConnectServer 
 --name Spark Connect server 
 --packages org.apache.spark:spark-connect_2.12:3.4.0 spark-internal
+
+
+
