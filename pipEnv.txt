@@ -1,3 +1,8 @@
+====== psycopg2 ========
+apt-get install libpq-dev
+
+
+
 pip freeze > scarpip.txt
 
 pip install -r scarpip.txt
