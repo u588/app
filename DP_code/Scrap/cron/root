@@ -22,10 +22,10 @@
 45 16 * * 1-5 python3 /home/TDX/tdxGetIndexsD.py
 00 17 * * 1-5 python3 /home/TDX/iniTDXIndexsData.py
 
-00 06 1-7 1,7 * [ `date +%w` -eq 7 ] && python3 /home/CS/pgCsCons.py
+00 06 1-7 1,7 * [ `date +\%w` -eq 7 ] && python3 /home/CS/pgCsCons.py
 30 17 * * 1-5 python3 /home/CS/pgCssmDaily.py
 
 40 18 * * 1-5 python3 /home/THS/pgTHSFunds.py
 00 00 15 3,6,9 * python3 /home/THS/pgTHSStockBas.py
-00 00 8-14 * * [ `date +%w` -eq 7 ] && python3 /home/THS/pgTHSStockFina.py
-00 00 1-7 3,6,9,12 * [ `date +%w` -eq 7 ] && python3 /home/THS/pgTHSStockHolders.py
+00 00 8-14 * * [ `date +\%w` -eq 7 ] && python3 /home/THS/pgTHSStockFina.py
+00 00 1-7 3,6,9,12 * [ `date +\%w` -eq 7 ] && python3 /home/THS/pgTHSStockHolders.py
