@@ -1,0 +1,9 @@
+pip install pyspark
+
+pip install grpcio
+pip install grpcio-status
+pip install PyArrow
+pip install protobuf
+pip install grpc
+
+
