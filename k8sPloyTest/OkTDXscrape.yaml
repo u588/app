@@ -14,12 +14,12 @@ spec:
     spec:
       containers:
       - name: tdxscrape
-        image: 10.3.18.60/docker/tdx-scrape:v2
+        image: 10.3.18.60/docker/tdx-scrape:v3
         volumeMounts:
         - mountPath: /home 
           name: home
-        - mountPath: /var/spool/cron/crontabs
-          name: crontab
+        # - mountPath: /var/spool/cron/crontabs
+        #   name: crontab
 
 
       volumes:
@@ -28,8 +28,8 @@ spec:
           server: 10.145.254.55
           path: /home/nfsroot/Scrap
           readOnly: false
-      - name: crontab
-        nfs:
-          server: 10.145.254.55
-          path: /home/nfsroot/Scrap/cron
-          readOnly: false
+      # - name: crontab
+      #   nfs:
+      #     server: 10.145.254.55
+      #     path: /home/nfsroot/Scrap/cron
+      #     readOnly: false

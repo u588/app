@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 import tushare as ts
 import pandas as pd
-
+import pyspark.pandas as ps
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/MarkCap')
-
+ps.read_sql('table_name', 'jdbc:postgresql:db_name')
 try:
     tsTop = ts.inst_detail().sort_values('date')
     upDay = tsTop.tail(1)['date'].to_list()[0]
