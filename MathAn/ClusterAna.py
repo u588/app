@@ -7,43 +7,37 @@ from matplotlib.collections import LineCollection
 from sklearn import cluster, covariance, manifold
 from sqlalchemy import create_engine
 
-home = '10.145.254.55:5432'
-job = '10.3.18.56:5432'
-ip = job
-
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-IndexConsts = pd.read_csv('f:\indexconst.csv', dtype={'code':object, 'index_code':object})
+IndexConsts = pd.read_excel('g:/gitee/app/data/indexconst.xlsx', dtype={'IndexCode':object, 'StockCode':object})
 ###############################################################################
 # Retrieve the data from Internet
 
 # Choose a time period reasonably calm (not too long ago so that we get
 # high-tech firms, and before the 2008 crash)
-d1 = '2019-04-01'
-d2 = '2019-06-12'
+d1 = '2023-02-01'
+d2 = '2023-08-01'
 
 start_date = datetime.strptime(d1,'%Y-%m-%d')
 end_date = datetime.strptime(d2,'%Y-%m-%d')
 
-IndexCode = '399394'
+IndexCode = '881092'
 
 
-Consts = IndexConsts[IndexConsts.index_code==IndexCode]
-symbols = Consts.code.tolist()
-names = Consts.name.tolist() 
+Consts = IndexConsts[IndexConsts.IndexCode==IndexCode]
+symbols = Consts.StockCode.tolist()
+names = Consts.StockName.tolist() 
 
 quotes = []
 for symbol in symbols:
     print('Fetching quote history for %r' % symbol)
-    
     df = pd.read_sql(symbol, eng)[['datetime', 'open', 'close']]
     df.datetime = df.datetime.str.replace('15:00', '')
     dd = df[(df['datetime']>d1) & (df['datetime']<d2)]
-    
-    quotes.append(dd)
+    quotes = pd.concat(quotes, dd)
 
 
 close_prices = np.vstack([q['close'] for q in quotes])
@@ -151,5 +145,5 @@ plt.xlim(embedding[0].min() - .15 * embedding[0].ptp(),
 plt.ylim(embedding[1].min() - .03 * embedding[1].ptp(),
          embedding[1].max() + .03 * embedding[1].ptp())
 
-plt.title('上证50成分股')
+plt.title('上证成分股')
 plt.show()
