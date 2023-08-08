@@ -27,3 +27,73 @@ ax.set_zlabel('Z')
 plt.show()
 
 
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Fixing random state for reproducibility
+np.random.seed(19680801)
+
+
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+x, y = np.random.rand(2, 100) * 4
+hist, xedges, yedges = np.histogram2d(x, y, bins=4, range=[[0, 4], [0, 4]])
+
+# Construct arrays for the anchor positions of the 16 bars.
+xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25, indexing="ij")
+xpos = xpos.ravel()
+ypos = ypos.ravel()
+zpos = 0
+
+# Construct arrays with the dimensions for the 16 bars.
+dx = dy = 0.5 * np.ones_like(zpos)
+dz = hist.ravel()
+
+ax.bar3d(xpos, ypos, zpos, dx, dy, dz, zsort='average')
+
+plt.show()
+
+
+
+
+from matplotlib import cbook
+from matplotlib import cm
+from matplotlib.colors import LightSource
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load and format data
+dem = cbook.get_sample_data('jacksboro_fault_dem.npz', np_load=True)
+z = dem['elevation']
+nrows, ncols = z.shape
+x = np.linspace(dem['xmin'], dem['xmax'], ncols)
+y = np.linspace(dem['ymin'], dem['ymax'], nrows)
+x, y = np.meshgrid(x, y)
+
+region = np.s_[5:50, 5:50]
+x, y, z = x[region], y[region], z[region]
+
+# Set up plot
+fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
+
+ls = LightSource(270, 45)
+# To use a custom hillshading mode, override the built-in shading and pass
+# in the rgb colors of the shaded surface calculated from "shade".
+rgb = ls.shade(z, cmap=cm.gist_earth, vert_exag=0.1, blend_mode='soft')
+surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,
+                       linewidth=0, antialiased=False, shade=False)
+
+plt.show()
+
+
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+df_scaled = scaler.fit_transform(df)
+
+
+fig, ax = plt.subplots()
+ax.scatter(delta1[:-1], delta1[1:], c=close, s=volume, alpha=0.5)
