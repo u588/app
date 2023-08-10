@@ -90,9 +90,13 @@ plt.show()
 
 
 
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-df_scaled = scaler.fit_transform(df)
+from sklearn import preprocessing
+scaler = preprocessing.StandardScaler().fit(X_train)
+preprocessing.minmax_scale
+preprocessing.maxabs_scale
+preprocessing.robust_scale
+preprocessing.normalize
+preprocessing.scale
 
 
 fig, ax = plt.subplots()
