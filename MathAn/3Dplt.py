@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.finance as mpf
 
 
 from sqlalchemy import create_engine
@@ -101,3 +102,10 @@ preprocessing.scale
 
 fig, ax = plt.subplots()
 ax.scatter(delta1[:-1], delta1[1:], c=close, s=volume, alpha=0.5)
+
+
+ax.scatter(df['index'], df.close, s=preprocessing.minmax_scale(df.vol)*100, alpha=0.5)
+
+
+surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,
+                       linewidth=0, antialiased=True, shade=True)
