@@ -1,24 +1,58 @@
-kubectl apply -n kubejupter -f - <<EOF
-kind: StorageClass
+kubectl apply  -f - <<EOF
 apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: manual
+  name: local-storage
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 EOF
 
+============= NFS ==========
 
-kubectl apply -n kubejupter -f - <<EOF
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: data-jupyter-postgresql-0
+  name: pv0003
 spec:
-  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: slow
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /home/nfsroot/tmp
+    server: 10.145.254.55
+EOF
+
+============ Local ==============
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-0062
+spec:
   capacity:
     storage: 10Gi
+  volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
-  hostPath:
-    path: /tmp
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  local:
+    path: /tmp/62
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-node-62
 EOF
