@@ -2,13 +2,13 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.finance as mpf
+
 
 
 from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
-df = pd.read_sql('600188', eng).tail(100).reset_index(drop=True).reset_index()
+df = pd.read_sql('600180', eng).tail(100).reset_index(drop=True).reset_index()
 
 #时间转换
 df['data'] = pd.to_datetime(df.datetime).dt.strftime('%Y%m%d')
@@ -109,3 +109,31 @@ ax.scatter(df['index'], df.close, s=preprocessing.minmax_scale(df.vol)*100, alph
 
 surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,
                        linewidth=0, antialiased=True, shade=True)
+
+
+
+
+from scipy import fft 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+
+prices = df.close
+fft = np.fft.fft(prices)
+
+
+freqs = np.fft.fftfreq(prices.size)
+plt.plot(freqs, np.abs(fft))
+plt.xlabel('Frequency')
+plt.ylabel('Amplitude')
+plt.show()
+
+ifft = np.fft.ifft(fft)
+
+plt.plot(prices, label='Original')
+plt.plot(ifft.real, label='Reconstructed')
+plt.legend()
+plt.show()
+
