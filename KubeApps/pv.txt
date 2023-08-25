@@ -36,7 +36,7 @@ kubectl apply -f - <<EOF
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-0062
+  name: pv-0052
 spec:
   capacity:
     storage: 10Gi
@@ -46,7 +46,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   storageClassName: local-storage
   local:
-    path: /tmp/62
+    path: /tmp/52
   nodeAffinity:
     required:
       nodeSelectorTerms:
