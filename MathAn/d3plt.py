@@ -3,7 +3,7 @@ from sklearn import preprocessing
 from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
-df = pd.read_sql('600409', eng).tail(250).reset_index(drop=True).reset_index()
+df = pd.read_sql('600996', eng).tail(250).reset_index(drop=True).reset_index()
 
 
 # Load d3blocks
@@ -31,8 +31,8 @@ d3.scatter(df['index'].values,
                opacity=0.4,
                tooltip=tooltip,
             #    scale='true',
-               title='D3Plt',
+               title='996',
                figsize=[1200,600],
-               filepath='scatter_demo.html',
+               filepath='scatter_996.html',
                cmap='tab20c')
 

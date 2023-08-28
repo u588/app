@@ -131,6 +131,7 @@
         var url = "/detChart/"+stockID
         var url1 = "/gridChart/"+stockID
         var url2 = "/detaChart/"+stockID
+        var url3 = "/d3Chart/"+stockID
 
         var chart = echarts.init(document.getElementById('grid'), 'roma', {renderer: 'Canvsa'});
         chart.clear();
@@ -165,7 +166,22 @@
             });
         }
     )     
-        
+
+    $(
+        function () {
+                window.open(url3,'_blank')
+                $.ajax({
+                type: "GET",
+                url: url,
+                dataType: 'json',
+                success: function (result) {
+                    chart.setOption(result);
+                }
+                
+            });
+        }
+    )     
+
 }
 
 </script>
