@@ -3,42 +3,52 @@ from sklearn import preprocessing
 from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
-from d3blocks import D3Blocks
 
-
-
+from bokeh.models import ColumnDataSource, RangeTool
+from bokeh.plotting import figure, show ,output_file
+from bokeh.transform import log_cmap
+from bokeh.layouts import column
 
 def d3(CodeId):
-   df = pd.read_sql(CodeId, eng).reset_index(drop=True).reset_index()
-   StocksList = pd.read_sql('StocksDetail20236', engB)
-   St = StocksList.loc[StocksList['code']==CodeId]
-   # Load d3blocks
-   # from d3blocks import D3Blocks
-   #
-   # Initialize
-   d3 = D3Blocks()
-   #
-   # Load example data
-   # df = d3.import_example('cancer')
-   #
-   # Set size and tooltip
+    TOOLS="hover,crosshair,pan,wheel_zoom,box_zoom,undo,redo,reset,tap,save"
 
-   # size = df['survival_months'].fillna(1).values / 20
-   size =  ((preprocessing.minmax_scale(df.vol))*38).round(2)
-   # tooltip = df['labx'].values + ' <br /> Survival: ' + df['survival_months'].astype(str).str[0:4].values
-   tooltip = 'Date: '+df['datetime'].str[:10]+' <br /> Close: '+df['close'].astype(str).values + ' <br /> vol: ' + df['vol'].astype(str).values
-   #
-   # Scatter plot
-   d3.scatter(df['index'].values,
-                  df['close'].values,
-                  size=size,
-                  color=df['close'].astype(str).values,
-                  stroke='#000000',
-                  opacity=0.4,
-                  tooltip=tooltip,
-               #    scale='true',
-                  title=St.name.to_list()[0]+' : '+St.code.to_list()[0],
-                  figsize=[1800,700],
-                  filepath='/home/static/d3plt.html',
-                  cmap='tab20c')
-   
+    TOOLTIPS = [
+        ("Date", "@sdate"),
+        ("Close", "@close"),
+        ("Vol", "@vol"),
+    ]
+
+    df = pd.read_sql(CodeId, eng).reset_index(drop=True).reset_index()
+    StocksList = pd.read_sql('StocksDetail20236', engB)
+    St = StocksList.loc[StocksList['code']==CodeId]
+    size =  ((preprocessing.minmax_scale(df.vol))*38).round(2)
+    dates = pd.to_datetime(df.datetime.str[:10])
+    sdate = df['datetime'].str[:10]
+    source = ColumnDataSource(data=dict(date=dates, close=df.close, vol=df.vol, size=size, sdate=sdate))
+    cmap = log_cmap(field_name='close', palette="RdYlGn8", low=min(df.close), high=max(df.close))
+
+    p = figure(height=600, width=1400, tools=TOOLS, toolbar_location="right",
+            x_axis_type="datetime", x_axis_location="above",
+            background_fill_color="#efefef", x_range=(dates[1200], dates[1600]),
+            tooltips = TOOLTIPS)
+
+    # p.line('date', 'close', source=source)
+    p.scatter(x='date', y='close', color=cmap, size='size', alpha=0.5,source=source,line_color='#333333')
+    p.yaxis.axis_label = 'Price'
+
+    select = figure(
+                    height=100, width=1400, y_range=p.y_range,
+                    x_axis_type="datetime", y_axis_type=None,
+                    tools="", toolbar_location=None, background_fill_color="#efefef")
+
+    range_tool = RangeTool(x_range=p.x_range)
+    range_tool.overlay.fill_color = "navy"
+    range_tool.overlay.fill_alpha = 0.2
+
+    select.line('date', 'close', source=source)
+    select.ygrid.grid_line_color = None
+    select.add_tools(range_tool)
+
+    p.toolbar.autohide = True
+    output_file("/home/static/d3plt.html", title=St.name.to_list()[0]+' : '+St.code.to_list()[0])
+    show(column(p, select))
