@@ -27,9 +27,9 @@ def d3(CodeId):
     source = ColumnDataSource(data=dict(date=dates, close=df.close, vol=df.vol, size=size, sdate=sdate))
     cmap = log_cmap(field_name='close', palette="RdYlGn8", low=min(df.close), high=max(df.close))
 
-    p = figure(height=600, width=1400, tools=TOOLS, toolbar_location="right",
+    p = figure(height=600, width=1800, tools=TOOLS, toolbar_location="right",
             x_axis_type="datetime", x_axis_location="above",
-            background_fill_color="#efefef", x_range=(dates[1200], dates[1600]),
+            background_fill_color="#efefef", x_range=(dates[len(dates)-500], dates[len(dates)-1]),
             tooltips = TOOLTIPS)
 
     # p.line('date', 'close', source=source)
@@ -37,7 +37,7 @@ def d3(CodeId):
     p.yaxis.axis_label = 'Price'
 
     select = figure(
-                    height=100, width=1400, y_range=p.y_range,
+                    height=100, width=1800, y_range=p.y_range,
                     x_axis_type="datetime", y_axis_type=None,
                     tools="", toolbar_location=None, background_fill_color="#efefef")
 

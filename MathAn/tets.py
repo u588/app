@@ -26,7 +26,7 @@ cmap = log_cmap(field_name='close', palette="RdYlGn8", low=min(df.close), high=m
 
 p = figure(height=600, width=1400, tools=TOOLS, toolbar_location="right",
            x_axis_type="datetime", x_axis_location="above",
-           background_fill_color="#efefef", x_range=(dates[1200], dates[1600]),
+           background_fill_color="#efefef", x_range=(dates[len(dates)-500], dates[len(dates)-1]),
            tooltips = TOOLTIPS)
 
 # p.line('date', 'close', source=source)
