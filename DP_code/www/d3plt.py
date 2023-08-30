@@ -4,13 +4,13 @@ from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
 
-from bokeh.models import ColumnDataSource, RangeTool
+from bokeh.models import ColumnDataSource, RangeTool, WheelZoomTool
 from bokeh.plotting import figure, show ,output_file
 from bokeh.transform import log_cmap
 from bokeh.layouts import column
 
 def d3(CodeId):
-    TOOLS="hover,crosshair,pan,wheel_zoom,box_zoom,undo,redo,reset,tap,save"
+    TOOLS="hover,crosshair,pan,box_zoom,undo,redo,reset,tap,save"
 
     TOOLTIPS = [
         ("Date", "@sdate"),
@@ -48,7 +48,10 @@ def d3(CodeId):
     select.line('date', 'close', source=source)
     select.ygrid.grid_line_color = None
     select.add_tools(range_tool)
-
+    wheel_zoom = WheelZoomTool()
+    wheel_zoom.dimensions = 'width'
+    p.add_tools(wheel_zoom)
+    p.toolbar.active_scroll = wheel_zoom
     p.toolbar.autohide = True
     output_file("/home/static/d3plt.html", title=St.name.to_list()[0]+' : '+St.code.to_list()[0])
     show(column(p, select))

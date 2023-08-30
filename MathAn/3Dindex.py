@@ -1,14 +1,14 @@
 import pandas as pd
 from sklearn import preprocessing
 from sqlalchemy import create_engine
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
 
-from bokeh.models import ColumnDataSource, RangeTool, WheelZoomTool
+from bokeh.models import ColumnDataSource, RangeTool
 from bokeh.plotting import figure, show ,output_file
 from bokeh.transform import log_cmap
 from bokeh.layouts import column
 
-TOOLS="hover,crosshair,pan,box_zoom,undo,redo,reset,tap,save"
+TOOLS="hover,crosshair,pan,xwheel_zoom,box_zoom,undo,redo,reset,tap,save"
 
 
 TOOLTIPS = [
@@ -17,7 +17,7 @@ TOOLTIPS = [
     ("Vol", "@vol"),
 ]
 
-df = pd.read_sql('600996', eng).reset_index(drop=True).reset_index()
+df = pd.read_sql('881422', eng).reset_index(drop=True).reset_index()
 size =  ((preprocessing.minmax_scale(df.vol))*38).round(2)
 dates = pd.to_datetime(df.datetime.str[:10])
 sdate = df['datetime'].str[:10]
@@ -46,48 +46,6 @@ select.line('date', 'close', source=source)
 select.ygrid.grid_line_color = None
 select.add_tools(range_tool)
 
-wheel_zoom = WheelZoomTool()
-wheel_zoom.dimensions = 'width'
-p.add_tools(wheel_zoom)
-p.toolbar.active_scroll = wheel_zoom
 p.toolbar.autohide = True
 output_file("stocks.html", title="stocks.py example")
 show(column(p, select))
-
-
-
-import numpy as np
-
-from bokeh.models import WheelZoomTool
-from bokeh.plotting import figure, show
-
-x = np.random.random(size=200)
-y = np.random.random(size=200)
-
-# Basic plot setup
-p = figure(width=400, height=400, title='Select and Zoom',
-              tools="hover,crosshair,pan,box_zoom,undo,redo,reset,tap,save")
-
-
-wheel_zoom = WheelZoomTool()
-wheel_zoom.dimensions = 'width'
-p.add_tools(wheel_zoom)
-p.toolbar.active_scroll = wheel_zoom
-
-p.circle(x, y, size=5)
-show(p)
-# select_overlay = plot.select_one(WheelZoomTool).overlay
-
-# select_overlay.fill_color = "firebrick"
-# select_overlay.line_color = None
-
-# zoom_overlay = plot.select_one(WheelZoomTool).overlay
-
-# zoom_overlay.line_color = "olive"
-# zoom_overlay.line_width = 8
-# zoom_overlay.line_dash = "solid"
-# zoom_overlay.fill_color = None
-
-# plot.select_one(WheelZoomTool).overlay.line_dash = [10, 10]
-WheelZoomTool
-show(plot)
