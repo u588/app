@@ -1,0 +1,34 @@
+# pytdx将重点放在底层包的解析，对于更高层的封装，建议参考或者直接使用Quantaxis的实现
+https://github.com/yutiansut/QUANTAXIS/blob/master/QUANTAXIS/QAFetch/QATdx.py
+
+
+============= 文件读写 ===========
+# w为创建新文件，同名就替换，x为创建新文件，同名就失败，a为添加到已有文件，没有才创建新文件
+f = open(file=r'g:\tmp\1\1.txt', mode='w')
+f.write()
+f.close()
+
+0 - 深圳， 1 - 上海
+
+import pandas as pd
+from pytdx.hq import TdxHq_API
+api = TdxHq_API()
+api.connect('119.147.212.81', 7709)
+
+1 : 查询公司信息目录
+api.to_df(api.get_company_info_category(0 , '000001'))
+
+2 : 读取公司信息详情
+api.to_df(api.get_company_info_content(0, '000001', '000001.txt', 877195, 49773))
+
+
+======== 历史专业财务数据 ============
+gpcw19971231.zip 1231 0930 0630 0331
+
+from pytdx.crawler.base_crawler import demo_reporthook
+from pytdx.crawler.history_financial_crawler import HistoryFinancialCrawler
+
+datacrawler = HistoryFinancialCrawler()
+pd.set_option('display.max_columns', None)
+result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename='gpcw20230630.zip', path_to_download="/tmp/tmpfile.zip")
+datacrawler.to_df(data=result).round(2).to_excel('g:/tmp/1/1.xlsx')
