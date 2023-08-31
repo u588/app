@@ -12,6 +12,7 @@ import getCsIndex
 import getCsStock
 import csIndexChart
 import test
+import d3plt
 
 
 app = Flask(__name__, 
@@ -67,6 +68,12 @@ def gridChart(codeID):
     c = Kpro.Kchart(codeID)
     # return c.dump_options_with_quotes()
     return c.render_embed()
+
+@app.route("/d3Chart/<codeID>")
+def d3Chart(codeID):
+    d3plt.d3(codeID)
+    # return c.dump_options_with_quotes()
+    return app.send_static_file('d3plt.html')
 
 @app.route("/indexChart/<codeID>")
 def indexChart(codeID):

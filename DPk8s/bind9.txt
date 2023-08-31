@@ -1,0 +1,105 @@
+systemctl enable named
+systemctl restart named
+
+
+cat >/etc/bind/named.conf<<EOF
+options {
+        directory "/var/cache/bind";
+        listen-on { any; };
+        listen-on-v6 { any; };
+        allow-query { any; };
+        allow-query-cache { any; };
+        recursion yes;
+        allow-recursion { any; };
+        allow-transfer { none; };
+        allow-update { none; };
+        auth-nxdomain no;
+        dnssec-validation no;
+        forward first;
+        forwarders {
+          111.11.1.1;
+          8.8.8.8;
+        };
+};
+zone "tsdc.io" IN {
+  type master;
+  file "/var/lib/bind/tsdc.io.zone";
+};
+zone "18.3.10.in-addr.arpa" IN {
+  type master;
+  file "/var/lib/bind/18.3.10.in-addr.arpa";
+};
+EOF
+
+
+cat >/var/lib/bind/tsdc.io.zone<<'EOF'
+$TTL 1W
+@   IN    SOA    ns1.tsdc.io.    root (
+                 2019070700        ; serial
+                 3H                ; refresh (3 hours)
+                 30M               ; retry (30 minutes)
+                 2W                ; expiry (2 weeks)
+                 1W )              ; minimum (1 week)
+    IN    NS     ns1.tsdc.io.
+    IN    MX 10  smtp.tsdc.io.
+;
+ns1.tsdc.io.            IN A 10.3.18.99
+smtp.tsdc.io.           IN A 10.3.18.99
+;
+registry.tsdc.io.       IN A 10.3.18.97
+mirrors.tsdc.io.       IN A 10.3.18.60
+
+lb-93.tsdc.io.  IN A 10.3.18.93
+lb-94.tsdc.io.  IN A 10.3.18.94
+;
+*.apps.k8s.tsdc.io.    IN A 10.3.18.99
+;
+bastion.tsdc.io.   IN A 10.3.18.51
+;
+master-91.k8s.tsdc.io.  IN A  10.3.18.91
+master-92.k8s.tsdc.io.  IN A  10.3.18.92
+master-90.k8s.tsdc.io.  IN A  10.3.18.90
+;
+node-95.k8s.tsdc.io.    IN A  10.3.18.95
+node-96.k8s.tsdc.io.    IN A  10.3.18.96
+node-98.k8s.tsdc.io.    IN A  10.3.18.98
+
+EOF
+
+
+cat >/var/lib/bind/18.3.10.in-addr.arpa<<'EOF'
+$TTL 1W
+@   IN    SOA      ns1.tsdc.io.     root (
+                   2019070700        ; serial
+                   3H                ; refresh (3 hours)
+                   30M               ; retry (30 minutes)
+                   2W                ; expiry (2 weeks)
+                   1W )              ; minimum (1 week)
+    IN    NS       ns1.tsdc.io.
+;
+
+93.18.3.10.in-addr.arpa. IN PTR lb-93.k8s.tsdc.io.
+94.18.3.10.in-addr.arpa. IN PTR lb-94.k8s.tsdc.io.
+51.18.3.10.in-addr.arpa. IN PTR bastion.tsdc.io.
+97.18.3.10.in-addr.arpa. IN PTR registry.tsdc.io.
+60.18.3.10.in-addr.arpa. IN PTR mirrors.tsdc.io.
+ 
+;
+91.18.3.10.in-addr.arpa. IN PTR master-91.k8s.tsdc.io.
+92.18.3.10.in-addr.arpa. IN PTR master-92.k8s.tsdc.io.
+90.18.3.10.in-addr.arpa. IN PTR master-90.k8s.tsdc.io.
+;
+95.18.3.10.in-addr.arpa. IN PTR node-95.k8s.tsdc.io.
+96.18.3.10.in-addr.arpa. IN PTR node-96.k8s.tsdc.io.
+98.18.3.10.in-addr.arpa. IN PTR node-98.k8s.tsdc.io.
+EOF
+
+
+
+chmod -R a+rwx /etc/bind
+chmod -R a+rwx /var/lib/bind/
+chmod -R a+rwx /var/cache/bind/
+
+systemctl restart named
+
+

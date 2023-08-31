@@ -118,7 +118,7 @@ ctr  image pull docker.io/rancher/k3s:v1.25.9+k3s1
 curl –sfL \
      https://rancher-mirror.oss-cn-beijing.aliyuncs.com/k3s/k3s-install.sh | \
      INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION="v1.25.9+k3s1" sh -s - \
-     --system-default-registry "registry.cn-hangzhou.aliyuncs.com"`
+     --system-default-registry "registry.cn-hangzhou.aliyuncs.com"
 
 
 

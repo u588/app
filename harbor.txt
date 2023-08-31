@@ -100,7 +100,7 @@ docker-compose up -d
 docker rm -f $(docker ps -aq)
 bash ./prepare
 docker-compose down -v
-./install.sh --with-trivy  --with-chartmuseum
+./install.sh --with-trivy  (--with-chartmuseum)
 docker-compose up -d
 
 
