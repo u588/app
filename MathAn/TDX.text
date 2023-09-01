@@ -32,3 +32,7 @@ datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename='gpcw20230630.zip', path_to_download="/tmp/tmpfile.zip")
 datacrawler.to_df(data=result).round(2).to_excel('g:/tmp/1/1.xlsx')
+
+
+通过命令行工具hq_reader读取并保存到 csv 文件
+hqreader -d hf -o g:/tmp/1/gpcw20230630.csv g:/tmp/1/gpcw20230630.dat
