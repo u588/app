@@ -1,6 +1,7 @@
 # pytdx将重点放在底层包的解析，对于更高层的封装，建议参考或者直接使用Quantaxis的实现
 https://github.com/yutiansut/QUANTAXIS/blob/master/QUANTAXIS/QAFetch/QATdx.py
 
+https://rainx.gitbooks.io/pytdx/content/
 
 ============= 文件读写 ===========
 # w为创建新文件，同名就替换，x为创建新文件，同名就失败，a为添加到已有文件，没有才创建新文件
@@ -23,6 +24,16 @@ api.to_df(api.get_company_info_content(0, '000001', '000001.txt', 877195, 49773)
 
 
 ======== 历史专业财务数据 ============
+
+1、获取历史专业财务数据列表
+
+from pytdx.crawler.history_financial_crawler import HistoryFinancialListCrawler
+crawler = HistoryFinancialListCrawler()
+list_data = crawler.fetch_and_parse()
+print(pd.DataFrame(data=list_data))
+
+
+
 gpcw19971231.zip 1231 0930 0630 0331
 
 from pytdx.crawler.base_crawler import demo_reporthook
