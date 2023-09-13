@@ -347,14 +347,14 @@ def Kchart(CodeId):
                     title=(CodeId+' : '+Stock.name[0]), pos_left="center",
                     subtitle=(str(StockF['report_date'].tolist()[0])+
                             '  所属行业: '+Stock['icLev1'].tolist()[0]+'、'+Stock['icLev3'].tolist()[0]+  '    地域: '+Stock['regi'].tolist()[0]+'    控股股东: '+Stock['cSH'].tolist()[0]+' '+Stock['cSHr'].tolist()[0]+
-                            '    最终控住人: '+Stock['ucSH'].tolist()[0]+' '+Stock['ucSHr'].tolist()[0]+'    注册资本: '+Stock['regCap'].tolist()[0]+ '    雇员人数：'+Stock['empNum'].tolist()[0] +"\n" + "\n"+
-                            '收益: '+str(StockF['col1'].tolist()[0])+'  净资: '+str(StockF['col4'].tolist()[0])+'  资本公积金: '+str(StockF['col5'].tolist()[0])+'  未分利润 :'+str(StockF['col3'].tolist()[0])+'  经营现金流: '+str(StockF['col7'].tolist()[0])+'  现金比率: '+str(StockF['col161'].tolist()[0])+'%'+
+                            '    最终控住人: '+Stock['ucSH'].tolist()[0]+' '+Stock['ucSHr'].tolist()[0]+'    注册资本: '+Stock['regCap'].tolist()[0]+ '    雇员人数：'+Stock['empNum'].tolist()[0] +"\n" + 
+                            '收益: '+str(StockF['col1'].tolist()[0])+'  净资: '+str(StockF['col4'].tolist()[0])+'  资本公积金: '+str(StockF['col5'].tolist()[0])+'  未分利润 :'+str(StockF['col3'].tolist()[0])+'  经营现金流: '+str(StockF['col7'].tolist()[0])+'  现金比率: '+str(StockF['col161'].tolist()[0])+
                             '  总收入: '+str(round(float(StockF['col502'].tolist()[0])/10000, 2))+'亿元'+'  总收入同比: '+str(StockF['col183'].tolist()[0])+'%'+'  货币资金: '+str(round(float(StockF['col8'].tolist()[0])/100000000, 2))+'亿元'+'  交易性金融资产: '+str(round(float(StockF['col9'].tolist()[0])/100000000, 2))+'亿元'+
-                            '  现金及现金等价物净增加额: '+str(round(float(StockF['col131'].tolist()[0])/100000000, 2))+'亿元'+
-                            '  净利润: '+str(round(float(StockF['col95'].tolist()[0])/100000000, 2))+'亿元'+'  净利润同比: '+str(StockF['col184'].tolist()[0])+'%'+
+                            '  现金及现金等价物净增加额: '+str(round(float(StockF['col131'].tolist()[0])/100000000, 2))+'亿元'+"\n" + 
+                            '净利润: '+str(round(float(StockF['col95'].tolist()[0])/100000000, 2))+'亿元'+'  净利润同比: '+str(StockF['col184'].tolist()[0])+'%'+
                             '  毛利率: '+str(StockF['col202'].tolist()[0])+'%'+'  净利率: '+str(StockF['col201'].tolist()[0])+'%'+'  净资收益率: '+str(StockF['col6'].tolist()[0])+'%'+
-                            '  资产总计: '+ str(round(float(StockF['col40'].tolist()[0])/100000000, 2))+'亿元'+'  固定资产比率: '+str(StockF['col214'].tolist()[0])+'%'+'  存货比率: '+str(StockF['col213'].tolist()[0])+'%' +'  资产负债率: '+str(StockF['col201'].tolist()[0])+'%', 
-                    subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold')
+                            '  资产总计: '+ str(round(float(StockF['col40'].tolist()[0])/100000000, 2))+'亿元'+'  固定资产比率: '+str(StockF['col214'].tolist()[0])+'%'+'  存货比率: '+str(StockF['col213'].tolist()[0])+'%' +'  资产负债率: '+str(StockF['col201'].tolist()[0])+'%'), 
+                    subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='normal',font_size=12),
                 ),
                 xaxis_opts=opts.AxisOpts(
                     type_="category",
