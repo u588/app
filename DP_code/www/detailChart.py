@@ -12,7 +12,7 @@ engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds
 
 def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD)
-    ll = list(Data.columns[0:10])+['col21','col27','col63','col86','col92','col131','col161']+list(Data.columns[183:203])+ list(Data.columns[209:215])+['col225','col228','col229','col246','col284','col502']
+    ll = list(Data.columns[0:10])+['col17','col21','col22','col27','col33','col35','col36','col40','col54','col63','col81','col83','col86','col92','col95','col131','col135','col143']+list(Data.columns[159:228])+list(Data.columns[244:262])['col246','col284','col502']
     Data = Data[ll]
     dn = pd.read_sql('tdxFSCode', engD)
     dd = Data.set_index('report_date')
