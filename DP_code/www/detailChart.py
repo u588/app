@@ -14,9 +14,10 @@ def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD)
     # ll = list(Data.columns[0:10])+['col17','col21','col22','col27','col33','col35','col36','col40','col54','col63','col81','col83','col86','col92','col95','col131','col135','col143'] + \
         # list(Data.columns[159:190])+['col191']+list(Data.columns[193:230])+['col238','col239','col243','col244','col284','col326','col242','col246','col401','col502','col506','col509','col519','col520','col580','col581']
-    ll =  pd.read_sql('tdxFSLists' , engD).Code.to_list()
+    dn = pd.read_sql('tdxFSLists', engD)
+    ll =  dn.Code.to_list()
     Data = Data[ll]
-    dn = pd.read_sql('tdxFSCode', engD)
+    
     dd = Data.set_index('report_date')
     d = list(dd.columns)
     dd.reset_index(inplace=True)
