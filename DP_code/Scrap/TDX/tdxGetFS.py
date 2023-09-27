@@ -11,7 +11,7 @@ api.connect('119.147.212.81', 7709)
 
 lsD = pd.read_excel('G:/Gitee/App/MathAn/tdxFSls.xlsx')
 ls = lsD['filename'].to_list()
-
+ls = ['gpcw20230930.zip']
 
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
