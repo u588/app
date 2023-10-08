@@ -1,4 +1,4 @@
-from hugegraph import PyHugeGraph
+from hugegraph.connection import PyHugeGraph
 # init client
 client = PyHugeGraph("127.0.0.1", "8080", user="admin", pwd="pwd", graph="hugegraph")
 
