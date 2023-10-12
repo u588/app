@@ -2,6 +2,7 @@ docker login  u588 syslog6^^
 
 
 ============ Docker Command ========
+docker commit 容器ID  镜像名
 #导出一个已经创建的容器导到一个文件
 docker export -o 文件名.tar 容器id
 #将文件导入为镜像

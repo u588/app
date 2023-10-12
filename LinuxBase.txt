@@ -7,9 +7,26 @@ ps pkill --> apt install procps
     Debian : timeconfig
 
     cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+二、中文环境
+    apt install locales
+    dpkg-reconfigure locales
+
+    临时改变语言环境
+    export LANG=zh_CN.utf8
+
+    永久改变系统全局语言环境
+    cd /etc/profile.d
+    touch set-lang.sh
+    chmod +x set-lang.sh
+
+cat > /etc/profile.d/set-lang.sh << 'EOF'
+#!/bin/bash
+export LANG=zh_CN.utf8
+EOF
 
 
-二、apt源
+
+三、apt源
  debian:
     deb http://mirrors.163.com/debian/ bookworm main non-free-firmware 
     deb http://mirrors.163.com/debian/ bookworm-backports  main non-free-firmware
