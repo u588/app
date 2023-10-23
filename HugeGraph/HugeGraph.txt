@@ -1,0 +1,4 @@
+1 、 停止 Server，初始化执行 init-store.sh
+./bin/stop-hugegraph.sh
+./bin/init-store.sh
+./bin/start-hugegraph.sh
