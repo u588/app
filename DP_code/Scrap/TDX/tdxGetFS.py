@@ -9,7 +9,7 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 api = TdxHq_API()
 api.connect('119.147.212.81', 7709)
 
-lsD = pd.read_excel('G:/Gitee/App/MathAn/tdxFSls.xlsx')
+lsD = pd.read_excel('/home/ts/app/MathAn/tdxFSls.xlsx')
 ls = lsD['filename'].to_list()
 
 
