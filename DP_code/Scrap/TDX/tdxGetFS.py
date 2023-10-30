@@ -9,15 +9,9 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 api = TdxHq_API()
 api.connect('119.147.212.81', 7709)
 
-<<<<<<< HEAD
-lsD = pd.read_excel('/home/ts/app/MathAn/tdxFSls.xlsx')
-ls = lsD['filename'].to_list()
-
-=======
 # lsD = pd.read_excel('G:/Gitee/App/MathAn/tdxFSls.xlsx')
 # ls = lsD['filename'].to_list()
 ls = ['gpcw20230930.zip']
->>>>>>> add0482f9d08b446b2ec5f06a938210261295e4b
 
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
