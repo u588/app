@@ -72,6 +72,10 @@ sed -i 's#https://mirrors.aliyun.comm#http://mirrors.163.co#g' /etc/apt/sources.
 
 debian  /usr/sbin  /usr/local/sbin
 
+============ 系统改名 =============
+
+系统改名 hostnamectl set-hostname 
+
 ============ 添加磁盘 =============
 /sbin/fdisk -l
 g 选择磁盘模式
@@ -86,6 +90,8 @@ mkfs.ext4 /dev/sdb1
 ls -l /dev/disk/by-uuid/
 vi /etc/fstab
 UUID=id   挂载点  ext4 defaults 0 0
+
+
 ============ 磁盘调整 =============
 
 1、200G的硬盘，安装完后发现只有不足100G可用
