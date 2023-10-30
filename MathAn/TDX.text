@@ -41,7 +41,13 @@ from pytdx.crawler.history_financial_crawler import HistoryFinancialCrawler
 
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
-result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename='gpcw20230630.zip', path_to_download="/tmp/tmpfile.zip")
+result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename='gpcw20230930.zip', path_to_download="/tmp/tmpfile.zip")
+datacrawler.to_df(data=result).round(2).to_excel('/tmp/1/1.xlsx')
+
+
+datacrawler = HistoryFinancialCrawler()
+pd.set_option('display.max_columns', None)
+result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename='gpcw20230930.zip', path_to_download="g:/tmp/tmpfile.zip")
 datacrawler.to_df(data=result).round(2).to_excel('g:/tmp/1/1.xlsx')
 
 
