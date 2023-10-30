@@ -1,89 +1,58 @@
-import re
 from pyecharts.charts.composite_charts.grid import Grid
-from pyecharts.options.global_options import InitOpts
 from sqlalchemy import create_engine
 import pandas as pd
-import numpy as np
-from pyecharts.components import Table
-from pyecharts.charts import Pie, Line
+from pyecharts.charts import Line
 from pyecharts import options as opts
-from pyecharts.options import ComponentTitleOpts
+
 
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
-engD = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/StockFina')
+engD = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxFS')
 engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
 
 def line(StockID) -> Line:
-    Data = pd.read_sql(StockID, engD).fillna('0').applymap(lambda x : x.replace('%', ''))
-    d = Data[['date','nProfit','nProfit_yoy','totalRevenue','tr_yoy','eps', 'bps','capital_rese_ps', 'undist_profit_ps', 'ocfps', 'nProfit_margin', 
-    'gProfit_margin', 'roe', 'debt_to_eqt', 'debt_to_assets']].loc[0]
-    dd = Data.loc[1:].tail(61).set_index('date').astype(float).round(2)
-    dd['nProfit'] = (dd['nProfit']/100000000).round(2)
-    dd['dtnProfit'] = (dd['dtnProfit']/100000000).round(2)
-    dd['totalRevenue'] = (dd['totalRevenue']/100000000).round(2)
+    Data = pd.read_sql(StockID, engD)
+    # ll = list(Data.columns[0:10])+['col17','col21','col22','col27','col33','col35','col36','col40','col54','col63','col81','col83','col86','col92','col95','col131','col135','col143'] + \
+        # list(Data.columns[159:190])+['col191']+list(Data.columns[193:230])+['col238','col239','col243','col244','col284','col326','col242','col246','col401','col502','col506','col509','col519','col520','col580','col581']
+    dn = pd.read_sql('tdxFSLists', engD)
+    ll =  dn.Code.to_list()
+    Data = Data[ll]
+    
+    dd = Data.set_index('report_date')
+    d = list(dd.columns)
     dd.reset_index(inplace=True)
-
-    d1s = dd[['date','nProfit','nProfit_yoy','totalRevenue','tr_yoy','eps', 'bps','capital_rese_ps', 'undist_profit_ps', 'ocfps', 'nProfit_margin', 
-    'gProfit_margin', 'roe', 'debt_to_eqt', 'debt_to_assets']]
-    # d2s = dd[['date','sIndex','pe_lyr_ly','pr_ttm_ly','pb_ly']]
-    # d1g = d1s.groupby('sIndex')
-    # inName = d1g.head(1).sIndex.tolist()
-    date = dd.drop_duplicates(subset=('date'), keep='first').date.to_list()
+    d1s = dd
+    date = dd.report_date.apply(str).to_list()
     c = (
         Line(opts.InitOpts(page_title='财务分析',width="1330px", height="600px"))
         .add_xaxis(date)
-        .set_global_opts(xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False), legend_opts=opts.LegendOpts(type_='scroll',orient='vertical',pos_right='0%',pos_top='10%',is_show=True),title_opts=opts.TitleOpts(title=StockID, pos_left="center",pos_top="5"),)
-    )
-    for i, n in enumerate(d.tolist()[1:]):
-        c.add_yaxis(d.tolist()[1:][i], d1s[d1s.columns[i+1]].tolist(),is_smooth=True, label_opts=opts.LabelOpts(is_show=False),is_selected=False)
+        .set_global_opts(
+            # tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
+            xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False), 
+            legend_opts=opts.LegendOpts(type_='scroll',orient='horizontal',pos_left='5%',pos_bottom='0%',is_show=True),
+            title_opts=opts.TitleOpts(title=StockID, pos_left="center",pos_top="5"),
+            datazoom_opts=[
+                opts.DataZoomOpts(xaxis_index=[0, 0],is_show=False, type_="inside",range_start=0, range_end=100),
+                opts.DataZoomOpts(xaxis_index=[0, 1],is_show=True, range_start=0, range_end=100,pos_bottom='6%'),
+            ],
 
-    grid_chart = Grid(opts.InitOpts(page_title='分析', width="1350px", height="600px"))
+            )
+        )
+    for i in d:
+        try:
+            c.add_yaxis(
+                series_name=dn[(dn.Code==i)].cnName.tolist()[0], 
+                y_axis=d1s[i].tolist(),
+                is_smooth=True,
+                is_selected=False,
+                # is_hover_animation=True,
+                label_opts=opts.LabelOpts( is_show=False),
+            )
+        except:
+            pass
+    grid_chart = Grid(opts.InitOpts(page_title='分析', width="1360px", height="650px"))
 
-    grid_chart.add(c, grid_opts=opts.GridOpts(border_width=0, pos_left="5%", pos_right="12%"),)
+    grid_chart.add(c, grid_opts=opts.GridOpts(border_width=0, pos_left="8%", pos_right="5%",pos_bottom="15%"),)
 
     return grid_chart
-
-
-def pie(StockID):
-
-
-    StocksList = pd.read_sql('StocksCode',eng,  dtype={'StockCode':'object'})
-    Stock = StocksList.loc[StocksList['StockCode']==StockID].astype(str).reset_index()
-
-    IndexConst = pd.read_sql('IndexCons', eng)
-    StockInIndex = IndexConst[IndexConst.StockCode==StockID][['IndexCode', 'StockCode','StockName']]
-
-    csIndex = pd.read_sql('tdxIndexs', eng)
-    csIndex =csIndex[['IndexCode', 'IndexName']]
-
-    data = pd.merge(StockInIndex, csIndex, on='IndexCode')  
-
-    dd = data[['IndexName', 'IndexCode']]
-    d = data.StockName[0]+" : " + data.StockCode[0]
-    c = (
-        Pie()
-        .add(
-            "",
-            [list(z) for z in zip(dd.IndexName, dd.IndexCode)],
-            radius=["25%", "70%"],
-            center=["50%", "50%"],
-            rosetype="area",
-        )
-        .set_global_opts(
-                        title_opts=opts.TitleOpts(
-                                    title=(d),pos_left="center",pos_top="20",
-                          
-                        #             subtitle = ('所属行业: '+Stock['industry'][0]+'  地域: '+Stock['area'][0]+'  市盈率: '+Stock['pe'][0]+'  总股本: '+Stock['totals'][0]+'亿元'+
-                        #     '  流通股本: '+Stock['outstanding'][0]+'亿元'+'  市净率:'+Stock['pb'][0]+'  每股收益:'+Stock['esp'][0]+ '  每股净资:'+Stock['bvps'][0]+
-                        #     '  每股分配利润:'+Stock['perundp'][0]+'  收入同比:'+Stock['rev'][0]+'%'+'  利润同比:'+Stock['profit'][0]+'%'+'  毛利率:'+Stock['gpr'][0]+'%'+
-                        #     '  净利润率:'+Stock['npr'][0]+'%'), 
-                        #             subtitle_textstyle_opts=opts.TextStyleOpts(color='blue',font_style='italic',font_weight='bold'),
-                        ),
-                        legend_opts=opts.LegendOpts(is_show=False),
-        )
-        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
-    )
-    return c
-
 

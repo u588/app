@@ -51,11 +51,11 @@ def contact():
 def detail():
     return render_template("detail.html")
 
-@app.route("/detChart/<codeID>")
-def detChart(codeID):
-    c = detailChart.pie(codeID)
-    return c.dump_options_with_quotes()
-    # return c.render_embed()
+# @app.route("/detChart/<codeID>")
+# def detChart(codeID):
+#     c = detailChart.pie(codeID)
+#     return c.dump_options_with_quotes()
+#     # return c.render_embed()
 
 @app.route("/detaChart/<codeID>")
 def detaChart(codeID):

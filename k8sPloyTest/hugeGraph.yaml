@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: huge
-        image: 10.3.18.60/docker/hugegraph:latest
+        image: 10.3.18.60/docker/hugegraph:v1
         ports: 
         - containerPort: 8080
         volumeMounts:
@@ -22,7 +22,7 @@ spec:
           name: conf
           
       - name: hubble
-        image: 10.3.18.60/docker/hugegraph-hubble:latest
+        image: 10.3.18.60/docker/hugegraph-hubble:v1
         ports:
         - containerPort: 8088
 

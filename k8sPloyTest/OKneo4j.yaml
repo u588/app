@@ -14,10 +14,16 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: 10.3.18.60/docker/neo4j
+        image: 10.3.18.60/docker/neo4j:v5.11
         ports:
         - containerPort: 7474
         - containerPort: 7687
+        env:
+          - name: NEO4J_AUTH
+            value: "none"
+          - name: NEO4J_server_config_strict__validation_enabled
+            value: "false"
+
 
 ---
 apiVersion: v1
@@ -33,7 +39,7 @@ spec:
    ports:
    - name: neo4j-http
      protocol: TCP
-     port: 7474
+     port: 80
      targetPort: 7474
    - name: neo4j-bolt
      protocol: TCP
