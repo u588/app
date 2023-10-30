@@ -72,7 +72,20 @@ sed -i 's#https://mirrors.aliyun.comm#http://mirrors.163.co#g' /etc/apt/sources.
 
 debian  /usr/sbin  /usr/local/sbin
 
+============ 添加磁盘 =============
+/sbin/fdisk -l
+g 选择磁盘模式
+n 建立新分区
+w 保存配置
 
+格式化磁盘
+mkfs.ext4 /dev/sdb1 
+
+自动挂载磁盘
+查看磁盘uuid
+ls -l /dev/disk/by-uuid/
+vi /etc/fstab
+UUID=id   挂载点  ext4 defaults 0 0
 ============ 磁盘调整 =============
 
 1、200G的硬盘，安装完后发现只有不足100G可用
