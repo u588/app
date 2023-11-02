@@ -15,7 +15,7 @@ host all all 0.0.0.0/0
 
 
 /usr/lib/postgresql/16/bin/pg_upgrade --old-datadir /data/pg12/ --new-datadir /data/pg16/ --old-bindir /usr/lib/postgresql/12/bin/ --new-bindir /usr/lib/postgresql/16/bin/ --check
-pg_basebackup -h 10.3.18.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pgdata/bakup
+pg_basebackup -h 1.1.1.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg16
 create user sa password '11111111';
 create user rep password 'syslog6^';
 alter user sa password '';
