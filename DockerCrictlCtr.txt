@@ -1,3 +1,11 @@
+========== Docker 制作 =========
+docker run --name tdx-uwsgi 10.3.18.60/docker/tdx-uwsgi:v1
+docker ps -a
+docker exec -it 59b63ffaffb4 bash
+docker commit 90a5d440e13e 10.3.18.60/docker/tdx-scrape:v3
+docker stop
+docker rm 
+
 ============ Docker Command ========
 停止所有运行中的容器
 docker stop`docker ps -a -q`
