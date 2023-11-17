@@ -53,5 +53,5 @@ def d3(CodeId):
     p.add_tools(wheel_zoom)
     p.toolbar.active_scroll = wheel_zoom
     p.toolbar.autohide = True
-    output_file("/home/static/d3plt.html", title=St.name.to_list()[0]+' : '+St.code.to_list()[0])
+    output_file("/home/static/d3plt.html", title='D3 '+St.name.to_list()[0]+' : '+St.code.to_list()[0])
     show(column(p, select))

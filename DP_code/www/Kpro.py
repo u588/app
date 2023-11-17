@@ -344,7 +344,8 @@ def Kchart(CodeId):
             .set_global_opts(
                 legend_opts=opts.LegendOpts(pos_top='10%',is_show=True),
                 title_opts=opts.TitleOpts(
-                    title=(CodeId+' : '+Stock.name[0]), pos_left="center",
+                    # title=(CodeId+' : '+Stock.name[0]), 
+                    pos_left="center",
                     subtitle=(str(StockF['report_date'].tolist()[0])+
                             '  所属行业: '+Stock['icLev1'].tolist()[0]+'、'+Stock['icLev3'].tolist()[0]+  '    地域: '+Stock['regi'].tolist()[0]+'    控股股东: '+Stock['cSH'].tolist()[0]+' '+Stock['cSHr'].tolist()[0]+
                             '    最终控住人: '+Stock['ucSH'].tolist()[0]+' '+Stock['ucSHr'].tolist()[0]+'    注册资本: '+Stock['regCap'].tolist()[0]+ '    雇员人数：'+Stock['empNum'].tolist()[0] +"\n" + 
