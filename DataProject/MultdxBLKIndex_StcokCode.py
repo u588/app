@@ -21,7 +21,13 @@ def getCons(data, STL):
     return dfi
 
 data = [[dq,'地区'],[fg, '风格'], [gn, '概念'], [hy, '行业'], [zs, '指数']]
+dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
 
+def Merg(res):
+    global dfi
+    a = res.result()
+    dfi = pd.concat([dfi, a])
+    return dfi
 
 import pandas as pd
 import concurrent.futures
@@ -29,19 +35,12 @@ import concurrent.futures
 def MultiGetIndexCons(workers, jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
         for task in jobs:
-            pool.submit(getCons, task[0], task[1])
+            pool.submit(getCons, task[0], task[1]).add_done_callback(Merg)
 
 
 if __name__ == '__main__':
- 
-    dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
-
-    result = []
-    result.append(MultiGetIndexCons(5,data))
+    MultiGetIndexCons(5,data)
     
-    for i in [0,1,2,3,4]:
-        dfi = pd.concat([dfi, result[i]])
-
     dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
     .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsConsBLK.xlsx')
 
