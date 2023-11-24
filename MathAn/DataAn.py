@@ -7,17 +7,17 @@ engFS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxFS')
 
 StocksList = pd.read_sql('StocksList', eng).code
 n = int(len(StocksList)/5)
-# d1 = StocksList[:n]
-# d2 = StocksList[n:2*n]
-# d3 = StocksList[2*n:3*n]
-# d4 = StocksList[3*n:4*n]
-# d5 = StocksList[4*n:]
+d1 = StocksList[:n]
+d2 = StocksList[n:2*n]
+d3 = StocksList[2*n:3*n]
+d4 = StocksList[3*n:4*n]
+d5 = StocksList[4*n:]
 
-d1 = StocksList[:10]
-d2 = StocksList[20:30]
-d3 = StocksList[100:120]
-d4 = StocksList[300:320]
-d5 = StocksList[1000:1020]
+# d1 = StocksList[:10]
+# d2 = StocksList[20:30]
+# d3 = StocksList[100:120]
+# d4 = StocksList[300:320]
+# d5 = StocksList[1000:1020]
 
 
 
