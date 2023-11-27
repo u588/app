@@ -33,7 +33,7 @@ def getlist(lis):
             if (dd.tail(2) > 0).all():
                 sl.loc[i,'code'] = j
             else:
-                # print(j)
+                print(j)
                 pass
         except:
             pass
@@ -47,7 +47,7 @@ def getlistS(lis):
             if (df.close.tail(20).tail(1).to_list()[0]-df.close.tail(20).head(1).to_list()[0]) > 0:
                 sl.loc[i,'code'] = j
             else:
-                # print(j)
+                print(j)
                 pass
         except:
             pass
