@@ -82,6 +82,8 @@ if __name__ == '__main__':
 
     MultiGet(5,data1)
     ss.reset_index(drop=True, inplace=True)
+    print(ss)
+    print(len(ss))
     m = int(len(ss)/5)
     dd1 = ss[:m]
     dd2 = ss[m:2*m]
@@ -91,8 +93,8 @@ if __name__ == '__main__':
     data2 = [dd1,dd2,dd3,dd4,dd5]
 
     MultiGetS(5,data2)
+    print(sss)
     print(len(sss))
-    print(len(ss))
 
 
 
