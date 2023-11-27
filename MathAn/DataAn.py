@@ -71,17 +71,20 @@ def MultiGet(workers, jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
         for task in jobs:
             pool.submit(getlist, task).add_done_callback(Merg)
+            pool.shutdown()
 
 def MultiGetS(workers, jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
         for task in jobs:
             pool.submit(getlistS, task).add_done_callback(MergS)
+            pool.shutdown()
 
 
 if __name__ == '__main__':
 
     MultiGet(5,data1)
     ss.reset_index(drop=True, inplace=True)
+    print('ss')
     print(ss)
     print(len(ss))
     m = int(len(ss)/5)
@@ -93,6 +96,7 @@ if __name__ == '__main__':
     data2 = [dd1,dd2,dd3,dd4,dd5]
 
     MultiGetS(5,data2)
+    print('sss')
     print(sss)
     print(len(sss))
 
