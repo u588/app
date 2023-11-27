@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 import concurrent.futures
 from sqlalchemy import create_engine
 
@@ -13,14 +14,6 @@ d3 = StocksList[2*n:3*n]
 d4 = StocksList[3*n:4*n]
 d5 = StocksList[4*n:]
 
-# d1 = StocksList[:10]
-# d2 = StocksList[20:30]
-# d3 = StocksList[100:120]
-# d4 = StocksList[300:320]
-# d5 = StocksList[1000:1020]
-
-
-
 ss = pd.DataFrame(columns=['code'], dtype=object)
 sss = pd.DataFrame(columns=['code'], dtype=object)
 
@@ -33,7 +26,7 @@ def getlist(lis):
             if (dd.tail(2) > 0).all():
                 sl.loc[i,'code'] = j
             else:
-                print(j)
+                # print(j)
                 pass
         except:
             pass
@@ -44,10 +37,10 @@ def getlistS(lis):
     for i, j in enumerate(lis):
         try:
             df = pd.read_sql(j, eng)
-            if (df.close.tail(20).tail(1).to_list()[0]-df.close.tail(20).head(1).to_list()[0]) > 0:
+            if (df.close.tail(30).tail(1).to_list()[0]-df.close.tail(30).head(1).to_list()[0]) > 0:
                 sl.loc[i,'code'] = j
             else:
-                print(j)
+                # print(j)
                 pass
         except:
             pass
@@ -71,36 +64,34 @@ def MultiGet(workers, jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
         for task in jobs:
             pool.submit(getlist, task).add_done_callback(Merg)
-            pool.shutdown()
+    pool.shutdown()
 
 def MultiGetS(workers, jobs):
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as pool:
         for task in jobs:
             pool.submit(getlistS, task).add_done_callback(MergS)
-            pool.shutdown()
+    pool.shutdown()
 
 
 if __name__ == '__main__':
-
+    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     MultiGet(5,data1)
     ss.reset_index(drop=True, inplace=True)
-    print('ss')
-    print(ss)
-    print(len(ss))
-    m = int(len(ss)/5)
-    dd1 = ss[:m]
-    dd2 = ss[m:2*m]
-    dd3 = ss[2*m:3*m]
-    dd4 = ss[3*m:4*m]
-    dd5 = ss[4*m:]
+
+    print('ss: ' + str(len(ss)))
+    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    ls = ss.code
+    m = int(len(ls)/5)
+    dd1 = ls[:m]
+    dd2 = ls[m:2*m]
+    dd3 = ls[2*m:3*m]
+    dd4 = ls[3*m:4*m]
+    dd5 = ls[4*m:]
     data2 = [dd1,dd2,dd3,dd4,dd5]
-
+    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     MultiGetS(5,data2)
-    print('sss')
-    print(sss)
-    print(len(sss))
-
-
+    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    print('sss: ' + str(len(sss)))
 
     print(len(sss)/len(ss))
 
