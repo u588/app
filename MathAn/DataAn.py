@@ -83,14 +83,16 @@ if __name__ == '__main__':
     MultiGet(5,data1)
     ss.reset_index(drop=True, inplace=True)
     m = int(len(ss)/5)
-    dd1 = StocksList[:m]
-    dd2 = StocksList[m:2*m]
-    dd3 = StocksList[2*m:3*m]
-    dd4 = StocksList[3*m:4*m]
-    dd5 = StocksList[4*m:]
+    dd1 = ss[:m]
+    dd2 = ss[m:2*m]
+    dd3 = ss[2*m:3*m]
+    dd4 = ss[3*m:4*m]
+    dd5 = ss[4*m:]
     data2 = [dd1,dd2,dd3,dd4,dd5]
 
     MultiGetS(5,data2)
+    print(len(sss))
+    print(len(ss))
 
 
 
