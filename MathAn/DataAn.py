@@ -38,7 +38,7 @@ def getlistS(lis):
     for i, j in enumerate(lis):
         try:
             df = pd.read_sql(j, eng)
-            if (df.close.tail(30).tail(1).to_list()[0]-df.close.tail(30).head(1).to_list()[0]) > 0:
+            if (df.close.tail(25).tail(1).to_list()[0]-df.close.tail(25).head(1).to_list()[0]) > 0:
                 sl.loc[i,'code'] = j
             else:
                 # print(j)
