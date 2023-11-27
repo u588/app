@@ -77,8 +77,11 @@ def MultiGetS(workers, jobs):
 if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     MultiGet(5,data1)
+    engFS.dispose()
+
     ss.reset_index(drop=True, inplace=True)
-    ss.reset_index().to_sql('StockFS', engAn)
+    ss.to_sql('StockFS', engAn, if_exists='replace')
+    engAn.dispose()
 
     print('ss: ' + str(len(ss)))
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -92,6 +95,7 @@ if __name__ == '__main__':
     data2 = [dd1,dd2,dd3,dd4,dd5]
 
     MultiGetS(5,data2)
+    eng.dispose()
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     print('sss: ' + str(len(sss)))
 
