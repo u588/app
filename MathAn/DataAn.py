@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engFS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxFS')
+engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
 StocksList = pd.read_sql('StocksList', eng).code
 n = int(len(StocksList)/5)
@@ -77,6 +78,7 @@ if __name__ == '__main__':
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     MultiGet(5,data1)
     ss.reset_index(drop=True, inplace=True)
+    ss.reset_index().to_sql('StockFS', engAn)
 
     print('ss: ' + str(len(ss)))
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     dd4 = ls[3*m:4*m]
     dd5 = ls[4*m:]
     data2 = [dd1,dd2,dd3,dd4,dd5]
-    print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
     MultiGetS(5,data2)
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     print('sss: ' + str(len(sss)))
