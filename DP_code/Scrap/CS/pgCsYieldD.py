@@ -40,4 +40,4 @@ for codeID in IndexLists:
 D.dropna(inplace=True)
 D.set_index('IndexCode').to_sql('csYield', eng , if_exists='replace')
 print(' == 指数收益率 All Saved ! == ')    
-
+eng.dispose()

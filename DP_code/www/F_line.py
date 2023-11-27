@@ -85,3 +85,4 @@ MACD_bar = (
     )
 
 
+engFn.dispose()

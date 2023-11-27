@@ -145,3 +145,5 @@ def test(StockID):
     grid_chart.add(iBar(StockID), grid_opts=opts.GridOpts(pos_left="5%", pos_right="2%", pos_top="65%",height="30%"), )    
 
     return grid_chart
+
+engFn.dispose()

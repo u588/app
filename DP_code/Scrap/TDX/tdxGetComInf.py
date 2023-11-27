@@ -15,3 +15,6 @@ api.connect('119.147.212.81', 7709)
 api.to_df(api.get_company_info_category(0 , '000001'))
 api.to_df(api.get_company_info_content(0, '000001', '000001.txt', 877195, 49773))
 api.to_df(api.get_company_info_content(0, sl[0], inf.iloc[0][1], inf.iloc[0][2], inf.iloc[0][3]))
+
+engs.dispose()
+eng.dispose()

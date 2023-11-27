@@ -22,3 +22,5 @@ c = (
                )
     .render("f:/tmp/scatter.html")
 )
+
+eng.dispose()

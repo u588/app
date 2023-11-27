@@ -87,3 +87,6 @@ def pie(StockID):
     return c
 
 
+eng.dispose()
+engD.dispose()
+engF.dispose()

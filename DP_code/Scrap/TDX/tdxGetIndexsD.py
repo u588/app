@@ -137,3 +137,4 @@ with eapi.connect('182.175.240.157', 7727):
 
 
 print(' == 通达信每日更新 指数 行情完成 ! ==')
+eng.dispose()

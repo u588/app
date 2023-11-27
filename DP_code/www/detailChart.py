@@ -56,3 +56,6 @@ def line(StockID) -> Line:
 
     return grid_chart
 
+eng.dispose()
+engD.dispose()
+engF.dispose()

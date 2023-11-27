@@ -61,3 +61,4 @@ weak.exchange = 'sz'
 weak.set_index('date').to_sql('weak',eng,if_exists='append')
 
 print('每日板块信息 ok ! ')
+eng.dispose()

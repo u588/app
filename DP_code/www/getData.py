@@ -17,3 +17,4 @@ def getCode(date):
     d = data[['datetime','code']].groupby('datetime').get_group(date).sort_values(by='code').to_json(orient='records')
     return d
 
+eng.dispose()

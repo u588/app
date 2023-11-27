@@ -55,3 +55,5 @@ for stockID in StockLists:
         pass
 
 print('All saved !')
+eng.dispose()
+engs.dispose()

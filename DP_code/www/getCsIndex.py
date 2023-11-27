@@ -10,3 +10,5 @@ def csIndexData(date):
 
     dd = data[['IndexName','IndexCode', date]].sort_values(date, ascending=0).to_json(orient='records')
     return dd
+
+eng.dispose()

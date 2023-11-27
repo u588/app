@@ -380,4 +380,6 @@ def tab():
     # tab.add(raDarIndex(mkData),"RaDar指数")
     
     return tab
+eng.dispose()
+engTDX.dispose()
 

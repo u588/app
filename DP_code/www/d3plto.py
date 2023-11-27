@@ -42,3 +42,6 @@ def d3(CodeId):
                   filepath='/home/static/d3plt.html',
                   cmap='tab20c')
    
+
+eng.dispose()
+engB.dispose()

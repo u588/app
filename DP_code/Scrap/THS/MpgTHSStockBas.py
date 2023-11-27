@@ -30,3 +30,5 @@ for stockID in StockLists:
         print('Not Save! '+stockID)
         pass
 print('All Saved !')
+eng.dispose()
+engs.dispose()

@@ -37,5 +37,5 @@ while i < n :
         pass
 
 D.set_index('IndexCode').to_sql('tdxIndexsData', eng, if_exists = 'replace')
-
+eng.dispose()
 

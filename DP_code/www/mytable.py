@@ -29,3 +29,4 @@ def table():
         title_opts=ComponentTitleOpts(title="Table-基本示例", subtitle='共有 '+str(data.shape[0]))
     )
     return table
+eng.dispose()

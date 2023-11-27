@@ -49,3 +49,4 @@ for codeID in IndexLists:
         print('Not Updated ! '+ codeID)
         pass
 print(' == 指数行情 All Updated ! == ')
+eng.dispose()

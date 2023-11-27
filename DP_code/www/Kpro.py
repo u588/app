@@ -483,3 +483,8 @@ def Kchart(CodeId):
     grid_chart.add(iBar(CodeId), grid_opts=opts.GridOpts(pos_left="4%", pos_right="2%", pos_top="60%",height="10%"), ) 
 
     return grid_chart
+
+eng.dispose()
+engF.dispose()
+engFn.dispose()
+engB.dispose()

@@ -319,3 +319,4 @@ def Kchart(CodeId):
     ),
     )
     return grid_chart
+eng.dispose()

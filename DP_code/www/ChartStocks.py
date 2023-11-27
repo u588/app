@@ -331,4 +331,5 @@ grid_chart.add(
 )
 
 grid_chart.render("/home/ts/app/www/static/" + name + ".html")
-
+eng.dispose()
+engF.dispose()

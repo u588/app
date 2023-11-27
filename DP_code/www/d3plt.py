@@ -55,3 +55,6 @@ def d3(CodeId):
     p.toolbar.autohide = True
     output_file("/home/static/d3plt.html", title='D3 '+St.name.to_list()[0]+' : '+St.code.to_list()[0])
     show(column(p, select))
+
+eng.dispose()
+engB.dispose()

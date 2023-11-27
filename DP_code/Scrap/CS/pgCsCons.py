@@ -42,3 +42,4 @@ for codeID in IndexLists:
         print('Not Save!'+ codeID)
         pass
 print(' == 指数成份股 All Saved ! == ')
+eng.dispose()

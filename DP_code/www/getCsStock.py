@@ -30,3 +30,5 @@ def getStock(Code,ID):
     d.sort_values(by='PCB', ascending=0, inplace=True)
     data = d.to_json(orient='records')
     return data
+eng.dispose()
+engT.dispose()

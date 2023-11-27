@@ -21,3 +21,4 @@ for codeID in IndexLists:
     except:
         pass
 D.set_index('Index_code').to_sql('csIndexsData', eng, if_exists = 'replace')
+eng.dispose()

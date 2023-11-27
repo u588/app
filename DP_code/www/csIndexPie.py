@@ -23,3 +23,4 @@ def pie(date):
         .set_global_opts(title_opts=opts.TitleOpts(title=""))
     )
     return c
+eng.dispose()
