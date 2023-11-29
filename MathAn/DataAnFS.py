@@ -54,7 +54,7 @@ if __name__ == '__main__':
     MultiGet(5,data1)
 
 
-    ss.reset_index(drop=True).reset_index()
+    ss.reset_index(drop=True,inplace=True)
     ss.to_sql('StockFS', engAn, if_exists='replace')
 
     print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
