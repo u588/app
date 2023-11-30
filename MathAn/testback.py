@@ -123,9 +123,9 @@ if __name__ == '__main__':
     new=['open','high','low','close','vol']
     df = df.reindex(columns=new)  
     stock_hfq_df = df
-    start_date = datetime(2020,9,30,15,00,00)  # 回测开始时间
+    start_date = datetime(2020,7,30,15,00,00)  # 回测开始时间
     end_date = datetime(2021,9,30,15,00,00)  # 回测结束时间
-    data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date)  # 加载数据
+    data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date,)  # 加载数据
     cerebro.adddata(data)  # 将数据传入回测系统
        
     cerebro.broker.setcash(100000.0)
