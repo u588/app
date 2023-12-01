@@ -11,8 +11,8 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks
 def get_feeds(code):
     df = pd.read_sql(code, eng)
     df['datetime']=pd.to_datetime(df['datetime'])   
-    start_date = datetime(2020,7,30,15,00,00)  # 回测开始时间
-    end_date = datetime(2021,9,30,15,00,00)  # 回测结束时间
+    start_date = datetime(2022,7,30,15,00,00)  # 回测开始时间
+    end_date = datetime(2023,11,30,15,00,00)  # 回测结束时间
     feeds = bt.feeds.PandasData(
         name = code,
         dataname= df,
