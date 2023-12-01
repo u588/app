@@ -7,14 +7,14 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/FindSt
 
 def getDate():
     data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
+    eng.dispose()
     data = data.drop_duplicates(subset=('datetime'), keep='first').reset_index()
     d = data[['datetime','code']].to_json(orient='records')
     return d
 
 def getCode(date):
     data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
+    eng.dispose()
     data = data.drop_duplicates(subset=(['datetime','code']), keep='first').reset_index()
     d = data[['datetime','code']].groupby('datetime').get_group(date).sort_values(by='code').to_json(orient='records')
     return d
-
-eng.dispose()

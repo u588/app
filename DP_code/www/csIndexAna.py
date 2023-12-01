@@ -18,7 +18,7 @@ def getIndexs(Code):
             # print(codeID + 'Append !')
         except:
             pass
+    eng.dispose()
     return D
 # dd = getIndexs(28).sort_values('PCB').head(10).reset_index(drop=True)
 #  ddd.loc[ddd['Index_code']=='930901'].reset_index(drop=True)
-eng.dispose()

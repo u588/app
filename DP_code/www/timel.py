@@ -14,6 +14,7 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/FindStocks')
 
 def pie(date):
     data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
+    eng.dispose()
     data = data.drop_duplicates(subset=['datetime', 'code'], keep='first')  
     d = data.groupby('datetime').get_group(date)
     dd = d[['name', 'code']]
@@ -30,8 +31,6 @@ def pie(date):
     )
     return c
 
-
-eng.dispose()
 
 
 

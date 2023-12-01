@@ -22,6 +22,8 @@ mkData = pd.read_sql('Market',eng)
 csData = pd.read_sql('csYield', engTDX)
 # csData.rename(columns={'Index_code':'IndexCode','Index_name':'IndexName'}, inplace = True)
 tdxIndexsData = pd.read_sql('tdxIndexsData', engTDX)
+eng.dispose()
+engTDX.dispose()
 
 def raDarIndex(dd):
     tl = Timeline()
@@ -380,6 +382,4 @@ def tab():
     # tab.add(raDarIndex(mkData),"RaDar指数")
     
     return tab
-eng.dispose()
-engTDX.dispose()
 

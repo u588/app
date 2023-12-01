@@ -10,7 +10,9 @@ from d3blocks import D3Blocks
 
 def d3(CodeId):
    df = pd.read_sql(CodeId, eng).reset_index(drop=True).reset_index()
+   eng.dispose()
    StocksList = pd.read_sql('StocksDetail20236', engB)
+   engB.dispose()
    St = StocksList.loc[StocksList['code']==CodeId]
    # Load d3blocks
    # from d3blocks import D3Blocks
@@ -42,6 +44,3 @@ def d3(CodeId):
                   filepath='/home/static/d3plt.html',
                   cmap='tab20c')
    
-
-eng.dispose()
-engB.dispose()
