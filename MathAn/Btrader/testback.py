@@ -6,6 +6,27 @@ from sqlalchemy import create_engine
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
+def get_feeds(code,start_date,end_date):
+    df = pd.read_sql(code, eng)
+    eng.dispose()
+    df['datetime']=pd.to_datetime(df['datetime'])   
+    # start_date = datetime(2022,7,30,15,00,00)  # 回测开始时间
+    # end_date = datetime(2023,11,30,15,00,00)  # 回测结束时间
+    feeds = bt.feeds.PandasData(
+        name = code,
+        dataname= df,
+        datetime=0,
+        open=1,
+        high=3,
+        low=4,
+        close=2,
+        volume=5,
+        openinterest=-1,
+        fromdate=start_date,
+        todate=end_date
+    )
+    return feeds
+
 # Create a Stratey
 class TestStrategy(bt.Strategy):
     params = (
@@ -108,7 +129,7 @@ class TestStrategy(bt.Strategy):
                 self.order = self.sell()
  
 if __name__ == '__main__':
-    cerebro = bt.Cerebro()
+    cerebro = bt.Cerebro(optreturn=False)
     
     # 增加多参数的策略
     strats = cerebro.optstrategy(
@@ -116,17 +137,17 @@ if __name__ == '__main__':
         maperiod=range(10, 31))
     
     #获取数据
-    df = pd.read_sql('600000', eng)
-    df['datetime']=pd.to_datetime(df['datetime'])
-    df['date']=df['datetime']
-    df = df.set_index('date')  
-    new=['open','high','low','close','vol']
-    df = df.reindex(columns=new)  
-    stock_hfq_df = df
-    start_date = datetime(2020,7,30,15,00,00)  # 回测开始时间
-    end_date = datetime(2021,9,30,15,00,00)  # 回测结束时间
-    data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date,)  # 加载数据
-    cerebro.adddata(data)  # 将数据传入回测系统
+    # df = pd.read_sql('600000', eng)
+    # df['datetime']=pd.to_datetime(df['datetime'])
+    # df['date']=df['datetime']
+    # df = df.set_index('date')  
+    # new=['open','high','low','close','vol']
+    # df = df.reindex(columns=new)  
+    # stock_hfq_df = df
+    startDay = datetime(2023,7,30,15,00,00)  # 回测开始时间
+    endDay = datetime(2023,12,2,15,00,00)  # 回测结束时间
+    # data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date,)  # 加载数据
+    cerebro.adddata(get_feeds('000001',startDay,endDay))  # 将数据传入回测系统
        
     cerebro.broker.setcash(100000.0)
     # Set the commission - 0.1% ... divide by 100 to remove the %
@@ -142,5 +163,5 @@ if __name__ == '__main__':
  
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
     
-    # b = Bokeh(style='bar', plot_mode='single')
-    cerebro.plot()
+    b = Bokeh(style='bar', plot_mode='single')
+    cerebro.plot(b)
