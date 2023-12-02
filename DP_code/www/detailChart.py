@@ -12,9 +12,11 @@ engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds
 
 def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD)
+    engD.dispose()
     # ll = list(Data.columns[0:10])+['col17','col21','col22','col27','col33','col35','col36','col40','col54','col63','col81','col83','col86','col92','col95','col131','col135','col143'] + \
         # list(Data.columns[159:190])+['col191']+list(Data.columns[193:230])+['col238','col239','col243','col244','col284','col326','col242','col246','col401','col502','col506','col509','col519','col520','col580','col581']
     dn = pd.read_sql('tdxFSLists', engD)
+    engD.dispose()
     ll =  dn.Code.to_list()
     Data = Data[ll]
     
@@ -55,7 +57,3 @@ def line(StockID) -> Line:
     grid_chart.add(c, grid_opts=opts.GridOpts(border_width=0, pos_left="8%", pos_right="5%",pos_bottom="15%"),)
 
     return grid_chart
-
-eng.dispose()
-engD.dispose()
-engF.dispose()

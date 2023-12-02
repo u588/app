@@ -16,6 +16,7 @@ engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds
 
 def line(StockID) -> Line:
     Data = pd.read_sql(StockID, engD).fillna('0').applymap(lambda x : x.replace('%', ''))
+    engD.dispose()
     d = Data[['date','nProfit','nProfit_yoy','totalRevenue','tr_yoy','eps', 'bps','capital_rese_ps', 'undist_profit_ps', 'ocfps', 'nProfit_margin', 
     'gProfit_margin', 'roe', 'debt_to_eqt', 'debt_to_assets']].loc[0]
     dd = Data.loc[1:].tail(61).set_index('date').astype(float).round(2)
@@ -49,12 +50,15 @@ def pie(StockID):
 
 
     StocksList = pd.read_sql('StocksCode',eng,  dtype={'StockCode':'object'})
+    eng.dispose()
     Stock = StocksList.loc[StocksList['StockCode']==StockID].astype(str).reset_index()
 
     IndexConst = pd.read_sql('IndexCons', eng)
+    eng.dispose()
     StockInIndex = IndexConst[IndexConst.StockCode==StockID][['IndexCode', 'StockCode','StockName']]
 
     csIndex = pd.read_sql('tdxIndexs', eng)
+    eng.dispose()
     csIndex =csIndex[['IndexCode', 'IndexName']]
 
     data = pd.merge(StockInIndex, csIndex, on='IndexCode')  
@@ -85,8 +89,3 @@ def pie(StockID):
         .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
     )
     return c
-
-
-eng.dispose()
-engD.dispose()
-engF.dispose()

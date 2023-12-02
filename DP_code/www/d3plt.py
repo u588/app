@@ -19,7 +19,9 @@ def d3(CodeId):
     ]
 
     df = pd.read_sql(CodeId, eng).reset_index(drop=True).reset_index()
+    eng.dispose()
     StocksList = pd.read_sql('StocksDetail20236', engB)
+    engB.dispose()
     St = StocksList.loc[StocksList['code']==CodeId]
     size =  ((preprocessing.minmax_scale(df.vol))*38).round(2)
     dates = pd.to_datetime(df.datetime.str[:10])
@@ -55,6 +57,3 @@ def d3(CodeId):
     p.toolbar.autohide = True
     output_file("/home/static/d3plt.html", title='D3 '+St.name.to_list()[0]+' : '+St.code.to_list()[0])
     show(column(p, select))
-
-eng.dispose()
-engB.dispose()

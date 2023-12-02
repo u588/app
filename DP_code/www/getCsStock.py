@@ -4,10 +4,11 @@ import pandas as pd
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 engT = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
 IndexLists = pd.read_sql('tdxIndexs', eng).IndexCode.to_list()
-
+eng.dispose()
 
 def getStock(Code,ID):
     D = pd.read_sql('IndexCons',eng)
+    eng.dispose()
     d = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
     n = int(ID.strip('D'))
     Data = D.loc[D['IndexName']== Code].reset_index(drop=True)
@@ -29,6 +30,5 @@ def getStock(Code,ID):
 
     d.sort_values(by='PCB', ascending=0, inplace=True)
     data = d.to_json(orient='records')
+    engT.dispose()
     return data
-eng.dispose()
-engT.dispose()

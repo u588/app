@@ -12,6 +12,7 @@ engFn = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Fund
 
 StockID = '000001'
 rData = pd.read_sql(StockID, engFn).tail(500).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+engFn.dispose()
 r = rData.astype(float)
 rData.rename(columns={'vol':'volume','datetime':'date'}, inplace=True)
 
@@ -83,6 +84,3 @@ MACD_bar = (
             legend_opts=opts.LegendOpts(pos_top='95%',is_show=True),
         )
     )
-
-
-engFn.dispose()

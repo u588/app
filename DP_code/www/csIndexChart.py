@@ -14,9 +14,11 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 def Kchart(CodeId):
 
     tdxIndexList = pd.read_sql('tdxIndexs', eng)
+    eng.dispose()
     IndexCodeId = tdxIndexList.loc[tdxIndexList['IndexName']==CodeId]['IndexCode'].to_list()[0]
 
     data= pd.read_sql(IndexCodeId, eng).tail(500)
+    eng.dispose()
     data = data.fillna(method='bfill', limit=3,axis=1)
     data.rename(columns={'amount':'volume','datetime':'date'}, inplace=True)
    
@@ -319,4 +321,3 @@ def Kchart(CodeId):
     ),
     )
     return grid_chart
-eng.dispose()

@@ -11,6 +11,7 @@ ip = job
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/FindStocks')
 data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)
+eng.dispose()
 data = data.drop_duplicates(subset=['datetime', 'code'], keep='first')
 
 def filter(a,b):
@@ -29,4 +30,3 @@ def table():
         title_opts=ComponentTitleOpts(title="Table-基本示例", subtitle='共有 '+str(data.shape[0]))
     )
     return table
-eng.dispose()

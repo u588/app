@@ -14,6 +14,7 @@ engFn = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Fund
 def iBar(StockID):
 
     rData = pd.read_sql(StockID, engFn).tail(500).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    engFn.dispose()
     r = rData.astype(float).reset_index()
 
     ema3 = tb.EMA(r.inflow, timeperiod=3)
@@ -118,6 +119,7 @@ def iBar(StockID):
 def sBar(StockID) -> Bar:
 
     rData = pd.read_sql(StockID, engFn).tail(500).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    engFn.dispose()
     r = rData.astype(float).reset_index()
 
     n = ['bEqu', 'mEqu', 'sEqu']
@@ -146,4 +148,3 @@ def test(StockID):
 
     return grid_chart
 
-engFn.dispose()
