@@ -22,6 +22,7 @@ def getValues(code,start,end):
 
 for i,code in enumerate(Stocks.code):
     try:
+        print(code)
         Stocks.loc[i,'PCB'] = getValues(code,startDay,endDay)
     except:
         pass
