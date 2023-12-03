@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
-Indexs = pd.read_sql('tdxIndex', eng)
+Indexs = pd.read_sql('tdxIndexs', eng)
 eng.dispose()
 
 timeSer07 = [['2005-11-01 15:00','2005-12-14 15:00'],['2005-12-14 15:00','2006-02-09 15:00'],['2006-02-09 15:00','2006-03-21 15:00'],\
