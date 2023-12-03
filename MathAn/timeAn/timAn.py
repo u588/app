@@ -1,5 +1,14 @@
-1: 13(1)  2006/2/16(4) ==> 2007/10/16(2) ==> 2008/5/14(3) 16(5)
-2: 15(1) 2014/9/19(5) ==> 2015/6/12(5) ==> 2015/12/24(4) 25(5)
+import pandas as pd
+from sklearn import preprocessing
+from sqlalchemy import create_engine
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
+engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
+
+Stocks = pd.read_sql('cicsClass', eng)
+eng.dispose()
+
 timeSer07 = [['2005-11-01 15:00','2005-12-14 15:00'],['2005-12-14 15:00','2006-02-09 15:00'],['2006-02-09 15:00','2006-03-21 15:00'],\
          ['2006-03-21 15:00','2006-05-15 15:00'],['2006-05-15 15:00','2006-06-15 15:00'],['2006-06-15 15:00','2006-07-06 15:00'],\
          ['2006-07-06 15:00','2006-08-15 15:00'],['2006-08-15 15:00','2006-10-10 15:00'],['2006-10-10 15:00','2007-01-10 15:00'],\
@@ -19,3 +28,30 @@ timeSer15 = [['2014-05-12 15:00','2014-07-28 15:00'],['2014-07-28 15:00','2014-0
              ['2015-11-17 15:00','2016-01-27 15:00'],['2016-01-27 15:00','2016-04-15 15:00'],['2016-04-15 15:00','2016-05-23 15:00']
 
 ] 
+
+
+def getValues(ff,start,end):
+    a = (ff[ff.datetime==end].close.values\
+         -ff[ff.datetime==start].close.values)\
+            /ff[ff.datetime==start].close.values*100
+    return a.round(2)[0]
+
+for i,code in enumerate(Stocks.code):
+    try:
+        df = pd.read_sql(code, engS)
+        engS.dispose()
+        print(code)
+        try:
+            for j,tim in enumerate(timeSer07):
+                Stocks.loc[i,'7PCB'+str(j)] = getValues(df,tim[0],tim[1])
+        except:
+            pass
+        try:
+            for j,tim in enumerate(timeSer15):
+                Stocks.loc[i,'15PCB'+str(j)] = getValues(df,tim[0],tim[1])
+        except:
+            pass
+    except:
+        pass
+Stocks.set_index('code').to_sql('timAn',engAn,if_exists='replace')
+engAn.dispose()
