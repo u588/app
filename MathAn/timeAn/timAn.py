@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn import preprocessing
+# from sklearn import preprocessing
 from sqlalchemy import create_engine
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
@@ -41,16 +41,16 @@ for i,code in enumerate(Stocks.code):
         df = pd.read_sql(code, engS)
         engS.dispose()
         print(code)
-        try:
-            for j,tim in enumerate(timeSer07):
-                Stocks.loc[i,'7PCB'+str(j)] = getValues(df,tim[0],tim[1])
-        except:
-            pass
-        try:
-            for j,tim in enumerate(timeSer15):
-                Stocks.loc[i,'15PCB'+str(j)] = getValues(df,tim[0],tim[1])
-        except:
-            pass
+        for j,tim in enumerate(timeSer07):
+            try:
+                Stocks.loc[i,'7PCB'+tim[0][2:10].replace('-', '')] = getValues(df,tim[0],tim[1])
+            except:
+                pass
+        for j,tim in enumerate(timeSer15):
+            try:
+                Stocks.loc[i,'15PCB'+tim[0][2:10].replace('-', '')] = getValues(df,tim[0],tim[1])
+            except:
+                pass
     except:
         pass
 Stocks.set_index('code').to_sql('timAn',engAn,if_exists='replace')
