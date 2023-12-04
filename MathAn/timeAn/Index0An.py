@@ -30,16 +30,16 @@ pcb3 = df[['datetime', 'PCB3','PCB3time', 'PCB3time8']]
 pcb5 = df[['datetime', 'PCB5','PCB5time', 'PCBtime13']]
 pcb13 = df[['datetime', 'PCB13','PCB13time', 'PCB13time34']]
 pcb21 = df[['datetime', 'PCB21','PCB21time', 'PCB21time55']]
-a = 4
-for n in pcb3.index[::]:
+
+n = 0
+while n < len(pcb3):
     try:
-        if pcb3.loc[n].PCB3 > a & atime :
-            a = pcb3.loc[n].PCB3
-            atime = pcb3.loc[n].datetime
-            stime = pcb3.loc[n].PCB3time
+        if pcb3.PCB3[n:n+3].max() > 4 :
+           i = pcb3.PCB3[n:n+3][pcb3.PCB3==pcb3.PCB3[n:n+3].max()].index.values[0]
+           n = pcb3.PCB3[i:i+3][pcb3.PCB3==pcb3.PCB3[i:i+3].max()].index.values[0]
 
-
-i = pcb3.PCB3[n:n+3][pcb3.PCB3==pcb3.PCB3[n:n+3].max()].index.values[0]
+        elif:
+            n = n + 1
 
 
 
