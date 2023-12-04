@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
 df = pd.read_sql('000001', eng)
@@ -26,22 +26,11 @@ for n in df.index[::-1]:
     except:
         pass
 
-pcb3 = df[['datetime', 'PCB3','PCB3time', 'PCB3time8']]
-pcb5 = df[['datetime', 'PCB5','PCB5time', 'PCBtime13']]
-pcb13 = df[['datetime', 'PCB13','PCB13time', 'PCB13time34']]
-pcb21 = df[['datetime', 'PCB21','PCB21time', 'PCB21time55']]
-a = 4
-for n in pcb3.index[::]:
-    try:
-        if pcb3.loc[n].PCB3 > a & atime :
-            a = pcb3.loc[n].PCB3
-            atime = pcb3.loc[n].datetime
-            stime = pcb3.loc[n].PCB3time
+# df.to_sql('Stock0', engAn, if_exists='replace')
+pcb3 = df['datetime', 'PCB3','PCB3time', 'PCB3time8']
+pcb5 = df['datetime', 'PCB5','PCB5time', 'PCBtime813']
+pcb13 = df['datetime', 'PCB13','PCB13time', 'PCB13time34']
+pcb21 = df['datetime', 'PCB21','PCB21time', 'PCB21time55']
 
 
-i = pcb3.PCB3[n:n+3][pcb3.PCB3==pcb3.PCB3[n:n+3].max()].index.values[0]
-
-
-
-df.to_sql('Index0', engAn, if_exists='replace')
-df.to_excel('g:/1/Index1.xlsx')
+df.to_excel('g:/1/stock0.xlsx')
