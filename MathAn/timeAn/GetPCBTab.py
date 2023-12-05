@@ -56,5 +56,7 @@ def GetPCB(pcb,m,g):
 # df.to_sql('Index0', engAn, if_exists='replace')
 pcb = [[pcb3,3,4],[pcb5,5,6],[pcb13,13,10],[pcb21,21,15]]
 for n  in pcb:
-    GetPCB(n[0],n[1],n[2]).reset_index(drop=True).to_excel('g:/1/pcb'+str(n[1])+'.xlsx')
+    a = GetPCB(n[0],n[1],n[2]).reset_index(drop=True)
+    a['Num'] = pd.to_datetime(a.datetime)-pd.to_datetime(a.shift(1).datetime)
+    a.to_excel('g:/1/pcb'+str(n[1])+'.xlsx')
 
