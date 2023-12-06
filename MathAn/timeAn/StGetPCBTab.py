@@ -58,5 +58,5 @@ pcb = [[pcb5,5,8],[pcb13,13,16]]
 for n  in pcb:
     a = GetPCB(n[0],n[1],n[2]).reset_index(drop=True)
     a['Num'] = pd.to_datetime(a.datetime)-pd.to_datetime(a.shift(1).datetime)
-    a.to_excel('g:/1/2/St'+code + 'PCB'+str(n[1])+'.xlsx')
-df.to_excel('g:/1/2/St'+code + '.xlsx')
+    a.set_index('datetime').to_excel('g:/1/2/St'+code + 'PCB'+str(n[1])+'.xlsx')
+df.set_index('datetime').to_excel('g:/1/2/St'+code + '.xlsx')
