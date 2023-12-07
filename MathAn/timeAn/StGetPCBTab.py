@@ -6,7 +6,9 @@ engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn'
 
 code = '000001'
 rawD = pd.read_sql(code, eng)
-df = rawD[rawD.datetime >= '2000-01-01'].reset_index(drop=True)
+dff = rawD[rawD.datetime >= '2000-01-01'].reset_index(drop=True)
+dff['mea'] = (dff.amount/(dff.vol*100)).round(2)
+df = dff[['datetime','open','close','high','low','mea','vol','amount']]
 eng.dispose()
 
 p0 = [[5,13],[13,34]]
