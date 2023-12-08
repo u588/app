@@ -15,15 +15,16 @@ p0 = [[5,13],[13,34]]
 
 #第二个参数n涨幅周期，第三个参数p回测周期。
 def GetPCBraw(df,n,p):
-    a = ((df.loc[n].close - df.loc[(n-p)].close)/df.loc[(n-p)].close)*100
-    return a.round(2)
+    a = (((df.loc[n].close - df.loc[(n-p)].close)/df.loc[(n-p)].close)*100).round(2)
+    b = (((df.loc[n].mea - df.loc[(n-p)].mea)/df.loc[(n-p)].mea)*100).round(2)
+    return a,b
 
 for n in df.index[::-1]:
     print(n)
     try:
         for p in p0:
             try:
-                df.loc[n, 'PCB'+str(p[0])] = GetPCBraw(df,n,p[0])
+                df.loc[n, 'PCB'+str(p[0])], df.loc[n, 'PCBmea'+str(p[0])]= GetPCBraw(df,n,p[0])
                 df.loc[n,'PCB'+str(p[0])+'time'] = df.loc[(n-p[0])].datetime
                 df.loc[n,'PCB'+str(p[0])+'time'+str(p[1])] = df.loc[(n-(p[0]+p[1]))].datetime
             except:
@@ -31,8 +32,8 @@ for n in df.index[::-1]:
     except:
         pass
 
-pcb5 = df[['datetime', 'PCB5','PCB5time', 'PCB5time13']]
-pcb13 = df[['datetime', 'PCB13','PCB13time', 'PCB13time34']]
+pcb5 = df[['datetime', 'PCB5','PCBmea5','PCB5time', 'PCB5time13']]
+pcb13 = df[['datetime', 'PCB13','PCBmea13','PCB13time', 'PCB13time34']]
 
 #第二个参数m涨幅周期，第三个参数选择涨幅大于g的记录。
 def GetPCB(pcb,m,g):
