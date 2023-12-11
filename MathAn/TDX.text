@@ -33,7 +33,7 @@ list_data = crawler.fetch_and_parse()
 print(pd.DataFrame(data=list_data))
 
 2023.11.20  --> gpcw20230930.zip 4929989
-
+2023.12.11  --> gpcw20230930.zip 4939105
 gpcw19971231.zip 1231 0930 0630 0331
 
 from pytdx.crawler.base_crawler import demo_reporthook
