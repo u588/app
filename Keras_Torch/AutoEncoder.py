@@ -1,5 +1,3 @@
-#https://blog.keras.io/building-autoencoders-in-keras.html
-
 import os
 # This guide can only be run with the torch backend.
 os.environ["KERAS_BACKEND"] = "torch"
@@ -9,33 +7,21 @@ import keras
 from keras import layers
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
+import keras
+from keras import layers
 
-a = pd.read_excel('g:/1/2/st000001.xlsx')
-b = pd.read_excel('g:/1/2/st000001pcb5.xlsx')
-c = pd.read_excel('g:/1/2/st000001pcb13.xlsx')
+# This is the size of our encoded representations
+encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
 
-
-i = 0
-qq = pd.DataFrame((a[a.datetime>=b.loc[i][3:5][1]][a.datetime<=b.loc[i][3:5][0]].reset_index()[['open','close','high','low','mea']]).stack().values).T
-while i < len(b):
-    print(i)
-    df = a[a.datetime>=b.loc[i][3:5][1]][a.datetime<=b.loc[i][3:5][0]].reset_index()[['open','close','high','low','mea']]
-    aa = pd.DataFrame(df.stack().values).T
-    qq = pd.concat([qq,aa])
-    i = i + 1
- 
-nor = Normalizer(norm='l2')
-x_train = nor.fit_transform(qq[1:65])
-x_test = nor.fit_transform(qq[65:])
-
-encoding_dim = 10  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
 # This is our input image
-input_img = keras.Input(shape=(70,))
+input_img = keras.Input(shape=(784,))
 # "encoded" is the encoded representation of the input
 encoded = layers.Dense(encoding_dim, activation='relu')(input_img)
 # "decoded" is the lossy reconstruction of the input
-decoded = layers.Dense(70, activation='sigmoid')(encoded)
+decoded = layers.Dense(784, activation='sigmoid')(encoded)
+
 # This model maps an input to its reconstruction
 autoencoder = keras.Model(input_img, decoded)
 # This model maps an input to its encoded representation
@@ -47,66 +33,73 @@ decoder_layer = autoencoder.layers[-1]
 # Create the decoder model
 decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
 autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
-
+from keras.datasets import mnist
+import numpy as np
+(x_train, _), (x_test, _) = mnist.load_data()
+x_train = x_train.astype('float32') / 255.
+x_test = x_test.astype('float32') / 255.
+x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
+x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
+print(x_train.shape)
+print(x_test.shape)
 
 autoencoder.fit(x_train, x_train,
                 epochs=50,
-                batch_size=20,
+                batch_size=256,
                 shuffle=True,
                 validation_data=(x_test, x_test))
 
+
+import matplotlib.pyplot as plt
 # Encode and decode some digits
 # Note that we take them from the *test* set
 encoded_imgs = encoder.predict(x_test)
 decoded_imgs = decoder.predict(encoded_imgs)
-
-import matplotlib.pyplot as plt
-n = 20  # How many digits we will display
+# Use Matplotlib (don't ask)
+n = 10  # How many digits we will display
 plt.figure(figsize=(20, 4))
 for i in range(n):
     # Display original
     ax = plt.subplot(2, n, i + 1)
-    plt.imshow(x_test[i].reshape(14, 5))
+    plt.imshow(x_test[i].reshape(28, 28))
     plt.gray()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
     # Display reconstruction
     ax = plt.subplot(2, n, i + 1 + n)
-    plt.imshow(decoded_imgs[i].reshape(14, 5))
+    plt.imshow(decoded_imgs[i].reshape(28, 28))
     plt.gray()
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 
 plt.show()
 
-
-
 from keras import regularizers
 
-encoding_dim = 16
+encoding_dim = 32
 
-input_img = keras.Input(shape=(70,))
+input_img = keras.Input(shape=(784,))
 # Add a Dense layer with a L1 activity regularizer
 encoded = layers.Dense(encoding_dim, activation='relu',
                 activity_regularizer=regularizers.l1(10e-5))(input_img)
-decoded = layers.Dense(70, activation='sigmoid')(encoded)
+decoded = layers.Dense(784, activation='sigmoid')(encoded)
 autoencoder = keras.Model(input_img, decoded)
 
-input_img = keras.Input(shape=(70,))
-encoded = layers.Dense(50, activation='relu')(input_img)
-encoded = layers.Dense(30, activation='relu')(encoded)
-encoded = layers.Dense(16, activation='relu')(encoded)
+input_img = keras.Input(shape=(784,))
+encoded = layers.Dense(128, activation='relu')(input_img)
+encoded = layers.Dense(64, activation='relu')(encoded)
+encoded = layers.Dense(32, activation='relu')(encoded)
 
-decoded = layers.Dense(30, activation='relu')(encoded)
-decoded = layers.Dense(50, activation='relu')(decoded)
-decoded = layers.Dense(70, activation='sigmoid')(decoded)
+decoded = layers.Dense(64, activation='relu')(encoded)
+decoded = layers.Dense(128, activation='relu')(decoded)
+decoded = layers.Dense(784, activation='sigmoid')(decoded)
 
 autoencoder = keras.Model(input_img, decoded)
 autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
 
 autoencoder.fit(x_train, x_train,
-                epochs=50,
-                batch_size=20,
+                epochs=100,
+                batch_size=256,
                 shuffle=True,
                 validation_data=(x_test, x_test))
 
@@ -134,7 +127,6 @@ decoded = layers.Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
 autoencoder = keras.Model(input_img, decoded)
 autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
-
 
 from keras.datasets import mnist
 import numpy as np
@@ -241,7 +233,6 @@ autoencoder.fit(x_train_noisy, x_train,
                 validation_data=(x_test_noisy, x_test),
                 callbacks=[TensorBoard(log_dir='/tmp/tb', histogram_freq=0, write_graph=False)])
 
-
 timesteps = ...  # Length of your sequences
 input_dim = ... 
 latent_dim = ...
@@ -335,9 +326,3 @@ for i, yi in enumerate(grid_x):
 plt.figure(figsize=(10, 10))
 plt.imshow(figure)
 plt.show()
-
-
-
-
-
-
