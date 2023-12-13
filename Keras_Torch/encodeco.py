@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import Normalizer
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as pltk
+import matplotlib.pyplot as plt
 
 a = pd.read_excel('g:/1/2/st000001.xlsx')
 b = pd.read_excel('g:/1/2/st000001pcb5.xlsx')
