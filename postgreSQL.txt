@@ -1,0 +1,4 @@
+C8 upgrade 
+vi /usr/lib/systemd/system/postgresql-16.service
+
+Environment=PGDATA=/home/pg16/
