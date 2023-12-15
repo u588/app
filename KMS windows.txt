@@ -3,6 +3,7 @@ KMS激活服务器 10.18.1.8
 ./vlmcsd-x64-musl-static
 netstat -lnp  port 1688
 
+================ Windows activation =============
 
 slmgr /ipk WX4NM-KYWYW-QJJR4-XV3QB-6VM33
 
@@ -13,9 +14,9 @@ slmgr.vbs -ato
 slmgr.vbs -dlv
 slmgr.vbs -dli
 
-
 slmgr -xpr 过期时间
 slmgr -dlv 服务器信息
+
 
 ############################# Windows Server ######################################
 Windows Server 2022 Datacente           WX4NM-KYWYW-QJJR4-XV3QB-6VM33
@@ -56,6 +57,16 @@ PowerPoint LTSC 2021	          TY7XF-NFRBR-KJ44C-G83KF-GX27K
 Publisher LTSC 2021	         2MW9D-N4BXM-9VBPG-Q7W6M-KFBGQ
 Skype for Business LTSC 2021	  HWCXN-K3WBT-WJBKY-R8BD9-XK29P
 Word LTSC 2021	                  TN8H9-M34D3-Y64V9-TR72V-X79KV
+
+============== office activation ==================
+cd C:\Program Files\Microsoft Office\Office16
+cscript ospp.vbs /inpkey:FXYTK-NJJ8C-GB6DW-3DYQT-6F7TH
+cscript ospp.vbs /sethst:10.18.1.8
+cscript ospp.vbs /act
+检查
+cscript ospp.vbs /dstatus
+
+
 
 
 SQL Server 2016 Enterprise Edition 企业版序列号：MDCJV-3YX8N-WG89M-KV443-G8249
