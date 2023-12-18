@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
-import keras
-from keras import layers
+
 
 # This is the size of our encoded representations
 encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
