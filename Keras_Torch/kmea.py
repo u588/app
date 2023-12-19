@@ -12,11 +12,13 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from collections import Counter
 import matplotlib.pyplot as plt
+import mplfinance as mpf
 
 a = pd.read_excel('g:/1/2/st000001.xlsx')
 b = pd.read_excel('g:/1/2/st000001pcb5.xlsx')
 c = pd.read_excel('g:/1/2/st000001pcb13.xlsx')
 
+#生成分析数据
 i = 0
 qq = pd.DataFrame((a[a.datetime>=b.loc[i][3:5][1]][a.datetime<=b.loc[i][3:5][0]].reset_index()[['open','close','high','low','mea']]).stack().values).T
 while i < len(b):
@@ -26,16 +28,36 @@ while i < len(b):
     qq = pd.concat([qq,aa])
     i = i + 1
 
+# 归一化qq
+qqq = ((qq-qq.min().min())/(qq.max().max()-qq.min().min())).reset_index(drop=True)
+
 nor = Normalizer(norm='l2')
 x_train = nor.fit_transform(qq[1:65])
 x_test = nor.fit_transform(qq[65:])
 X = nor.fit_transform(qq)
 
 #选择合适的 n clusters 值
-n_clusters=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+n_clusters=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,100]
 for n_clusters in n_clusters:
     cluster=KMeans(n_clusters=n_clusters,random_state=1, n_init="auto")
     cluster_labels=cluster.fit_predict(X)
 # 计算所有样本的平均轮廓系数
     silhouette=silhouette_score(X,cluster_labels)
     print("For n_clusters=",n_clusters, "ilhouette score is :", round(silhouette,2))
+
+# 3D plot 
+from matplotlib import  cm
+from matplotlib.colors import LightSource
+z = qqq.loc[0].values.reshape(14,5)
+nrows, ncols = z.shape
+x = np.linspace(0, 4, ncols)
+y = np.linspace(0, 13, nrows)
+x, y = np.meshgrid(x, y)
+
+# region = np.s_[5:50, 5:50]
+# x, y, z = x[region], y[region], z[region]
+
+fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
+ls = LightSource(270, 45)
+rgb = ls.shade(z, cmap=cm.gist_earth, vert_exag=0.1, blend_mode='soft')
+surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,linewidth=0, antialiased=True, shade=False)
