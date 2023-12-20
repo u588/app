@@ -67,3 +67,7 @@ surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,linewidth=0
 
 # 平行坐标系
 pd.plotting.parallel_coordinates(aaa[['open','close','high','low','mea','datetime']],'datetime')
+
+#力矩图
+#https://blog.csdn.net/qq_38998213/article/details/133015643
+pd.plotting.radviz(df, 'Category')
