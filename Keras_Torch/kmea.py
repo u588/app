@@ -70,4 +70,5 @@ pd.plotting.parallel_coordinates(aaa[['open','close','high','low','mea','datetim
 
 #力矩图
 #https://blog.csdn.net/qq_38998213/article/details/133015643
+#https://www.mdpi.com/2227-9709/6/2/16
 pd.plotting.radviz(df, 'Category')
