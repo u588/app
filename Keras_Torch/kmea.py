@@ -51,6 +51,8 @@ from matplotlib.colors import LightSource
 z = qqq.loc[0].values.reshape(14,5)
 nrows, ncols = z.shape
 x = np.linspace(0, 4, ncols)
+x = np.linspace(0, 200, ncols)
+y = np.linspace(0, 20, nrows)
 y = np.linspace(0, 13, nrows)
 x, y = np.meshgrid(x, y)
 
@@ -60,4 +62,8 @@ x, y = np.meshgrid(x, y)
 fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
 ls = LightSource(270, 45)
 rgb = ls.shade(z, cmap=cm.gist_earth, vert_exag=0.1, blend_mode='soft')
-surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,linewidth=0, antialiased=True, shade=False)
+surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, facecolors=rgb,linewidth=0, antialiased=False, shade=False)
+
+
+# 平行坐标系
+pd.plotting.parallel_coordinates(aaa[['open','close','high','low','mea','datetime']],'datetime')
