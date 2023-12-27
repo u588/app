@@ -1,15 +1,23 @@
+
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
+pd.plotting.radviz
 
 from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
 df = pd.read_sql('600180', eng).tail(100).reset_index(drop=True).reset_index()
 
+nn = pd.plotting(df.open)
+
+
+mm = pd.plotting.radviz(df[['open','close','high','low','index']], 'index')
+
+plt.show()
 #时间转换
 df['data'] = pd.to_datetime(df.datetime).dt.strftime('%Y%m%d')
 x = df['index']
