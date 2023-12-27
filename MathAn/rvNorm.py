@@ -4,6 +4,7 @@ import numpy as np
 def rvNorm(data):
     x = pd.DataFrame(columns=['datetime','x','y'])
     df = data.drop('datetime', axis=1)
+    df = ((df.T-df.T.min())/(df.T.max()-df.T.min())).T
     n = len(df)
     m = df.shape[1]
     s = np.array([(np.cos(t), np.sin(t))
