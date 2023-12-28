@@ -7,9 +7,11 @@ from sklearn.datasets import make_blobs
 from sqlalchemy import create_engine
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
-df = pd.read_sql('600180', eng).tail(5360).reset_index(drop=True)
-
-
+code = '600180'
+df = pd.read_sql(code, eng)
+df = df[df.datetime>'2000-01-01']
+df['pct5'] = (df.close.pct_change(5)*100).round(2)
+df = df.iloc[21:].reset_index(drop=True)
 
 # The following bandwidth can be automatically detected using
 bandwidth = estimate_bandwidth(X, quantile=0.2, n_samples=20)

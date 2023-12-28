@@ -21,10 +21,10 @@ c = pd.read_excel('g:/1/2/st000001pcb13.xlsx')
 #生成分析数据
 #df.loc[(df.PCB13>-9)&(df.PCB13<-7),'classes'] = 10
 i = 0
-qq = pd.DataFrame((a[a.datetime>=b.loc[i][3:5][1]][a.datetime<=b.loc[i][3:5][0]].reset_index()[['open','close','high','low','mea']]).stack().values).T
+qq = pd.DataFrame((a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low','mea']]).stack().values).T
 while i < len(b):
     print(i)
-    df = a[a.datetime>=b.loc[i][3:5][1]][a.datetime<=b.loc[i][3:5][0]].reset_index()[['open','close','high','low','mea']]
+    df = a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low','mea']]
     aa = pd.DataFrame(df.stack().values).T
     qq = pd.concat([qq,aa])
     i = i + 1
