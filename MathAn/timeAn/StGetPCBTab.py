@@ -8,7 +8,7 @@ engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn'
 def rvNorm(data):
     x = pd.DataFrame(columns=['datetime','x','y'])
     df = data.drop('datetime', axis=1)
-    df = ((df.T-df.T.min())/(df.T.max()-df.T.min())).T
+    # df = ((df.T-df.T.min())/(df.T.max()-df.T.min())).T
     n = len(df)
     m = df.shape[1]
     s = np.array([(np.cos(t), np.sin(t))
@@ -105,6 +105,8 @@ while i < len(b):
     i = i + 1
 
 qq = qq[1:].reset_index(drop=True)
+
+
 qq = ((qq.T-qq.T.min())/(qq.T.max()-qq.T.min())).T
 qq['datetime'] = b['PCB5time']
 
