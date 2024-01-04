@@ -24,13 +24,16 @@ def rvNorm(data):
     return x
 
 
-code = '000001'
+code = '601600'
 rawD = pd.read_sql(code, eng)
 dff = rawD[rawD.datetime >= '2000-01-01'].reset_index(drop=True)
 dff['mea'] = (dff.amount/(dff.vol*100)).round(2)
 df = dff[['datetime','open','close','high','low','mea','vol','amount']]
 eng.dispose()
-a = df
+a = df.copy()
+aaa = df.copy()
+aaa.loc[:,'date'] = pd.to_datetime(df.datetime)
+aaa.set_index('date',inplace=True)
 # p0 = [[5,13],[13,34]]
 p0 = [[5,13]]
 
@@ -99,8 +102,8 @@ i = 0
 qq = pd.DataFrame((a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low','mea']]).stack().values).T
 while i < len(b):
     print(i)
-    df = a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low','mea']]
-    aa = pd.DataFrame(df.stack().values).T
+    dfz = a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low','mea']]
+    aa = pd.DataFrame(dfz.stack().values).T
     qq = pd.concat([qq,aa])
     i = i + 1
 
@@ -111,3 +114,43 @@ qq = ((qq.T-qq.T.min())/(qq.T.max()-qq.T.min())).T
 qq['datetime'] = b['PCB5time']
 
 x = rvNorm(qq)
+
+
+from sklearn.cluster import DBSCAN
+from numpy import unique
+from numpy import where
+import matplotlib.pyplot as plt
+import mplfinance as mpf
+
+
+X = x[['x','y']].values
+model = DBSCAN(eps=0.8 ,min_samples=3)
+
+model.fit(X)
+yhat = model.fit_predict(X)
+clusters = unique(yhat)
+for cluster in clusters:
+    row_ix = where(yhat == cluster)
+    plt.scatter(X[row_ix, 0], X[row_ix, 1])
+
+plt.show()
+
+x['clus'] = pd.DataFrame(yhat)
+
+xx = x.sort_values('clus').reset_index(drop=True)
+xxg = xx.groupby('clus')
+xxg.size()
+gg = xxg.get_group(3).reset_index(drop=True)
+
+n = gg.shape[0]
+i = 0
+fig = mpf.figure()
+while i<n:
+    date = gg.loc[i].datetime
+    i  = i+1
+    mpf.plot(aaa[aaa.datetime<=date].tail(13),ax=fig.add_subplot(int(str(n)),1,i),type='candle')
+
+plt.show()
+
+
+
