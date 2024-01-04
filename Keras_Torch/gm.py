@@ -50,12 +50,12 @@ df = df.iloc[21:].reset_index(drop=True)
 
 #涨幅标注
 
-df.loc[(df.PCB5>=8) & (df.PCB5<11),'clas'] = 1
-df.loc[(df.PCB5>=11) & (df.PCB5<15),'clas'] = 2
-df.loc[(df.PCB5>=15) & (df.PCB5<21),'clas'] = 3
-df.loc[(df.PCB5>=21) & (df.PCB5<25),'clas'] = 4
-df.loc[(df.PCB5>=25),'clas'] = 5
-b = df.dropna(subset='clas').reset_index(drop=True)
+df.loc[(df.PCB5>=8) & (df.PCB5<11),'label'] = 1
+df.loc[(df.PCB5>=11) & (df.PCB5<15),'label'] = 2
+df.loc[(df.PCB5>=15) & (df.PCB5<21),'label'] = 3
+df.loc[(df.PCB5>=21) & (df.PCB5<25),'label'] = 4
+df.loc[(df.PCB5>=25),'label'] = 5
+b = df.dropna(subset='label').reset_index(drop=True)
 
 
 #生成训练数据PCB参考日前13日
@@ -76,8 +76,8 @@ qq['datetime'] = b['PCB5time']
 
 
 from sklearn.cluster import DBSCAN
-from numpy import unique
-from numpy import where
+# from numpy import unique
+# from numpy import where
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 
@@ -87,17 +87,17 @@ model = DBSCAN(eps=0.7 ,min_samples=3)
 
 model.fit(X)
 yhat = model.fit_predict(X)
-clusters = unique(yhat)
-for cluster in clusters:
-    row_ix = where(yhat == cluster)
-    plt.scatter(X[row_ix, 0], X[row_ix, 1])
+# clusters = unique(yhat)
+# for cluster in clusters:
+#     row_ix = where(yhat == cluster)
+#     plt.scatter(X[row_ix, 0], X[row_ix, 1])
 
-plt.show()
+# plt.show()
 
-b['clus'] = pd.DataFrame(yhat)
+b['cluster'] = pd.DataFrame(yhat)
 
-xx = b.sort_values('clus').reset_index(drop=True)
-xxg = xx.groupby('clus')
+xx = b.sort_values('cluster').reset_index(drop=True)
+xxg = xx.groupby('cluster')
 xxg.size()
 gg = xxg.get_group(4).reset_index(drop=True)
 
