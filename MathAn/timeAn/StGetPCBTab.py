@@ -57,27 +57,27 @@ for n in df.index[::-1]:
         pass
 
 df = df.iloc[21:].reset_index(drop=True)
-# pcb5 = df[['datetime', 'PCB5','PCBmea5','PCB5time', 'PCB5time13']]
+pcb5 = df[['datetime', 'PCB5','PCBmea5','PCB5time', 'PCB5time13']]
 # pcb13 = df[['datetime', 'PCB13','PCBmea13','PCB13time', 'PCB13time34']]
 
 #第二个参数m涨幅周期，第三个参数选择涨幅大于g的记录。
-# def GetPCB(pcb,m,g):
-#     dd = pd.DataFrame()
-#     n = 0
-#     while n < len(pcb):
-#         try:
-#             if pcb[pcb.columns[1]][n:n+m].max() > g :
-#                 # print(n)
-#                 i = pcb[pcb.columns[1]][n:n+m][pcb[pcb.columns[1]]==pcb[pcb.columns[1]][n:n+m].max()].index.values[0]
-#                 n = pcb[pcb.columns[1]][i:i+m][pcb[pcb.columns[1]]==pcb[pcb.columns[1]][i:i+m].max()].index.values[0]
-#                 dd = pd.concat([dd,pcb.loc[n].to_frame().T])
-#                 n = n + m 
-#             else:
-#                 n = n + 1
-#         except:
-#             n = n + 1
-#             pass
-#     return dd
+def GetPCB(pcb,m,g):
+    dd = pd.DataFrame()
+    n = 0
+    while n < len(pcb):
+        try:
+            if pcb[pcb.columns[1]][n:n+m].max() > g :
+                # print(n)
+                i = pcb[pcb.columns[1]][n:n+m][pcb[pcb.columns[1]]==pcb[pcb.columns[1]][n:n+m].max()].index.values[0]
+                n = pcb[pcb.columns[1]][i:i+m][pcb[pcb.columns[1]]==pcb[pcb.columns[1]][i:i+m].max()].index.values[0]
+                dd = pd.concat([dd,pcb.loc[n].to_frame().T])
+                n = n + m 
+            else:
+                n = n + 1
+        except:
+            n = n + 1
+            pass
+    return dd
 
 
 # df.to_sql('Index0', engAn, if_exists='replace')
@@ -91,11 +91,12 @@ df.loc[(df.PCB5>=25),'clas'] = 5
 b = df.dropna(subset='clas').reset_index(drop=True)
 
 # pcb = [[pcb5,5,8],[pcb5,5,11],[pcb5,5,15],[pcb5,5,21],[pcb5,5,25]]
-# for n  in pcb:
-#     a = GetPCB(n[0],n[1],n[2]).reset_index(drop=True)
-#     a['Num'] = pd.to_datetime(a.datetime)-pd.to_datetime(a.shift(1).datetime)
-#     a.set_index('datetime').to_excel('g:/1/2/St'+code + 'PCB'+str(n[1])+'.xlsx')
-# df.set_index('datetime').to_excel('g:/1/2/St'+code + '.xlsx')
+pcb = [[pcb5,5,8]]
+for n  in pcb:
+    a = GetPCB(n[0],n[1],n[2]).reset_index(drop=True)
+    a['Num'] = pd.to_datetime(a.datetime)-pd.to_datetime(a.shift(1).datetime)
+    a.set_index('datetime').to_excel('g:/1/2/St'+code + 'PCB'+str(n[1])+'.xlsx')
+df.set_index('datetime').to_excel('g:/1/2/St'+code + '.xlsx')
 
 #生成训练数据PCB参考日前13日
 i = 0

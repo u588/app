@@ -1,6 +1,8 @@
 import pandas as pd
 from sqlalchemy import create_engine
-import numpy as np
+from sklearn.cluster import DBSCAN
+import matplotlib.pyplot as plt
+import mplfinance as mpf
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
@@ -14,7 +16,7 @@ grList = gr.size().index.to_list()
 gr.get_group(grList[0])
 
 
-code = '601600'
+code = '600185'
 rawD = pd.read_sql(code, eng)
 dff = rawD[rawD.datetime >= '2000-01-01'].reset_index(drop=True)
 dff['mea'] = (dff.amount/(dff.vol*100)).round(2)
@@ -55,38 +57,57 @@ df.loc[(df.PCB5>=11) & (df.PCB5<15),'label'] = 2
 df.loc[(df.PCB5>=15) & (df.PCB5<21),'label'] = 3
 df.loc[(df.PCB5>=21) & (df.PCB5<25),'label'] = 4
 df.loc[(df.PCB5>=25),'label'] = 5
-b = df.dropna(subset='label').reset_index(drop=True)
+# b = df.dropna(subset='label').reset_index(drop=True)
 
 
-#生成训练数据PCB参考日前13日
+#生成训练数据PCB参考日前13日 第二个参数m涨幅周期，第三个参数选择涨幅大于g的记录。
+def GetPCB(pcb,m,g):
+    dd = pd.DataFrame()
+    n = 0
+    while n < len(pcb):
+        try:
+            if pcb[pcb.columns[8]][n:n+m].max() >= g :
+                # print(n)
+                i = pcb[pcb.columns[8]][n:n+m][pcb[pcb.columns[8]]==pcb[pcb.columns[8]][n:n+m].max()].index.values[0]
+                n = pcb[pcb.columns[8]][i:i+m][pcb[pcb.columns[8]]==pcb[pcb.columns[8]][i:i+m].max()].index.values[0]
+                dd = pd.concat([dd,pcb.loc[n].to_frame().T])
+                n = n + m 
+            else:
+                n = n + 1
+        except:
+            n = n + 1
+            pass
+    return dd
+
+# b = GetPCB(df,18,8).reset_index(drop=True)
+b = df
+# b['num'] = pd.to_datetime(b.datetime)-pd.to_datetime(b.datetime.shift(1))
+# b.num.describe()
+
 i = 0
-qq = pd.DataFrame((a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low']]).stack().values).T
+qq = pd.DataFrame((a[(a.datetime>=b.loc[i][10:12][1])&(a.datetime<=b.loc[i][10:12][0])].reset_index()[['open','close','high','low']]).stack().values).T
 while i < len(b):
     print(i)
-    dfz = a[a.datetime>=b.loc[i][10:12][1]][a.datetime<=b.loc[i][10:12][0]].reset_index()[['open','close','high','low']]
+    dfz = a[(a.datetime>=b.loc[i][10:12][1])&(a.datetime<=b.loc[i][10:12][0])].reset_index()[['open','close','high','low']]
     aa = pd.DataFrame(dfz.stack().values).T
     qq = pd.concat([qq,aa])
     i = i + 1
 
 qq = qq[1:].reset_index(drop=True)
-
-
 qq = ((qq.T-qq.T.min())/(qq.T.max()-qq.T.min())).T
-qq['datetime'] = b['PCB5time']
+# qq['datetime'] = b['PCB5time']
 
-
-from sklearn.cluster import DBSCAN
-# from numpy import unique
-# from numpy import where
-import matplotlib.pyplot as plt
-import mplfinance as mpf
 
 
 X = qq.values
-model = DBSCAN(eps=0.7 ,min_samples=3)
+model = DBSCAN(eps=0.68 ,min_samples=3)
 
 model.fit(X)
-yhat = model.fit_predict(X)
+
+# from numpy import unique
+# from numpy import where
+
+yy = model.fit_predict(X)
 # clusters = unique(yhat)
 # for cluster in clusters:
 #     row_ix = where(yhat == cluster)
@@ -94,20 +115,20 @@ yhat = model.fit_predict(X)
 
 # plt.show()
 
-b['cluster'] = pd.DataFrame(yhat)
+b['cluster'] = pd.DataFrame(yy)
 
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 xxg.size()
-gg = xxg.get_group(4).reset_index(drop=True)
+gg = xxg.get_group(61).sort_values('datetime').reset_index(drop=True)
 
 n = gg.shape[0]
 i = 0
 fig = mpf.figure()
 while i<n:
     date = gg.loc[i].PCB5time
-    mpf.plot(aaa[aaa.datetime<=date].tail(14),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle')
-    mpf.plot(aaa[aaa.datetime>=date].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=str(gg.loc[i].PCB5))
+    mpf.plot(aaa[aaa.datetime<=date].tail(14),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle',datetime_format="%Y%b%d",ylabel="")
+    mpf.plot(aaa[aaa.datetime>=date].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=str(gg.loc[i].PCB5),datetime_format="%Y%b%d",ylabel="")
     i  = i+1
 
 plt.show()
