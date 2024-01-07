@@ -7,62 +7,20 @@ import mplfinance as mpf
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
-gm = pd.read_sql('gm', engAn)
-engAn.dispose()
-
-gr = gm.groupby('lev4_code')
-grList = gr.size().index.to_list()
-
-angr = gr.get_group(grList[0])
-
-codeList = angr[angr.scale==500].code.to_list()
-
-
 def GetX(code):
     rawD = pd.read_sql(code, eng)
     dff = rawD[rawD.datetime >= '2000-01-01'].reset_index(drop=True)
     dff['mea'] = (dff.amount/(dff.vol*100)).round(2)
     df = dff[['datetime','open','close','high','low','mea','vol','amount']]
     eng.dispose()
+    df = df.copy()
     a = df.copy()
     aaa = df.copy()
-    aaa.loc[:,'date'] = pd.to_datetime(df.datetime)
-    aaa.set_index('date',inplace=True)
-    p0 = [[5,13]]
-    def GetPCBraw(df,n,p):
-        a = (((df.loc[n].close - df.loc[(n-p)].close)/df.loc[(n-p)].close)*100).round(2)
-        b = (((df.loc[n].mea - df.loc[(n-p)].mea)/df.loc[(n-p)].mea)*100).round(2)
-        return a,b
-    for n in df.index[::-1]:
-        print(n)
-        try:
-            for p in p0:
-                try:
-                    df.loc[n, 'PCB'+str(p[0])], df.loc[n, 'PCBmea'+str(p[0])]= GetPCBraw(df,n,p[0])
-                    df.loc[n,'PCB'+str(p[0])+'time'] = df.loc[(n-p[0])].datetime
-                    df.loc[n,'PCB'+str(p[0])+'time'+str(p[1])] = df.loc[(n-(p[0]+p[1]))].datetime
-                except:
-                    pass
-        except:
-            pass
+    df.loc[:,'PCB5'] = (df.close.pct_change(5)*100).round(2)
+    df.loc[:,'PCBmea5'] = (df.mea.pct_change(5)*100).round(2)
+    df.loc[:,'PCB5time'] = df.datetime.shift(5)
+    df.loc[:,'PCB5time13'] = df.datetime.shift(18)
     df = df.iloc[21:].reset_index(drop=True)
-    def GetPCB(pcb,m,g):
-        dd = pd.DataFrame()
-        n = 0
-        while n < len(pcb):
-            try:
-                if pcb[pcb.columns[8]][n:n+m].max() >= g :
-                    # print(n)
-                    i = pcb[pcb.columns[8]][n:n+m][pcb[pcb.columns[8]]==pcb[pcb.columns[8]][n:n+m].max()].index.values[0]
-                    n = pcb[pcb.columns[8]][i:i+m][pcb[pcb.columns[8]]==pcb[pcb.columns[8]][i:i+m].max()].index.values[0]
-                    dd = pd.concat([dd,pcb.loc[n].to_frame().T])
-                    n = n + m 
-                else:
-                    n = n + 1
-            except:
-                n = n + 1
-                pass
-        return dd
     b = df
     i = 0
     qq = pd.DataFrame((a[(a.datetime>=b.loc[i][10:12][1])&(a.datetime<=b.loc[i][10:12][0])].reset_index()[['open','close','high','low']]).stack().values).T
@@ -76,10 +34,35 @@ def GetX(code):
     qq = ((qq.T-qq.T.min())/(qq.T.max()-qq.T.min())).T
     return qq,aaa,b            
 
-aqq = pd.DataFrame(pd.read_sql('000001',eng).head(14)[['open','close','high','low']].stack().values).T
-eng.dispose()
-aqa = pd.DataFrame(columns=['code','datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','date']).set_index('date')
-aqb = pd.DataFrame(columns=['code','datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','PCB5', 'PCBmea5', 'PCB5time', 'PCB5time13', 'cluster'])
+def gplt(clum):
+    gg = xxg.get_group(clum).sort_values('datetime').reset_index(drop=True)
+    n = gg.shape[0]
+    i = 0
+    fig = mpf.figure()
+    while i<n:
+        date = gg.loc[i].PCB5time
+        code = gg.loc[i].code
+        mpf.plot(aaa[(aaa.code==code)&(aaa.datetime<=date)].tail(14),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle',datetime_format="%Y%b%d",ylabel=code)
+        mpf.plot(aaa[(aaa.code==code)&(aaa.datetime>=date)].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=str(gg.loc[i].PCB5),datetime_format="%Y%b%d",ylabel="")
+        i  = i+1
+    plt.show()
+
+gm = pd.read_sql('gm', engAn)
+engAn.dispose()
+
+gr = gm.groupby('lev4_code')
+grList = gr.size().index.to_list()
+
+angr = gr.get_group(grList[245])
+
+codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
+
+
+
+aqq = pd.DataFrame(columns=list(range(56)))
+aqa = pd.DataFrame(columns=['code','datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount'])
+aqb = pd.DataFrame(columns=['code','datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','PCB5', 'PCBmea5', 'PCB5time', 'PCB5time13'])
+
 for code in codeList:    
     qq,aaa,b = GetX(code)
     aaa['code']=code
@@ -88,4 +71,21 @@ for code in codeList:
     aqa = pd.concat([aqa,aaa])
     aqb = pd.concat([aqb,b])
 
-aqq = aqq[1:]
+
+qq = aqq.reset_index(drop=True)
+aaa = aqa.reset_index(drop=True)
+aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
+aaa.set_index('date',inplace=True)
+b =aqb.reset_index(drop=True)
+
+X = qq.values
+model = DBSCAN(eps=0.48,min_samples=5)
+# model = DBSCAN(eps=0.68,min_samples=3)
+model.fit(X)
+
+yy = model.fit_predict(X)
+b['cluster'] = pd.DataFrame(yy)
+xx = b.sort_values('cluster').reset_index(drop=True)
+xxg = xx.groupby('cluster')
+xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False)
+
