@@ -32,7 +32,7 @@ def GetX(code):
         i = i + 1
     qq = qq[1:].reset_index(drop=True)
     qq = ((qq.T-qq.T.min())/(qq.T.max()-qq.T.min())).T
-    return qq,aaa,b            
+    return qq,aaa,b
 
 def gplt(clum):
     gg = xxg.get_group(clum).sort_values('datetime').reset_index(drop=True)
@@ -53,9 +53,14 @@ engAn.dispose()
 gr = gm.groupby('lev4_code')
 grList = gr.size().index.to_list()
 
-angr = gr.get_group(grList[245])
+# angr = gr.get_group(grList[243])
+angr = gr.get_group(55102010)
 
-codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
+#数据分成进程数
+List = angr.code.to_list()
+codeList = [List[i:i+6] for i in range(0,len(List),6)]
+# codeList = angr.code.to_list()[:4]
+# codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 
 
 
@@ -63,14 +68,48 @@ aqq = pd.DataFrame(columns=list(range(56)))
 aqa = pd.DataFrame(columns=['code','datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount'])
 aqb = pd.DataFrame(columns=['code','datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','PCB5', 'PCBmea5', 'PCB5time', 'PCB5time13'])
 
-for code in codeList:    
-    qq,aaa,b = GetX(code)
-    aaa['code']=code
-    b['code']=code
-    aqq = pd.concat([aqq,qq])
-    aqa = pd.concat([aqa,aaa])
-    aqb = pd.concat([aqb,b])
+import multiprocessing
 
+if __name__ == '__main__':
+    for list in codeList:
+        pool  = multiprocessing.Pool(processes=6)
+        results = []
+        for code in list:
+            results.append(pool.apply_async(GetX, (code,) ))
+        pool.close()
+        pool.join()    
+        for res in results:
+            aqq = pd.concat([aqq,res.get()[0]])
+            aqa = pd.concat([aqa,res.get()[1]])
+            aqb = pd.concat([aqb,res.get()[2]])        
+        # print(res.get()[2])
+    qq = aqq.reset_index(drop=True)
+    aaa = aqa.reset_index(drop=True)
+    aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
+    aaa.set_index('date',inplace=True)
+    b =aqb.reset_index(drop=True)
+
+    X = qq.values
+    model = DBSCAN(eps=0.48,min_samples=5)
+    # model = DBSCAN(eps=0.68,min_samples=3)
+    model.fit(X)
+
+    yy = model.fit_predict(X)
+    b['cluster'] = pd.DataFrame(yy)
+    xx = b.sort_values('cluster').reset_index(drop=True)
+    xxg = xx.groupby('cluster')
+    print(xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False))
+
+
+#单进程
+def spr(codeList):
+    for code in codeList:    
+        qq,aaa,b = GetX(code)
+        aaa['code']=code
+        b['code']=code
+        aqq = pd.concat([aqq,qq])
+        aqa = pd.concat([aqa,aaa])
+        aqb = pd.concat([aqb,b])
 
 qq = aqq.reset_index(drop=True)
 aaa = aqa.reset_index(drop=True)

@@ -27,9 +27,7 @@ import multiprocessing
 
 
 if __name__ == '__main__':
- 
     dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
-
     pool  = multiprocessing.Pool(processes=5)
     results = []
     for i in [0, 1, 2,3,4]:
@@ -42,7 +40,6 @@ if __name__ == '__main__':
    
     dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
     .set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsConsBLK.xlsx')
-
     dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
     n = 0
     while n < dfs.shape[0]:
