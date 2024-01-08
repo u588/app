@@ -56,9 +56,10 @@ grList = gr.size().index.to_list()
 # angr = gr.get_group(grList[243])
 angr = gr.get_group(55102010)
 
-#数据分成进程数
+#数据分成进程数P
+P=4
 List = angr.code.to_list()
-codeList = [List[i:i+6] for i in range(0,len(List),6)]
+codeList = [List[i:i+P] for i in range(0,len(List),P)]
 # codeList = angr.code.to_list()[:4]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 
@@ -72,7 +73,7 @@ import multiprocessing
 
 if __name__ == '__main__':
     for list in codeList:
-        pool  = multiprocessing.Pool(processes=6)
+        pool  = multiprocessing.Pool(processes=P)
         results = []
         for code in list:
             results.append(pool.apply_async(GetX, (code,) ))
@@ -102,29 +103,29 @@ if __name__ == '__main__':
 
 
 #单进程
-def spr(codeList):
-    for code in codeList:    
-        qq,aaa,b = GetX(code)
-        aaa['code']=code
-        b['code']=code
-        aqq = pd.concat([aqq,qq])
-        aqa = pd.concat([aqa,aaa])
-        aqb = pd.concat([aqb,b])
+# def spr(codeList):
+#     for code in codeList:    
+#         qq,aaa,b = GetX(code)
+#         aaa['code']=code
+#         b['code']=code
+#         aqq = pd.concat([aqq,qq])
+#         aqa = pd.concat([aqa,aaa])
+#         aqb = pd.concat([aqb,b])
 
-qq = aqq.reset_index(drop=True)
-aaa = aqa.reset_index(drop=True)
-aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
-aaa.set_index('date',inplace=True)
-b =aqb.reset_index(drop=True)
+# qq = aqq.reset_index(drop=True)
+# aaa = aqa.reset_index(drop=True)
+# aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
+# aaa.set_index('date',inplace=True)
+# b =aqb.reset_index(drop=True)
 
-X = qq.values
-model = DBSCAN(eps=0.48,min_samples=5)
-# model = DBSCAN(eps=0.68,min_samples=3)
-model.fit(X)
+# X = qq.values
+# model = DBSCAN(eps=0.48,min_samples=5)
+# # model = DBSCAN(eps=0.58,min_samples=5)
+# model.fit(X)
 
-yy = model.fit_predict(X)
-b['cluster'] = pd.DataFrame(yy)
-xx = b.sort_values('cluster').reset_index(drop=True)
-xxg = xx.groupby('cluster')
-xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False)
+# yy = model.fit_predict(X)
+# b['cluster'] = pd.DataFrame(yy)
+# xx = b.sort_values('cluster').reset_index(drop=True)
+# xxg = xx.groupby('cluster')
+# xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False)
 
