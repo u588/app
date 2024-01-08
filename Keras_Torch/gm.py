@@ -120,17 +120,34 @@ b['cluster'] = pd.DataFrame(yy)
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 xxg.size()
-gg = xxg.get_group(61).sort_values('datetime').reset_index(drop=True)
 
-n = gg.shape[0]
-i = 0
-fig = mpf.figure()
-while i<n:
-    date = gg.loc[i].PCB5time
-    mpf.plot(aaa[aaa.datetime<=date].tail(14),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle',datetime_format="%Y%b%d",ylabel="")
-    mpf.plot(aaa[aaa.datetime>=date].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=str(gg.loc[i].PCB5),datetime_format="%Y%b%d",ylabel="")
-    i  = i+1
+# #plot
+# gg = xxg.get_group(61).sort_values('datetime').reset_index(drop=True)
+# n = gg.shape[0]
+# i = 0
+# fig = mpf.figure()
+# while i<n:
+#     date = gg.loc[i].PCB5time
+#     mpf.plot(aaa[aaa.datetime<=date].tail(14),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle',datetime_format="%Y%b%d",ylabel="")
+#     mpf.plot(aaa[aaa.datetime>=date].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=str(gg.loc[i].PCB5),datetime_format="%Y%b%d",ylabel="")
+#     i  = i+1
 
-plt.show()
+# plt.show()
 
+
+cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+
+def glplt(m,v):
+    glist= cl[['cluster','count','mean','min','std']].loc[m:v].reset_index(drop=True)
+    n = glist.shape[0]
+    fig = mpf.figure()
+    i = 0
+    while i <n :
+        gg = xxg.get_group(glist.cluster[i]).head(1)
+        date = gg.PCB5time.tolist()[0]
+        code = gg.code.tolist()[0]
+        mpf.plot(aaa[(aaa.code==code)&(aaa.datetime<=date)].tail(9),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle',datetime_format="%Y%b%d",ylabel=str(glist['cluster'][i]))
+        mpf.plot(aaa[(aaa.code==code)&(aaa.datetime>=date)].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=('Mean:'+str(glist['mean'][i])+' Std:'+str(glist['std'][i])),datetime_format="%Y%b%d",ylabel=str(glist['count'][i]))
+        i = i + 1
+    plt.show()
 

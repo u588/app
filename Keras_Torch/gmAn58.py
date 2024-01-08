@@ -82,14 +82,30 @@ aaa.set_index('date',inplace=True)
 b =aqb.reset_index(drop=True)
 
 X = qq.fillna(1).values
-# eps 0.28 0.38
+# eps 0.28 0.38 
 model = DBSCAN(eps=0.35,min_samples=5)
-# model = DBSCAN(eps=0.58,min_samples=5)
+
+#========= 60万记录 300 175标的===
+#model = DBSCAN(eps=0.28,min_samples=5)
+#573
+#model = DBSCAN(eps=0.18,min_samples=5)
+#36
+#model = DBSCAN(eps=0.18,min_samples=3)
+#162
+#model = DBSCAN(eps=0.16,min_samples=3)
+#95
+#model = DBSCAN(eps=0.15,min_samples=3)
+#62
+#model = DBSCAN(eps=0.13,min_samples=3)
+#35
+
+
+
 model.fit(X)
 
 yy = model.fit_predict(X)
 b['cluster'] = pd.DataFrame(yy)
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
-xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False)
+xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
