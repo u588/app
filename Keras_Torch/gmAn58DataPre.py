@@ -71,10 +71,10 @@ b.set_index('code').to_sql('b10001',engAn, if_exists='replace')
 
 X = qq.fillna(1).values
 # minSamples 3
-e = 0.19
+esp = 0.19
 n = 200
 while n > 100 :
-    model = DBSCAN(eps=e,min_samples=3)
+    model = DBSCAN(eps=esp,min_samples=3)
     print('fit ESP:'+str(esp))
     yy = model.fit_predict(X)
     n = pd.DataFrame(yy).groupby(0).size().shape[0]

@@ -78,10 +78,10 @@ if __name__ == '__main__':
 
     X = qq.fillna(1).values
     # minSamples 3
-    e = 0.19
+    esp = 0.19
     n = 200
     while n > 100 :
-        model = DBSCAN(eps=e,min_samples=3)
+        model = DBSCAN(eps=esp,min_samples=3)
         print('fit ESP:'+str(esp))
         yy = model.fit_predict(X)
         n = pd.DataFrame(yy).groupby(0).size().shape[0]
@@ -97,10 +97,10 @@ if __name__ == '__main__':
     cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
     cl.to_sql(('e'+str(esp+0.02)+'s3sbcl'+filname),engAn, if_exists='replace')
     # minSamples 5
-    e = 0.27
+    esp = 0.27
     n = 300
     while n > 200 :
-        model = DBSCAN(eps=e,min_samples=5)
+        model = DBSCAN(eps=esp,min_samples=5)
         print('fit ESP:'+str(esp))
         yy = model.fit_predict(X)
         n = pd.DataFrame(yy).groupby(0).size().shape[0]
