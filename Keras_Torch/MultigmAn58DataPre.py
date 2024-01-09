@@ -44,9 +44,9 @@ engAn.dispose()
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 P=8
-List = gm[(gm['scale']==500)&(gm['b_code']==1)].code.tolist()
+List = gm[(gm['scale']==500)&(gm['b_code']==2)].code.tolist()
 codeList = [List[i:i+P] for i in range(0,len(List),P)]
-filname = '5001'
+filname = '5002'
 
 aqq = pd.DataFrame(columns=list(range(36)))
 aqa = pd.DataFrame(columns=['datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','code'])
