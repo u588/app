@@ -59,6 +59,7 @@ angr = gr.get_group(55102010)
 #数据分成进程数P
 codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
+# codeList = gm[(gm['scale']==1000)&(gm['b_code']==2)].code.tolist()
 
 
 
@@ -82,22 +83,64 @@ aaa.set_index('date',inplace=True)
 b =aqb.reset_index(drop=True)
 
 X = qq.fillna(1).values
-# eps 0.28 0.38 
-model = DBSCAN(eps=0.35,min_samples=5)
+# minSamples 3
+e = 0.19
+n = 200
+while n > 100 :
+    model = DBSCAN(eps=e,min_samples=3)
+    print('fit ESP:'+str(esp))
+    yy = model.fit_predict(X)
+    n = pd.DataFrame(yy).groupby(0).size().shape[0]
+    print(n)
+    esp = esp - 0.02
 
-#========= 60万记录 300 175标的===
+# minSamples 5
+e = 0.27
+n = 300
+while n > 200 :
+    model = DBSCAN(eps=e,min_samples=5)
+    print('fit ESP:'+str(esp))
+    yy = model.fit_predict(X)
+    n = pd.DataFrame(yy).groupby(0).size().shape[0]
+    print(n)
+    esp = esp - 0.02
+
+
+#参数规范 25%>8  model数量100左右
+    #esp 0.27 s5
+    #esp 0.19 s3
+
+#========= 60万记录 300 175标的=== 
 #model = DBSCAN(eps=0.28,min_samples=5)
 #573
-#model = DBSCAN(eps=0.18,min_samples=5)
-#36
+#model = DBSCAN(eps=0.26,min_samples=5)
+#
+
 #model = DBSCAN(eps=0.18,min_samples=3)
 #162
 #model = DBSCAN(eps=0.16,min_samples=3)
 #95
-#model = DBSCAN(eps=0.15,min_samples=3)
-#62
-#model = DBSCAN(eps=0.13,min_samples=3)
-#35
+
+#========= 240万记录 10001 680标的 ==
+
+#========= 43万记录 10002 320标的===
+#model = DBSCAN(eps=0.28,min_samples=5)
+#286 17 相似度不高
+#model = DBSCAN(eps=0.27,min_samples=5)
+#218 17 相似度不高
+
+#model = DBSCAN(eps=0.244,min_samples=5)
+#90 6 
+
+#model = DBSCAN(eps=0.19,min_samples=3)
+#100 10 
+#model = DBSCAN(eps=0.186,min_samples=3)
+#95 11 
+#model = DBSCAN(eps=0.18,min_samples=3)
+#77 10 
+#model = DBSCAN(eps=0.16,min_samples=3)
+#54  8 
+
 
 
 
@@ -108,4 +151,21 @@ b['cluster'] = pd.DataFrame(yy)
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
+
+cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+
+def glplt(df,m,v):
+    glist= df[['cluster','count','mean','min','std']].loc[m:v].reset_index(drop=True)
+    n = glist.shape[0]
+    fig = mpf.figure()
+    i = 0
+    while i <n :
+        gg = xxg.get_group(glist.cluster[i]).head(1)
+        date = gg.PCB5time.tolist()[0]
+        code = gg.code.tolist()[0]
+        mpf.plot(aaa[(aaa.code==code)&(aaa.datetime<=date)].tail(9),ax=fig.add_subplot(int(str(n)),2,i*2+1),type='candle',datetime_format="%Y%b%d",ylabel=str(glist['cluster'][i]))
+        mpf.plot(aaa[(aaa.code==code)&(aaa.datetime>=date)].head(6),ax=fig.add_subplot(int(str(n)),2,i*2+2),type='candle',axtitle=('Mean:'+str(glist['mean'][i])+' Std:'+str(glist['std'][i])),datetime_format="%Y%b%d",ylabel=str(glist['count'][i]))
+        i = i + 1
+    plt.show()
+
 
