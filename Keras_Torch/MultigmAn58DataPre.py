@@ -94,8 +94,10 @@ if __name__ == '__main__':
 
         cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
         cl.to_sql(('e'+str(esp+0.02)+'s3sbcl'+filname),engAn, if_exists='replace')
-
-        esp = esp - 0.02
+        if n > 500:
+            esp = esp - 0.05
+        else:
+            esp = esp - 0.02
 
 
     # minSamples 5
@@ -115,6 +117,7 @@ if __name__ == '__main__':
 
         cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
         cl.to_sql(('e'+str(esp+0.02)+'s5sbcl'+filname),engAn, if_exists='replace')
-        esp = esp - 0.02
-
-
+        if n > 500:
+            esp = esp - 0.05
+        else:
+            esp = esp - 0.02
