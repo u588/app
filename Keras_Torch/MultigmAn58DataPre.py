@@ -34,19 +34,15 @@ def GetX(code):
 gm = pd.read_sql('gm', engAn)
 engAn.dispose()
 
-# gr = gm.groupby('lev4_code')
-# grList = gr.size().index.to_list()
-
-# angr = gr.get_group(grList[243])
-# angr = gr.get_group(55102010)
 
 #数据分成进程数P
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 P=8
+filname = '3001'
 List = gm[(gm['scale']==300)&(gm['b_code']==1)].code.tolist()
 codeList = [List[i:i+P] for i in range(0,len(List),P)]
-filname = '3001'
+
 
 aqq = pd.DataFrame(columns=list(range(36)))
 aqa = pd.DataFrame(columns=['datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','code'])
@@ -66,7 +62,6 @@ if __name__ == '__main__':
             aqq = pd.concat([aqq,res.get()[0]])
             aqa = pd.concat([aqa,res.get()[1]])
             aqb = pd.concat([aqb,res.get()[2]])        
-        # print(res.get()[2])
     qq = aqq.reset_index(drop=True)
     aaa = aqa.reset_index(drop=True)
     aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
@@ -77,7 +72,8 @@ if __name__ == '__main__':
     b.set_index('code').to_sql(('b'+filname),engAn, if_exists='replace')
 
     X = qq.fillna(1).values
-    # minSamples 3
+
+# ============ minSamples 3
     esp = 0.19
     n = 200
     while n > 100 :
@@ -100,7 +96,7 @@ if __name__ == '__main__':
             esp = esp - 0.02
 
 
-    # minSamples 5
+#=========== minSamples 5
     esp = 0.27
     n = 300
     while n > 200 :
