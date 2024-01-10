@@ -44,9 +44,9 @@ engAn.dispose()
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 P=8
-List = gm[(gm['scale']==500)&(gm['b_code']==2)].code.tolist()
+List = gm[(gm['scale']==300)&(gm['b_code']==1)].code.tolist()
 codeList = [List[i:i+P] for i in range(0,len(List),P)]
-filname = '5002'
+filname = '3001'
 
 aqq = pd.DataFrame(columns=list(range(36)))
 aqa = pd.DataFrame(columns=['datetime', 'open', 'close', 'high', 'low', 'mea', 'vol', 'amount','code'])
@@ -86,16 +86,18 @@ if __name__ == '__main__':
         yy = model.fit_predict(X)
         n = pd.DataFrame(yy).groupby(0).size().shape[0]
         print(n)
+        b['cluster'] = pd.DataFrame(yy)
+        b.set_index('code').to_sql(('e'+str(esp+0.02)+'s3sb'+filname),engAn, if_exists='replace')
+        xx = b.sort_values('cluster').reset_index(drop=True)
+        xxg = xx.groupby('cluster')
+        xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
+
+        cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+        cl.to_sql(('e'+str(esp+0.02)+'s3sbcl'+filname),engAn, if_exists='replace')
+
         esp = esp - 0.02
 
-    b['cluster'] = pd.DataFrame(yy)
-    b.set_index('code').to_sql(('e'+str(esp+0.02)+'s3sb'+filname),engAn, if_exists='replace')
-    xx = b.sort_values('cluster').reset_index(drop=True)
-    xxg = xx.groupby('cluster')
-    xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
-    cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-    cl.to_sql(('e'+str(esp+0.02)+'s3sbcl'+filname),engAn, if_exists='replace')
     # minSamples 5
     esp = 0.27
     n = 300
@@ -105,13 +107,14 @@ if __name__ == '__main__':
         yy = model.fit_predict(X)
         n = pd.DataFrame(yy).groupby(0).size().shape[0]
         print(n)
+        b['cluster'] = pd.DataFrame(yy)
+        b.set_index('code').to_sql(('e'+str(esp+0.02)+'s5sb'+filname),engAn, if_exists='replace')
+        xx = b.sort_values('cluster').reset_index(drop=True)
+        xxg = xx.groupby('cluster')
+        xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
+
+        cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+        cl.to_sql(('e'+str(esp+0.02)+'s5sbcl'+filname),engAn, if_exists='replace')
         esp = esp - 0.02
 
-    b['cluster'] = pd.DataFrame(yy)
-    b.set_index('code').to_sql(('e'+str(esp+0.02)+'s5sb'+filname),engAn, if_exists='replace')
-    xx = b.sort_values('cluster').reset_index(drop=True)
-    xxg = xx.groupby('cluster')
-    xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
-    cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-    cl.to_sql(('e'+str(esp+0.02)+'s5sbcl'+filname),engAn, if_exists='replace')
