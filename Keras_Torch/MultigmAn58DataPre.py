@@ -99,7 +99,7 @@ if __name__ == '__main__':
 #=========== minSamples 5
     esp = 0.27
     n = 300
-    while n > 200 :
+    while n > 120 :
         model = DBSCAN(eps=esp,min_samples=5)
         print('fit ESP:'+str(esp))
         yy = model.fit_predict(X)
