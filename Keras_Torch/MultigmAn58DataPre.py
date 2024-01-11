@@ -39,8 +39,8 @@ engAn.dispose()
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 P=8
-filname = '3002'
-List = gm[(gm['scale']==300)&(gm['b_code']==2)].code.tolist()
+filname = '3001'
+List = gm[(gm['scale']==300)&(gm['b_code']==1)].code.tolist()
 codeList = [List[i:i+P] for i in range(0,len(List),P)]
 
 
@@ -52,17 +52,20 @@ import multiprocessing
 
 if __name__ == '__main__':
     for list in codeList:
-        pool  = multiprocessing.Pool(processes=P)
-        results = []
+
         for code in list:
+            pool  = multiprocessing.Pool(processes=P)            
+            results = []
             results.append(pool.apply_async(GetX, (code,) ))
-            aqq = pd.concat([aqq,results.get()[0]])
-            aqa = pd.concat([aqa,results.get()[1]])
-            aqb = pd.concat([aqb,results.get()[2]])
-            aqa['code'] = code
-            aqb['code'] = code            
-        pool.close()
-        pool.join()    
+            aqq = pd.concat([aqq,results[0].get()[0]])
+            a = results[0].get()[1]
+            a['code'] = code
+            aqa = pd.concat([aqa,a])
+            b = results[0].get()[2]
+            b['code'] = code
+            aqb = pd.concat([aqb,b])       
+            pool.close()
+            pool.join()    
     
     qq = aqq.reset_index(drop=True)
     aaa = aqa.reset_index(drop=True)
