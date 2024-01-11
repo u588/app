@@ -154,8 +154,8 @@ xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
 cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
 
-def glplt(df,m,v):
-    glist= df[['cluster','count','mean','min','std']].loc[m:v].reset_index(drop=True)
+def glplt(cl,m,v):
+    glist= cl[['cluster','count','mean','min','std']].loc[m:v].reset_index(drop=True)
     n = glist.shape[0]
     fig = mpf.figure()
     i = 0
