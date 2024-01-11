@@ -88,13 +88,13 @@ if __name__ == '__main__':
         n = pd.DataFrame(yy).groupby(0).size().shape[0]
         print(n)
         b['cluster'] = pd.DataFrame(yy)
-        b.set_index('code').to_sql(('e'+str(esp)+'s3sb'+filname),engAn, if_exists='replace')
+        b.set_index('code').to_sql(('e'+str(esp)+'s3b'+filname),engAn, if_exists='replace')
         xx = b.sort_values('cluster').reset_index(drop=True)
         xxg = xx.groupby('cluster')
         xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
         cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-        cl.to_sql(('e'+str(esp)+'s3sbcl'+filname),engAn, if_exists='replace')
+        cl.to_sql(('e'+str(esp)+'s3bcl'+filname),engAn, if_exists='replace')
         if n > 500:
             esp = round(esp-0.05 , 2)
         else:
@@ -111,13 +111,13 @@ if __name__ == '__main__':
         n = pd.DataFrame(yy).groupby(0).size().shape[0]
         print(n)
         b['cluster'] = pd.DataFrame(yy)
-        b.set_index('code').to_sql(('e'+str(esp)+'s5sb'+filname),engAn, if_exists='replace')
+        b.set_index('code').to_sql(('e'+str(esp)+'s5b'+filname),engAn, if_exists='replace')
         xx = b.sort_values('cluster').reset_index(drop=True)
         xxg = xx.groupby('cluster')
         xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
         cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-        cl.to_sql(('e'+str(esp)+'s5sbcl'+filname),engAn, if_exists='replace')
+        cl.to_sql(('e'+str(esp)+'s5bcl'+filname),engAn, if_exists='replace')
         if n > 500:
             esp = round(esp-0.05, 2)
         else:
