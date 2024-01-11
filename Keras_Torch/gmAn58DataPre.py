@@ -43,8 +43,8 @@ engAn.dispose()
 #数据分成进程数P
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
-codeList = gm[(gm['scale']==1000)&(gm['b_code']==1)].code.tolist()
-
+codeList = gm[(gm['scale']==300)&(gm['b_code']==2)].code.tolist()
+filname = '3002'
 
 
 aqq = pd.DataFrame(columns=list(range(36)))
@@ -65,12 +65,12 @@ aaa = aqa.reset_index(drop=True)
 aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
 aaa.set_index('date',inplace=True)
 b =aqb.reset_index(drop=True)
-qq.set_index(0).to_sql('qq10001',engAn, if_exists='replace')
-aaa.set_index('code').to_sql('aaa10001',engAn, if_exists='replace')
-b.set_index('code').to_sql('b10001',engAn, if_exists='replace')
+qq.set_index(0).to_sql(('qq'+filname),engAn, if_exists='replace')
+aaa.set_index('code').to_sql(('aaa'+filname),engAn, if_exists='replace')
+b.set_index('code').to_sql(('b'+filname),engAn, if_exists='replace')
 
 X = qq.fillna(1).values
-# minSamples 3
+# ============ minSamples 3
 esp = 0.19
 n = 200
 while n > 100 :
@@ -79,32 +79,38 @@ while n > 100 :
     yy = model.fit_predict(X)
     n = pd.DataFrame(yy).groupby(0).size().shape[0]
     print(n)
-    esp = esp - 0.02
+    b['cluster'] = pd.DataFrame(yy)
+    b.set_index('code').to_sql(('e'+str(esp)+'s3sb'+filname),engAn, if_exists='replace')
+    xx = b.sort_values('cluster').reset_index(drop=True)
+    xxg = xx.groupby('cluster')
+    xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
-b['cluster'] = pd.DataFrame(yy)
-b.set_index('code').to_sql(('e'+str(esp+0.02)+'s3s1000b1'),engAn, if_exists='replace')
-xx = b.sort_values('cluster').reset_index(drop=True)
-xxg = xx.groupby('cluster')
-xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
+    cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+    cl.to_sql(('e'+str(esp)+'s3sbcl'+filname),engAn, if_exists='replace')
+    if n > 500:
+        esp = round(esp-0.05 , 2)
+    else:
+        esp = round(esp-0.02, 2)
 
-cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-cl.to_sql(('e'+str(esp+0.02)+'1000b1s3sxxg'),engAn, if_exists='replace')
-# minSamples 5
-e = 0.27
+
+#=========== minSamples 5
+esp = 0.27
 n = 300
-while n > 200 :
-    model = DBSCAN(eps=e,min_samples=5)
+while n > 120 :
+    model = DBSCAN(eps=esp,min_samples=5)
     print('fit ESP:'+str(esp))
     yy = model.fit_predict(X)
     n = pd.DataFrame(yy).groupby(0).size().shape[0]
     print(n)
-    esp = esp - 0.02
+    b['cluster'] = pd.DataFrame(yy)
+    b.set_index('code').to_sql(('e'+str(esp)+'s5sb'+filname),engAn, if_exists='replace')
+    xx = b.sort_values('cluster').reset_index(drop=True)
+    xxg = xx.groupby('cluster')
+    xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 
-b['cluster'] = pd.DataFrame(yy)
-b.set_index('code').to_sql(('e'+str(esp+0.02)+'s5s1000b1'),engAn, if_exists='replace')
-xx = b.sort_values('cluster').reset_index(drop=True)
-xxg = xx.groupby('cluster')
-xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
-
-cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-cl.to_sql(('e'+str(esp+0.02)+'1000b1s5sxxg'),engAn, if_exists='replace')
+    cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+    cl.to_sql(('e'+str(esp)+'s5sbcl'+filname),engAn, if_exists='replace')
+    if n > 500:
+        esp = round(esp-0.05, 2)
+    else:
+        esp = round(esp-0.02 , 2)
