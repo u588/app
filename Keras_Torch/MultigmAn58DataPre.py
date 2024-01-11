@@ -56,14 +56,14 @@ if __name__ == '__main__':
         results = []
         for code in list:
             results.append(pool.apply_async(GetX, (code,) ))
+            aqq = pd.concat([aqq,results.get()[0]])
+            aqa = pd.concat([aqa,results.get()[1]])
+            aqb = pd.concat([aqb,results.get()[2]])
+            aqa['code'] = code
+            aqb['code'] = code            
         pool.close()
         pool.join()    
-        for res in results:
-            aqq = pd.concat([aqq,res.get()[0]])
-            aqa = pd.concat([aqa,res.get()[1]])
-            aqb = pd.concat([aqb,res.get()[2]])
-            aqa['code'] = code
-            aqb['code'] = code        
+    
     qq = aqq.reset_index(drop=True)
     aaa = aqa.reset_index(drop=True)
     aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
