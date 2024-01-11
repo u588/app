@@ -7,7 +7,7 @@ import mplfinance as mpf
 
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
-def gplt(nm,m,v):
+def gplt(nm,m=0,v=5):
     gg = xxg.get_group(nm).sort_values('datetime').reset_index(drop=True).loc[m:v].reset_index(drop=True)
     n = gg.shape[0]
     i = 0
@@ -21,7 +21,7 @@ def gplt(nm,m,v):
     plt.show()
 
 
-def glplt(cl,m,v):
+def glplt(cl,m=0,v=8):
     glist= cl[['cluster','count','mean','min','std']].loc[m:v].reset_index(drop=True)
     n = glist.shape[0]
     fig = mpf.figure()
