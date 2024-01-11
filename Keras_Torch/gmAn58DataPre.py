@@ -19,15 +19,15 @@ def GetX(code):
     df.loc[:,'PCB5time8'] = df.datetime.shift(13)
     df = df.iloc[21:].reset_index(drop=True)
     b = df
-    i = 0
-    qq = pd.DataFrame((a[(a.datetime>=b.loc[i][10:12][1])&(a.datetime<=b.loc[i][10:12][0])].reset_index()[['open','close','high','low']]).stack().values).T
+
+    qq = pd.DataFrame(columns=list(range(36)))
     while i < len(b):
         print(i)
         dfz = a[(a.datetime>=b.loc[i][10:12][1])&(a.datetime<=b.loc[i][10:12][0])].reset_index()[['open','close','high','low']]
         aa = pd.DataFrame(dfz.stack().values).T
         qq = pd.concat([qq,aa])
         i = i + 1
-    qq = qq[1:].reset_index(drop=True)
+    qq = qq.reset_index(drop=True)
     qq = ((qq.T-qq.T.min())/(qq.T.max()-qq.T.min())).T
     return qq,aaa,b
 
