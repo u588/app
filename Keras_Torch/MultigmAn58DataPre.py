@@ -39,8 +39,8 @@ engAn.dispose()
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
 P=8
-filname = '3001'
-List = gm[(gm['scale']==300)&(gm['b_code']==1)].code.tolist()
+filname = '3002'
+List = gm[(gm['scale']==300)&(gm['b_code']==2)].code.tolist()
 codeList = [List[i:i+P] for i in range(0,len(List),P)]
 
 
