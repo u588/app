@@ -62,8 +62,8 @@ for code in codeList:
 
 qq = aqq.reset_index(drop=True)
 aaa = aqa.reset_index(drop=True)
-aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
-aaa.set_index('date',inplace=True)
+# aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
+# aaa.set_index('date',inplace=True)
 b =aqb.reset_index(drop=True)
 qq.set_index(0).to_sql(('qq'+filname),engAn, if_exists='replace')
 aaa.set_index('code').to_sql(('aaa'+filname),engAn, if_exists='replace')
