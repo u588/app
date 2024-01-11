@@ -7,8 +7,8 @@ import mplfinance as mpf
 
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
-def gplt(clum):
-    gg = xxg.get_group(clum).sort_values('datetime').reset_index(drop=True)
+def gplt(nm,m,v):
+    gg = xxg.get_group(nm).sort_values('datetime').reset_index(drop=True).loc[m:v].reset_index(drop=True)
     n = gg.shape[0]
     i = 0
     fig = mpf.figure()
