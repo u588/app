@@ -94,7 +94,7 @@ while n > 100 :
 
 
 #=========== minSamples 5
-esp = 0.27
+esp = 0.22
 n = 300
 while n > 120 :
     model = DBSCAN(eps=esp,min_samples=5)
