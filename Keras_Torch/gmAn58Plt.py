@@ -50,3 +50,8 @@ xxg = xx.groupby('cluster')
 xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
 
+gm = pd.read_sql('gm', engAn)
+engAn.dispose()
+
+gm[gm['code'].isin(b[b['cluster']==5].code.tolist())]
+
