@@ -36,7 +36,7 @@ def glplt(cl,m=0,v=8):
     plt.show()
 
 
-fname = '5001'
+fname = '2000'
 eps = 'e0.14s3b'
 
 
