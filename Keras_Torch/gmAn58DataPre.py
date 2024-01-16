@@ -43,8 +43,8 @@ engAn.dispose()
 #数据分成进程数P
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
-codeList = gm[(gm['scale']==1000)&(gm['b_code']==1)].code.tolist()
-filname = '10001'
+codeList = gm[(gm['scale']==2000)&(gm['b_code']==2)].code.tolist()
+filname = '20002'
 
 
 aqq = pd.DataFrame(columns=list(range(36)))

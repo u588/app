@@ -59,14 +59,14 @@ sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
 
-M = 2
+M = 10
 
 with api.connect('119.147.212.81', 7709):
     IndexLists=sh.IndexCode.to_list()     
     for i, IndexCode in enumerate(IndexLists):
         # print('Index', i, '/', len(IndexLists))
         sql = 'select * from "'+IndexCode+'" order by datetime desc limit 1 ;'
-        IndexData = api.to_df(api.get_index_bars(9, 1, IndexCode, 0, M))
+        IndexData = api.to_df(api.get_index_bars(9, 1, IndexCode, 1, M))
         try:
             DayUp = IndexData.head(1)['datetime'].tolist()[0]
             Day = pd.read_sql(sql, eng)['datetime'].tolist()[0]
@@ -84,7 +84,7 @@ with api.connect('119.147.212.81', 7709):
     for i, IndexCode in enumerate(IndexLists):
         # print('Index', i, '/', len(IndexLists))
         sql = 'select * from "'+IndexCode+'" order by datetime desc limit 1 ;'
-        IndexData = api.to_df(api.get_index_bars(9, 0, IndexCode, 0, M))
+        IndexData = api.to_df(api.get_index_bars(9, 0, IndexCode, 1, M))
         try:
             DayUp = IndexData.head(1)['datetime'].tolist()[0]
             Day = pd.read_sql(sql, eng)['datetime'].tolist()[0]
@@ -106,7 +106,7 @@ with eapi.connect('182.175.240.157', 7727):
     for i, IndexCode in enumerate(IndexLists):
         # print('Index', i, '/', len(IndexLists))
         sql = 'select * from "'+IndexCode+'" order by datetime desc limit 1 ;'
-        IndexData = eapi.to_df(eapi.get_instrument_bars(9, 62, IndexCode, 0, M))
+        IndexData = eapi.to_df(eapi.get_instrument_bars(9, 62, IndexCode, 1, M))
         try:
             DayUp = IndexData.head(1)['datetime'].tolist()[0]
             Day = pd.read_sql(sql, eng)['datetime'].tolist()[0]
