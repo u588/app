@@ -1,0 +1,16 @@
+1、 https://pytorch.org/get-started/locally/
+pytorch2.1.2 cuda12.1 
+https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-major-component-versions
+minin driver version >=525.60.13
+driver version >=530.30.02
+
+cuda12.1 download
+https://developer.nvidia.com/cuda-12-1-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_local
+
+
+
+2、英伟达驱动官网:
+https://www.nvidia.cn/Download/index.aspx?lang=cn
+
+3、k8s中如何使用gpu、gpu资源讲解、nvidia gpu驱动
+https://blog.csdn.net/MssGuo/article/details/129444434

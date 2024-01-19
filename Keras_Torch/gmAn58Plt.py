@@ -36,7 +36,7 @@ def glplt(cl,m=0,v=8):
     plt.show()
 
 
-fname = '5001'
+fname = '2000'
 eps = 'e0.14s3b'
 
 
@@ -49,6 +49,16 @@ xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
 cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+
+gm = pd.read_sql('gm', engAn)
+engAn.dispose()
+
+gm[gm['code'].isin(b[b['cluster']==5].code.tolist())]
+
+gm = pd.read_sql('gm', engAn)
+engAn.dispose()
+
+gm[gm['code'].isin(b[b['cluster']==5].code.tolist())]
 
 #查看聚类类别
 gm = pd.read_sql('gm', engAn)

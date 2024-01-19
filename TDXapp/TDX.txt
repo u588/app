@@ -1,0 +1,12 @@
+https://rainx.gitbooks.io/pytdx/content/pytdx_exhq.html
+
+通达信扩展行情 中证指数 代码 62
+
+from pytdx.exhq import TdxExHq_API
+import pandas as pd
+
+eapi =  TdxExHq_API()
+eapi.connect('182.175.240.157', 7727)
+
+eapi.to_df(eapi.get_instrument_info(57642,621))
+
