@@ -1,3 +1,4 @@
+# 废弃
 from pytdx.hq import TdxHq_API
 from pytdx.exhq import TdxExHq_API
 import pandas as pd
