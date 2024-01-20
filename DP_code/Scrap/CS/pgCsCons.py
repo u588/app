@@ -11,14 +11,14 @@ from sqlalchemy import text
 header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67',}
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
-sql = 'DROP TABLE IF EXISTS "csIndexCon";'
-eng.connect().execute(text(sql))
-eng.connect().commit()
-eng.connect().close()
-time.sleep(5)
+con = eng.connect()
+
+con.execute(text('DROP TABLE IF EXISTS "csIndexCon";'))
+con.commit()
+
+time.sleep(3)
 
 def getData(codeID):
-    
     # url = "http://www.csindex.com.cn/zh-CN/indices/index-detail/"+codeID
     # url = "https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/"+codeID+"closeweight.xls"
     url = "https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/cons/"+codeID+"cons.xls"
@@ -31,18 +31,20 @@ def getData(codeID):
     a.set_index('IndexCode',inplace=True)
     return a
 
-df = pd.read_sql('tdxIndexs', eng)
+df = pd.read_sql('tdxIndexs', con)
 IndexLists = df.loc[df.From=='CS'].IndexCode.tolist()
 
 for codeID in IndexLists:
     try:
         Data = getData(codeID)
         time.sleep(random.randint(1,3))
-        Data.to_sql('csIndexCon', eng , if_exists='append')
+        Data.to_sql('csIndexCon', con , if_exists='append')
+        con.commit()
 
         # print(codeID + 'Saved !')
     except:
         print('Not Save!'+ codeID)
         pass
 print(' == 指数成份股 All Saved ! == ')
-eng.dispose()
+
+con.close()
