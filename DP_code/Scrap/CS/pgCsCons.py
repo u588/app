@@ -5,13 +5,16 @@ from lxml import etree
 import pandas as pd
 import random
 import time
+from sqlalchemy import text
 
 #header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',}
 header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67',}
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 sql = 'DROP TABLE IF EXISTS "csIndexCon";'
-eng.connect().execute(sql)
+eng.connect().execute(text(sql))
+eng.connect().commit()
+eng.connect().close()
 time.sleep(5)
 
 def getData(codeID):
