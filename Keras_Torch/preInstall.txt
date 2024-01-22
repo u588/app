@@ -37,8 +37,23 @@ export PATH=$PATH:/usr/local/cuda-12.1/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-12.1/lib64
 cat /proc/driver/nvidia/version
 
+======= 安装 cudnn =======
+sudo dpkg -i cudnn-local-repo-ubuntu2204-8.9.2.26_1.0-1_amd64.deb
+sudo cp /var/cudnn-local-repo-ubuntu2204-8.9.2.26/cudnn-local-4EB48413-keyring.gpg /usr/share/keyrings/
+
+sudo apt update
+apt search cudnn
+sudo apt install libcudnn8=8.9.2.26-1+cuda12.1 libcudnn8-dev=8.9.2.26-1+cuda12.1 libcudnn8-samples=8.9.2.26-1+cuda12.1
 
 pytorch
 pip install torch torchvision torchaudio
 
 pip install --upgrade keras
+
+
+
+====git ======
+
+git config --global user.name u588
+git config --global user.email u588@sina.com
+git clone https://gitee.com/u588/App.git
