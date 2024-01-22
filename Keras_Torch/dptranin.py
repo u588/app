@@ -2,7 +2,7 @@
 
 import os
 
-os.environ["KERAS_BACKEND"] = "torch"
+# os.environ["KERAS_BACKEND"] = "torch"
 
 import torch
 import numpy as np
@@ -83,7 +83,7 @@ def train_model(model, dataloader, num_epochs, optimizer, loss_fn):
 
 
 num_gpu = torch.cuda.device_count()
-num_epochs = 2
+num_epochs = 30
 batch_size = 64
 print(f"Running on {num_gpu} GPUs")
 
@@ -144,11 +144,13 @@ def per_device_launch_fn(current_gpu_index, num_gpu):
 
 if __name__ == "__main__":
     # We use the "fork" method rather than "spawn" to support notebooks
+    # torch.multiprocessing.set_start_method('spawn')
     torch.multiprocessing.start_processes(
         per_device_launch_fn,
         args=(num_gpu,),
         nprocs=num_gpu,
         join=True,
-        start_method="fork",
+        # start_method="fork",
+        start_method="spawn",
     )
 

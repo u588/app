@@ -1,9 +1,9 @@
 # https://keras.io/guides/custom_train_step_in_torch/
-import os
+# import os
 
-# This guide can only be run with the torch backend.
-os.environ["KERAS_BACKEND"] = "torch"
-os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
+# # This guide can only be run with the torch backend.
+# os.environ["KERAS_BACKEND"] = "torch"
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 
 import torch
 import keras
