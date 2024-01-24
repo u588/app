@@ -1,5 +1,5 @@
-import json
-import re
+# import json
+# import re
 import pandas as pd
 
 a = open('D:/new_tdx/T0002/hq_cache/infoharbor_ex.code', 'r',encoding="GBK", errors='ignore').read()
@@ -23,4 +23,4 @@ q.drop(0, inplace=True)
 q.dropna(inplace=True)
 q.columns = ['StockCode', 'StockName']
 
-q.set_index('StockCode').to_excel('G:/Gitee/App/Data/2023TdxCs/StockCodeApp.xlsx')
+q.set_index('StockCode').to_excel('G:/Gitee/App/TDXapp/Data/2023TdxCs/StockCodeApp.xlsx')

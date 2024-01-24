@@ -39,7 +39,7 @@ if __name__ == '__main__':
         dfi = pd.concat([dfi, res.get()])
    
     dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
-    .set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsConsBLK.xlsx')
+    .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsConsBLK202401.xlsx')
     dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
     n = 0
     while n < dfs.shape[0]:
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         print(str(n) + '  ok !') 
  
     dfs['From'] = 'TDXBLK'
-    dfs.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True).set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsBLK.xlsx')
+    dfs.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True).set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsBLK202401.xlsx')
    
 
 
