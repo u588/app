@@ -5,10 +5,14 @@ https://rainx.gitbooks.io/pytdx/content/pytdx_exhq.html
 from pytdx.exhq import TdxExHq_API
 import pandas as pd
 
+
 eapi =  TdxExHq_API()
 eapi.connect('182.175.240.157', 7727)
 
 eapi.to_df(eapi.get_instrument_info(57642,621))
+#2024.1.20 中证指数（622）
+eapi.to_df(eapi.get_instrument_info(58295,624))
+
 # pytdx将重点放在底层包的解析，对于更高层的封装，建议参考或者直接使用Quantaxis的实现
 
 https://github.com/yutiansut/QUANTAXIS/blob/master/QUANTAXIS/QAFetch/QATdx.py
@@ -21,12 +25,24 @@ f = open(file=r'g:\tmp\1\1.txt', mode='w')
 f.write()
 f.close()
 
-0 - 深圳， 1 - 上海
+0 - 深圳（18018）， 1 - 上海（22959）
+# 市场标的规模
+api.get_security_count(0)
 
 import pandas as pd
 from pytdx.hq import TdxHq_API
 api = TdxHq_API()
 api.connect('119.147.212.81', 7709)
+
+深圳指数（373）
+api.to_df(api.get_security_list(0, 0)).head(375)
+api.to_df(api.get_security_list(0, 880))
+
+上海指数（373）
+api.to_df(api.get_security_list(1, 523)).head(751)
+
+api.to_df(api.get_security_list(1, 20150))
+
 
 1 : 查询公司信息目录
 api.to_df(api.get_company_info_category(0 , '000001'))

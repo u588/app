@@ -20,6 +20,6 @@ https://www.csindex.com.cn/#/indices/family/list -->导出列表
 通达信软件 -->选项 -->数据导出-->板块导出
 
 4、tdxIndex 来源
-
+中证指数  -->其他-->中证指数--> 导出数据
 通达信软件 J:\new_tdx\T0002\hq_cache\
 shm.tnf  szm.tnf 
