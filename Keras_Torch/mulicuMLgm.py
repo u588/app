@@ -13,17 +13,17 @@ import dask
 
 import cudf
 
-cluster = LocalCUDACluster()
+cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES="0,1")
 client = Client(cluster)
 
 
 
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
-qq = pd.read_sql('qq3001',engAn.connect())
+qq = pd.read_sql('qq3002',engAn.connect())
 
 X = cudf.DataFrame(qq.fillna(1))
-model = DBSCAN(eps=0.48,min_samples=5)
+model = DBSCAN(eps=0.48,min_samples=3)
 
 yy = model.fit_predict(X)
 

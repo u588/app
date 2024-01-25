@@ -1,0 +1,8 @@
+master node
+dask scheduler --host 10.3.69.7 --port 8786 --dashboard-address 10.3.69.7:8787
+
+
+worker node 
+dask cuda worker --host 10.3.69.7 --memory-limit "8GiB" --multiprocessing-method spawn  10.3.69.7:8786
+
+
