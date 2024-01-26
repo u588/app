@@ -74,7 +74,7 @@ X = qq.fillna(1).values
 esp = 0.19
 n = 200
 while n > 100 :
-    model = DBSCAN(eps=esp,min_samples=3)
+    model = DBSCAN(eps=esp,min_samples=3,n_jobs=10)
     print('fit ESP:'+str(esp))
     yy = model.fit_predict(X)
     n = pd.DataFrame(yy).groupby(0).size().shape[0]
