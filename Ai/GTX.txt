@@ -1,0 +1,10 @@
+GeForce GTX 1080	6.1
+Geforce RTX 2080	7.5
+GeForce RTX 3080	8.6
+GeForce RTX 4080	8.9
+
+Tesla P100	6.0
+Tesla P4	6.1
+NVIDIA V100	7.0
+NVIDIA T4	7.5
+NVIDIA A2	8.6
