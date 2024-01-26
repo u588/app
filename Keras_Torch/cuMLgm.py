@@ -13,8 +13,8 @@ X = cudf.DataFrame(qq.fillna(1))
 model = DBSCAN(eps=0.48,min_samples=5)
 
 yy = model.fit_predict(X)
-
-b['cluster'] = pd.DataFrame(yy)
+b = pd.DataFrame()
+b['cluster'] = pd.DataFrame(yy.to_numpy())
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 print(xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False))
