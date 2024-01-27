@@ -1,10 +1,12 @@
-GeForce GTX 1080	6.1
-Geforce RTX 2080	7.5
-GeForce RTX 3080	8.6
-GeForce RTX 4080	8.9
+https://zhuanlan.zhihu.com/p/585861104
+https://developer.nvidia.com/cuda-gpus
+GeForce GTX 1080	6.1     F16-          F32-8.8T
+Geforce RTX 2080	7.5     F16-20.14T     F32-10.07T
+GeForce RTX 3080	8.6     F16-29.7T     F32-29.7T
+GeForce RTX 4080	8.9     F16-29.7T     F32-49T
 
-Tesla P100	6.0
-Tesla P4	6.1
-NVIDIA V100	7.0
-NVIDIA T4	7.5
-NVIDIA A2	8.6
+Tesla P100	6.0   F16-21.2T F32-10.6T   F64-5.3T 
+Tesla P4	6.1   I8-22T    F32-5.5T 
+NVIDIA V100	7.0   F16-112T  F32-14T     F64-7T  Tensor-112T
+NVIDIA T4	7.5   F16-65T   F32-8.1T  
+NVIDIA A2	8.6             F32-4.5T
