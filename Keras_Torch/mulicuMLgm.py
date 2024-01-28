@@ -37,11 +37,12 @@ X = ((qq.astype('float32')).fillna(1)).values
 model = DBSCAN(eps=0.48,min_samples=3)
 
 yy = model.fit_predict(X)
-
+b = pd.DataFrame()
 b['cluster'] = pd.DataFrame(yy)
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 print(xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False))
+print(xxg.cluster.describe().sort_values(['25%','mean'],ascending=False))
 
 
 

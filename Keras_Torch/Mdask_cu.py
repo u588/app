@@ -10,7 +10,7 @@ cluster = LocalCUDACluster(name='dask_6',CUDA_VISIBLE_DEVICES='0,1',n_workers=2,
 import pandas as pd
 from sqlalchemy import create_engine
 from cuml.dask.cluster import DBSCAN
-from dask.distributed import Client
+# from dask.distributed import Client
 # import cudf
 
 client = Client('ucx://127.0.0.1:36379')
@@ -35,6 +35,27 @@ cluster = LocalCUDACluster(
     rmm_pool_size="6GB"
 )
 client = Client(cluster)
+
+
+import dask
+from dask.distributed import config
+dask.config.set({'distributed.scheduler.worker-ttl': None})
+dask.config.get("distributed.scheduler.worker-ttl")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 from dask_cuda import LocalCUDACluster
 cluster = LocalCUDACluster(
