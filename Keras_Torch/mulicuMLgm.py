@@ -15,7 +15,6 @@ import cudf
 
 # Initialize UCX for high-speed transport of CUDA arrays
 from dask_cuda import LocalCUDACluster
-
 # Create a Dask single-node CUDA cluster w/ one worker per device
 cluster = LocalCUDACluster(protocol="tcp",
                            enable_tcp_over_ucx=False,

@@ -1,22 +1,28 @@
+import sys
+# sys.getrecursionlimit()
+sys.setrecursionlimit(2500)
 
 import dask
 from dask.distributed import config
-# dask.config.set({'distributed.scheduler.worker-ttl': None})
 dask.config.set({'distributed.scheduler.worker-ttl': '60 minutes'})
-dask.config.get("distributed.scheduler.worker-ttl")
+
+# dask.config.set({'distributed.scheduler.worker-ttl': None})
+# dask.config.get("distributed.scheduler.worker-ttl")
+
+# https://zhuanlan.zhihu.com/p/657368354 内存管理
 
 from dask.distributed import Client
 from dask_cuda import LocalCUDACluster
-cluster = LocalCUDACluster(name='dask_6',CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=1,ip='127.0.0.1',scheduler_port='8786',
-                       dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='15GB',device_memory_limit=0.9,
-                       protocol='ucx',rmm_pool_size='7GB',
+cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=32,ip='127.0.0.1',
+                       dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='25GB',
+                       protocol='ucx',rmm_pool_size='7GB',enable_tcp_over_ucx=True,device_memory_limit="6GB",jit_unspill=True,
                         )
-# protocol='ucx'enable_tcp_over_ucx=True,
 
-cluster = LocalCUDACluster(name='dask_6',CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=1,ip='10.3.69.7',scheduler_port='8786',
-                       dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='25GB',device_memory_limit=0.9,
-                       protocol='tcp',rmm_pool_size='6GB',
-                       )
+# cluster = LocalCUDACluster(name='dask_6',CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=1,ip='10.3.69.7',scheduler_port='8786',
+#                        dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='25GB',device_memory_limit=0.9,
+#                        enable_tcp_over_ucx=True,enable_infiniband=True,
+#                        protocol='tcp',rmm_pool_size='6GB',
+#                        )
 
 client = Client(cluster)
 
