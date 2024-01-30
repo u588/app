@@ -29,13 +29,13 @@ from cuml.dask.cluster import DBSCAN
 
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
-qq = pd.read_sql('qq20001',engAn.connect())
+qq = pd.read_sql('qq20001',engAn)
 qq = qq.iloc[:,:36]
 X = ((qq.astype('float32')).fillna(1)).values
 
 # X = cudf.DataFrame(qq.fillna(1))
 
-model = DBSCAN(eps=0.27,min_samples=8,output_type='pandas',)
+model = DBSCAN(eps=0.16,min_samples=8,output_type='pandas',)
 
 yy = model.fit_predict(X)
 
@@ -67,7 +67,7 @@ cluster = LocalCUDACluster(
 
 
 b = pd.read_sql('b20001',engAn.connect())
-b['cluster'] = pd.DataFrame(yy)
+b['cluster'] = yy
 xx = b.sort_values('cluster').reset_index(drop=True)
 xxg = xx.groupby('cluster')
 xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
