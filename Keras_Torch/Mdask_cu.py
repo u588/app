@@ -13,16 +13,11 @@ dask.config.set({'distributed.scheduler.worker-ttl': '60 minutes'})
 
 from dask.distributed import Client
 from dask_cuda import LocalCUDACluster
-cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=32,ip='127.0.0.1',
+cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=8,ip='127.0.0.1',
                        dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='25GB',
                        protocol='ucx',rmm_pool_size='7GB',enable_tcp_over_ucx=True,device_memory_limit="6GB",jit_unspill=True,
                         )
 
-# cluster = LocalCUDACluster(name='dask_6',CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=1,ip='10.3.69.7',scheduler_port='8786',
-#                        dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='25GB',device_memory_limit=0.9,
-#                        enable_tcp_over_ucx=True,enable_infiniband=True,
-#                        protocol='tcp',rmm_pool_size='6GB',
-#                        )
 
 client = Client(cluster)
 
@@ -40,7 +35,7 @@ X = ((qq.astype('float32')).fillna(1)).values
 
 # X = cudf.DataFrame(qq.fillna(1))
 
-model = DBSCAN(eps=0.27,min_samples=5)
+model = DBSCAN(eps=0.27,min_samples=8,output_type='pandas',)
 
 yy = model.fit_predict(X)
 

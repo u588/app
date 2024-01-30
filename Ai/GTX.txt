@@ -1,10 +1,13 @@
 https://zhuanlan.zhihu.com/p/585861104
 https://docs.nvidia.com/deeplearning/tensorrt/support-matrix/index.html
 https://developer.nvidia.com/cuda-gpus
-GeForce GTX 1080	6.1     F16-          F32-8.8T
-Geforce RTX 2080	7.5     F16-20.14T     F32-10.07T
-GeForce RTX 3080	8.6     F16-29.7T     F32-29.7T
-GeForce RTX 4080	8.9     F16-29.7T     F32-49T
+GeForce GTX 1080	6.1     F16-          F32-8.8T             870
+Geforce RTX 2080	7.5     F16-20.14T    F32-10.07T  215W     1500
+GeForce RTX 3080	8.6     F16-29.7T     F32-29.7T   320W     3000 
+GeForce RTX 3070	8.6     F16-20.4T     F32-20.4T   220W     1950
+GeForce RTX 3060	8.6     F16-13T       F32-13T     170W     1600
+GeForce RTX 4080	8.9     F16-29.7T     F32-49T     320W     9399    
+GeForce RTX 4070	8.9     F16-29.7T     F32-49T     320W     4700    
 
 Tesla P100	6.0   F16-21.2T F32-10.6T   F64-5.3T 
 Tesla P4	6.1   I8-22T    F32-5.5T 
