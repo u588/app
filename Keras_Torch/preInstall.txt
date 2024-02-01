@@ -91,7 +91,21 @@ pip install \
     cudf-cu11==23.12.* dask-cudf-cu11==23.12.* cuml-cu11==23.12.*
 
 
+
+pip install \
+    --extra-index-url=https://pypi.nvidia.com \
+    cudf-cu11==23.12.* dask-cudf-cu11==23.12.* cuml-cu11==23.12.* \
+    cugraph-cu11==23.12.* cuspatial-cu11==23.12.* cuproj-cu11==23.12.* \
+    cuxfilter-cu11==23.12.* cucim-cu11==23.12.* pylibraft-cu11==23.12.* \
+    raft-dask-cu11==23.12.*    
+
+
 pip uninstall \
     cudf-cu12==23.12.* dask-cudf-cu12==23.12.* cuml-cu12==23.12.* \
     cugraph-cu12==23.12.*
 
+pip uninstall \
+cudf-cu12 dask-cudf-cu12 cuml-cu12 \
+cugraph-cu12 cuspatial-cu12 cuproj-cu12 \
+cuxfilter-cu1 cucim-cu12 pylibraft-cu12 \
+raft-dask-cu12
