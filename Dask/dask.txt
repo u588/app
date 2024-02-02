@@ -1,20 +1,31 @@
 master node
+export DASK_DISTRIBUTED__SCHEDULER__WORKER_TTL='60 minutes'
+
 dask scheduler --host 10.3.68.2 --port 8786 --protocol "ucx" --dashboard-address 10.3.68.2:8787 --idle-timeout "40 minutes"
+dask scheduler --host 10.3.68.3 --port 8786 --protocol "ucx" --dashboard-address 10.3.68.3:8787 --idle-timeout "40 minutes"
 
 
 worker node 
 cudaP4.3
-dask cuda worker --host 192.168.168.3 --nthreads 2 --memory-limit "25GiB" --device-memory-limit "6GB" \
+dask cuda worker --host 192.168.168.3 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
 --multiprocessing-method spawn ucx://10.3.68.2:8786
 
+dask cuda worker --host 192.168.168.3 --nthreads 2 --memory-limit "25GiB" --device-memory-limit "6GB" \
+--rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
+--multiprocessing-method spawn ucx://10.3.68.3:8786
+
 node cudaGTX.2
-dask cuda worker --host 192.168.168.2 --nthreads 2 --memory-limit "25GiB" --device-memory-limit "6GB" \
---rmm-pool-size "7GB" --enable-tcp-over-ucx  --enable-jit-unspill  \
+dask cuda worker --host 192.168.168.2 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
+--rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
 --multiprocessing-method spawn  ucx://10.3.68.2:8786
 
+dask cuda worker --host 192.168.168.2 --nthreads 2 --memory-limit "25GiB" --device-memory-limit "6GB" \
+--rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
+--multiprocessing-method spawn  ucx://10.3.68.3:8786
 
-ask cuda worker --host 192.168.168.2 --nthreads 8 --memory-limit "25GiB" --device-memory-limit "6GB" --multiprocessing-method spawn  ucx://10.3.69.6:8786
+
+dask cuda worker --host 192.168.168.2 --nthreads 8 --memory-limit "25GiB" --device-memory-limit "6GB" --multiprocessing-method spawn  ucx://10.3.69.6:8786
 
 
 pip install --no-cache-dir --extra-index-url https://pypi.nvidia.com
