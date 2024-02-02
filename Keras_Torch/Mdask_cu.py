@@ -19,7 +19,7 @@ cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_wo
                         )
 
 
-client = Client('ucx://10.3.69.6:8786')
+client = Client('ucx://10.3.68.2:8786')
 
 import pandas as pd
 from sqlalchemy import create_engine
