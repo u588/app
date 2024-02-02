@@ -1,2 +1,2 @@
-[ 19386][19:17:33:934608][info  ] ----- RMM LOG BEGIN [PTDS DISABLED] -----
-[ 19386][19:17:33:934676][error ] [A][Stream 0x1][Upstream 10000000000B][FAILURE maximum pool size exceeded]
+[ 26292][23:26:28:688868][info  ] ----- RMM LOG BEGIN [PTDS DISABLED] -----
+[ 26292][23:26:28:688894][error ] [A][Stream 0x1][Upstream 7000000000B][FAILURE maximum pool size exceeded]
