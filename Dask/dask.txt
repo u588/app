@@ -22,7 +22,8 @@ cudaP4.3
 UCX_MEMTYPE_REG_WHOLE_ALLOC_TYPES=cuda \
 dask cuda worker --name P4 --host 192.168.168.3 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
---multiprocessing-method spawn ucx://10.3.68.2:8786
+--multiprocessing-method spawn --local-directory "/home/ts/cudatmp" --rmm-log-directory "/home/ts/rmmlog" \
+ucx://10.3.68.2:8786
 
 dask cuda worker --host 192.168.168.3 --nthreads 2 --memory-limit "25GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
@@ -31,7 +32,8 @@ dask cuda worker --host 192.168.168.3 --nthreads 2 --memory-limit "25GiB" --devi
 node cudaGTX.2
 dask cuda worker --name GTX --host 192.168.168.2 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
---multiprocessing-method spawn  ucx://10.3.68.2:8786 
+--multiprocessing-method spawn  --local-directory "/home/ts/cudatmp" --rmm-log-directory "/home/ts/rmmlog" \
+ucx://10.3.68.2:8786 
 
 dask cuda worker --host 192.168.168.2 --nthreads 2 --memory-limit "25GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --enable-jit-unspill  \
