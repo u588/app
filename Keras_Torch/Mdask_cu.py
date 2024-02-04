@@ -21,9 +21,9 @@ from dask.distributed import Client
 client = Client('ucx://10.3.68.2:8786')
 
 from dask_cuda import LocalCUDACluster
-cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0,1',n_workers=2,threads_per_worker=8,ip='127.0.0.1',
-                       dashboard_address='10.3.69.7:8787',worker_dashboard_address='10.3.69.7',memory_limit='25GB',
-                       protocol='ucx',rmm_pool_size='7GB',enable_tcp_over_ucx=True,device_memory_limit="6GB",jit_unspill=True,
+cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0',n_workers=1,threads_per_worker=2,ip='10.3.68.2',scheduler_port='8786',
+                       dashboard_address='10.3.68.2:8787',worker_dashboard_address='10.3.68.2',memory_limit='25GB',
+                       protocol='ucx',rmm_pool_size='7GB',device_memory_limit="6GB",
                         )
 
 
