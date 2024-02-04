@@ -21,8 +21,8 @@ from dask.distributed import Client
 client = Client('ucx://10.3.68.2:8786')
 
 from dask_cuda import LocalCUDACluster
-cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0',n_workers=1,threads_per_worker=2,ip='10.3.68.2',scheduler_port='8786',
-                       dashboard_address='10.3.68.2:8787',worker_dashboard_address='10.3.68.2',memory_limit='25GB',
+cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0',n_workers=1,threads_per_worker=2,host='127.0.0.1',ip='10.3.68.2',scheduler_port='8786',
+                       dashboard_address='10.3.68.2:8787',worker_dashboard_address='10.3.68.2',memory_limit='20GB',
                        protocol='ucx',rmm_pool_size='7GB',device_memory_limit="6GB",
                         )
 
@@ -48,37 +48,6 @@ X = ((qq.astype('float32')).fillna(1)).values
 
 model = DBSCAN(client=client,verbose=True, eps=0.16,min_samples=8)
 yy = model.fit_predict(X)
-
-
-
-model = DBSCAN(client=client,verbose=True, eps=0.16,min_samples=8,output_type='pandas',)
-
-
-
-from dask.distributed import Client
-from dask_cuda import LocalCUDACluster
-cluster = LocalCUDACluster(
-    protocol="ucx",
-    interface="lo",
-    rmm_pool_size="6GB"
-)
-client = Client(cluster)
-
-
-
-
-
-
-from dask_cuda import LocalCUDACluster
-cluster = LocalCUDACluster(
-    protocol="ucx",
-    interface="lo",
-    enable_tcp_over_ucx=True,
-    # enable_nvlink=False,
-    # enable_infiniband=True,
-    # enable_rdmacm=True,
-    rmm_pool_size="7GB"
-)
 
 
 b = pd.read_sql('b20001',engAn.connect())
