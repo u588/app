@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 from sqlalchemy import create_engine
 from cuml.dask.cluster import DBSCAN
 from dask.distributed import Client
@@ -44,7 +45,7 @@ engAn.dispose()
 #数据分成进程数P
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
-codeList = gm[(gm['scale']==300)&(gm['b_code']==1)].code.tolist()
+codeList = gm[(gm['scale']==300)&(gm['b_code']==2)].code.tolist()
 filname = '3002'
 
 
@@ -95,6 +96,8 @@ while n > 100 :
     else:
         esp = round(esp-0.02, 2)
     client.close()
+    time.sleep(5)
+    
 
 #=========== minSamples 5
 esp = 0.22
@@ -119,3 +122,4 @@ while n > 120 :
     else:
         esp = round(esp-0.02 , 2)
     client.close()
+    time.sleep(5)
