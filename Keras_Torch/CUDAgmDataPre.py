@@ -3,8 +3,6 @@ from sqlalchemy import create_engine
 from cuml.dask.cluster import DBSCAN
 from dask.distributed import Client
 
-client = Client('ucx://10.3.68.3:8786')
-
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
@@ -46,8 +44,8 @@ engAn.dispose()
 #数据分成进程数P
 # codeList = angr.code.to_list()[9:19]
 # codeList = angr[(angr.scale==500)&(angr.b_code==2.0)].code.to_list()
-codeList = gm[(gm['scale']==2000)&(gm['b_code']==2)].code.tolist()
-filname = '20002'
+codeList = gm[(gm['scale']==300)&(gm['b_code']==1)].code.tolist()
+filname = '3002'
 
 
 aqq = pd.DataFrame(columns=list(range(36)))
@@ -78,6 +76,7 @@ X = qq.astype('float32')
 esp = 0.19
 n = 200
 while n > 100 :
+    client = Client('ucx://10.3.68.3:8786')
     model = DBSCAN(client=client,verbose=True,eps=esp,min_samples=3)
     print('fit ESP:'+str(esp))
     yy = model.fit_predict(X)
@@ -95,12 +94,13 @@ while n > 100 :
         esp = round(esp-0.05 , 2)
     else:
         esp = round(esp-0.02, 2)
-
+    client.close()
 
 #=========== minSamples 5
 esp = 0.22
 n = 300
 while n > 120 :
+    client = Client('ucx://10.3.68.3:8786')
     model = DBSCAN(client=client,verbose=True,eps=esp,min_samples=5)
     print('fit ESP:'+str(esp))
     yy = model.fit_predict(X)
@@ -118,5 +118,4 @@ while n > 120 :
         esp = round(esp-0.05, 2)
     else:
         esp = round(esp-0.02 , 2)
-
-client.close()
+    client.close()
