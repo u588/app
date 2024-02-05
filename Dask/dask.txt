@@ -1,17 +1,3 @@
-=== ssh 断开继续运行 =======
-screen -S 名称 
-
-Ctrl+A+D 组合键，即可从当前screen会话分离
-
-==== 重连 ========
-screen -r 名称
-
-master node
-export DASK_DISTRIBUTED__SCHEDULER__WORKER_TTL='60 minutes'
-
-DASK_DISTRIBUTED__COMM__UCX__CUDA_COPY=True \
-DASK_DISTRIBUTED__COMM__UCX__TCP=True \
-DASK_DISTRIBUTED__COMM__UCX__CREATE_CUDA_CONTEXT=True \
 
 ============================
 ==== master
@@ -28,6 +14,21 @@ dask cuda worker --name GTX --interface 'eno1' --nthreads 1 --memory-limit "20Gi
 --rmm-log-directory "/home/ts/rmmlog" ucx://10.3.68.3:8786
 
 ==================================================
+
+=== ssh 断开继续运行 =======
+screen -S 名称 
+
+Ctrl+A+D 组合键，即可从当前screen会话分离
+
+==== 重连 ========
+screen -r 名称
+
+master node
+export DASK_DISTRIBUTED__SCHEDULER__WORKER_TTL='60 minutes'
+
+DASK_DISTRIBUTED__COMM__UCX__CUDA_COPY=True \
+DASK_DISTRIBUTED__COMM__UCX__TCP=True \
+DASK_DISTRIBUTED__COMM__UCX__CREATE_CUDA_CONTEXT=True \
 
 node cudaGTX.2
 dask cuda worker --name GTX --host 127.0.0.1 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
