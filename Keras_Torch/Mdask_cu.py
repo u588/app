@@ -51,6 +51,36 @@ cluster = LocalCUDACluster(CUDA_VISIBLE_DEVICES='0',n_workers=1,threads_per_work
                        dashboard_address='10.3.68.2:8787',worker_dashboard_address='10.3.68.2',memory_limit='20GB',
                        protocol='ucx',rmm_pool_size='7GB',device_memory_limit="6GB",local_directory="/home/ts/cudatmp",
                         )
+
+
+# client = Client('ucx://10.3.68.3:8786')
+
+import pandas as pd
+from sqlalchemy import create_engine
+from cuml.dask.cluster import DBSCAN
+
+# import cudf
+
+engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
+
+qq = pd.read_sql('qq20001',engAn)
+qq = qq.iloc[:,:36]
+X = qq.astype('float32')
+
+X = ((qq.astype('float32')).fillna(1)).values
+
+# X = cudf.DataFrame(qq.fillna(1))
+
+
+model = DBSCAN(client=client,verbose=True, eps=0.16,min_samples=8)
+yy = model.fit_predict(X)
+
+
+
+model = DBSCAN(client=client,verbose=True, eps=0.16,min_samples=8,output_type='pandas',)
+
+
+
 from dask.distributed import Client
 from dask_cuda import LocalCUDACluster
 cluster = LocalCUDACluster(
@@ -59,6 +89,11 @@ cluster = LocalCUDACluster(
     rmm_pool_size="6GB"
 )
 client = Client(cluster)
+
+
+
+
+
 
 from dask_cuda import LocalCUDACluster
 cluster = LocalCUDACluster(
