@@ -6,38 +6,34 @@ Ctrl+A+D 组合键，即可从当前screen会话分离
 ==== 重连 ========
 screen -r 名称
 
-
 master node
 export DASK_DISTRIBUTED__SCHEDULER__WORKER_TTL='60 minutes'
 
 DASK_DISTRIBUTED__COMM__UCX__CUDA_COPY=True \
 DASK_DISTRIBUTED__COMM__UCX__TCP=True \
 DASK_DISTRIBUTED__COMM__UCX__CREATE_CUDA_CONTEXT=True \
-dask scheduler --host 10.3.68.2 --port 8786 --protocol "ucx" --dashboard-address 10.3.68.2:8787 --idle-timeout "5 minutes"
 
+============================
+==== master
+dask scheduler --host 10.3.68.3 --port 8786 --protocol "ucx" --dashboard-address 10.3.68.3:8787 
 
-
-worker node 
-cudaP4.3
-UCX_MEMTYPE_REG_WHOLE_ALLOC_TYPES=cuda \
-dask cuda worker --name P4 --host 192.168.168.3 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
+===== node 
+==cudaP4.3
+dask cuda worker --name P4 --interface 'eno3' --nthreads 1 --memory-limit "20GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --local-directory "/home/ts/cudatmp" --rmm-log-directory "/home/ts/rmmlog" \
-ucx://10.3.68.2:8786
-
-dask cuda worker --name P4 --host 192.168.168.3 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
+ucx://10.3.68.3:8786
+==cudaGTX.2
+dask cuda worker --name GTX --interface 'eno1' --nthreads 1 --memory-limit "20GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx"  --multiprocessing-method spawn --local-directory "/home/ts/cudatmp" \
---rmm-log-directory "/home/ts/rmmlog" ucx://10.3.68.2:8786
+--rmm-log-directory "/home/ts/rmmlog" ucx://10.3.68.3:8786
 
-
+==================================================
 
 node cudaGTX.2
 dask cuda worker --name GTX --host 127.0.0.1 --nthreads 1 --memory-limit "25GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --enable-tcp-over-ucx  --local-directory "/home/ts/cudatmp" --rmm-log-directory "/home/ts/rmmlog" \
 ucx://10.3.68.2:8786 
 
-
-
 dask cuda worker --host 192.168.168.2 --nthreads 8 --memory-limit "25GiB" --device-memory-limit "6GB" --multiprocessing-method spawn  ucx://10.3.69.6:8786
-
 
 pip install --no-cache-dir --extra-index-url https://pypi.nvidia.com
