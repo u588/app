@@ -71,3 +71,5 @@ b =aqb.reset_index(drop=True)
 qq.set_index(0).to_sql(('qq'+filname),engAn, if_exists='replace')
 aaa.set_index('code').to_sql(('aaa'+filname),engAn, if_exists='replace')
 b.set_index('code').to_sql(('b'+filname),engAn, if_exists='replace')
+
+eng.dispose()
