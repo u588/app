@@ -54,7 +54,9 @@ print('Read sql ')
 qq = pd.read_sql('qq5001', engAn)
 b = pd.read_sql('b5001', engAn)
 X = qq.astype('float32')
-client = Client('ucx://10.3.68.3:8786')
+
+
+client = Client('tcp://10.3.68.2:8786')
 # ============ minSamples 3
 esp = 0.19
 n = 200
@@ -80,8 +82,8 @@ while n > 100 :
     else:
         esp = round(esp-0.02, 2)
 
-    client.restart_workers(['GTX','P4-0','P4-1'])
-    time.sleep(5)
+    # client.restart_workers(['GTX','P4-0','P4-1'])
+    # time.sleep(5)
     
 
 #=========== minSamples 5
@@ -109,8 +111,11 @@ while n > 120 :
     else:
         esp = round(esp-0.02 , 2)
 
-    client.restart_workers(['GTX','P4-0','P4-1'])
-    time.sleep(5)
+    # client.restart_workers(['GTX','P4-0','P4-1'])
+    # time.sleep(5)
 
-time.sleep(2)
+
 client.close()
+print('client closed !')
+print(client)
+time.sleep(5)
