@@ -1,17 +1,19 @@
 
 ============================
 ==== master
-dask scheduler --host 10.3.68.3 --port 8786 --protocol "ucx" --dashboard-address 10.3.68.3:8787 
+DASK_DISTRIBUTED__COMM__UCX__CUDA_COPY=True DASK_DISTRIBUTED__COMM__UCX__TCP=True \
+DASK_DISTRIBUTED__COMM__UCX__CREATE_CUDA_CONTEXT=True DASK_DISTRIBUTED__COMM__UCX_MEMTYPE_CACHE=n \
+dask scheduler --host 10.3.68.3 --port 8786 --protocol "ucx" --dashboard-address 10.3.68.3:8787
 
 ===== node 
 ==cudaP4.3
 dask cuda worker --name P4 --interface 'eno3' --nthreads 1 --memory-limit "20GiB" --device-memory-limit "6GB" \
 --rmm-pool-size "7GB" --protocol "ucx" --local-directory "/home/ts/cudatmp" --rmm-log-directory "/home/ts/rmmlog" \
 ucx://10.3.68.3:8786
+
 ==cudaGTX.2
 dask cuda worker --name GTX --interface 'eno1' --nthreads 1 --memory-limit "20GiB" --device-memory-limit "6GB" \
---rmm-pool-size "7GB" --protocol "ucx"  --multiprocessing-method spawn --local-directory "/home/ts/cudatmp" \
---rmm-log-directory "/home/ts/rmmlog" ucx://10.3.68.3:8786
+--protocol "ucx"   --local-directory "/home/ts/cudatmp" ucx://10.3.68.3:8786
 
 ==================================================
 
