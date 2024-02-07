@@ -7,6 +7,8 @@ from dask.distributed import Client
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
 
+li =[[300,1],[300,2],[500,1],[500,2],[1000,1],[1000,2],[2000,1],[2000,2]]
+
 def GetX(code):
     rawD = pd.read_sql(code, eng)
     dff = rawD[rawD.datetime >= '2000-01-01'].reset_index(drop=True)
@@ -71,7 +73,7 @@ qq.set_index(0).to_sql(('qq'+filname),engAn, if_exists='replace')
 aaa.set_index('code').to_sql(('aaa'+filname),engAn, if_exists='replace')
 b.set_index('code').to_sql(('b'+filname),engAn, if_exists='replace')
 
-qq = qq.iloc[:,:36]
+qq = pd.read_sql('qq3002', engAn)
 X = qq.astype('float32')
 # ============ minSamples 3
 esp = 0.19
