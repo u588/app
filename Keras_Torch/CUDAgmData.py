@@ -24,7 +24,7 @@ while n > 100 :
     print('fit ESP5 : '+str(esp))
     yy = model.fit_predict(X)
     n = pd.DataFrame(yy).groupby(0).size().shape[0]
-    print("==> "+n)
+    print("==> "+str(n))
     b['cluster'] = pd.DataFrame(yy)
     # b.set_index('code').to_sql(('CUDAe'+str(esp)+'s3b'+filname),engAn, if_exists='replace')
     xx = b.sort_values('cluster').reset_index(drop=True)
@@ -50,7 +50,7 @@ while n > 100 :
     print('fit ESP8 : '+str(esp))
     yy = model.fit_predict(X)
     n = pd.DataFrame(yy).groupby(0).size().shape[0]
-    print("==> "+n)
+    print("==> "+str(n))
     b['cluster'] = pd.DataFrame(yy)
     # b.set_index('code').to_sql(('CUDAe'+str(esp)+'s5b'+filname),engAn, if_exists='replace')
     xx = b.sort_values('cluster').reset_index(drop=True)
