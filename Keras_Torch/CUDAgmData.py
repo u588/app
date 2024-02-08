@@ -37,7 +37,7 @@ for gm in li:
         xxg = xx.groupby('cluster')
 
         cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-        ccl = cl[cl['count']>1][cl['25%']>6].reset_index(drop=True)
+        ccl = cl[cl['count']>5][cl['25%']>6].reset_index(drop=True)
         n = ccl.shape[0]
         print(n)
         print(ccl)
