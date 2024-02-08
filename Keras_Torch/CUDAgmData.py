@@ -1,76 +1,67 @@
 import pandas as pd
+import datetime
 import time
 from sqlalchemy import create_engine
 from cuml.dask.cluster import DBSCAN
 from dask.distributed import Client
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
-engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
+
 
 li =[[300,1],[300,2],[500,1],[500,2],[1000,1],[1000,2],[2000,1],[2000,2]]
+# li =[[500,2]]
+engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
+for gm in li:
 
-print('Read sql ')
-qq = pd.read_sql('qq20001', engAn)
-b = pd.read_sql('b20001', engAn)
-X = qq.astype('float32')
-
-client = Client('tcp://10.3.68.2:8786')
-
-# ============ minSamples 3
-esp = 0.3
-n = 200
-while n > 100 :
-    model = DBSCAN(client=client,verbose=True,eps=esp,min_samples=5)
-    print('fit ESP5 : '+str(esp))
-    yy = model.fit_predict(X)
-    n = pd.DataFrame(yy).groupby(0).size().shape[0]
-    print("==> "+str(n))
-    b['cluster'] = pd.DataFrame(yy)
-    # b.set_index('code').to_sql(('CUDAe'+str(esp)+'s3b'+filname),engAn, if_exists='replace')
-    xx = b.sort_values('cluster').reset_index(drop=True)
-    xxg = xx.groupby('cluster')
-    xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
-    cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-    print(cl)
-    print("\n")
-    print("==============================================================")    
-    # cl.to_sql(('e'+str(esp)+'s3bcl'+filname),engAn, if_exists='replace')
-    if n > 500:
-        esp = round(esp-0.1 , 2)
-    else:
-        esp = round(esp-0.02, 2)
-
-#=========== minSamples 5
-
-esp = 0.3
-n = 300
-while n > 100 :
+    print('Read sql ')
+    qq = pd.read_sql('qq'+str(gm[0]) + str(gm[1]), engAn)
+    print(len(qq))
+    b = pd.read_sql('b'+str(gm[0]) + str(gm[1]), engAn)
     
-    model = DBSCAN(client=client,verbose=True,eps=esp,min_samples=8)
-    print('fit ESP8 : '+str(esp))
-    yy = model.fit_predict(X)
-    n = pd.DataFrame(yy).groupby(0).size().shape[0]
-    print("==> "+str(n))
-    b['cluster'] = pd.DataFrame(yy)
-    # b.set_index('code').to_sql(('CUDAe'+str(esp)+'s5b'+filname),engAn, if_exists='replace')
-    xx = b.sort_values('cluster').reset_index(drop=True)
-    xxg = xx.groupby('cluster')
-    xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).reset_index()
-    cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
-    print(cl)
-    print("\n")
-    print("==============================================================")
-    # cl.to_sql(('CUDAe'+str(esp)+'s5bcl'+filname),engAn, if_exists='replace')
-    if n > 500:
-        esp = round(esp-0.1, 2)
-    else:
-        esp = round(esp-0.02 , 2)
+    X = (qq.fillna(1)).astype('float32')
 
-    # client.restart_workers(['GTX','P4-0','P4-1'])
-    # time.sleep(5)
+    esp = 0.38
+    n = 50
+    client = Client('tcp://10.3.68.2:8786')
+    while n > 5 :
+        t0 = datetime.datetime.now()
+        model = DBSCAN(client=client,verbose=True,eps=esp,min_samples=8)
+        print('fit ESP8 : '+str(esp))
+        yy = model.fit_predict(X)
+        t1 = datetime.datetime.now()
 
-client.restart_workers(['GTX','P4-0','P4-1'])
-time.sleep(5)
+        b['cluster'] = pd.DataFrame(yy)
+        print(('b'+str(gm[0]) + str(gm[1])+'e'+str(esp)+'s8'))
+
+        xx = b.sort_values('cluster').reset_index(drop=True)
+        xxg = xx.groupby('cluster')
+
+        cl = xxg.PCB5.describe().sort_values(['25%','mean'],ascending=False).round(2).reset_index()
+        ccl = cl[cl['count']>1][cl['25%']>6].reset_index(drop=True)
+        n = ccl.shape[0]
+        print(n)
+        print(ccl)
+        print("\n")
+        print("==============================================================")    
+
+        if n > 40:
+            esp = round(esp-0.1 , 3)
+        elif n > 20:
+            esp = round(esp-0.02 , 3)
+        else:
+            esp = round(esp-0.01, 3)
+        
+        if n < 21:
+            b.set_index('code').to_sql(('b'+str(gm[0]) + str(gm[1])+'e'+str(esp)+'s8'),engAn, if_exists='replace')
+            cl.to_sql(('b'+str(gm[0]) + str(gm[1])+'e'+str(esp)+'s8cl'),engAn, if_exists='replace')
+        else:
+            pass
+
+        tt = int((t1-t0).total_seconds())
+        print(tt)
+
+    client.restart_workers(['GTX','P4-0','P4-1'])
+    time.sleep(5)
 client.close()
+engAn.dispose()
 print('client closed !')
 print(client)
