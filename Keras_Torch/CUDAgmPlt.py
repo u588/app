@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import mplfinance as mpf
 
 engAn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/DataAn')
+engAn = create_engine('postgresql+psycopg2://sa:11111111@111.61.77.88:65123/DataAn')
 
 # nm聚类编号
 def gplt(nm,m=0,v=5):
