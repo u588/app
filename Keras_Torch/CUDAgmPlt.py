@@ -1,3 +1,13 @@
+# pip install adbc_driver_manager adbc_driver_postgresql pyarrow
+# pandas 2.2
+
+import adbc_driver_postgresql.dbapi as pg_dbapi
+
+uri = "postgresql://sa:11111111@10.3.18.56:5432/DataAn"
+conn = pg_dbapi.connect(uri)
+pd.read_sql('gm', conn)
+
+
 import pandas as pd
 from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
@@ -47,7 +57,7 @@ gml = li[0]
 esp = 0.37 
 
 b = pd.read_sql(('b'+str(gml[0]) + str(gml[1])+'e'+str(esp)+'s8'), engAn)
-b['Dday'] = pd.to_datetime(b['datetime']) - pd.to_datetime(b['PCB5time8']).dt.days
+b['Dday'] = (pd.to_datetime(b['datetime']) - pd.to_datetime(b['PCB5time8'])).dt.days
 
 aaa = pd.read_sql('b'+str(gml[0]) + str(gml[1]), engAn)
 aaa.loc[:,'date'] = pd.to_datetime(aaa.datetime)
