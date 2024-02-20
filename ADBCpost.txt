@@ -1,0 +1,8 @@
+pip install adbc_driver_manager adbc_driver_postgresql pyarrow
+pandas 2.2
+
+import adbc_driver_postgresql.dbapi as pg_dbapi
+
+uri = "postgresql://sa:11111111@10.3.18.56:5432/DataAn"
+conn = pg_dbapi.connect(uri)
+pd.read_sql('gm', conn)
