@@ -1,0 +1,14 @@
+新虚拟终端
+screen -S 
+
+开了多少个屏幕
+screen -ls
+
+清除死亡的屏幕进程
+screen -wipe
+
+连接
+screen -R
+
+退出
+Ctrl+a+d
