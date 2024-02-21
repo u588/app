@@ -24,7 +24,7 @@ print(pd.DataFrame(data=list_data))
 
 '''
 
-ls = ['gpcw20230930.zip']
+ls = ['gpcw20231231.zip']
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 
