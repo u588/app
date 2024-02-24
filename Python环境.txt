@@ -1,0 +1,36 @@
+1、设置默认python
+#查看python3 的安装位置
+which python3  
+#设置默认python为 python3
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+#查看是否成功
+python --version
+
+2、创建虚拟环境
+#安装venv
+sudo apt install python3.10-venv
+#创建虚拟环境 （可以选择在家目录创建）
+python3 -m venv PYEnv-name
+#进入虚拟环境
+source PYEnv-name/bin/activate
+安装自己需要Python插件
+pip install pyecharts ...
+
+3、调用虚拟环境的Python来运行程序
+#! /bin/bash
+# ubuntu环境下使用虚拟Python环境运行脚本:  ./Py  main.py
+PYEnv_DIR="/root/PYEnv/bin"
+source $PYEnv_DIR/activate
+if [ $# -eq 0 ]; then
+  echo "没有传递任何参数。"
+else
+        $PYEnv_DIR/python3 $@
+fi
+
+4、每次需要运行Python文件的时候，使用命令：
+#假设要运行 main.py 文件
+#把py文件拷贝过来
+./py main.py
+#也可以把py放到  /usr/bin 目录，不用拷贝，直接运行
+py main.py
+
