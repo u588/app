@@ -1,1 +1,9 @@
 git clone https://gitee.com/u588/App.git
+
+生成
+ssh-keygen -t ed25519 -C "Gitee SSH Key"
+
+ssh -T u588@gitee.com
+
+转换为 SSH 协议
+git remote set-url origin git@gitee.com:u588/App.git
