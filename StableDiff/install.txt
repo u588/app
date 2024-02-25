@@ -1,11 +1,16 @@
 # https://blog.csdn.net/chengxuquan/article/details/135397547
+模型库
+https://aitool.ai/stablediffusion/checkpoint
+
 
 一：准备安装环境
 
 1、创建虚拟环境
 2、安装pytorch
 cuda11.8
-pip install torch==2.2.0 torchvision==0.17.0 torchaudio=2.2.0 --index-url https://download.pytorch.org/whl/cu118
+pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu118
+
+pip3 install -U xformers --index-url https://download.pytorch.org/whl/cu118
 
 二：安装Stable Diffusion
 1、克隆仓库
