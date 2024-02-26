@@ -1,6 +1,9 @@
 # https://blog.csdn.net/chengxuquan/article/details/135397547
 模型库
 https://aitool.ai/stablediffusion/checkpoint
+
+https://aifasthub.com/models
+
 https://zhuanlan.zhihu.com/p/643420260
 
 一：准备安装环境
@@ -12,6 +15,7 @@ pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https
 
 pip3 install -U xformers --index-url https://download.pytorch.org/whl/cu118
 
+================ Stable Diffusion WebUI ============
 二：安装Stable Diffusion
 1、克隆仓库
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
@@ -59,3 +63,23 @@ python launch.py
 python webui.py
 #两种访求均可
 
+================= ComfyUI ===========================
+
+git clone https://github.com/comfyanonymous/ComfyUI.git
+
+汉化
+/ComfyUI/custom_nodes/
+git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation.git
+
+插件管理器
+git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+
+https://zhuanlan.zhihu.com/p/672389382
+===========  ComfyUI WebUI 双工 ========
+/ComfyUI/
+extra_model_paths.yaml.example ==> extra_model_paths.yaml
+base_path: path/to/stable-diffusion-webui/ 将base_path:后面改为WebUI文件夹的地址
+
+
+这个网站里有海量workflow参考：
+https://comfyworkflows.com/
