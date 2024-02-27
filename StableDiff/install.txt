@@ -17,7 +17,7 @@ pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https
 pip3 install -U xformers --index-url https://download.pytorch.org/whl/cu118
 
 ================ Stable Diffusion WebUI ============
-二：安装Stable Diffusion
+二：安装Stable Diffusion WebUI
 1、克隆仓库
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
 cd stable-diffusion-webui
@@ -68,6 +68,7 @@ python webui.py
 
 git clone https://github.com/comfyanonymous/ComfyUI.git
 
+==== 插件 ==============
 汉化
 /ComfyUI/custom_nodes/
 git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation.git
