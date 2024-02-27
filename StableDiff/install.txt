@@ -9,6 +9,7 @@ https://zhuanlan.zhihu.com/p/643420260
 一：准备安装环境
 
 1、创建虚拟环境
+/home/ts/App/Python环境.txt
 2、安装pytorch
 cuda11.8
 pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu118
