@@ -6,6 +6,9 @@ https://aifasthub.com/models
 
 https://zhuanlan.zhihu.com/p/643420260
 
+wget https://aifasthub.com/models/stabilityai/stable-diffusion-xl-refiner-1.0/sd_xl_refiner_1.0_0.9vae.safetensor
+wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/sd_xl_base_1.0_0.9vae.safetensors
+
 一：准备安装环境
 
 1、创建虚拟环境
@@ -13,6 +16,8 @@ https://zhuanlan.zhihu.com/p/643420260
 2、安装pytorch
 cuda11.8
 pip install torch==2.2.0 torchvision==0.17.0 torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu118
+
+wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl
 
 pip3 install -U xformers --index-url https://download.pytorch.org/whl/cu118
 

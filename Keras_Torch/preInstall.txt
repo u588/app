@@ -126,3 +126,16 @@ pip install --no-cache-dir --extra-index-url https://pypi.nvidia.com rmm-cu11
 
 === dask cuda ===
 pip install --no-cache-dir  cupy-cuda11x
+
+
+=========== 启动 Dash ==============
+GTX
+master
+dask scheduler --host 10.3.68.2 --port 8786 --protocol "tcp" --dashboard-address 10.3.68.2:8787
+node
+dask cuda worker --name GTX --interface 'eno1' --nthreads 2 --memory-limit "20GiB" --device-memory-limit "6GB"  --local-directory "/home/ts/cudatmp"  tcp://10.3.68.2:8786
+
+P4
+dask cuda worker --name P4 --interface 'eno1' --nthreads 2 --memory-limit "20GiB" --device-memory-limit "6GB"  --local-directory "/home/ts/cudatmp"  tcp://10.3.68.2:8786
+
+
