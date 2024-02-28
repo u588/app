@@ -97,8 +97,12 @@ https://comfyworkflows.com/
 
 
 ======== 启动参数 =============
+1、ComfyUI
 GTX
 python main.py --listen  --cuda-device 0
 
 P4
 python main.py --listen --use-pytorch-cross-attention --cuda-device 1
+
+2、WebUI
+python launch.py  --device-id 0 --medvram-sdxl --no-half-vae
