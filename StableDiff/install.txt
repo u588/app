@@ -4,6 +4,9 @@ https://aitool.ai/stablediffusion/checkpoint
 
 https://aifasthub.com/models
 
+xformers
+pi3 install -U xformers --index-url https://download.pytorch.org/whl/cu118
+
 深入浅出完整解析Stable Diffusion XL（SDXL）核心基础知识
 https://zhuanlan.zhihu.com/p/643420260
 
@@ -11,6 +14,17 @@ wget https://aifasthub.com/models/stabilityai/stable-diffusion-xl-refiner-1.0/sd
 wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/sd_xl_base_1.0_0.9vae.safetensors
 
 一：准备安装环境
+torch == 2.1.1
+wget https://download.pytorch.org/whl/cu118/torchvision-0.16.1%2Bcu118-cp310-cp310-linux_x86_64.whl
+wget https://download.pytorch.org/whl/cu118/torchaudio-2.1.1%2Bcu118-cp310-cp310-linux_x86_64.whl
+wget https://download.pytorch.org/whl/cu118/torch-2.1.1%2Bcu118-cp310-cp310-linux_x86_64.whl
+wget https://download.pytorch.org/whl/cu118/xformers-0.0.23%2Bcu118-cp310-cp310-manylinux2014_x86_64.whl
+
+torcy==2.2.0
+wget https://download.pytorch.org/whl/cu118/torchvision-0.17.0%2Bcu118-cp310-cp310-linux_x86_64.whl
+wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl
+wget https://download.pytorch.org/whl/cu118/torch-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl
+wget https://download.pytorch.org/whl/cu118/xformers-0.0.24%2Bcu118-cp310-cp310-manylinux2014_x86_64.whl
 
 1、创建虚拟环境
 /home/ts/App/Python环境.txt
@@ -37,7 +51,7 @@ pip install -r requirements_versions.txt
 pip install -r requirements.txt 
 
 3、修改web的绑定IP
-vim webui.py
+vim webui.py 79行
  
 #找到下面这几行
 #app, local_url, share_url = shared.demo.launch(
@@ -48,6 +62,10 @@ vim webui.py
 #将shared.demo.launch()第一行改为
 share=True，
 server_name="192.168.29.198",#注意IP上的双引号，IP灵活根据自己服务器的IP设置
+
+修改model目录
+stable-diffusion-webui/modules/paths_internal.py 28行
+models_path = '修改至'
 
 4、下载模型并拷贝
 模型考贝地址：
@@ -105,4 +123,4 @@ P4
 python main.py --listen --use-pytorch-cross-attention --cuda-device 1
 
 2、WebUI
-python launch.py  --device-id 0 --medvram-sdxl --no-half-vae
+python launch.py  --device-id 0 --medvram-sdxl --no-half-vae --xformers
