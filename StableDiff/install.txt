@@ -4,6 +4,7 @@ https://aitool.ai/stablediffusion/checkpoint
 
 https://aifasthub.com/models
 
+深入浅出完整解析Stable Diffusion XL（SDXL）核心基础知识
 https://zhuanlan.zhihu.com/p/643420260
 
 wget https://aifasthub.com/models/stabilityai/stable-diffusion-xl-refiner-1.0/sd_xl_refiner_1.0_0.9vae.safetensor
@@ -80,6 +81,9 @@ git clone https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation.git
 
 插件管理器
 git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+
+运行
+python main.py --listen --port 8888
 
 https://zhuanlan.zhihu.com/p/672389382
 ===========  ComfyUI WebUI 双工 ========
