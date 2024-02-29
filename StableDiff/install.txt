@@ -13,6 +13,10 @@ https://zhuanlan.zhihu.com/p/643420260
 wget https://aifasthub.com/models/stabilityai/stable-diffusion-xl-refiner-1.0/sd_xl_refiner_1.0_0.9vae.safetensor
 wget https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/blob/main/sd_xl_base_1.0_0.9vae.safetensors
 
+TensorRT
+https://github.com/NVIDIA/Stable-Diffusion-WebUI-TensorRT
+
+
 一：准备安装环境
 torch == 2.1.1
 wget https://download.pytorch.org/whl/cu118/torchvision-0.16.1%2Bcu118-cp310-cp310-linux_x86_64.whl
