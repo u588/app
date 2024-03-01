@@ -3,7 +3,6 @@ https://hf-mirror.com/
 pip install -U huggingface_hub
 export HF_ENDPOINT=https://hf-mirror.com
 
-huggingface-cli download --resume-download gpt2 --local-dir gpt2
 
 huggingface-cli download --resume-download stabilityai/stable-cascade stage_a.safetensors --local-dir-use-symlinks False --local-dir ./
 
