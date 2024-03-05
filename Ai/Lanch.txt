@@ -1,2 +1,14 @@
-Text-generation-webui
+============ Text-generation-webui ==============
 python server.py --listen --trust-remote-code --auto-devices --model-dir /srv/models/Language/Qwen/
+
+
+================== stable diffusion webui ===========
+python launch.py --listen  --medvram-sdxl  --no-half-vae  --no-half --device-id=="0,1" --force-enable-xformers  ---ckpt-dir  --vae-dir 
+
+master 
+PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512 \
+python launch.py --api --listen --device-id 0 --no-half-vae --opt-channelslast   --xformers --medvram
+
+node 
+PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512 \
+python launch.py --api --port 7866  --device-id 1 --no-half-vae --opt-channelslast   --xformers --medvram

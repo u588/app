@@ -7,3 +7,16 @@ ssh -T u588@gitee.com
 
 转换为 SSH 协议
 git remote set-url origin git@gitee.com:u588/App.git
+
+
+=========== Git ===========
+查看本地库信息 git log
+
+放弃本地修改
+git stash
+git pull
+
+
+本地库升级新版
+git pull origin master
+
