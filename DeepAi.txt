@@ -1,0 +1,9 @@
+======= 系统优化 DeepSpeed ===========
+https://zhuanlan.zhihu.com/p/624412809
+https://github.com/microsoft/DeepSpeed/releases
+
+pip install deepspeed
+查看 
+ds_report
+
+

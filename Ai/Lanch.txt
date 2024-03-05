@@ -1,0 +1,2 @@
+Text-generation-webui
+python server.py --listen --trust-remote-code --auto-devices --model-dir /srv/models/Language/Qwen/
