@@ -1,0 +1,37 @@
+参考：==>  /home/ts/App/Keras_Torch/preInstall.txt
+
+官方 ==> Pascal(1080,P4 6.0算力)显卡推荐配置 cuDNN 9.0.0 CUDA11.8  
+        Volta(2080,7.0算力)   cuDNN 9.0.0 CUDA12.3
+
+
+=========  CUDA ============== 
+1、 cuda
+GTX:/srv/CUDA
+sudo sh cuda_xxxxx.xx_linux.run
+
+vi ~/.bashrc
+export PATH=$PATH:/usr/local/cuda-11.8/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64
+
+2、cuDNN
+下载包
+GTX:/srv/CUDA 
+sudo dpkg -i cudnn-9.0.0-11-12.deb
+sudo cp /var/cudnn-local-repo-ubuntu2204-9.0.0/cudnn-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+
+CUDA11 ==> sudo apt-get -y install cudnn-cuda-11
+CUDA12 ==> sudo apt-get -y install cudnn-cuda-12
+
+
+
+
+========= Torch ============
+下载包
+https://download.pytorch.org/whl/cu118
+wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl
+
+
+============ Xformers ==============
+https://github.com/facebookresearch/xformers
+v0.0.23.post1 ==> PyTorch 2.1.2 

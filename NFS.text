@@ -13,12 +13,12 @@ sudo mkdir -p /srv/nfs4/www
 sudo mount --bind /var/www /srv/nfs4/www
 
 重启后自动绑定目录
-sudo vim etc/fstab
+sudo vim /etc/fstab
 /var/www     /srv/nfs4/www      none   bind   0   0
 
 1.3编写配置文件
 #/etc/exports文件的内容如下：
-sudo vim etc/exports
+sudo vim /etc/exports
 /srv/nfs4  192.168.33.0/24(rw,sync,no_subtree_check,crossmnt,fsid=0)
 /srv/nfs4/www     192.168.33.110(rw,sync,no_subtree_check)
 
@@ -53,7 +53,7 @@ sudo mount -t nfs -o vers=4 192.168.33.10:/www /srv/www
 vers=4表示使用V4版本的NFS
 
 自动挂载NFS共享目录
-sudo vim etc/fstab
+sudo vim /etc/fstab
 192.168.33.10:/www /srv/www       nfs   defaults,timeo=900,retrans=5,_netdev	0 0
 
 
