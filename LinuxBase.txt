@@ -101,6 +101,7 @@ UUID=id   挂载点  ext4 defaults 0 0
 
 1、200G的硬盘，安装完后发现只有不足100G可用
 2、fdisk查看明明有个198GB
+    sudo fdisk -l
 3、发现有99G，25344没有分配
     lvm
     vgdisplay -v
