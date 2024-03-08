@@ -6,6 +6,20 @@ https://developer.nvidia.com/cuda-toolkit
 https://www.nvidia.com/en-us/data-center/
 https://resources.nvidia.com/en-us-gpu-resources/a2-gpu-datasheet?lx=CPwSfP
 
+显卡浮点能力支持
+https://docs.nvidia.com/deeplearning/tensorrt/support-matrix/index.html#hardware-precision-matrix
+
+CUDA Example	TF32	FP32	FP16	INT8	FP16 Tensor Cores	INT8 Tensor Cores	DLA
+9.0	H100	Yes	Yes	Yes	Yes	Yes	Yes	No
+8.9	RTX4090	Yes	Yes	Yes	Yes	Yes	Yes	No
+8.6	A10	    Yes	Yes	Yes	Yes	Yes	Yes	No
+8.0	A100	Yes	Yes	Yes	Yes	Yes	Yes	No
+7.5	T4	    No	Yes	Yes	Yes	Yes	Yes	No
+7.0	V100	No	Yes	Yes	Yes	Yes	No	No
+6.1	P4   	No	Yes	Yes	Yes	No	No	No
+6.0	P100	No	Yes	Yes	No	No	No	No
+
+
 GeForce GTX 1080	6.1     F16-          F32-8.8T             870
 Geforce RTX 2080	7.5     F16-20.14T    F32-10.07T  215W     1500
 GeForce RTX 3080	8.6     F16-29.7T     F32-29.7T   320W     3000 
