@@ -1,0 +1,28 @@
+https://github.com/jeinlee1991/chinese-llm-benchmark
+
+1、综合能力排行榜
+Qwen1.5-14B-Chat(new)	87.33	7
+internlm2-chat-20b(new)	86.75	10
+
+(1) 10B以下大模型排行榜
+大模型	         分类能力	信息抽取能力	阅读理解能力	表格问答	总分	排名
+Baichuan2-7B-Chat	88 76	83.3	69	79.1	1
+
+(2) 10B~20B大模型排行榜
+tigerbot-13b-chat-v4	85	82	80.0	85	83.0	1
+BELLE-Llama2-13B-chat-0.4M	90	74	76.0	79	79.8	2
+Baichuan2-13B-Chat	83	83	74.7	77	79.4	3
+
+2、分类能力排行榜
+internlm2-chat-20b(new)	93	6
+BELLE-Llama2-13B-chat-0.4M	90	8
+
+3、信息抽取能力排行榜
+Baichuan2-13B-Chat	83	18
+
+4、阅读理解能力排行榜
+Qwen1.5-14B-Chat(new)	90.7
+
+5、数据分析排行榜
+Qwen1.5-14B-Chat(new)	90.7
+tigerbot-13b-chat-v4	85.0

@@ -35,3 +35,23 @@ wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310
 ============ Xformers ==============
 https://github.com/facebookresearch/xformers
 v0.0.23.post1 ==> PyTorch 2.1.2 
+
+
+========== 编译安装 Llama ==========
+git clone https://github.com/ggerganov/llama.cpp
+
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir --verbose 
+
+======== 源码安装 exllamav2 ===========
+git clone https://github.com/turboderp/exllamav2
+cd exllamav2
+pip install .
+
+pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/
+
+======== 源码 autoAWQ ========
+git clone https://github.com/casper-hansen/AutoAWQ
+cd AutoAWQ
+pip install -e .
