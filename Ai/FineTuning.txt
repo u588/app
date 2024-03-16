@@ -1,0 +1,13 @@
+ModelSize    Method    SequenceLength
+                       256      512     1024        2048        4096        8192
+1.8B        LoRA       6.7G     7.4G    8.4G        11G         16.2G       21.8G
+            LoRA(emb)  13.7G    14G     14G         15.1G       19.7G       27.7G
+            QLoRA      5.8G     6G      6.6G        7.8G        10.2G       15.8G
+
+7B          LoRA       20.1G    20.4G   21.5G       23.8G       29.7G       36.6G
+            LoRA(emb)  33.7G    34.1G   35.2G       35.1G       39.2G       48.5G
+            QLoRA      11.5G    11.5G   12.3G       13.9G       16.9G       23.5G
+            
+14B         LoRA       34.6G    35.1G   35.3G       37.4G       42.5G       55.2G
+            LoRA(emb)  51.2G    51.1G   51.5G       54.1G       56.8G       67.7G
+            QLoRA      18.7G    18.4G   18.9G       19.8G       23G         27.9G

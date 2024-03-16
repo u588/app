@@ -26,3 +26,5 @@ Qwen1.5-14B-Chat(new)	90.7
 5、数据分析排行榜
 Qwen1.5-14B-Chat(new)	90.7
 tigerbot-13b-chat-v4	85.0
+
+
