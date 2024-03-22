@@ -1,4 +1,66 @@
+============== 安装 =============
+sudo vi /etc/postgresql/16/main/postgresql.conf 
+==> listen_addresses = '*'  
+
+sudo vim /etc/postgresql/16/main/pg_hba.conf
+==> # IPv4 local connections:
+     host    all             all             0.0.0.0/0               md5
+
+sudo systemctl restart postgresql
+
+
+
 C8 upgrade 
 vi /usr/lib/systemd/system/postgresql-16.service
 
 Environment=PGDATA=/home/pg16/
+
+
+sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+应用的位置是 /usr/lib/postgresql/
+配置文件的位置是 /etc/postgresql/
+
+修改配置文件
+修改文件 /etc/postgresql/16/main/pg_hba.conf
+#IPv4 local connections:
+host all all 0.0.0.0/0
+
+
+============ 数据库备份 ==========
+/usr/pgsql-16/bin/pg_upgrade --old-datadir /var/lib/pgsql/12/data/ --new-datadir /home/pg16/ --old-bindir /usr/pgsql-12/bin --new-bindir /usr/pgsql-16/bin --check
+
+
+/usr/lib/postgresql/16/bin/pg_upgrade --old-datadir /data/pg12/ --new-datadir /data/pg16/ --old-bindir /usr/lib/postgresql/12/bin/ --new-bindir /usr/lib/postgresql/16/bin/ --check
+pg_basebackup -h 1.1.1.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg16
+
+sudo -i -u postgres psql
+
+create user sa password '11111111';
+create user rep password 'syslog6^';
+alter user sa password '';
+ALTER ROLE sa SUPERUSER;
+ALTER ROLE sa CREATEROLE;
+ALTER ROLE sa CREATEDB;
+ALTER ROLE rep REPLICATION;
+
+
+
+============ 数据库升级 ==========
+1、安装旧库
+2、流式复制库 postgres$ pg_basebackup -h 10.3.18.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg12
+3、主从分离  停库从起 /usr/lib/postgresql/12/bin/pg_ctl stop -D /datat/pg12
+3、改名旧库 /data/pg12/postgresql.auto.conf /data/pg12/standby.signal --> .bak
+4、主从分离  停库从起 /usr/lib/postgresql/12/bin/pg_ctl start -D /datat/pg12
+5、升级 /usr/lib/postgresql/16/bin/pg_upgrade --old-datadir /data/pg12/ --new-datadir /data/pg16/ --old-bindir /usr/lib/postgresql/12/bin/ --new-bindir /usr/lib/postgresql/16/bin/
+
+Upgrade Complete
+----------------
+Optimizer statistics are not transferred by pg_upgrade.
+Once you start the new server, consider running:
+    /usr/lib/postgresql/16/bin/vacuumdb --all --analyze-in-stages
+Running this script will delete the old cluster's data files:
+    ./delete_old_cluster.sh
+
+
