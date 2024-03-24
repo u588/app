@@ -64,3 +64,15 @@ Running this script will delete the old cluster's data files:
     ./delete_old_cluster.sh
 
 
+=============   ===============
+sudo -i -u postgres psql DataAn
+
+REINDEX DATABASE    ;
+
+ALTER DATABASE      REFRESH COLLATION VERSION;
+
+
+=========== 主备库查询 ==========
+sudo -i -u postgres psql
+master ==> SELECT * FROM pg_stat_replication;
+salve ==> SELECT * FROM pg_stat_wal_receiver;
