@@ -1,0 +1,5 @@
+source /home/ts/TextUi/bin/activate
+cd /home/ts/TextUi/llama.cpp
+
+python convert.py 
+quantize 
