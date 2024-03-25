@@ -50,5 +50,5 @@ for i in ls:
             print(l+" =====  Excepts !!")
             pass
 
-conn.close()
+conn.dispose()
 
