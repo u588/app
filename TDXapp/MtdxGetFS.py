@@ -22,6 +22,9 @@ crawler = HistoryFinancialListCrawler()
 list_data = crawler.fetch_and_parse()
 print(pd.DataFrame(data=list_data))
 
+
+2024.2.21 5218
+2024.3.25 346077
 '''
 
 ls = ['gpcw20231231.zip']
@@ -47,5 +50,5 @@ for i in ls:
             print(l+" =====  Excepts !!")
             pass
 
-conn.close()
+conn.dispose()
 
