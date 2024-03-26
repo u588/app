@@ -1,3 +1,20 @@
+======== 安装 ==============
+git clone https://github.com/ggerganov/llama.cpp.git
+
+cd llama.cpp
+make LLAMA_CUBLAS=1
+
+---- or ---
+mkdir build
+cd build
+cmake .. -DLLAMA_CUBLAS=ON
+cmake --build . --config Release
+
+
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+
+
+
 source /home/ts/TextUi/bin/activate
 cd /home/ts/TextUi/llama.cpp
 
