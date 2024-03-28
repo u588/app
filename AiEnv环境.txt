@@ -27,6 +27,12 @@ CUDA12 ==> sudo apt-get -y install cudnn-cuda-12
 
 
 ========= Torch ============
+download.pytorch.org
+52.84.229.89
+52.84.229.13
+52.84.229.87
+52.84.229.68
+
 下载包
 https://download.pytorch.org/whl/cu118
 wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl

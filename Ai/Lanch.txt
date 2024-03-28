@@ -12,3 +12,8 @@ python launch.py --api --listen --device-id 0 --no-half-vae --opt-channelslast  
 node 
 PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512 \
 python launch.py --api --port 7866  --device-id 1 --no-half-vae --opt-channelslast   --xformers --medvram
+
+
+
+================= ModelScope  Swift ==============
+WEBUI_SERVER=10.3.68.2 WEBUI_PORT=8080 swift web-ui
