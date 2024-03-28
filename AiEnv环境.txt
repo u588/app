@@ -23,6 +23,16 @@ sudo apt-get update
 CUDA11 ==> sudo apt-get -y install cudnn-cuda-11
 CUDA12 ==> sudo apt-get -y install cudnn-cuda-12
 
+3、nccl 
+https://developer.download.nvidia.cn/compute/cuda/repos/ubuntu2204/x86_64/
+#配置网络存储库
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo apt-get update
+
+#安装特定版本
+sudo apt install libnccl2=2.15.5-1+cuda11.8 libnccl-dev=2.15.5-1+cuda11.8
+
 
 
 
@@ -41,7 +51,9 @@ wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310
 ============ Xformers ==============
 https://github.com/facebookresearch/xformers
 v0.0.23.post1 ==> PyTorch 2.1.2 
-
+源码安装
+pip install ninja
+pip install -v -U git+https://github.com/facebookresearch/xformers.git@main#egg=xformers
 
 ========== 编译安装 Llama ==========
 git clone https://github.com/ggerganov/llama.cpp
