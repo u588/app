@@ -16,4 +16,8 @@ python launch.py --api --port 7866  --device-id 1 --no-half-vae --opt-channelsla
 
 
 ================= ModelScope  Swift ==============
-WEBUI_SERVER=10.3.68.2 WEBUI_PORT=8080 swift web-ui
+WEBUI_SERVER=10.3.68.2 WEBUI_PORT=7860 swift web-ui
+
+
+================= LLaMA-Factory ================
+python ./src/train_web.py
