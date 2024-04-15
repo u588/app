@@ -1,5 +1,5 @@
 ============ Text-generation-webui ==============
-python server.py --listen --trust-remote-code --auto-devices --model-dir /srv/models/Language/Qwen/
+python server.py --listen --trust-remote-code --auto-devices --model-dir /Models/use --lora-dir /Models/use --api --character Assistant
 
 
 ================== stable diffusion webui ===========
