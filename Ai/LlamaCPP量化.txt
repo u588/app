@@ -10,8 +10,8 @@ cd build
 cmake .. -DLLAMA_CUDA=ON
 cmake --build . --config Release
 
-
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+=========  llama-cpp-python ==========
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
 
 
 
