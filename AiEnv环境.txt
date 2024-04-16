@@ -5,9 +5,13 @@
 
 
 =========  CUDA ============== 
+wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+wget https://developer.download.nvidia.com/compute/cuda/12.1.0/local_installers/cuda_12.1.0_530.30.02_linux.run
+
 1、 cuda
 GTX:/srv/CUDA
-sudo sh cuda_xxxxx.xx_linux.run
+sudo sh cuda_11.8.0_520.61.05_linux.run
+sudo sh cuda_12.1.0_530.30.02_linux.run
 
 vi ~/.bashrc
 export PATH=$PATH:/usr/local/cuda-11.8/bin
