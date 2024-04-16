@@ -14,9 +14,10 @@ export PATH=$PATH:/usr/local/cuda-11.8/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64
 
 2、cuDNN
+wget https://developer.download.nvidia.com/compute/cudnn/9.1.0/local_installers/cudnn-local-repo-ubuntu2204-9.1.0_1.0-1_amd64.deb
 下载包
 GTX:/srv/CUDA 
-sudo dpkg -i cudnn-9.0.0-11-12.deb
+sudo dpkg -i cudnn-9.1.0.deb
 sudo cp /var/cudnn-local-repo-ubuntu2204-9.0.0/cudnn-*-keyring.gpg /usr/share/keyrings/
 sudo apt-get update
 
