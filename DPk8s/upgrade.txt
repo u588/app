@@ -1,0 +1,20 @@
+https://kubernetes.io/zh-cn/releases/download/
+1、 下载 kubeadm 、 kubectl 、kubelet
+    ==> chmod 755 
+    ==> /user/bin
+
+ 2、 控制平面升级
+    kubeadm upgrade plan
+    kubeadm upgrade apply v1.XX.x
+
+    systemctl daemon-reload
+    systemctl  restart  kubelet.service
+
+    kubeadm upgrade node
+
+3、 node
+    kubelet ==> /user/bin
+    
+    systemctl daemon-reload
+    systemctl  restart  kubelet.service    
+
