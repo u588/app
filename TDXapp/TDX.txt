@@ -55,14 +55,19 @@ api.to_df(api.get_company_info_content(0, '000001', '000001.txt', 877195, 49773)
 
 1、获取历史专业财务数据列表
 
+import pandas as pd
+from pytdx.hq import TdxHq_API
+api = TdxHq_API()
+api.connect('119.147.212.81', 7709)
 from pytdx.crawler.history_financial_crawler import HistoryFinancialListCrawler
 crawler = HistoryFinancialListCrawler()
 list_data = crawler.fetch_and_parse()
 print(pd.DataFrame(data=list_data))
 
-2023.11.20  --> gpcw20230930.zip 4929989
-2023.12.11  --> gpcw20230930.zip 4939105
-gpcw19971231.zip 1231 0930 0630 0331
+
+2024.5.12  --> gpcw20240331.zip 4786722
+gpcw2024.zip 1231 0930 0630 0331
+==> /home/ts/app/DP_code/Scrap/TDX/MtdxGetFS.py
 
 from pytdx.crawler.base_crawler import demo_reporthook
 from pytdx.crawler.history_financial_crawler import HistoryFinancialCrawler

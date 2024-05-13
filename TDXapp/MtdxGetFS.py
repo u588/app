@@ -25,9 +25,13 @@ print(pd.DataFrame(data=list_data))
 
 2024.2.21 5218
 2024.3.25 346077
+2024.5.12  --> gpcw20240331.zip 4786722
+
+gpcw2024.zip 1231 0930 0630 0331
+
 '''
 
-ls = ['gpcw20231231.zip']
+ls = ['gpcw20240330.zip']
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 
