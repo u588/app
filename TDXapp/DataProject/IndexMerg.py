@@ -5,31 +5,32 @@ from sqlalchemy import create_engine
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxIndex')
 
 
-tdx88 = pd.read_excel('G:/Gitee/App/Data/2023TdxCs/csIndex2023.xlsx', dtype={'IndexCode':object})
-tdxRaw = pd.read_excel('G:/Gitee/App/Data/20230617/TDXIndexsOK2023.xlsx', dtype={'IndexCode':object})
+blk = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsBLK.xlsx', dtype={'IndexCode':object})
+zz = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxZZindexs.xlsx', dtype={'IndexCode':object})
+cs = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx', dtype={'IndexCode':object})
+sh = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSHIndexs.xlsx', dtype={'IndexCode':object})
+sz = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSZIndexs.xlsx', dtype={'IndexCode':object})
 
-tdxB = pd.read_excel('G:/Gitee/App/Data/2023TdxCs/tdxBolckIndexs2023.xlsx', dtype={'IndexCode':object, })
+zz.drop_duplicates(subset='IndexCode',inplace=True)
+m3 = pd.concat([sh, sz])
+m3.reset_index(drop=True, inplace=True)
 
+blkm = pd.merge(blk,m3, on=['IndexCode','IndexName'],how='inner')
+blkm.reset_index(drop=True, inplace=True)
+zzm = pd.merge(cs,zz, on='IndexCode',how='inner')
+zzm.reset_index(drop=True, inplace=True)
 
-tdxsz = pd.read_excel('G:/Gitee/App/Data/TDXdata/New/szIndexs.xlsx', dtype={'IndexCode':object})
-cs = pd.read_excel('G:/Gitee/App/Data/CSdata/csIndex2023.xlsx', dtype={'IndexCode':object})
-tdx = pd.read_excel('G:/Gitee/App/tdxAppData/FinalIndexs621.xlsx', dtype={'IndexCode':object})
-tdx88 = pd.read_excel('G:/Gitee/App/tdxAppData/tdxGuiIndex.xlsx', dtype={'IndexCode':object})
+zm = pd.merge(m3,zzm[['IndexCode','IndexSTL','Num','From']],on=['IndexCode'],how='inner')
+finz = pd.concat([zzm,zm])
+finz.sort_values(by=['IndexCode','MarketCode'],inplace=True)
+finz.drop_duplicates(subset='IndexCode',inplace=True)
+finz.reset_index(drop=True, inplace=True)
 
-tdx.drop_duplicates(subset='IndexCode', keep='first', inplace=True)
+finm = pd.concat([blkm,finz])
+finm.sort_values(by=['IndexCode','MarketCode'],inplace=True)
+finm.drop_duplicates(subset='IndexCode',inplace=True)
+finm.reset_index(drop=True, inplace=True)
 
-m1 = pd.merge(tdx, tdx88, on='IndexCode', how='outer')
-m1['Num'] = m1.Num_x.fillna(m1.Num_y)
-m1['IndexSTL'] = m1.IndexSTL_x.fillna(m1.IndexSTL_y)
-m1['From'] = m1.From_x.fillna(m1.From_y)
-m1[''] = m1.Num_x.fillna(m1.Num_y)
+finm.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/IndexM.xlsx')
 
-
-m1.set_index('IndexCode').to_excel('g:/gitee/App/tdxAppData/mergIndex.xlsx')
-m1.to_excel('g:/gitee/20230617/810merged.xlsx')
-
-# tdx.set_index('IndexCode').to_sql('tdxIndexs', eng, if_exists='replace')
-
-#NaN值处理
-
-tdx['Num'] = tdx.Num_x.fillna(tdx.Num_y)
+print('=========> Merged ! ')

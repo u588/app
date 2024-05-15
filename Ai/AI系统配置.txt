@@ -1,0 +1,7 @@
+以下配置，硬件为最小要求，系统及软件为指定版本。
+所有服务器兼容（Intel x86_64双路CPU），系统ubuntu22.04.4 LTS服务器版最新更新。Python3.11环境。
+1、数据库服务器1台：16G内存、 数据库存储可用硬盘空间500G，数据库postgresql 16.2版+pgvector插件 开启远程数据访问
+
+2、大模型服务器1台：64G内存，GPU 显存20G，GPU 计算能力（Compute Capability）8.0 ，固态硬盘500G，机械硬盘可用空间1T 。CUDA 12.1 ,cuDNN 9.1.1 , pytorch 2.1.2 ,torchvision 0.16.2 torchaudio 2.1.2 
+
+3、知识库服务器1台：32G内存，GPU 显存16G，GPU 计算能力（Compute Capability）8.0 ，固态硬盘500G，机械硬盘可用空间1T 。CUDA 12.1 ,cuDNN 9.1.1 , pytorch 2.1.2 ,torchvision 0.16.2 torchaudio 2.1.2 
