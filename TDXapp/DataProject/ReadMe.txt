@@ -32,5 +32,6 @@ shm.tnf  szm.tnf
 4、tdx上证、深证指数列表生成 运行 python G:\Gitee\App\TDXapp\DataProject\tdxSHSZIndex.py
 
 5、生成指数列表 运行 python G:\Gitee\App\TDXapp\DataProject\IndexMerg.py
-6、编辑 G:/Gitee/App/TDXapp/tdxAppData/indexM.xlsx 文件 生成所需指数列表 ==> final.xlsx
-
+6、生成最终指数列表  更新数据库 ==> python G:\Gitee\App\TDXapp\DataProject\Finalndex.py
+7、获取cs成分股列表 python G:\Gitee\App\TDXapp\pgTDXCons.py
+8、生成股票成分股 更新数据库  python G:\Gitee\App\TDXapp\MergeCsTdxCons.py
