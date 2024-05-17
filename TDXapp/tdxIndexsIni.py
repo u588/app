@@ -73,9 +73,9 @@ with api.connect('110.41.147.114', 7709):
                     pass
                 else:
                     IndexData = pd.concat([IndexData.astype(df.dtypes),df])
-                    IndexData.dropna(thresh=6, inplace=True)
-                    IndexData.set_index('datetime', inplace=True)
-                    IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
             print(IndexCode,'saved to sql !')
 
         except:
@@ -95,9 +95,9 @@ with api.connect('110.41.147.114', 7709):
                     pass
                 else:
                     IndexData = pd.concat([IndexData.astype(df.dtypes),df])
-                    IndexData.dropna(thresh=6, inplace=True)
-                    IndexData.set_index('datetime', inplace=True)
-                    IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
             print(IndexCode,'saved to sql !')
 
         except:
@@ -119,9 +119,9 @@ with eapi.connect('182.175.240.157', 7727):
                     pass
                 else:
                     IndexData = pd.concat([IndexData.astype(df.dtypes),df])
-                    IndexData.dropna(thresh=6, inplace=True)
-                    IndexData.set_index('datetime', inplace=True)
-                    IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
             print(IndexCode,'saved to sql !')
 
         except:
