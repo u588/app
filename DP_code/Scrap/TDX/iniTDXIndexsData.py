@@ -18,10 +18,10 @@ D = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astyp
 
 while i < n :
     try:
-        Data = pd.read_sql(IndexLists.loc[i][0], eng)
+        Data = pd.read_sql(IndexLists.loc[i]['IndexCode'], eng)
         d  = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
-        d['IndexCode'] = [IndexLists.loc[i][0]]
-        d['IndexName'] = [IndexLists.loc[i][1]]
+        d['IndexCode'] = [IndexLists.loc[i]['IndexCode']]
+        d['IndexName'] = [IndexLists.loc[i]['IndexName']]
 
         d['3D'] = [(Data.close.pct_change(1)*100).tail(3).sum().round(2)]
         d['5D'] = [(Data.close.pct_change(1)*100).tail(5).sum().round(2)]
