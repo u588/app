@@ -29,7 +29,7 @@ while i < n :
         d['55D'] = [(Data.close.pct_change(1)*100).tail(55).sum().round(2)]       
 
         D = pd.concat([D,d])
-        print(IndexLists.loc[i][0] + ' Concated !')
+        print(IndexLists.loc[i]['IndexCode'] + ' Concated !')
         i = i + 1
 
     except:
