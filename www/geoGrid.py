@@ -230,11 +230,11 @@ def colBar():
 def geoo():
     grid = (
         Grid()
-        # .add(bar_datazoom_slider(), grid_opts=opts.GridOpts(pos_top="0%", pos_left="50%"))
+        # .add(bar_datazoom_slider(), grid_opts=opts.GridOpts(pos_left="4%", pos_right="2%", pos_top="0%",height="12%"))
         # .add(line_markpoint(), grid_opts=opts.GridOpts(pos_top='0%',pos_left="50%"))
-        .add(pie_rosetype(),grid_opts=opts.GridOpts(pos_top='20',pos_right="50%"))
-        # .add(grid_mutil_yaxis(),grid_opts=opts.GridOpts(pos_left="60%"))
-        # .add(liquid_data_precision(), grid_opts=opts.GridOpts(pos_left="60%"))
+        # .add(pie_rosetype(),grid_opts=opts.GridOpts(pos_top='20',pos_right="50%"))
+        .add(grid_mutil_yaxis(),grid_opts=opts.GridOpts(pos_left="0%",pos_right="50%"))
+        # .add(liquid_data_precision(), grid_opts=opts.GridOpts(pos_left="4%", pos_right="2%", pos_top="50%",height="10%"))
         # .add(table_base(), grid_opts=opts.GridOpts(pos_left="60%"))
         # .render("grid_geo_bar.html")
     )
