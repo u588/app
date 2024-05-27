@@ -1,29 +1,53 @@
-from random import randrange
-from flask import Flask, render_template
-from jinja2 import Markup
-from pyecharts import options as opts
-from pyecharts.charts import Bar
+import streamlit as st
+from streamlit_option_menu import option_menu
+from apps import home, heatmap, upload  # import your app modules here
 
 
-import Kpro
+st.set_page_config(page_title="我的APP", layout="wide")
 
-app = Flask(__name__, 
-                        static_url_path='/',
-                        static_folder='static',
-                        template_folder='templates')
+# A dictionary of apps in the format of {"App title": "App icon"}
+# More icons can be found here: https://icons.getbootstrap.com
 
+apps = [
+    {"func": home.app, "title": "Home", "icon": "house"},
+    {"func": heatmap.app, "title": "D3Plot", "icon": "map"},
+    {"func": upload.app, "title": "Upload", "icon": "cloud-upload"},
+]
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+titles = [app["title"] for app in apps]
+titles_lower = [title.lower() for title in titles]
+icons = [app["icon"] for app in apps]
 
+# params = st.experimental_get_query_params()
+params = st.session_state
 
-@app.route("/gridChart")
-def get_grid_chart():
-    c = Kpro.Kchart('603535')
-    return c.dump_options_with_quotes()
-    
+if "page" in params:
+    default_index = int(titles_lower.index(params["page"][0].lower()))
+else:
+    default_index = 0
 
+with st.sidebar:
+    selected = option_menu(
+        "Main Menu",
+        options=titles,
+        icons=icons,
+        menu_icon="cast",
+        default_index=default_index,
+    )
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    st.sidebar.title("About")
+    st.sidebar.info(
+        """
+        This web [app](https://share.streamlit.io/giswqs/streamlit-template) is maintained by [Qiusheng Wu](https://wetlands.io). You can follow me on social media:
+            [GitHub](https://github.com/giswqs) | [Twitter](https://twitter.com/giswqs) | [YouTube](https://www.youtube.com/c/QiushengWu) | [LinkedIn](https://www.linkedin.com/in/qiushengwu).
+        
+        Source code: <https://github.com/giswqs/streamlit-template>
+
+        More menu icons: <https://icons.getbootstrap.com>
+    """
+    )
+
+for app in apps:
+    if app["title"] == selected:
+        app["func"]()
+        break
