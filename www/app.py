@@ -1,53 +1,73 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from apps import home, heatmap, upload  # import your app modules here
+from apps import cycAna, recom, trend,qInfo
 
 
-st.set_page_config(page_title="我的APP", layout="wide")
+st.set_page_config(
+    page_title="分析",
+    layout="wide"
+)
 
-# A dictionary of apps in the format of {"App title": "App icon"}
-# More icons can be found here: https://icons.getbootstrap.com
+USER = 'root'
+PASSWD = '11111111'
 
-apps = [
-    {"func": home.app, "title": "Home", "icon": "house"},
-    {"func": heatmap.app, "title": "D3Plot", "icon": "map"},
-    {"func": upload.app, "title": "Upload", "icon": "cloud-upload"},
-]
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
 
-titles = [app["title"] for app in apps]
-titles_lower = [title.lower() for title in titles]
-icons = [app["icon"] for app in apps]
 
-# params = st.experimental_get_query_params()
-params = st.session_state
 
-if "page" in params:
-    default_index = int(titles_lower.index(params["page"][0].lower()))
-else:
-    default_index = 0
+def login_page():
+    with st.form('login_from'):
+        # st.title('登录')
+        username = st.text_input('用户名',value='')
+        password = st.text_input('密码', value='' ,type='password')
+        submit = st.form_submit_button('登录')
 
-with st.sidebar:
-    selected = option_menu(
-        "Main Menu",
-        options=titles,
-        icons=icons,
-        menu_icon="cast",
-        default_index=default_index,
-    )
+    if submit:
+        if username == USER and password == PASSWD:
+            st.success("登录成功！")
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error("用户名或密码错误，请重新输入。")
 
-    st.sidebar.title("About")
-    st.sidebar.info(
-        """
-        This web [app](https://share.streamlit.io/giswqs/streamlit-template) is maintained by [Qiusheng Wu](https://wetlands.io). You can follow me on social media:
-            [GitHub](https://github.com/giswqs) | [Twitter](https://twitter.com/giswqs) | [YouTube](https://www.youtube.com/c/QiushengWu) | [LinkedIn](https://www.linkedin.com/in/qiushengwu).
-        
-        Source code: <https://github.com/giswqs/streamlit-template>
 
-        More menu icons: <https://icons.getbootstrap.com>
-    """
-    )
+if __name__ == "__main__":
+    
+    if st.session_state.logged_in:
+        apps = [
+            {"func": cycAna.app, "title": "周期分析", "icon": "house"},
+            {"func": recom.app, "title": "推  荐", "icon": "map"},
+            {"func": trend.app, "title": "趋  势", "icon": "cloud-upload"},
+            {"func": qInfo.app, "title": "查  询", "icon": "cloud-upload"},
+        ]
 
-for app in apps:
-    if app["title"] == selected:
-        app["func"]()
-        break
+        titles = [app["title"] for app in apps]
+        titles_lower = [title.lower() for title in titles]
+        icons = [app["icon"] for app in apps]
+
+        params = st.session_state
+
+        if "page" in params:
+            default_index = int(titles_lower.index(params["page"][0].lower()))
+        else:
+            default_index = 0
+
+        with st.sidebar:
+            selected = option_menu(
+                "分析",
+                options=titles,
+                icons=icons,
+                menu_icon="cast",
+                default_index=default_index,
+            )
+
+        for app in apps:
+            if app["title"] == selected:
+                app["func"]()
+                break
+    else:
+        col1 ,col2,col3= st.columns(3)
+        with col2:
+            st.markdown('<center><h2>  登 录 </h2></center>', unsafe_allow_html=True)
+            login_page()
