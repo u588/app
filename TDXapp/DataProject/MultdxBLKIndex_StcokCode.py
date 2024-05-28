@@ -42,12 +42,12 @@ if __name__ == '__main__':
     MultiGetIndexCons(5,data)
     
     dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
-    .set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsConsBLK.xlsx')
+    .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/Data/2024TdxCs/tdxIndexsConsBLK.xlsx')
 
     dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
     dfs['Num'] = dfi.groupby('IndexCode').count()['IndexName'].reset_index(drop=True)
     dfs['From'] = 'TDXBLK'
-    dfs.set_index('IndexCode').to_excel('G:/Gitee/App/Data/2023TdxCs/tdxIndexsBLK.xlsx')
+    dfs.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/Data/2024TdxCs/tdxIndexsBLK.xlsx')
      
 
     print('Index NormDescri finshed !')

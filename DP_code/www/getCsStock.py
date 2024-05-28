@@ -17,18 +17,15 @@ def getStock(Code,ID):
         try:
             DD = pd.read_sql(Stock, engT)
             dd =  pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
-
-
             dd['code'] = [Stock] 
             dd['PCB'] = [(DD.close.pct_change(1)*100).tail(n).sum().round(2)]
             dd.reset_index(drop=True, inplace =True)
-
             # d = d.append(dd[['code','PCB']])
             d = pd.concat([d, dd[['code','PCB']]])
         except:
             pass
-
     d.sort_values(by='PCB', ascending=0, inplace=True)
-    data = d.to_json(orient='records')
+    dd = pd.concat([d.head(10), d.tail(5)]).drop_duplicates(subset='code')
+    data = dd.to_json(orient='records')
     engT.dispose()
     return data

@@ -33,16 +33,17 @@ for i in data:
     dfi = pd.concat([dfi, df])
 
 dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
-    .set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsConsBLK.xlsx')
+    .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsConsBLK.xlsx')
 
 dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
 n = 0
 while n < dfs.shape[0]:
     dfs.loc[[n],['Num']] = len(dfi.groupby('IndexCode').groups[dfs.loc[n][0]])
     n = n + 1
-    print(str(n) + '  ok !')
+    # print(str(n) + '  ok !')
 
 
 # dfs['Num'] = dfi.groupby('IndexCode').count()['IndexName'].reset_index(drop=True)
 dfs['From'] = 'TDXBLK'
-dfs.set_index('IndexCode').to_excel('G:/Gitee/App/tdxAppData/tdxIndexsBLK.xlsx')
+dfs.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsBLK.xlsx')
+print('Saved  ok !')

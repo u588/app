@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: kubernetes-dashboard
+  name: kuberboard-operator-secret
+  annotations:
+    kubernetes.io/service-account.name: "kuberboard-operator-secret"
+type: kubernetes.io/service-account-token
+

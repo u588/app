@@ -23,4 +23,4 @@ q.drop(0, inplace=True)
 q.dropna(inplace=True)
 q.columns = ['StockCode', 'StockName']
 
-q.set_index('StockCode').to_excel('G:/Gitee/App/TDXapp/Data/2023TdxCs/StockCodeApp.xlsx')
+q.set_index('StockCode').to_excel('G:/Gitee/App/TDXapp/Data/2024TdxCs/StockCodeApp.xlsx')

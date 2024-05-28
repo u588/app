@@ -11,17 +11,17 @@ while is_holiday(datetime.date.today()):
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 Data = pd.read_sql('tdxIndexs', eng)
-IndexLists = Data.loc[~(Data.IndexSTL=='市场总览')].reset_index(drop=True)
+IndexLists = Data.loc[~(Data['From']=='EMP')].reset_index(drop=True)
 n = IndexLists.shape[0]
 i = 0
 D = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
 
 while i < n :
     try:
-        Data = pd.read_sql(IndexLists.loc[i][0], eng)
+        Data = pd.read_sql(IndexLists.loc[i]['IndexCode'], eng)
         d  = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
-        d['IndexCode'] = [IndexLists.loc[i][0]]
-        d['IndexName'] = [IndexLists.loc[i][1]]
+        d['IndexCode'] = [IndexLists.loc[i]['IndexCode']]
+        d['IndexName'] = [IndexLists.loc[i]['IndexName']]
 
         d['3D'] = [(Data.close.pct_change(1)*100).tail(3).sum().round(2)]
         d['5D'] = [(Data.close.pct_change(1)*100).tail(5).sum().round(2)]
@@ -29,7 +29,7 @@ while i < n :
         d['55D'] = [(Data.close.pct_change(1)*100).tail(55).sum().round(2)]       
 
         D = pd.concat([D,d])
-        print(IndexLists.loc[i][0] + ' Concated !')
+        print(IndexLists.loc[i]['IndexCode'] + ' Concated !')
         i = i + 1
 
     except:
