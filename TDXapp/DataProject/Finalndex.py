@@ -7,6 +7,6 @@ f= pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/indexM.xlsx', dtype={'IndexCode
 d= pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/dropIndexs.xlsx', dtype={'IndexCode':object})
 d.From='EMP'
 ff = pd.concat([d,f]).drop_duplicates(subset='IndexCode')
-ff.set_index('IndexName').to_sql('tdxIndexs',eng, if_exists = 'replace')
+ff.set_index('IndexCode').to_sql('tdxIndexs',eng, if_exists = 'replace')
 
 print('Saved ! ')
