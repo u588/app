@@ -23,18 +23,18 @@ def app():
             stockCode = getCsStock.getStock(indexCodeSel,cycCode)
             stockCodeSel = st.selectbox(
                 '股票选项',
-                (stockCode['code'])
+                (stockCode['code']+' : '+stockCode['StockName'])
         )
             submitted1 = st.form_submit_button('确认')
     if submitted1:
         tab1,tab2 = st.tabs(['Kpro','D3plt'])
         with tab1:
             # st.header('Kpro')         
-            st_pyecharts(Kpro.Kchart(stockCodeSel),height='750px')
+            st_pyecharts(Kpro.Kchart(stockCodeSel[:6]),height='750px')
             st.header('财务分析')
-            st_pyecharts(detailChart.line(stockCodeSel))
+            st_pyecharts(detailChart.line(stockCodeSel[:6]))
         with tab2:
             # st.header('D3plt')
-            st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
+            st.bokeh_chart(d3plt.d3(stockCodeSel[:6]),use_container_width=True)
 
             
