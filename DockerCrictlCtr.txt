@@ -1,3 +1,8 @@
+====== Docker login ========
+u588 ==> syslog6^^
+
+
+
 ========== Docker 制作 =========
 docker run --name tdx-uwsgi 10.3.18.60/docker/tdx-uwsgi:v1
 docker ps -a
