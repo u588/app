@@ -1,0 +1,5 @@
+https://zhuanlan.zhihu.com/p/699970019
+
+1、修改 Modelfile
+2、在Ollama里创建模型
+    ollama create minicpm-v2.5 -f examples/minicpm-v2.5/Modelfile

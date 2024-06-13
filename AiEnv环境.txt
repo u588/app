@@ -3,7 +3,7 @@
 官方 ==> Pascal(1080,P4 6.0算力)显卡推荐配置 cuDNN 9.0.0 CUDA11.8  
         Volta(2080,7.0算力)   cuDNN 9.0.0 CUDA12.3
 
-
+一、系统环境：
 =========  CUDA ============== 
 wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
 wget https://developer.download.nvidia.com/compute/cuda/12.1.0/local_installers/cuda_12.1.0_530.30.02_linux.run
@@ -40,8 +40,10 @@ sudo apt install libnccl2=2.15.5-1+cuda11.8 libnccl-dev=2.15.5-1+cuda11.8
 
 
 
+二、python环境：
+软件包==> GTX : /srv/nfs4/CUDA   P4: /srv/CUDA  
 
-========= Torch ============
+1、========= Torch ============
 download.pytorch.org
 52.84.229.89
 52.84.229.13
@@ -53,14 +55,14 @@ https://download.pytorch.org/whl/cu118
 wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl
 
 
-============ Xformers ==============
+2、============ Xformers ==============
 https://github.com/facebookresearch/xformers
 v0.0.23.post1 ==> PyTorch 2.1.2 
 源码安装
 pip install ninja
 pip install -v -U git+https://github.com/facebookresearch/xformers.git@main#egg=xformers
 
-========== 编译安装 Llama ==========
+3、========== 编译安装 Llama ==========
 git clone https://github.com/ggerganov/llama.cpp
 
 CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
