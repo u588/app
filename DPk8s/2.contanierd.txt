@@ -96,7 +96,7 @@ containerd config default > /etc/containerd/config.toml
 --------------- chenge ----------------
 mkdir -p /etc/containerd/certs.d
 sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.toml
-sed -i 's#registry.k8s.io/pause:3.6#registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9#g' /etc/containerd/config.toml
+sed -i 's#registry.k8s.io/pause:3.8#registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9#g' /etc/containerd/config.toml
 sed -i 's#config_path = ""#config_path = "/etc/containerd/certs.d/"#g' /etc/containerd/config.toml
 
 #启动

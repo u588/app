@@ -21,6 +21,7 @@ kubeadm init \
 --cri-socket=unix:///var/run/containerd/containerd.sock \
 --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers
 
+export KUBECONFIG=/etc/kubernetes/admin.conf
 mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
@@ -31,6 +32,8 @@ mkdir -p $HOME/.kube
 
 
 ---------------- 有问题 ---------------
+
+
 需要  rm -rf /etc/containerd/config.toml 
 
 
@@ -38,12 +41,12 @@ https://blog.csdn.net/hedao0515/article/details/130665761
 master ini  /etc/kubernetes/pki (sa.*| ca.* | front-proxy-ca* | admin.conf | ./etcd/ca.*) copyto master join
 modprobe br_netfilter
 masters:
-kubeadm join 10.3.18.90:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
-        --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436 \
+kubeadm join 10.3.18.99:6443 --token uhgz6n.yv9lkpx6wnkeh0ym \
+        --discovery-token-ca-cert-hash sha256:bec24ebd9f6c934a6560f48fa9d95af407571982380607229f91244d556305cb \
         --control-plane
 nodes:
-kubeadm join 10.3.18.99:6443 --token 7ip82x.jxkrdnq2k7i0e0o2 \
-        --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436
+kubeadm join 10.3.18.99:6443 --token uhgz6n.yv9lkpx6wnkeh0ym \
+        --discovery-token-ca-cert-hash sha256:bec24ebd9f6c934a6560f48fa9d95af407571982380607229f91244d556305cb
 
 
 ================ token 过期后加入集群 (24小时过期)======================
@@ -61,3 +64,62 @@ kubeadm join 10.3.18.99:6443 --token i9cyya.o0ok8a32eax1rnlf \
 --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436 \
 --control-plane \
 --certificate-key xxxxx
+
+
+================== 证书过期处理 ====================
+https://zhuanlan.zhihu.com/p/682722322
+
+一、原生 kubeadm 部署的集群
+1、查看证书状态
+  kubeadm certs check-expiration
+  openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -text |grep 'Not'
+
+2、备份证书
+  cp -rp /etc/kubernetes /etc/kubernetes.bak
+
+3、生成新证书
+  kubeadm certs renew all
+
+4、查看证书有效期
+  openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -text |grep 'Not'
+
+5、更新用户证书凭证
+  cp /etc/kubernetes/admin.conf ~/.kube/config
+
+6、重启 kubelet
+  systemctl restart kubelet
+
+7、重启apiserver，scheduler，controller-manager 容器 
+  docker ps | grep apiserver
+  docker ps | grep scheduler
+  docker ps | grep controller-manager
+  docker restart containerID
+
+8、检测状态，成功
+  systemctl status kubelet
+
+
+# 重启 kube-apiserver
+crictl pods --name=kube-apiserver* -q | xargs -I% --no-run-if-empty bash -c 'crictl stopp % && crictl rmp %'
+  
+# 重启 kube-controller-manager
+crictl pods --name=kube-controller-manager* -q | xargs -I% --no-run-if-empty bash -c 'crictl stopp % && crictl rmp %'
+  
+# 重启 kube-scheduler
+crictl pods --name=kube-scheduler* -q | xargs -I% --no-run-if-empty bash -c 'crictl stopp % && crictl rmp %'
+ 
+# 同时重启 kube-apiserver / kube-controller-manager / kube-scheduler
+crictl pods --namespace kube-system --name 'kube-scheduler-*|kube-controller-manager-*|kube-apiserver-*|etcd-*' -q | xargs crictl rmp -f
+
+
+
+========== 已过期 =================
+## 以下操作须在所有 master 节点上执行
+# 1. 移除 apiserver 证书 (/etc/kubernetes 目录下操作)
+mv pki/apiserver.crt  apiserver.crt-bak
+mv pki/apiserver.key  apiserver.key-bak
+
+# 2. 重新生成
+kubeadm init phase certs apiserver --config kubeadm-config.yaml
+ 
+# 3. 重启 kube-apiserver

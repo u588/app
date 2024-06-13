@@ -2,5 +2,8 @@
     "python.pythonPath": "/usr/bin/python3.9",
     "yaml.schemas": {
         "kubernetes://schema/v1%40pod": "file:///home/ts/app/k8sPloyTest/blockVolume.yaml"
-    }
+    },
+    "CodeGPT.apiKey": "Custom",
+    "CodeGPT.Autocomplete.provider": "Ollama - codellama:code",
+    "CodeGPT.Autocomplete.enabled": true
 }
