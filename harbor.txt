@@ -59,14 +59,14 @@ systemctl restart docker
 
 ------------------- install --------------------
 tar zxvf harbor-offline-installer-v2.8.1.tgz
-cp harbor.yml.tmpl  harbor.yml
 cd ./harbor
+cp harbor.yml.tmpl  harbor.yml 并编辑
 
-./install.sh 
+解压后目录 ==> /opt/harbor
+
 --with-trivy：启用Trivy镜像漏洞扫描插件；
---with-chartmuseum：启用Helm Chart组件；
---with-notary : 如果启用安全加密端口https可添加该参数
-./install.sh --with-trivy  --with-chartmuseum
+
+./install.sh --with-trivy  
 
 ================== 配置harbor开机自启动 ===================
 cat >/etc/systemd/system/harbor.service<<EOF
@@ -87,9 +87,6 @@ EOF
  
 systemctl enable harbor
 
-
-#重启docker
-systemctl restart docker
 #停止Harbor
 docker-compose down -v
 #重启启动Harbor
@@ -97,11 +94,12 @@ docker-compose up -d
 
 ================ 重新配置Harbor ============
 卸载步骤
+docker-compose down -v
+
 docker rm -f $(docker ps -aq)
 bash ./prepare
-docker-compose down -v
-./install.sh --with-trivy  (--with-chartmuseum)
-docker-compose up -d
+
+
 
 
 
