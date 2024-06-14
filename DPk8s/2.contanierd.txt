@@ -123,6 +123,15 @@ server = "https://docker.io"
 EOF
 [host."http://hub-mirror.c.163.com"]
 
+mkdir -p /etc/containerd/certs.d/registry.k8s.io
+cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml <<EOF
+server = "registry.k8s.io"
+[host."https://k8s.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+  skip_verify = true
+EOF
+
+
 
 
 -------- Setup Default Mirror for All Registries ------------
@@ -135,6 +144,10 @@ server = "https://mirrors.tsdc.io"
 capabilities = ["pull", "resolve","push"]
 ca = ["ca.crt"]
 EOF
+
+
+
+
 
 mkdir -p /etc/containerd/certs.d/10.3.18.60/
 scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /etc/containerd/certs.d/10.3.18.60

@@ -1,0 +1,36 @@
+1、安装nfs驱动
+git clone https://github.com/kubernetes-csi/csi-driver-nfs.git
+cd csi-driver-nfs
+./deploy/install-driver.sh v4.7.0 local
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: example-nfs
+provisioner: example.com/external-nfs
+parameters:
+  server: 10.145.254.55
+  path: /home/nfsroot/pv
+  readOnly: "false"
+
+
+
+ cat > /home/ts/nfs-csi.yaml <<EOF
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: nfs-csi
+    annotations:
+        storageclass.kubernetes.io/is-default-class: "true"
+  provisioner: nfs.csi.k8s.io
+  parameters:
+    server: 10.145.254.55
+    share: /home/nfsroot/pv
+    # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+    # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+    # csi.storage.k8s.io/provisioner-secret-namespace: "default"
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  mountOptions:
+    - nfsvers=4.1
+EOF
