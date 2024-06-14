@@ -117,11 +117,13 @@ update-ca-certificates
 mkdir -p /etc/containerd/certs.d/docker.io
 cat > /etc/containerd/certs.d/docker.io/hosts.toml <<EOF
 server = "https://docker.io"
-[host."http://hub-mirror.c.163.com"]
 [host."http://docker.m.daocloud.io"]
   capabilities = ["pull"]
   skip_verify = true
 EOF
+[host."http://hub-mirror.c.163.com"]
+
+
 
 -------- Setup Default Mirror for All Registries ------------
 
