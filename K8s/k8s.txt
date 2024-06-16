@@ -95,7 +95,7 @@ systemctl enable containerd.service
 master server初始化 (node不需要走init)
 
 kubeadm init \
---control-plane-endpoint=k8s-master-66 \
+--control-plane-endpoint=10.3.18.66 \
 --apiserver-advertise-address=10.3.18.66    \
 --apiserver-bind-port 6443 \
 --service-cidr=10.88.0.0/16     \
@@ -109,8 +109,8 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 
 ============ 加入集群 ========
 
-kubeadm join k8s-master-66:6443 --token fcf22m.hs379pa84f69v5yi \
-        --discovery-token-ca-cert-hash sha256:88c545a706087321e0e4f6a3e1f409e743d886b4a7d8551053001f3a0c1da04a
+kubeadm join k8s-master-66:6443 --token ilp4fx.3zju84hhnt643k3g \
+        --discovery-token-ca-cert-hash sha256:1d38db1df6c3483af4030c2ace32850583a75fbf827495fa5a95e51e3eedbb47
 
 
   mkdir -p $HOME/.kube

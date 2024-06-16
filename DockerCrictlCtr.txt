@@ -60,3 +60,6 @@ tag  ctr -n k8s.io images tag new   源image
 grep 'name' file1 > file2
 # 或者
 cat file1 | grep 'name' > file2
+
+
+nerdctl

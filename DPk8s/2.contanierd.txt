@@ -99,9 +99,44 @@ sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.t
 sed -i 's#registry.k8s.io/pause:3.6#registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9#g' /etc/containerd/config.toml
 sed -i 's#config_path = ""#config_path = "/etc/containerd/certs.d/"#g' /etc/containerd/config.toml
 
+=========== container2.0 ====================
+containerd config default > /etc/containerd/config.toml
+
+sed -i 's#SystemdCgroup = false#SystemdCgroup = true#g' /etc/containerd/config.toml
+sed -i 's#registry.k8s.io/pause:3.10#registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.10#g' /etc/containerd/config.toml
+sed -i "s#config_path = ''#config_path = '/etc/containerd/certs.d/'#g" /etc/containerd/config.toml
 #启动
-systemctl enable --now  containerd
-systemctl status containerd
+
+
+=========== container mirror ===========
+https://bgithub.xyz/containerd/containerd/blob/main/docs/hosts.md
+
+mkdir -p /etc/containerd/certs.d/docker.io
+cat > /etc/containerd/certs.d/docker.io/hosts.toml <<EOF
+server = "https://docker.io"
+[host."https://docker.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+[host."https://registry.cn-shanghai.aliyuncs.com"]
+  capabilities = ["pull", "resolve"]
+[host."http://hub-mirror.c.163.com"]
+  capabilities = ["pull", "resolve"]
+EOF
+
+mkdir -p /etc/containerd/certs.d/registry.k8s.io
+cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml <<EOF
+server = "registry.k8s.io"
+[host."https://k8s.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+  skip_verify = true
+EOF
+
+# mkdir -p /etc/containerd/certs.d/_default
+# cat > /etc/containerd/certs.d/_default/hosts.toml <<EOF
+# server = "m.daocloud.io"
+# EOF
+
+
+
 
 #验证
 ctr version
@@ -117,11 +152,14 @@ update-ca-certificates
 mkdir -p /etc/containerd/certs.d/docker.io
 cat > /etc/containerd/certs.d/docker.io/hosts.toml <<EOF
 server = "https://docker.io"
-[host."http://docker.m.daocloud.io"]
-  capabilities = ["pull"]
-  skip_verify = true
-EOF
+[host."https://docker.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+[host."https://reg-mirror.qiniu.com"]
+  capabilities = ["pull", "resolve"]
 [host."http://hub-mirror.c.163.com"]
+  capabilities = ["pull", "resolve"]
+EOF
+
 
 mkdir -p /etc/containerd/certs.d/registry.k8s.io
 cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml <<EOF
@@ -182,22 +220,8 @@ image-endpoint: "unix:///var/run/containerd/containerd.sock"
 EOF
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+================ 手工拉去镜像 ==================
+ctr -n k8s.io --debug=true i pull --hosts-dir=/etc/containerd/certs.d
 
 
 
@@ -205,8 +229,6 @@ EOF
 
 =============== Containerd 管理工具 ========
 https://github.com/containerd/nerdctl/releases
-
-
 
 
 =========== 官网安装 ===========
@@ -275,14 +297,8 @@ runtime-endpoint: "unix:///var/run/containerd/containerd.sock"
 EOF
 image-endpoint: "unix:///var/run/containerd/containerd.sock"
 
-
-
-
 /var/lib/kubelet/kubeadm-flags.env
 KUBELET_KUBEADM_ARGS="--cgroup-driver=systemd --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock --pod-infra-container-image=registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.9"
-
-
-
 
 
 加k8s国内源 
