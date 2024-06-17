@@ -1,3 +1,15 @@
+=========== 基础环境 ===========
+1、apt-get install libpq-dev python3-dev openssh-client
+2、TA-Lib安装环境 源码安装0.4.0版后安装 Python版numpy==1.25.2 TA-Lib==0.4.24
+3、pip 系统国内源
+
+cat > /etc/pip.conf <<EOF
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple/
+[install]
+trusted-host = pypi.tuna.tsinghua.edu.cn
+    
+================================
 1、设置默认python
 #查看python3 的安装位置
 which python3  
