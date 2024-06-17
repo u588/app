@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
       - name: tdxscrape
-        image: 10.3.18.60/docker/tdx-strape:u3
+        image: 10.3.18.60/docker/tdx-straper:u3

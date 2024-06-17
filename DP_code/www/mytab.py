@@ -12,13 +12,13 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDail
 engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 
-hs300Data = pd.read_sql('hs300', eng)
-zz500Data = pd.read_sql('zz500', eng)
-sz50Data = pd.read_sql('sz50', eng)
+# hs300Data = pd.read_sql('hs300', eng)
+# zz500Data = pd.read_sql('zz500', eng)
+# sz50Data = pd.read_sql('sz50', eng)
 strongData = pd.read_sql_table('Strong',eng)
 weakData = pd.read_sql_table('weak',eng)
 wcData = pd.concat([strongData, weakData], ignore_index=True).sort_values(by=['date']).reset_index(drop=True)
-mkData = pd.read_sql('Market',eng)
+# mkData = pd.read_sql('Market',eng)
 csData = pd.read_sql('csYield', engTDX)
 # csData.rename(columns={'Index_code':'IndexCode','Index_name':'IndexName'}, inplace = True)
 tdxIndexsData = pd.read_sql('tdxIndexsData', engTDX)
