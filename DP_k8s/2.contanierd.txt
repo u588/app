@@ -149,7 +149,9 @@ update-ca-certificates
 配置containerd 不需重启 Containerd
 
 ------ default Host Config for Docker ----
+
 mkdir -p /etc/containerd/certs.d/docker.io
+
 cat > /etc/containerd/certs.d/docker.io/hosts.toml <<EOF
 server = "https://docker.io"
 [host."https://docker.m.daocloud.io"]
@@ -160,11 +162,24 @@ server = "https://docker.io"
   capabilities = ["pull", "resolve"]
 EOF
 
+-----------------
 
 mkdir -p /etc/containerd/certs.d/registry.k8s.io
+
 cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml <<EOF
 server = "registry.k8s.io"
 [host."https://k8s.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+  skip_verify = true
+EOF
+
+-------------------
+
+mkdir -p /etc/containerd/certs.d/ghcr.io
+
+cat > /etc/containerd/certs.d/ghcr.io/hosts.toml <<EOF
+server = "ghcr.io"
+[host."https://ghcr.m.daocloud.io"]
   capabilities = ["pull", "resolve"]
   skip_verify = true
 EOF
