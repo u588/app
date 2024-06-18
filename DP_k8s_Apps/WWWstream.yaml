@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wwwlim-deployment
+spec:
+  selector:
+    matchLabels:
+      app: wwwlim
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: wwwlim
+    spec:
+      containers:
+      - name: wwwlim
+        image: 10.3.18.60/docker/wstrearlim:v1
+        ports:
+          - containerPort: 8501
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: wwwlim-svc
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.18.1.8
+   selector:
+      app: wwwlim
+   ports:
+   - name: wwwlim-http
+     protocol: TCP
+     port: 80
+     targetPort: 8501
