@@ -15,10 +15,11 @@ spec:
       labels:
         app: open-webui
     spec:
-      volumes:
-        - name: volume-fhg88u
-          persistentVolumeClaim:
-            claimName: openwebui
+      # volumes:
+      #   - name: volume-fhg88u
+      #     persistentVolumeClaim:
+      #       claimName: openwebui
+
       containers:
         - name: container-kaxnqv
           image: '10.3.18.60/docker/open-webui:main'
@@ -28,17 +29,23 @@ spec:
               protocol: TCP
           env:
             - name: OLLAMA_BASE_URL
-              value: '10.3.68.3:11434'
+              value: 'http://10.3.68.3:11434'
             - name: WEBUI_SECRET_KEY
               value: test
             - name: HF_ENDPOINT
               value: 'https://hf-mirror.com'
           resources: {}
           volumeMounts:
-            - name: volume-fhg88u
+            - name: openwebui-data
               mountPath: /app/backend/data
-          imagePullPolicy: IfNotPresent
+          # imagePullPolicy: IfNotPresent
 
+      volumes:
+      - name: openwebui-data
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/openwebui
+          readOnly: false    
 ---
 apiVersion: v1
 kind: Service
@@ -48,7 +55,7 @@ metadata:
     app: open-webui
 spec:
   type: ClusterIP
-  clusterIP: 10.18.1.9
+  clusterIP: 10.18.1.6
   ports:
     - name: http-0
       protocol: TCP
@@ -58,13 +65,13 @@ spec:
     app: open-webui
 
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: openwebui
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: openwebui
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 10Gi
