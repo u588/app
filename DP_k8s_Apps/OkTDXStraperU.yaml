@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tdxscrape-deployment
+  name: tdxstrape-deployment
 spec:
   selector:
     matchLabels:
-      app: tdxscrape
+      app: tdxstrape
   replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
   template:
     metadata:
       labels:
-        app: tdxscrape
+        app: tdxstrape
     spec:
       containers:
-      - name: tdxscrape
+      - name: tdxstrape
         image: 10.3.18.60/docker/tdx-straper:u5
