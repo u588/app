@@ -55,7 +55,7 @@ metadata:
     app: open-webui
 spec:
   type: ClusterIP
-  clusterIP: 10.18.1.9
+  clusterIP: 10.18.1.6
   ports:
     - name: http-0
       protocol: TCP
