@@ -1,0 +1,1 @@
+docker build -t 10.3.18.60/docker/tdx-scrape:u1 -f ./Dockerfile .
