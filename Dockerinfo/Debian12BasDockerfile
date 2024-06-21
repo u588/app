@@ -1,0 +1,2 @@
+FROM 10.3.18.60/docker/debain12bas:v1
+CMD ["cron", "-f"]
