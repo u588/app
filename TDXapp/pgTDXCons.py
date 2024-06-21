@@ -9,11 +9,8 @@ header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/5
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
 
 
-#from < v2.0
-# eng.execute('DROP TABLE IF EXISTS "csIndexCons";')
-
-# from v2.0
-eng.connect().execute('DROP TABLE IF EXISTS "csIndexCons";')
+# sql = 'DROP TABLE IF EXISTS "csIndexCons";'
+eng.execute('DROP TABLE IF EXISTS "csIndexCons";')
 time.sleep(5)
 
 def getData(codeID):
