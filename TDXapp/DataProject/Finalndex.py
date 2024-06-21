@@ -9,4 +9,5 @@ d.From='EMP'
 ff = pd.concat([d,f]).drop_duplicates(subset='IndexCode')
 ff.set_index('IndexCode').to_sql('tdxIndexs',eng, if_exists = 'replace')
 
+ff.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexs.xlsx')
 print('Saved ! ')
