@@ -35,3 +35,30 @@ shm.tnf  szm.tnf
 6、生成最终指数列表  更新数据库 ==>    python G:\Gitee\App\TDXapp\DataProject\Finalndex.py
 7、获取cs成分股列表 ==>               python G:\Gitee\App\TDXapp\pgTDXCons.py
 8、生成股票成分股 更新数据库==>        python G:\Gitee\App\TDXapp\MergeCsTdxCons.py
+
+
+
+============================ tdx 历史专业财务数据 1231 0930 0630 0331  =====================
+
+1、获取历史专业财务数据列表
+
+import pandas as pd
+from pytdx.hq import TdxHq_API
+from pytdx.crawler.history_financial_crawler import HistoryFinancialListCrawler
+
+api = TdxHq_API()
+api.connect('119.147.212.81', 7709)
+
+crawler = HistoryFinancialListCrawler()
+list_data = crawler.fetch_and_parse()
+print(pd.DataFrame(data=list_data))
+
+2024.5.12  --> gpcw20240331.zip 4786722
+2024.6.21  --> gpcw20240331.zip 4788337
+
+2、手动更新数据库数据 
+    更改以下程序中 ls = ["gpcwxxxxxxx.zip"]
+python G:\Gitee\App\TDXapp\MtdxGetFS.py
+
+
+
