@@ -24,8 +24,8 @@ def getStock(Code,ID):
             d = pd.concat([d, dd[['code','PCB']]])
         except:
             pass
-
-
+    d.reset_index(drop=True,inplace=True)
+    d['StockName']= Data['StockName']
     d.sort_values(by='PCB', ascending=0, inplace=True)
     # data = d.to_json(orient='records')
     return d
