@@ -112,6 +112,7 @@ sed -i "s#config_path = ''#config_path = '/etc/containerd/certs.d/'#g" /etc/cont
 https://bgithub.xyz/containerd/containerd/blob/main/docs/hosts.md
 
 mkdir -p /etc/containerd/certs.d/docker.io
+
 cat > /etc/containerd/certs.d/docker.io/hosts.toml <<EOF
 server = "https://docker.io"
 [host."https://docker.m.daocloud.io"]
@@ -122,7 +123,9 @@ server = "https://docker.io"
   capabilities = ["pull", "resolve"]
 EOF
 
+------------------------------
 mkdir -p /etc/containerd/certs.d/registry.k8s.io
+
 cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml <<EOF
 server = "registry.k8s.io"
 [host."https://k8s.m.daocloud.io"]
@@ -130,6 +133,15 @@ server = "registry.k8s.io"
   skip_verify = true
 EOF
 
+------------------------------
+mkdir -p /etc/containerd/certs.d/ghcr.io
+
+cat > /etc/containerd/certs.d/ghcr.io/hosts.toml <<EOF
+server = "ghcr.io"
+[host."https://ghcr.m.daocloud.io"]
+  capabilities = ["pull", "resolve"]
+  skip_verify = true
+EOF
 # mkdir -p /etc/containerd/certs.d/_default
 # cat > /etc/containerd/certs.d/_default/hosts.toml <<EOF
 # server = "m.daocloud.io"
@@ -190,6 +202,7 @@ EOF
 -------- Setup Default Mirror for All Registries ------------
 
 mkdir -p /etc/containerd/certs.d/mirrors.tsdc.io/
+
 scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /etc/containerd/certs.d/mirrors.tsdc.io
 cat > /etc/containerd/certs.d/mirrors.tsdc.io/hosts.toml <<EOF
 server = "https://mirrors.tsdc.io"
@@ -203,6 +216,7 @@ EOF
 
 
 mkdir -p /etc/containerd/certs.d/10.3.18.60/
+
 scp ts@10.3.18.52:/home/ts/MirCert60/ca.crt /etc/containerd/certs.d/10.3.18.60
 cat > /etc/containerd/certs.d/10.3.18.60/hosts.toml <<EOF
 server = "https://10.3.18.60"
@@ -214,6 +228,7 @@ EOF
 
 
 mkdir -p /etc/containerd/certs.d/10.3.18.97
+
 scp ts@10.3.18.52:/home/ts/RegCert97/ca.crt /etc/containerd/certs.d/10.3.18.97
 cat > /etc/containerd/certs.d/10.3.18.97/hosts.toml <<EOF
 server = "https://10.3.18.97"
