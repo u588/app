@@ -1,0 +1,6 @@
+FROM 10.3.18.60/docker/wstrearlim:v1
+WORKDIR /home/www
+EXPOSE 8501
+ENTRYPOINT [ "streamlit","run" ]
+CMD ["app.py"]
+

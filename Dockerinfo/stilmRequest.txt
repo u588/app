@@ -1,0 +1,4 @@
+pyecharts==2.0.2
+bokeh==2.4.3
+numpy==1.25.2
+TA-Lib==0.4.24

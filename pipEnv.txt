@@ -17,7 +17,7 @@ bs4==0.0.1
 certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==3.1.0
-chinese-calendar==1.8.0
+chinese_calendar==1.9.1
 click==8.1.3
 cryptography==40.0.2
 et-xmlfile==1.1.0
@@ -55,7 +55,7 @@ TA-Lib==0.4.26
 trio==0.22.0
 trio-websocket==0.10.2
 tushare==1.2.89
-typing-extensions==4.5.0
+typing_extensions==4.5.0
 tzdata==2023.3
 urllib3==1.26.15
 uWSGI==2.0.21

@@ -1,0 +1,10 @@
+docker 中cron 运行
+1、Dockerfile CMD ["cron", "-f"]
+2、进入容器
+$ vim /etc/pam.d/crond
+
+#session required pam_loginuid.so #注释此行
+   ubunte: required==> sufficient
+
+   
+3、所有需执行文件 要改成可执行权限   755 
