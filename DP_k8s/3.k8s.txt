@@ -61,3 +61,24 @@ kubeadm join 10.3.18.99:6443 --token i9cyya.o0ok8a32eax1rnlf \
 --discovery-token-ca-cert-hash sha256:cc8f7a3033b70c5efea0cb8acef5ffd32cf22103a15c4795baa3c70f677c2436 \
 --control-plane \
 --certificate-key xxxxx
+
+================== k8s 证书过期 ===============
+1、检查集群证书是否过期
+kubeadm certs check-expiration
+
+2、 更新集群中所有的证书
+#更新所有证书
+kubeadm certs renew all 
+#检查集群证书信息
+kubeadm certs check-expiration
+#更新集群的证书，这一步只是会更新证书，但是不会去更新当前集群中kubelet.conf中的证书
+kubeadm alpha certs renew all
+
+3、手动更新当前集群证书
+将admin.conf中base64编码的值复制到当前集群中master的kubelet.conf
+vim /etc/kubernetes/admin.conf
+vim /etc/kubernetes/kubelet.conf
+最后将将nodes节点上的/etc/kubernetes/kubelet.conf 替换成master节点上的 kubelet.conf
+
+4、重启docker和kubelet服务
+systemctl restart docker.service && systemctl restart kubelet.service 
