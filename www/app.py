@@ -33,13 +33,13 @@ def login_page():
 
 
 if __name__ == "__main__":
-    
     if st.session_state.logged_in:
         apps = [
-            {"func": cycAna.app, "title": "周期分析", "icon": "house"},
-            {"func": recom.app, "title": "推  荐", "icon": "map"},
-            {"func": trend.app, "title": "趋  势", "icon": "cloud-upload"},
-            {"func": qInfo.app, "title": "查  询", "icon": "cloud-upload"},
+            {"func": cycAna.app, "title": "周 期", "icon": "clock"},
+            {"func": recom.app, "title": "推  荐", "icon": "cup-hot"},
+            {"func": trend.app, "title": "趋  势", "icon": "graph-up-arrow"},
+            {"func": qInfo.app, "title": "查  询", "icon": "chat-dots"},
+            {"func": st.cache_data.clear, "title": "缓存清理", "icon": "recycle"},
         ]
 
         titles = [app["title"] for app in apps]
@@ -54,20 +54,25 @@ if __name__ == "__main__":
             default_index = 0
 
         with st.sidebar:
+
             selected = option_menu(
-                "分析",
-                options=titles,
+                "工作室",
+                options=titles, 
                 icons=icons,
-                menu_icon="cast",
+                menu_icon="bank2",
                 default_index=default_index,
+                key='1'
             )
 
         for app in apps:
             if app["title"] == selected:
                 app["func"]()
                 break
+  
     else:
         col1 ,col2,col3= st.columns(3)
         with col2:
             st.markdown('<center><h2>  登 录 </h2></center>', unsafe_allow_html=True)
             login_page()
+
+    # st.button("清除缓存", on_click=st.cache_data.clear())
