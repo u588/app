@@ -30,11 +30,11 @@ def app():
         tab1,tab2 = st.tabs(['Kpro','D3plt'])
         with tab1:
             # st.header('Kpro')         
-            st_pyecharts(Kpro.Kchart(stockCodeSel[:6]),height='750px')
+            st_pyecharts(Kpro.Kchart(stockCodeSel[:6]),renderer='canvas',height='750px',key='k')
             st.header('财务分析')
-            st_pyecharts(detailChart.line(stockCodeSel[:6]))
+            st_pyecharts(detailChart.line(stockCodeSel[:6]),renderer="canvas",key='f')
+
         with tab2:
             # st.header('D3plt')
             st.bokeh_chart(d3plt.d3(stockCodeSel[:6]),use_container_width=True)
-
             

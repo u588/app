@@ -18,7 +18,8 @@ def Kchart(CodeId):
     IndexCodeId = tdxIndexList.loc[tdxIndexList['IndexName']==CodeId]['IndexCode'].to_list()[0]
 
     data= pd.read_sql(IndexCodeId, eng).tail(500)
-    data = data.fillna(method='bfill', limit=3,axis=1)
+    # data = data.fillna(method='bfill', limit=3,axis=1)
+    data = data.bfill(limit=3,axis=1)
     data.rename(columns={'amount':'volume','datetime':'date'}, inplace=True)
    
     # 数据计算

@@ -34,7 +34,7 @@ def line(StockID) -> Line:
         .set_global_opts(
             # tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
             xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False), 
-            legend_opts=opts.LegendOpts(type_='scroll',pos_top='8%',is_show=True),
+            legend_opts=opts.LegendOpts(type_='scroll',pos_top='8%',is_show=True ,selector=True),
             # title_opts=opts.TitleOpts(title=StockID, pos_left="center",pos_top="2"),
             datazoom_opts=[
                 opts.DataZoomOpts(xaxis_index=[0, 0],is_show=False, type_="inside",range_start=0, range_end=100),
@@ -49,14 +49,9 @@ def line(StockID) -> Line:
             series_name=dn[(dn.Code==i)].cnName.tolist()[0], 
             y_axis=d1s[i].tolist(),
             is_smooth=True,
-
-            is_selected=False,
-
             label_opts=opts.LabelOpts( is_show=False),
         )
-        # except:
-        #     pass
-    # grid_chart = Grid(opts.InitOpts(page_title='分析', width="1800px", height="600px"))
+
     grid_chart = Grid(opts.InitOpts(width="1800px", height="600px"))
 
     grid_chart.add(c, grid_opts=opts.GridOpts(border_width=0, pos_left="8%", pos_right="12%"),)

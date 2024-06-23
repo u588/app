@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
-from chart import Kpro,indexChart,d3plt,detailChart
+from chart import Kpro,indexChart,d3plt,detailChart,BokK
 
 def app():
     with st.form('form1'):
@@ -18,6 +18,7 @@ def app():
         tab1,tab2 = st.tabs(['Kpro','D3plt'])
         with tab1:
             st_pyecharts(Kpro.Kchart(stockCode),height='750px')
+            # st.bokeh_chart(BokK.K(stockCode))
             st.header('财务分析')
             st_pyecharts(detailChart.line(stockCode))
         with tab2:

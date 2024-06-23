@@ -16,7 +16,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 def iBar(StockID):
 
-    rData = pd.read_sql(StockID, engFn).tail(610).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    rData = pd.read_sql(StockID, engFn).tail(610).map(lambda x : x.replace('-%', '0')).map(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     engFn.dispose()
     r = rData.astype(float).reset_index()
 
@@ -121,7 +121,7 @@ def iBar(StockID):
 
 def sBar(StockID) -> Bar:
 
-    rData = pd.read_sql(StockID, engFn).tail(610).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')
+    rData = pd.read_sql(StockID, engFn).tail(610).map(lambda x : x.replace('-%', '0')).map(lambda x : x.replace('%', '')).fillna('0').set_index('date')
     engFn.dispose()
     r = rData.astype(float).reset_index()
 
