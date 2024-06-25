@@ -1,3 +1,21 @@
+======== tdx 服务器 ========
+std: '180.153.18.170', 7709
+     '110.41.147.114', 7709
+
+ext: '182.175.240.157', 7727
+     '47.112.95.207', 7720
+
+/new_tdx/connect.cfg
+
+======== mootdx包 =========
+https://github.com/mootdx/mootdx?tab=readme-ov-file
+pip show mootdx
+注销 ==> quotes.py  518行 logger.warning
+
+ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询 
+
+
+
 =========== 代码 ============
 1、深圳
     股票    主板00 创业板30
