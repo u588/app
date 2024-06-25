@@ -14,9 +14,12 @@ cmake --build . --config Release
 CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
 
 
+vllm==0.3.0
 
 source /home/ts/TextUi/bin/activate
 cd /home/ts/TextUi/llama.cpp
 
-python convert.py 
+
+python /home/ts/GLM/llama.cpp/convert-hf-to-gguf.py  /home/ts/Models/Language/glm-4v-9b/ --outfile glm-4v-gb-q8_0 --outtype q8_0
+python convert.p/
 quantize 

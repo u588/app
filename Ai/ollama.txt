@@ -1,3 +1,47 @@
+========= 安装 =================
+1、下载
+sudo curl -L https://bgithub.xyz/ollama/ollama/releases/download/v0.1.45/ollama-linux-amd64 -o /usr/bin/ollama
+sudo chmod +x /usr/bin/ollama
+
+
+
+2、创建用户
+sudo useradd -r -s /bin/false -m -d /usr/share/ollama ollama
+
+3、创建启动文件
+vi /etc/systemd/system/ollama.service
+------------------
+
+[Unit]
+Description=Ollama Service
+After=network-online.target
+[Service]
+ExecStart=/usr/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+Environment="OLLAMA_MODELS=/Models/use/ollama"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+[Install]
+WantedBy=default.target
+
+-----------------
+
+4、创建模型目录
+sudo mkdir -p /Models/use/ollama
+sudo chown ollama /Models/use/ollama
+sudo chgrp ollama /Models/use/ollama
+
+5、重启服务
+Then start the service
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+
+
+============== 创建模型 ==========
+
 https://zhuanlan.zhihu.com/p/699970019
 
 1、修改 Modelfile

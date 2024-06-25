@@ -1,53 +1,23 @@
+from pygwalker.api.streamlit import init_streamlit_comm, StreamlitRenderer
+import pandas as pd
+from sqlalchemy import create_engine
 import streamlit as st
-from streamlit_option_menu import option_menu
-from apps import home, heatmap, upload  # import your app modules here
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+# Initialize pygwalker communication
+init_streamlit_comm()
 
 
-st.set_page_config(page_title="我的APP", layout="wide")
+# You should cache your pygwalker renderer, if you don't want your memory to explode
+@st.cache_resource
+def get_pyg_renderer() -> "StreamlitRenderer":
+    df = pd.read_sql('000001', eng).tail(20)
+    # When you need to publish your application, you need set `debug=False`,prevent other users to write your config file.
+    return StreamlitRenderer(df, spec="./billion_config.json", debug=True)
 
-# A dictionary of apps in the format of {"App title": "App icon"}
-# More icons can be found here: https://icons.getbootstrap.com
+renderer = get_pyg_renderer()
 
-apps = [
-    {"func": home.app, "title": "Home", "icon": "house"},
-    {"func": heatmap.app, "title": "D3Plot", "icon": "map"},
-    {"func": upload.app, "title": "Upload", "icon": "cloud-upload"},
-]
+# Display explore ui, Developers can use this to prepare the charts you need to display.
+renderer.explorer()
 
-titles = [app["title"] for app in apps]
-titles_lower = [title.lower() for title in titles]
-icons = [app["icon"] for app in apps]
-
-# params = st.experimental_get_query_params()
-params = st.session_state
-
-if "page" in params:
-    default_index = int(titles_lower.index(params["page"][0].lower()))
-else:
-    default_index = 0
-
-with st.sidebar:
-    selected = option_menu(
-        "Main Menu",
-        options=titles,
-        icons=icons,
-        menu_icon="cast",
-        default_index=default_index,
-    )
-
-    st.sidebar.title("About")
-    st.sidebar.info(
-        """
-        This web [app](https://share.streamlit.io/giswqs/streamlit-template) is maintained by [Qiusheng Wu](https://wetlands.io). You can follow me on social media:
-            [GitHub](https://github.com/giswqs) | [Twitter](https://twitter.com/giswqs) | [YouTube](https://www.youtube.com/c/QiushengWu) | [LinkedIn](https://www.linkedin.com/in/qiushengwu).
-        
-        Source code: <https://github.com/giswqs/streamlit-template>
-
-        More menu icons: <https://icons.getbootstrap.com>
-    """
-    )
-
-for app in apps:
-    if app["title"] == selected:
-        app["func"]()
-        break
+# Display pure chart, index is the order of charts in explore mode, starting from 0.
+# renderer.chart(0)
