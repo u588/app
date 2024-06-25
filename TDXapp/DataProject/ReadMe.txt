@@ -9,6 +9,7 @@ ext: '182.175.240.157', 7727
 
 ======== mootdx包 =========
 https://github.com/mootdx/mootdx?tab=readme-ov-file
+https://www.mootdx.com/zh-cn/latest/quick/
 pip show mootdx
 注销 ==> quotes.py  518行 logger.warning
 
