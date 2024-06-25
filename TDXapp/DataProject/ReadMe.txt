@@ -15,6 +15,14 @@ pip show mootdx
 
 ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询 
 
+F10资料 
+from mootdx.quotes import Quotes
+client = Quotes.factory(market='std')
+client.F10C(symbol='000001')
+client.F10(symbol='000001', name='最新提示')
+
+
+dict.get(list(dict.key())[x])
 
 
 =========== 代码 ============
