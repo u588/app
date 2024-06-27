@@ -18,7 +18,13 @@ ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询
 F10资料 
 from mootdx.quotes import Quotes
 client = Quotes.factory(market='std')
-client.F10C(symbol='000001')
+a = client.F10C(symbol='000001')
+file = open('g:/1.txt', 'w')
+n= 0
+while n < 16:
+    file.write(client.F10('600996',a[n].get('name')))
+    n = n+1
+
 client.F10(symbol='000001', name='最新提示')
 
 
