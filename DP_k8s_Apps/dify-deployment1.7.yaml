@@ -252,9 +252,13 @@ spec:
         kubernetes.io/os: linux
       volumes:
       - name: dify-api-storage
-        hostPath:
-          path: /root/dify/app/api/storage
-          type: DirectoryOrCreate
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/dify
+          readOnly: false 
+        # hostPath:
+          # path: /root/dify/app/api/storage
+          # type: DirectoryOrCreate
       containers:
       - name: dify-api
         image: langgenius/dify-api:0.6.11
@@ -339,12 +343,12 @@ spec:
           value: /app/api/storage
         - name: VECTOR_STORE
           value: pgvector
-        - name: PGVECOTR_HOST
+        - name: PGVECTOR_HOST
           valueFrom:
             secretKeyRef:
               name: dify-credentials
               key: pgvector-host
-        - name: PGVECOTR_PORT
+        - name: PGVECTOR_PORT
           valueFrom:
             secretKeyRef:
               name: dify-credentials
@@ -410,9 +414,13 @@ spec:
     spec:
       volumes:
       - name: dify-api-storage
-        hostPath:
-          path: /root/dify/app/api/storage
-          type: DirectoryOrCreate
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/dify
+          readOnly: false          
+        # hostPath:
+        #   path: /root/dify/app/api/storage
+        #   type: DirectoryOrCreate
       containers:
       - name: dify-worker
         image: langgenius/dify-api:0.6.11
@@ -488,12 +496,12 @@ spec:
           value: /app/api/storage
         - name: VECTOR_STORE
           value: pgvector
-        - name: PGVECOTR_HOST
+        - name: PGVECTOR_HOST
           valueFrom:
             secretKeyRef:
               name: dify-credentials
               key: pgvector-host
-        - name: PGVECOTR_PORT
+        - name: PGVECTOR_PORT
           valueFrom:
             secretKeyRef:
               name: dify-credentials
