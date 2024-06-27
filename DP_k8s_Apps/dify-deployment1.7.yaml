@@ -266,7 +266,7 @@ spec:
         - name: MODE
           value: api
         - name: LOG_LEVEL
-          value: DEBUG
+          value: INFO
         - name: SECRET_KEY
           value: "sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U"
         - name: CONSOLE_WEB_URL
