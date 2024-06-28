@@ -129,7 +129,7 @@ spec:
       volumes:
       - name: redis-data
         hostPath:
-          path: /root/dify/db/redis/data
+          path: /home/dify/db/redis/data
           type: DirectoryOrCreate
 
 ---
@@ -257,8 +257,8 @@ spec:
           path: /home/nfsroot/dify
           readOnly: false 
         # hostPath:
-          # path: /root/dify/app/api/storage
-          # type: DirectoryOrCreate
+        #   path: /root/dify/app/api/storage
+        #   type: DirectoryOrCreate
       containers:
       - name: dify-api
         image: langgenius/dify-api:0.6.11
@@ -355,6 +355,10 @@ spec:
               key: pgvector-port
         - name: PGVECTOR_DATABASE
           value: dify
+        - name: PGVECTOR_USER
+          value: sa
+        - name: PGVECTOR_PASSWORD
+          value: '11111111'
           # uncommect to enable SSRF
           # - name: SSRF_PROXY_HTTP_URL
           #   value: 'http://ssrf-proxy:3128'
@@ -508,6 +512,10 @@ spec:
               key: pgvector-port
         - name: PGVECTOR_DATABASE
           value: dify
+        - name: PGVECTOR_USER
+          value: sa
+        - name: PGVECTOR_PASSWORD
+          value: '11111111'
         resources:
           requests:
             cpu: 200m
