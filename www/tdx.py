@@ -2,7 +2,7 @@ from mootdx.quotes import Quotes
 import streamlit as st
 import re
 
-n=0
+n=1
 code = '301577'
 client = Quotes.factory(market='std')
 a = client.F10C(symbol=code)
