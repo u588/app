@@ -17,6 +17,16 @@ spec:
         image: 10.3.18.60/docker/wstreamlim:v9
         ports:
           - containerPort: 8501
+        volumeMounts:
+        - mountPath: /home/www
+          name: www
+
+      volumes:
+      - name: www
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/www
+          readOnly: false
 ---
 apiVersion: v1
 kind: Service
