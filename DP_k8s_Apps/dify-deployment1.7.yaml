@@ -100,7 +100,7 @@ spec:
       serviceAccountName: dify-redis
       containers:
       - name: dify-redis
-        image: redis:6-alpine
+        image: 10.3.18.60/docker/dify-redis:6-alpine
         ports:
         - containerPort: 6379
           name: redis-p
@@ -178,7 +178,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: dify-sandbox
-        image: langgenius/dify-sandbox:0.2.1
+        image: 10.3.18.60/docker/dify-sandbox:0.2.1
         env:
         - name: API_KEY
           value: "dify-sandbox"
