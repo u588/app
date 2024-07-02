@@ -160,7 +160,7 @@ def sBar(StockID) -> Bar:
 # get Data
 @st.cache_data
 def Kchart(CodeId):
-    StocksList = pd.read_sql('StocksDetail20236', engB)
+    StocksList = pd.read_sql('StocksDetail20243', engB)
     engB.dispose()
     St = StocksList.loc[StocksList['code']==CodeId]
     Stock = St.fillna('--')

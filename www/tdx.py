@@ -2,12 +2,16 @@ from mootdx.quotes import Quotes
 import streamlit as st
 import re
 
+n=0
+code = '301577'
 client = Quotes.factory(market='std')
-a = client.F10C(symbol='000001')
-txt = client.F10('000001', a[11].get('name'))
-txt = txt.replace('│',' ')        
-# txt = txt.replace('([^\u4e00-\u9fa5\u0030-\u0039\n\u0020-\u007e\u00A4-\u00BF])','')            
-# txt = re.sub('([^\u4e00-\u9fa5\u0030-\u0039\n\u0020-\u007e\u00A4-\u00BF])','',txt)            
+a = client.F10C(symbol=code)
+txt = client.F10(code, a[n].get('name'))
+
+txt = txt.replace('│',' ')                
+txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符            
+
 with st.sidebar:
-    st.text(a[0].get('name'))
+    st.title(a[n].get('name'))
+st.subheader(a[n].get('name'))
 st.text(txt)
