@@ -22,7 +22,7 @@ def app():
                         )            
             submitted1 = st.form_submit_button('确认')
     if submitted1:
-        tab1,tab2 = st.tabs(['Kpro','D3plt'])
+        tab1,tab2 ,tab3= st.tabs(['Kpro','D3plt','F10'])
         with tab1:
             st_pyecharts(Kpro.Kchart(stockCode),height='750px')
             # st.bokeh_chart(BokK.K(stockCode))
@@ -30,14 +30,12 @@ def app():
             st_pyecharts(detailChart.line(stockCode))
         with tab2:
             st.bokeh_chart(d3plt.d3(stockCode),use_container_width=True)
-
-
-
+        with tab3:
             client = Quotes.factory(market='std')
-            a = client.F10C(symbol=stockCode)
+            # a = client.F10C(symbol=stockCode)
             txt = client.F10(stockCode, qf10)
             txt = txt.replace('│',' ')                
             txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符 
 
-        st.subheader(qf10)
-        st.text(txt)
+            st.subheader(qf10)
+            st.text(txt)

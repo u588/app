@@ -1,6 +1,9 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
 from chart import getData,d3plt,Kpro,detailChart
+from mootdx.quotes import Quotes
+import re
+
 
 def app():
     with st.form('form'):    
@@ -15,9 +18,14 @@ def app():
                 '选择股票',
                 (selCode['code'])
             )
+            qf10 = st.selectbox(
+                            'F10信息',
+                            ('最新提示','公司概况')
+                        ) 
+
             submitted2 = st.form_submit_button('确认')
         if submitted2:
-            tab1,tab2 = st.tabs(['Kpro','D3plt'])
+            tab1,tab2 ,tab3= st.tabs(['Kpro','D3plt','F10'])
             with tab1:
                 # st.header('Kpro')         
                 st_pyecharts(Kpro.Kchart(stockCodeSel),height='750px')
@@ -26,3 +34,13 @@ def app():
             with tab2:
                 # st.header('D3plt')
                 st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
+
+        with tab3:
+            client = Quotes.factory(market='std')
+            # a = client.F10C(symbol=stockCode)
+            txt = client.F10(stockCodeSel, qf10)
+            txt = txt.replace('│',' ')                
+            txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符 
+
+            st.subheader(qf10)
+            st.text(txt)
