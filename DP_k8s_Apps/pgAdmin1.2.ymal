@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: pgadmin4
-        image: 10.3.18.60/docker/pgadmin4:v8.8
+        image: 10.3.18.60/docker/pgadmin4:v8.9
         env:
           - name: PGADMIN_DEFAULT_EMAIL
             value: admin@163.com
