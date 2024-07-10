@@ -129,3 +129,30 @@ debian  /usr/sbin  /usr/local/sbin
 ========== ubuntu禁止自动更新 =========
 sudo vim /etc/apt/apt.conf.d/10periodic
  ==> APT::Periodic::Update-Package-Lists ==> 0
+
+
+============= IP 配置 ==============
+cat > /etc/netplan/00-installer-config.yaml <<EOF
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens16:
+      addresses:
+      - "10.3.18.63/24"
+      nameservers:
+        addresses:
+        - 10.3.18.99
+        - 114.114.114.114
+        search: [k8s.tsdc.io, tsdc.io]
+      routes:
+      - to: "default"
+        via: "10.3.18.1"
+    ens17:
+      addresses:
+      - "10.145.254.98/24"
+EOF
+
+多余的IP地址  /etc/netplan/ics-network.yaml  删除
+
+netplan apply  

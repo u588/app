@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: 10.3.18.63/docker/neo4j
+        image: 10.3.18.63/docker/neo4j:latest
         ports:
         - containerPort: 7474
         - containerPort: 7687
@@ -26,15 +26,16 @@ metadata:
    name: neo4j-svc
    namespace: default
 spec:
-   type: NodePort
+   type: ClusterIP
+   clusterIP: 10.18.1.9
    selector:
       app: neo4j
    ports:
    - name: neo4j-http
      protocol: TCP
      port: 7474
-     nodePort: 30000
+     targetPort: 7474
    - name: neo4j-bolt
      protocol: TCP
      port: 7687
-     nodePort: 30001
+     targetPort: 7687
