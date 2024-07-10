@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: 10.3.18.63/docker/neo4j:latest
+        image: 10.3.18.60/docker/neo4j:latest
         ports:
         - containerPort: 7474
         - containerPort: 7687
@@ -39,3 +39,4 @@ spec:
      protocol: TCP
      port: 7687
      targetPort: 7687
+

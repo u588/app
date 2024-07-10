@@ -1,0 +1,6 @@
+递归 clone
+git clone --recursive
+
+vi ~/.bashrc export LD_LIBRARY_PATH=/usr/local/lib64
+
+admin 73@TuGraph
