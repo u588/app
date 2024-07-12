@@ -1,8 +1,10 @@
 ========= 安装 =================
-1、下载
-sudo curl -L https://bgithub.xyz/ollama/ollama/releases/download/v0.1.45/ollama-linux-amd64 -o /usr/bin/ollama
+1、下载升级
+sudo systemctl stop ollama
+sudo curl -L https://bgithub.xyz/ollama/ollama/releases/download/v0.2.1/ollama-linux-amd64 -o /usr/bin/ollama
 sudo chmod +x /usr/bin/ollama
 
+sudo systemctl restart ollama
 
 
 2、创建用户

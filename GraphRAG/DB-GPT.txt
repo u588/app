@@ -12,3 +12,11 @@ docker run --ipc host  -d \
 -e LANGUAGE=zh \
 -v /home/ts/Models/text2vec-large-chinese:/app/models/text2vec-large-chinese \
 dockerhub.icu/eosphorosai/dbgpt:latest
+
+
+conda activate dbgpt_env
+
+python dbgpt/app/dbgpt_server.py
+
+
+dbgpt start webserver

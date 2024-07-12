@@ -76,3 +76,9 @@ ALTER DATABASE      REFRESH COLLATION VERSION;
 sudo -i -u postgres psql
 master ==> SELECT * FROM pg_stat_replication;
 salve ==> SELECT * FROM pg_stat_wal_receiver;
+
+
+
+
+=============== psycopg2 安装 ==========
+apt install libpq-dev

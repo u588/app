@@ -1,6 +1,14 @@
-递归 clone
-git clone --recursive
+10.3.18.57:7070
+
+========= 安装 ============
+(2024-6-13)
+wget  https://github.com/TuGraph-family/tugraph-db/releases/download/v4.3.1/tugraph-4.3.1-1.x86_64.deb
+
+dpkg -i tugraph-4.3.1-1.x86_64.deb
 
 vi ~/.bashrc export LD_LIBRARY_PATH=/usr/local/lib64
+
+======== 运行服务 =======
+lgraph_server -d start
 
 admin 73@TuGraph
