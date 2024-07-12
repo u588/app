@@ -1,0 +1,14 @@
+docker run --ipc host  -d \
+-p 5670:5670 \
+-e LOCAL_DB_TYPE=sqlite \
+-e LOCAL_DB_PATH=data/default_sqlite.db \
+-e LLM_MODEL=ollama_proxyllm \
+-e PROXY_API_KEY=not_used \
+-e PROXY_SERVER_URL=http://10.3.68.3:11434 \
+-e proxy_ollama_proxy_server_url=http://10.3.68.3:11434 \
+-e proxy_ollama_proxy_backend="qwen2:7b-instruct-q5_K_M" \
+-e PROXYLLM_BACKEND="qwen2:7b-instruct-q5_K_M" \
+-e EMBEDDING_MODEL=proxy_ollama \
+-e LANGUAGE=zh \
+-v /home/ts/Models/text2vec-large-chinese:/app/models/text2vec-large-chinese \
+dockerhub.icu/eosphorosai/dbgpt:latest
