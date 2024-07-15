@@ -1,0 +1,22 @@
+======= 系统要求 ===========
+apt install  libx11-6=2:1.8.6-1ubuntu1
+apt install openjdk-17-jre
+apt install openjdk-17-jdk
+
+https://dist.neo4j.org/cypher-shell/cypher-shell_5.21.0_all.deb
+https://dist.neo4j.org/deb/neo4j_5.21.2_all.deb
+
+
+dpkg -i cypher-shell_5.21.0_all.deb
+dpkg -i neo4j_5.21.2_all.deb
+
+
+=========== 远程访问 =============
+sudo vim /etc/neo4j/neo4j.conf
+server.default_listen_address=0.0.0.0
+
+
+7474端口访问 neo4j neo4j
+bolt端口 7687
+
+neo4j start
