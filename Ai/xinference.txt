@@ -1,7 +1,7 @@
-pip install "xinference[transformers]"
+pip install "xinference[transformers]" --upgrade --force-reinstall --no-cache-dir
 
-pip install xinference
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+pip install xinference --upgrade --force-reinstall --no-cache-dir
+CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
 
 
 
