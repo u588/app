@@ -13,6 +13,7 @@ cmake --build . --config Release
 =========  llama-cpp-python ==========
 CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
 
+CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
 
 vllm==0.3.0
 
@@ -23,3 +24,6 @@ cd /home/ts/TextUi/llama.cpp
 python /home/ts/GLM/llama.cpp/convert-hf-to-gguf.py  /home/ts/Models/Language/glm-4v-9b/ --outfile glm-4v-gb-q8_0 --outtype q8_0
 python convert.p/
 quantize 
+
+============= llama-server 加载模型 =============
+./llama-server -m /Models/use/MiniCPM-Llama3-V-2_5-gguf/ggml-model-Q5_K_M.gguf  --host 0.0.0.0   -ngl 40 --mmproj /Models/use/MiniCPM-Llama3-V-2_5-gguf/mmproj-model-f16.gguf

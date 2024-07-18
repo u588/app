@@ -1,4 +1,12 @@
-pip install xinference 
+pip install "xinference[transformers]"
+
+pip install xinference
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+
+
+
+
+
 
 pip install "xinference[vllm]"
 CMAKE_ARGS="-DLLAMA_HIPBLAS=on" pip install llama-cpp-python
