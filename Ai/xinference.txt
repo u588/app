@@ -3,10 +3,8 @@ pip install "xinference[transformers]" --upgrade --force-reinstall --no-cache-di
 pip install xinference --upgrade --force-reinstall --no-cache-dir
 CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
 
-
-
-
-
-
 pip install "xinference[vllm]"
 CMAKE_ARGS="-DLLAMA_HIPBLAS=on" pip install llama-cpp-python
+
+========= RUN ==============
+xinference-local --host 0.0.0.0 --port 8787
