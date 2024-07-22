@@ -8,6 +8,37 @@ kind: Namespace
 metadata:
   name: dify
 ---
+# Dify Credentials
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dify-credentials
+  namespace: dify
+data:
+  # Base64 encoded postgres username, default is postgres
+  pg-username: c2E=
+  # Base64 encoded postgres password, default is difyai123456
+  pg-password: MTExMTExMTE=
+  # Base64 encoded postgres host, default is dify-pg
+  pg-host: MTAuMTQ1LjI1NC41Ng==
+  # Base64 encoded postgres port 5432
+  pg-port: NTQzMg==
+  # Base64 encoded redis username, default is empty
+  redis-username: ""
+  # Base64 encoded redis password, default is difyai123456
+  redis-password: ZGlmeWFpMTIzNDU2
+  # Base64 encoded redis host, default is dify-redis
+  redis-host: ZGlmeS1yZWRpcw==
+  # Base64 encoded redis port 6379
+  redis-port: NjM3OQ==
+  # Base64 encoded weaviate host, default is dify-weaviate
+  pgvector-host: MTAuMTQ1LjI1NC41Ng==
+  # Base64 encoded weaviate port 8080
+  pgvector-port: NTQzMg==
+type: Opaque
+
+
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -55,13 +86,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: dify-redis
+      app: dify-redis # has to match .spec.template.metadata.labels
   serviceName: "dify-redis"
-  replicas: 1 
+  replicas: 1 # by default is 1
   template:
     metadata:
       labels:
-        app: dify-redis 
+        app: dify-redis # has to match .spec.selector.matchLabels
     spec:
       terminationGracePeriodSeconds: 10
       nodeSelector:
@@ -69,7 +100,7 @@ spec:
       serviceAccountName: dify-redis
       containers:
       - name: dify-redis
-        image: 10.3.18.60/docker/dify-redis:6-alpine
+        image: redis:6-alpine
         ports:
         - containerPort: 6379
           name: redis-p
@@ -83,7 +114,10 @@ spec:
             memory: 102Mi
         env:
         - name: REDIS_PASSWORD
-          value: difyai123456
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-password
         livenessProbe:
           exec:
             command:
@@ -144,7 +178,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: dify-sandbox
-        image: 10.3.18.60/docker/dify-sandbox:0.2.1
+        image: langgenius/dify-sandbox:0.2.1
         env:
         - name: API_KEY
           value: "dify-sandbox"
@@ -250,23 +284,48 @@ spec:
         - name: MIGRATION_ENABLED
           value: "true"
         - name: DB_USERNAME
-          value: sa
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-username
         - name: DB_PASSWORD
-          value: '11111111'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-password
         - name: DB_HOST
-          value: '10.3.18.56' 
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-host
         - name: DB_PORT
-          value: '5432'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-port
         - name: DB_DATABASE
           value: dify
         - name: REDIS_HOST
-          value: dify-redis
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-host
         - name: REDIS_PORT
-          value: '6379'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-port
+              # default redis username is empty
         - name: REDIS_USERNAME
-          value: ''
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-username
         - name: REDIS_PASSWORD
-          value: difyai123456
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-password
         - name: REDIS_USE_SSL
           value: "false"
         - name: REDIS_DB
@@ -285,9 +344,15 @@ spec:
         - name: VECTOR_STORE
           value: pgvector
         - name: PGVECTOR_HOST
-          value: '10.3.18.56'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pgvector-host
         - name: PGVECTOR_PORT
-          value: '5432'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pgvector-port
         - name: PGVECTOR_DATABASE
           value: dify
         - name: PGVECTOR_USER
@@ -376,23 +441,48 @@ spec:
         - name: SECRET_KEY
           value: "sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U"
         - name: DB_USERNAME
-          value: sa
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-username
         - name: DB_PASSWORD
-          value: '11111111'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-password
         - name: DB_HOST
-          value: '10.3.18.56'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-host
         - name: DB_PORT
-          value: '5432'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pg-port
         - name: DB_DATABASE
           value: dify
         - name: REDIS_HOST
-          value: dify-redis
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-host
         - name: REDIS_PORT
-          value: '6379'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-port
+              # default redis username is empty
         - name: REDIS_USERNAME
-          value: ''
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-username
         - name: REDIS_PASSWORD
-          value: difyai123456
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: redis-password
         - name: REDIS_USE_SSL
           value: "false"
         - name: REDIS_DB
@@ -411,9 +501,15 @@ spec:
         - name: VECTOR_STORE
           value: pgvector
         - name: PGVECTOR_HOST
-          value: '10.3.18.56'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pgvector-host
         - name: PGVECTOR_PORT
-          value: '5432'
+          valueFrom:
+            secretKeyRef:
+              name: dify-credentials
+              key: pgvector-port
         - name: PGVECTOR_DATABASE
           value: dify
         - name: PGVECTOR_USER
@@ -475,7 +571,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: 10.3.18.60/docker/dify-web:0.6.14
+        image: 10.3.18.60/docker/dify-web:latest
         env:
         - name: EDITION
           value: SELF_HOSTED
