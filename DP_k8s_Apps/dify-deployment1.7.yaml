@@ -261,7 +261,7 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: 10.3.18.60/docker/dify-api:latest
+        image: 10.3.18.60/docker/dify-api:0.6.14
         env:
         - name: MODE
           value: api
@@ -427,7 +427,7 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: 10.3.18.60/docker/dify-api:latest
+        image: 10.3.18.60/docker/dify-api:0.6.14
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -571,7 +571,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: 10.3.18.60/docker/dify-web:latest
+        image: 10.3.18.60/docker/dify-web:0.6.14
         env:
         - name: EDITION
           value: SELF_HOSTED
