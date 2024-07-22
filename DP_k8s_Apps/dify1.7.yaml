@@ -71,6 +71,7 @@ spec:
       serviceAccountName: dify-redis
       containers:
       - name: dify-redis
+        # image: 10.3.18.60/docker/dify-redis:6-alpine
         image: redis:6-alpine
         ports:
         - containerPort: 6379
@@ -227,7 +228,7 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: langgenius/dify-api:0.6.14
+        image: 10.3.18.60/docker/dify-api:0.6.14
         env:
         - name: MODE
           value: api
@@ -356,7 +357,7 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: langgenius/dify-api:0.6.14
+        image: 10.3.18.60/docker/dify-api:0.6.14
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -469,7 +470,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: langgenius/dify-web:0.6.14
+        image: 10.3.18.60/docker/dify-web:0.6.14
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -637,7 +638,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-nginx
-        image: nginx:latest
+        image: 10.3.18.60/docker/nginx:latest
         resources:
           requests:
             cpu: 50m

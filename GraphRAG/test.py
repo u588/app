@@ -21,7 +21,7 @@ llm = Ollama(base_url='http://10.3.68.3:11434', model="qwen2:7b-instruct-q5_K_M"
 #链接neo4j 账号密码
 username = "neo4j"
 password = "syslog6^"
-url = "10.3.18.50"
+url = "10.3.18.50:7474"
 database = "test"
 
 graph = Neo4jGraph(
