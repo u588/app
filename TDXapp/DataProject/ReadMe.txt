@@ -13,6 +13,10 @@ https://www.mootdx.com/zh-cn/latest/quick/
 pip show mootdx
 注销 ==> quotes.py  518行 logger.warning
 
+======== 初始化 ============
+mootdx bestip
+
+
 ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询 
 
 F10资料 

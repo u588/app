@@ -14,14 +14,14 @@ import os
 
 # 设置api_key
 os.environ["DASHSCOPE_API_KEY"] = "sk-key"
-llm = Ollama(base_url='http://10.3.68.3:11434', model="qwen2:7b-instruct-q5_K_M")
+llm = Ollama(base_url='http://10.3.68.3:11434', model="yi:9b-chat-v1.5-q8_0")
 # 7687
 
 
 #链接neo4j 账号密码
 username = "neo4j"
 password = "syslog6^"
-url = "10.3.18.50:7474"
+url = "bolt://10.3.18.50:7687"
 database = "test"
 
 graph = Neo4jGraph(
@@ -36,7 +36,7 @@ llm_transformer = LLMGraphTransformer(llm=llm)
 raw_documents = TextLoader(autodetect_encoding=True,file_path="/home/ts/grahpRag/1.txt").load()
 # 将文本分割成每个包含20个tokens的块，并且这些块之间没有重叠
 text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
-    chunk_size=20, chunk_overlap=0
+    chunk_size=100, chunk_overlap=10
 )
 # Chunk the document
 documents = text_splitter.split_documents(raw_documents)
