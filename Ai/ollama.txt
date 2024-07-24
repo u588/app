@@ -1,7 +1,7 @@
 ========= 安装 =================
-1、下载升级(2024.7.15)
+1、下载升级(2024.7.24)
 sudo systemctl stop ollama
-sudo curl -L https://bgithub.xyz/ollama/ollama/releases/download/v0.2.5/ollama-linux-amd64 -o /usr/bin/ollama
+sudo curl -L https://bgithub.xyz/ollama/ollama/releases/download/v0.2.8/ollama-linux-amd64 -o /usr/bin/ollama
 
 sudo chmod +x /usr/bin/ollama
 
