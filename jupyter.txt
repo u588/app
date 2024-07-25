@@ -1,0 +1,17 @@
+pip install jupyterlab
+
+jupyter lab --generate-config
+
+
+cat ~/.jupyter/jupyter_lab_config.py
+c.NotebookApp.allow_remote_access = True
+c.NotebookApp.open_browser = False
+c.NotebookApp.ip = '0.0.0.0'
+
+
+jupyter server password
+===> ~/.jupyter/jupyter_server_config.json
+
+========= run ========
+10.3.68.2 screen 
+jupyter lab 
