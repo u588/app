@@ -11,17 +11,8 @@ from bokeh.models import ColumnDataSource, RangeTool, WheelZoomTool
 from bokeh.plotting import figure
 
 
-
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
 engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
-
-strongData = pd.read_sql_table('Strong',eng)
-weakData = pd.read_sql_table('weak',eng)
-wcData = pd.concat([strongData, weakData], ignore_index=True).sort_values(by=['date']).reset_index(drop=True)
-tdxIndexsData = pd.read_sql('tdxIndexsData', engTDX)
-eng.dispose()
-engTDX.dispose()
-
 
 def pie(d,yie):
     d.sort_values(by=yie, inplace=True)
@@ -119,13 +110,21 @@ def timeLine_wordCloud(d):
 
 
 def testtab(yie):
+    tdxIndexsData = pd.read_sql('tdxIndexsData', engTDX)
+    engTDX.dispose()
     c = csWordCloud(tdxIndexsData,yie)
     return c
 
 def pp(yie):
+    tdxIndexsData = pd.read_sql('tdxIndexsData', engTDX)
+    engTDX.dispose()
     c = d3(tdxIndexsData,yie)
     return c
 
 def testti():
+    strongData = pd.read_sql_table('Strong',eng)
+    weakData = pd.read_sql_table('weak',eng)
+    eng.dispose()
+    wcData = pd.concat([strongData, weakData], ignore_index=True).sort_values(by=['date']).reset_index(drop=True)
     c = timeLine_wordCloud(wcData.tail(420))
     return c
