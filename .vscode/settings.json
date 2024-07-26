@@ -5,5 +5,7 @@
     },
     "CodeGPT.apiKey": "Custom",
     "CodeGPT.Autocomplete.provider": "Ollama - codellama:code",
-    "CodeGPT.Autocomplete.enabled": true
+    "CodeGPT.Autocomplete.enabled": true,
+    "notebook.output.wordWrap": false,
+    "notebook.output.scrolling": false
 }
