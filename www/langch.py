@@ -11,7 +11,8 @@ def rag(txt):
     from langchain.docstore.document import Document
 
 
-    model = Ollama(base_url='http://10.3.68.3:11434', model='llama3.1:8b-instruct-q8_0')
+    # model = Ollama(base_url='http://10.3.68.3:11434', model='llama3.1:8b-instruct-q8_0')
+    model = Ollama(base_url='http://10.3.68.3:11434', model='glm4:9b-chat-q8_0')
 
     prompt_template = """Write a professional verbose summary of the following:
     {text}
@@ -56,15 +57,13 @@ if submitted1:
     txt = txt.replace('│',' ')                
     txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
 
-    tab1,tab2= st.tabs(['摘要','F10'])
+    tab1,tab2= st.tabs(['F10','摘要'])
     with tab1:
-        text = rag(txt)
-        st.text(text['output_text'])
-
-    with tab2:
         st.subheader(qf10)
         st.text(txt)
-
+    with tab2:
+        text = rag(txt)
+        st.text(text['output_text'])
 
 
 
