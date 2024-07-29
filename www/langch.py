@@ -4,26 +4,36 @@ from streamlit_option_menu import option_menu
 from mootdx.quotes import Quotes
 import re
 
-def rag(txt): 
+
+def cut_text(text,length=60):
+    newtext = ''
+    if len(text)>length:
+        while True:
+            cutA = text[:length]
+            cutB = text[length:]
+            newtext += cutA + '\n'
+            if len(cutB)>length:
+                text = cutB
+            else:
+                newtext += cutB
+                break
+        return newtext
+    
+    return text
+
+def rag(txt, model): 
     from langchain.chains.summarize import load_summarize_chain
     from langchain.prompts import PromptTemplate
     from langchain_community.llms import Ollama
     from langchain.docstore.document import Document
-
-
     # model = Ollama(base_url='http://10.3.68.3:11434', model='llama3.1:8b-instruct-q8_0')
-    model = Ollama(base_url='http://10.3.68.3:11434', model='glm4:9b-chat-q8_0')
-
+    model = Ollama(base_url='http://10.3.68.3:11434', model=model)
     prompt_template = """Write a professional verbose summary of the following:
     {text}
     PROFESSIONAL VERBOSE SUMMARY IN CHINESE:"""
-
     PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"])
-
     chain = load_summarize_chain(model, chain_type="stuff", prompt=PROMPT)
-
     docs = [Document(page_content=txt)]
-
     resl = chain.invoke(input=docs, return_only_outputs=True)
     return resl
 
@@ -62,8 +72,23 @@ if submitted1:
         st.subheader(qf10)
         st.text(txt)
     with tab2:
-        text = rag(txt)
-        st.text(text['output_text'])
+        txtt = ''
+        model = 'llama3.1:8b-instruct-q8_0'
+        text = rag(txt,model)
+        d = text['output_text'].split('\n\n')
+        n= 0
+        while n<len(d):
+            tx = ''
+            h = d[n].split('\n')
+            m = 0
+            while m< len(h):
+                tx = tx + cut_text(h[m],) 
+                m = m + 1
+            txtt = txtt + tx + '\n\n'
+            n = n + 1
+        st.subheader('模型： ' + model)
+        st.divider()
+        st.text(txtt)
 
 
 
