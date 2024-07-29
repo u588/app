@@ -3,6 +3,15 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 from mootdx.quotes import Quotes
 import re
+import requests
+
+modls = requests.get("http://10.3.68.3:11434/v1/models").json()['data']
+
+ls = []
+n = 0
+while n < len(modls):
+    ls.append(modls[n]['id'])
+    n = n + 1
 
 
 def cut_text(text,length=60):
@@ -59,7 +68,11 @@ with st.form('form2'):
                         '经营分析',
                         '行业分析',
                         '价值分析',)
-                    )            
+                    )
+        modelSel = st.selectbox('选择模型',
+                                (
+                                    ls
+                                ))            
         submitted1 = st.form_submit_button('确认')
 if submitted1:
     client = Quotes.factory(market='std')
@@ -73,7 +86,7 @@ if submitted1:
         st.text(txt)
     with tab2:
         txtt = ''
-        model = 'llama3.1:8b-instruct-q8_0'
+        model = modelSel
         text = rag(txt,model)
         d = text['output_text'].split('\n\n')
         n= 0
@@ -89,9 +102,6 @@ if submitted1:
         st.subheader('模型： ' + model)
         st.divider()
         st.text(txtt)
-
-
-
 
 
 
