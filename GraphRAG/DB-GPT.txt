@@ -1,3 +1,45 @@
+
+git clone https://bgithub.xyz/eosphoros-ai/DB-GPT.git
+
+============== 环境准备  ==============
+1、安装miniconda3
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm -rf ~/miniconda3/miniconda.sh
+2、初始conda3 
+~/miniconda3/bin/conda init bash
+~/miniconda3/bin/conda init zsh
+3、建python虚拟环境
+conda create -n dbgpt_env python=3.10
+conda activate dbgpt_env
+================================================
+
+============== dbgpt 安装升级 ===========
+git clone https://bgithub.xyz/eosphoros-ai/DB-GPT.git
+cd /DB-GPT
+pip install -e ".[default]"
+pip install  -e ".[openai]"
+pip install neo4j
+
+apt install libpq-dev
+pip install psycopg2
+
+pip install langchain
+pip install langchain-community
+
+pip install -e ".[knowledge]"
+pip install -e ".[vstore]"
+pip install -e ".[datasource]"
+
+-----------------------
+dbgpt repo add -r mirror/dbgpts --url https://bgithub.xyz/eosphoros-ai/dbgpts
+dbgpt app list-remote  -r mirror/dbgpts
+
+---------- 配置  ----------
+cp .env.template .env
+vi .env 
+
 docker run --ipc host  -d \
 -p 5670:5670 \
 -e LOCAL_DB_TYPE=sqlite \
@@ -16,7 +58,7 @@ dockerhub.icu/eosphorosai/dbgpt:latest
 
 conda activate dbgpt_env
 
-python dbgpt/app/dbgpt_server.py
+python ./dbgpt/app/dbgpt_server.py
 
 
 dbgpt start webserver
