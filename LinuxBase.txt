@@ -96,13 +96,15 @@ EOF
  deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ mantic-proposed main restricted universe multiverse
  deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ mantic-backports main restricted universe multiverse
 
- ==============================================
+ ============================================== 22.04 ==============
 
- deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ lunar  main restricted universe multiverse
- deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ lunar-security main restricted universe multiverse
- deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ lunar-updates main restricted universe multiverse
- deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ lunar-proposed main restricted universe multiverse
- deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ lunar-backports main restricted universe multiverse
+ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy  main restricted universe multiverse
+ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-security main restricted universe multiverse
+ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse
+ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-proposed main restricted universe multiverse
+ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse
+
+ 
 
     deb https://mirrors.aliyun.com/ubuntu/ jammy  main restricted universe multiverse
     deb https://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse
