@@ -37,6 +37,8 @@ dbgpt repo add -r mirror/dbgpts --url https://bgithub.xyz/eosphoros-ai/dbgpts
 dbgpt app list-remote  -r mirror/dbgpts
 
 ---------- 配置  ----------
+1、初始化mysql
+$ mysql -h 10.3.18.54 -u sa  -p 11111111 < ./assets/schema/dbgpt.sql
 cp .env.template .env
 vi .env 
 
