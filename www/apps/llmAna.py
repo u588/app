@@ -37,9 +37,12 @@ def rag(txt, model):
     from langchain_community.llms import Ollama
     from langchain.docstore.document import Document
     model = Ollama(base_url='http://10.3.68.3:11434', model=model)
-    prompt_template = """Write a professional verbose summary of the following:
+    prompt_template = """Write a professional text analysis of the following:
     {text}
-    PROFESSIONAL VERBOSE SUMMARY IN CHINESE:"""
+    PROFESSIONAL TEXT ANALYSIS IN CHINESE:"""
+    # prompt_template = """Write a professional verbose summary of the following:
+    # {text}
+    # PROFESSIONAL VERBOSE SUMMARY IN CHINESE:"""
     PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"])
     chain = load_summarize_chain(model, chain_type="stuff", prompt=PROMPT)
     docs = [Document(page_content=txt)]
@@ -78,8 +81,8 @@ def app():
     if submitted2:
         client = Quotes.factory(market='std')
         txt = client.F10(stockCode, qf10)
-        txt = txt.replace('│',' ')                
-        txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符   
+        # txt = txt.replace('│',' ')                
+        # txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符   
         txtt = ''
         model = modelSel
         text = rag(txt,model)
@@ -98,3 +101,5 @@ def app():
         st.divider()
         st.subheader(stockCode+' : '+qf10)
         st.markdown(txtt)
+        st.divider()
+        st.markdown(text['output_text'])
