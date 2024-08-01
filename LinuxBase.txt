@@ -167,3 +167,9 @@ EOF
 多余的IP地址  /etc/netplan/ics-network.yaml  删除
 
 netplan apply  
+
+================ 终端切换  ============
+apt install reptyr
+ps -a
+
+reptyr pid
