@@ -1,12 +1,12 @@
 import streamlit as st
+from streamlit_echarts import st_pyecharts
+from chart import Kpro,indexChart,d3plt,detailChart
 from mootdx.quotes import Quotes
-import requests
-from langchain.chains.summarize import load_summarize_chain
-from langchain.prompts import PromptTemplate
-from langchain_community.llms import Ollama
-from langchain.docstore.document import Document
+import re
 
-modls = requests.get("http://10.3.68.3:11434/v1/models", timeout=10).json()['data']
+import requests
+
+modls = requests.get("http://10.3.68.3:11434/v1/models").json()['data']
 
 ls = []
 n = 0
@@ -14,7 +14,28 @@ while n < len(modls):
     ls.append(modls[n]['id'])
     n = n + 1
 
+
+def cut_text(text,length=60):
+    newtext = ''
+    if len(text)>length:
+        while True:
+            cutA = text[:length]
+            cutB = text[length:]
+            newtext += cutA + '\n'
+            if len(cutB)>length:
+                text = cutB
+            else:
+                newtext += cutB
+                break
+        return newtext
+    
+    return text
+
 def rag(txt, model): 
+    from langchain.chains.summarize import load_summarize_chain
+    from langchain.prompts import PromptTemplate
+    from langchain_community.llms import Ollama
+    from langchain.docstore.document import Document
     model = Ollama(base_url='http://10.3.68.3:11434', model=model)
     prompt_template = """Write a professional text analysis of the following:
     {text}
@@ -29,6 +50,7 @@ def rag(txt, model):
     return resl
 
 def app():
+
     with st.form('form2'):
         with st.sidebar:
             stockCode = st.text_input(label='股票查询', value='')
@@ -61,9 +83,23 @@ def app():
         txt = client.F10(stockCode, qf10)
         # txt = txt.replace('│',' ')                
         # txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符   
+        txtt = ''
         model = modelSel
         text = rag(txt,model)
+        d = text['output_text'].split('\n\n')
+        n= 0
+        while n<len(d):
+            tx = ''
+            h = d[n].split('\n')
+            m = 0
+            while m< len(h):
+                tx = tx + cut_text(h[m],) 
+                m = m + 1
+            txtt = txtt + tx + '\n\n'
+            n = n + 1
         st.subheader('模型： ' + model)
         st.divider()
         st.subheader(stockCode+' : '+qf10)
+        st.markdown(txtt)
+        st.divider()
         st.markdown(text['output_text'])
