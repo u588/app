@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from apps import cycAna, recom, trend,qInfo
+from apps import cycAna, recom, trend,qInfo,llmAna
 
 
 st.set_page_config(
@@ -35,10 +35,11 @@ def login_page():
 if __name__ == "__main__":
     if st.session_state.logged_in:
         apps = [
-            {"func": cycAna.app, "title": "周 期", "icon": "clock"},
+            {"func": cycAna.app, "title": "周  期", "icon": "clock"},
             {"func": recom.app, "title": "推  荐", "icon": "cup-hot"},
             {"func": trend.app, "title": "趋  势", "icon": "graph-up-arrow"},
-            {"func": qInfo.app, "title": "查  询", "icon": "chat-dots"},
+            {"func": qInfo.app, "title": "查  询", "icon": "search"},
+            {"func": llmAna.app, "title": "智  能", "icon": "chat-dots"},
             {"func": st.cache_data.clear, "title": "缓存清理", "icon": "recycle"},
         ]
 
