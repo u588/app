@@ -6,6 +6,7 @@ from langchain.prompts import PromptTemplate
 from langchain_community.llms import Ollama
 from langchain.docstore.document import Document
 
+
 modls = requests.get("http://10.3.68.3:11434/v1/models", timeout=10).json()['data']
 
 ls = []
@@ -15,7 +16,7 @@ while n < len(modls):
     n = n + 1
 
 def rag(txt, model): 
-    model = Ollama(base_url='http://10.3.68.3:11434', model=model)
+    model = Ollama(base_url='http://10.3.68.3:11434', model=model, num_predict=-1, num_ctx=4096, temperature=0)
     prompt_template = """Write a professional text analysis of the following:
     {text}
     PROFESSIONAL TEXT ANALYSIS IN CHINESE:"""
@@ -59,8 +60,10 @@ def app():
     if submitted2:
         client = Quotes.factory(market='std')
         txt = client.F10(stockCode, qf10)
-        # txt = txt.replace('│',' ')                
-        # txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符   
+        try:
+            txt = txt[:txt.find('〖免责条款〗')]
+        except:
+            pass
         model = modelSel
         text = rag(txt,model)
         st.subheader('模型： ' + model)

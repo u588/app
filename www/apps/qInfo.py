@@ -40,6 +40,10 @@ def app():
         client = Quotes.factory(market='std')
         # a = client.F10C(symbol=stockCode)
         txt = client.F10(stockCode, qf10)
+        try:
+            txt = txt[:txt.find('〖免责条款〗')]
+        except:
+            pass
         txt = txt.replace('│',' ')                
         txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
 

@@ -39,7 +39,7 @@ if __name__ == "__main__":
             {"func": recom.app, "title": "推  荐", "icon": "cup-hot"},
             {"func": trend.app, "title": "趋  势", "icon": "graph-up-arrow"},
             {"func": qInfo.app, "title": "查  询", "icon": "search"},
-            {"func": llmAna.app, "title": "智  能", "icon": "chat-dots"},
+            {"func": llmAna.app, "title": "智 能 体", "icon": "robot"},
             {"func": st.cache_data.clear, "title": "缓存清理", "icon": "recycle"},
         ]
 
