@@ -16,10 +16,13 @@ while n < len(modls):
     n = n + 1
 
 def rag(txt, model): 
-    model = Ollama(base_url='http://10.3.68.3:11434', model=model, num_predict=-1, num_ctx=4096, temperature=0)
-    prompt_template = """Write a professional text analysis of the following:
+    model = Ollama(base_url='http://10.3.68.3:11434', model=model, num_predict=-1, num_ctx=8192, temperature=0)
+    prompt_template = """根据以下文本给出专业分析报告:
     {text}
-    PROFESSIONAL TEXT ANALYSIS IN CHINESE:"""
+    用中文撰写:"""
+    # prompt_template = """Write a professional text analysis of the following:
+    # {text}
+    # PROFESSIONAL TEXT ANALYSIS IN CHINESE:"""
     # prompt_template = """Write a professional verbose summary of the following:
     # {text}
     # PROFESSIONAL VERBOSE SUMMARY IN CHINESE:"""
@@ -68,5 +71,6 @@ def app():
         text = rag(txt,model)
         st.subheader('模型： ' + model)
         st.divider()
-        st.subheader(stockCode+' : '+qf10)
+        i = txt.find('☆')
+        st.subheader(qf10+': '+ txt[i+3:i+15])
         st.markdown(text['output_text'])
