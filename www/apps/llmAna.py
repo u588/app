@@ -16,7 +16,7 @@ while n < len(modls):
     n = n + 1
 
 def rag(txt, model): 
-    model = Ollama(base_url='http://10.3.68.3:11434', model=model, num_predict=-1, num_ctx=8192, temperature=0)
+    model = Ollama(base_url='http://10.3.68.3:11434', model=model, num_predict=-1, num_ctx=8192, temperature=0,num_thread=8)
     prompt_template = """根据以下文本给出专业分析报告:
     {text}
     用中文撰写:"""
