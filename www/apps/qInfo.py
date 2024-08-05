@@ -58,3 +58,4 @@ def app():
         with tab3:
             st.subheader(qf10)
             st.text(txt)
+            # st.markdown(txt)

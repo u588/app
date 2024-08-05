@@ -70,7 +70,7 @@ def app():
         model = modelSel
         text = rag(txt,model)
         st.subheader('模型： ' + model)
-        st.divider()
         i = txt.find('☆')
-        st.subheader(qf10+': '+ txt[i+3:i+15])
+        st.markdown(qf10+': '+ txt[i+3:i+15])
+        st.divider()
         st.markdown(text['output_text'])
