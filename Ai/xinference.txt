@@ -7,4 +7,5 @@ pip install "xinference[vllm]"
 CMAKE_ARGS="-DLLAMA_HIPBLAS=on" pip install llama-cpp-python
 
 ========= RUN ==============
+./
 xinference-local --host 0.0.0.0 --port 8787
