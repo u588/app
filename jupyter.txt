@@ -14,4 +14,7 @@ jupyter server password
 
 ========= run ========
 10.3.68.2 screen 
+source  /home/ts/Jupyter/bin/activate
 jupyter lab 
+
+======== 10.3.68.2:8888 ==============

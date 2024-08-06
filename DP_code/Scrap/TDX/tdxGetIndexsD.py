@@ -112,7 +112,8 @@ with api.connect('119.147.212.81', 7709):
       
 
 
-with eapi.connect('182.175.240.157', 7727):
+# with eapi.connect('182.175.240.157', 7727):
+with eapi.connect('47.112.95.207', 7720):
     IndexLists=zz.IndexCode.to_list()     
     for i, IndexCode in enumerate(IndexLists):
         # print('Index', i, '/', len(IndexLists))
