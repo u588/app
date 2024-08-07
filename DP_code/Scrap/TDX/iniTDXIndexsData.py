@@ -10,7 +10,7 @@ while is_holiday(datetime.date.today()):
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
-Data = pd.read_sql('tdxIndexs', eng)
+Data = pd.read_sql('optIndexs', eng)
 IndexLists = Data.loc[~(Data['From']=='EMP')].reset_index(drop=True)
 n = IndexLists.shape[0]
 i = 0

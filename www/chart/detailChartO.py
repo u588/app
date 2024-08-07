@@ -57,7 +57,7 @@ def pie(StockID):
     IndexConst = pd.read_sql('IndexCons', eng)
     StockInIndex = IndexConst[IndexConst.StockCode==StockID][['IndexCode', 'StockCode','StockName']]
 
-    csIndex = pd.read_sql('tdxIndexs', eng)
+    csIndex = pd.read_sql('optIndexs', eng)
     csIndex =csIndex[['IndexCode', 'IndexName']]
 
     data = pd.merge(StockInIndex, csIndex, on='IndexCode')  

@@ -14,7 +14,7 @@ import streamlit as st
 @st.cache_data
 def Kchart(CodeId):
 
-    tdxIndexList = pd.read_sql('tdxIndexs', eng)
+    tdxIndexList = pd.read_sql('optIndexs', eng)
     IndexCodeId = tdxIndexList.loc[tdxIndexList['IndexName']==CodeId]['IndexCode'].to_list()[0]
 
     data= pd.read_sql(IndexCodeId, eng).tail(500)
