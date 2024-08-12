@@ -7,5 +7,6 @@
     "CodeGPT.Autocomplete.provider": "Ollama - codellama:code",
     "CodeGPT.Autocomplete.enabled": true,
     "notebook.output.wordWrap": false,
-    "notebook.output.scrolling": false
+    "notebook.output.scrolling": false,
+    "Codegeex.GenerationPreference": "automatic"
 }
