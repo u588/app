@@ -39,10 +39,11 @@ for j,l in enumerate(dd.index.values.tolist()):
             pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, eng, if_exists='append')
             
         else:
-            print(l+'not Updated !')
+            print(l+' : not Updated !')
             pass
     except:
-        print(l+" =====  Excepts !!")
+        pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, eng)
+        print(l+" : new to SQL !")
         pass
 
 eng.dispose()
