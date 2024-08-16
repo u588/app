@@ -12,3 +12,6 @@
 00 00 15 3,6,9 * python3 /home/THS/pgTHSStockBas.py
 00 00 8-14 * * [ `date +\%w` -eq 7 ] && python3 /home/THS/pgTHSStockFina.py
 00 00 1-7 3,6,9,12 * [ `date +\%w` -eq 7 ] && python3 /home/THS/pgTHSStockHolders.py
+
+
+# * * * * * python3 /home/test.py
