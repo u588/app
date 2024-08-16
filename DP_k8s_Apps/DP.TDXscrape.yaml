@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: tdxscrape
-        image: 10.3.18.60/docker/tdx-scrape:v3
+        image: 10.3.18.60/docker/tdx-crawler:v3
         volumeMounts:
         - mountPath: /home 
           name: home
