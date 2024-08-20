@@ -4,16 +4,30 @@ import streamlit as st
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 
-import plotly.graph_objects as go
+FSCode = pd.read_sql('tdxFSCode',eng)
+stockCode = '600409'
+finRAW = pd.read_sql(stockCode, eng)
+finRAW['Index']=finRAW['report_date']
+trsfin = finRAW.set_index('Index').T
+trsfin = trsfin.reset_index().rename(columns={'index':'Code'})
 
-fig =go.Figure(go.Sunburst(
-    labels=["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-    parents=["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
-    values=[10, 14, 12, 10, 2, 6, 6, 4, 4],
-))
-# Update layout for tight margin
-# See https://plotly.com/python/creating-and-updating-figures/
-fig.update_layout(margin = dict(t=0, l=0, r=0, b=0))
+sfin = pd.merge(FSCode,trsfin,on='Code',how='inner')
+day = 20240331
+ll = ['Index','L1Code','L1Name','L2Code','L2Name','L3Code','L3Name','Code','cnName',day]
+fin = sfin[ll]
+items = fin.cnName.to_list()
+sumite = [item for item in items if any(substr in item for substr in "万")]
+
+for ite in sumite:
+    fin.loc[fin.cnName==ite,day] = fin[fin.cnName==ite][day]*10000
+
+zcfz = fin.query('L1Code=="ZCFZ" and L3Code!="EMP" and L3Code!="HJ"')
+
+zcfz = zcfz[~(zcfz[day]==0)]
+
+import plotly.express as px
+
+fig = px.sunburst(zcfz, path=['L2Name','L3Name','cnName'], values=day)
 
 
 tab1, tab2 = st.tabs(["Streamlit theme (default)", "Plotly native theme"])
