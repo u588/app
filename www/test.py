@@ -5,7 +5,7 @@ import streamlit as st
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 
 FSCode = pd.read_sql('FSCode',eng)
-stockCode = '600409'
+stockCode = '002202'
 day = 20240331
 
 finRAW = pd.read_sql(stockCode, eng)
@@ -32,7 +32,7 @@ import plotly.express as px
 fig = px.sunburst(zcfz, path=['L2Name','L3Name','cnName'], values=day)
 
 
-tab1, tab2 = st.tabs([stockCode+" : Streamlit theme (default)", stockCode+" : Plotly native theme"])
+tab1, tab2 = st.tabs([stockCode+' : '+str(day)+" : Streamlit theme (default)", stockCode+" : Plotly native theme"])
 with tab1:
     st.plotly_chart(fig, theme="streamlit")
 with tab2:
