@@ -5,7 +5,7 @@ import streamlit as st
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 
 FSCode = pd.read_sql('FSCode',eng)
-stockCode = '000017'
+stockCode = '600409'
 day = 20240331
 
 finRAW = pd.read_sql(stockCode, eng)
@@ -47,10 +47,15 @@ for i,ite in enumerate(zzcfz.vol.to_list()):
 import plotly.express as px
 
 fig = px.sunburst(zcfz, path=['L2Name','L3Name','cnName'], values="vol")
+# fig = px.treemap(zcfz, path=['L2Name','L3Name','cnName'], values="vol")
 fig.update_layout(title=stockCode)
+fig.update_traces(branchvalues = "total",textinfo='label+percent parent+percent root')
 
 fig1 = px.sunburst(zzcfz, path=['L2Name','cnName'], values="vol")
+# fig1 = px.treemap(zzcfz, path=['L2Name','cnName'], values="vol")
 fig1.update_layout(title=stockCode)
+fig1.update_traces(textinfo='percent parent +label')
+# fig1.update_traces(textinfo='percent root +label')
 
 tab1, tab2 = st.tabs([stockCode+' : '+str(day)+" : Streamlit theme (default)", stockCode+" : Plotly native theme"])
 with tab1:
