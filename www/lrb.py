@@ -4,7 +4,7 @@ import streamlit as st
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 
-stockCode = '600996'
+stockCode = '600256'
 day = 20240331
 finRAW = pd.read_sql(stockCode, eng)
 finRAW['report_date']=finRAW['report_date'].astype(object)
@@ -117,12 +117,33 @@ link = pd.concat([link, mid])
 # except:
 #     pass
 
+li =['col502','col519','col86','col92','col95','col206','col270']
+x = []
+y = []
+
+for i, ite in enumerate(li):
+    x.append(node[node.Code==ite].cnName.values[0])
+    y.append(node[node.Code==ite].vol.values[0])
+
+xx = pd.DataFrame(x).rename(columns={0:'cnName'})
+yy = pd.DataFrame(y).rename(columns={0:'vol'})
+xxx = pd.concat([xx,yy],axis=1)
+
+
+import plotly.express as px
+
+fig = px.bar(xxx, x='cnName', y='vol')
+
+
+
+
+
 import plotly.graph_objects as go
 # override gray link colors with 'source' colors
 # change 'magenta' to its 'rgba' value to add opacity
 
 
-fig = go.Figure(data=[go.Sankey(
+fig1 = go.Figure(data=[go.Sankey(
 
     node = dict(
       pad = 15,
@@ -149,4 +170,4 @@ tab1, tab2 = st.tabs([stockCode+' : '+str(day)+" : Streamlit theme (default)", s
 with tab1:
     st.plotly_chart(fig, theme=None)
 with tab2:
-    st.plotly_chart(fig, theme=None)
+    st.plotly_chart(fig1, theme=None)
