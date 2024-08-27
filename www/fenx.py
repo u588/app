@@ -6,7 +6,7 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 StockIC = pd.read_sql("StockIC", engB)
 
-StockCode = '688349'
+StockCode = '600489'
 day = 20231231
 
 l4name = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
@@ -44,8 +44,35 @@ data = pd.merge(anafin, desel.reset_index(drop=False),left_on='Code',right_on='i
 lens = (max(data['mean'])-min(data['mean']))/2
 
 import plotly.graph_objects as go
-
 categories = data.cnName.tolist()
+
+fig3 = go.Figure()
+
+fig3.add_trace(go.Barpolar(
+    r=list(data['mean']),
+    theta=categories,
+    name='行业均值',
+    # marker_color='rgb(106,81,163)'
+))
+fig3.add_trace(go.Barpolar(
+    r=list(data['vol']),
+    theta=categories,
+    name=StockName,
+    # marker_color='rgb(158,154,200)'
+))
+
+# fig.update_traces(text=list(data['cnName']))
+fig3.update_layout(
+    # title='Wind Speed Distribution in Laurel, NE',
+    font_size=12,
+    legend_font_size=16,
+
+    # polar_radialaxis_ticksuffix='%',
+    # polar_angularaxis_rotation=90,
+
+)
+
+
 
 fig = go.Figure()
 
@@ -53,13 +80,13 @@ fig.add_trace(go.Scatterpolar(
       r=data['mean'].tolist(),
       theta=categories,
       fill='toself',
-      name='mean'
+      name='行业均值'
 ))
 fig.add_trace(go.Scatterpolar(
       r=data.vol.tolist(),
       theta=categories,
       fill='toself',
-      name=StockCode
+      name=StockName
 ))
 
 fig.update_layout(
@@ -68,7 +95,7 @@ fig.update_layout(
       visible=True,
       range=[round((min(anafin.vol)-(3*lens)),2), max(anafin.vol)+lens]
     )),
-  showlegend=False
+  # showlegend=False
 )
 
 fig1 = go.Figure(data=[go.Table(
@@ -76,9 +103,11 @@ fig1 = go.Figure(data=[go.Table(
         cells=dict(values=[tasel.StockCode,tasel.StockName,tasel.L1Name,tasel.L2Name,tasel.L3Name,tasel.L4Name]))
                         ])
 
-tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0]])
+tab1, tab2, tab3 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0],'tt'])
 with tab1:
     st.plotly_chart(fig1, theme=None)
 with tab2:
     st.plotly_chart(fig, theme=None)
+with tab3:
+    st.plotly_chart(fig3, theme=None)
 
