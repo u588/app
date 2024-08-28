@@ -43,6 +43,10 @@ data = pd.merge(anafin, desel.reset_index(drop=False),left_on='Code',right_on='i
 
 lens = (max(data['mean'])-min(data['mean']))/2
 
+ll = ['StockCode','StockName']
+ta = mfinsel[ll + anafin.Code.tolist()].reset_index(drop=True)
+ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
+
 import plotly.graph_objects as go
 categories = data.cnName.tolist()
 
@@ -52,12 +56,14 @@ fig3.add_trace(go.Barpolar(
     r=list(data['mean']),
     theta=categories,
     name='行业均值',
+    # base='stack'
     # marker_color='rgb(106,81,163)'
 ))
 fig3.add_trace(go.Barpolar(
     r=list(data['vol']),
     theta=categories,
     name=StockName,
+    base='stack'
     # marker_color='rgb(158,154,200)'
 ))
 
@@ -99,9 +105,25 @@ fig.update_layout(
 )
 
 fig1 = go.Figure(data=[go.Table(
-        header=dict(values=list(tasel.columns)),
-        cells=dict(values=[tasel.StockCode,tasel.StockName,tasel.L1Name,tasel.L2Name,tasel.L3Name,tasel.L4Name]))
-                        ])
+        header=dict(values=list(tasel.columns),
+                    fill_color='lightskyblue',
+                    ),
+        cells=dict(values=[tasel.StockCode,tasel.StockName,tasel.L1Name,tasel.L2Name,tasel.L3Name,tasel.L4Name],
+                   fill_color='lightcyan',
+                )
+        )
+    ])
+
+fig4 = go.Figure(data=[go.Table(
+    header=dict(values=list(ta.columns),
+                line_color='darkslategray',
+                fill_color='lightskyblue',
+                align='left'),
+    cells=dict(values=list(round(ta,2).values.T),
+                line_color='darkslategray',
+                fill_color='lightcyan',
+                align='left'))
+])
 
 tab1, tab2, tab3 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0],'tt'])
 with tab1:
@@ -110,4 +132,5 @@ with tab2:
     st.plotly_chart(fig, theme=None)
 with tab3:
     st.plotly_chart(fig3, theme=None)
+    st.plotly_chart(fig4, theme=None)
 
