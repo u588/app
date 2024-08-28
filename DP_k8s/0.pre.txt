@@ -142,6 +142,16 @@ deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF
 apt-get update
 
+------------------ 清华源 https://mirrors4.tuna.tsinghua.edu.cn/help/kubernetes/ ------------------------
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+curl -fsSL https://mirrors4.tuna.tsinghua.edu.cn/kubernetes/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+cat <<EOF > /etc/apt/sources.list.d/kubernetes.list 
+deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://mirrors.tuna.tsinghua.edu.cn/kubernetes/core:/stable:/v1.30/deb/ /
+EOF
+
+
 
 
 mkdir /home/ts/k8s
