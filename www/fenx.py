@@ -40,7 +40,10 @@ fin = GetFin(StockCode,day)
 
 tasel = mfinsel[['StockCode','StockName','L1Name','L2Name','L3Name','L4Name']]
 
-anafin = fin.query('L1Code=="FZNL" and L3Code!="EMP"')
+# anafin = fin.query('L1Code=="FZNL" and L3Code!="EMP"') #1
+# anafin = fin.query('L1Code=="CZNL" and L3Code!="EMP"')#2
+# anafin = fin.query('L1Code=="HLNL" and L3Code!="EMP"')#3
+anafin = fin.query('L1Code=="JYNL" and L3Code!="EMP"')#4
 
 data = pd.merge(anafin, desel.reset_index(drop=False),left_on='Code',right_on='index',how='inner')
 
@@ -50,19 +53,18 @@ ll = ['StockCode','StockName']
 ta = mfinsel[ll + anafin.Code.tolist()].reset_index(drop=True)
 ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
 
-ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('扣非每股收益同比(%)',ascending=False)
-
+# ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('扣非每股收益同比(%)',ascending=False) #1
+# ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('速动比率(非金融类指标)',ascending=False) #2
+# ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('净利润率(非金融类指标)',ascending=False) #3
+ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('存货周转率(非金融类指标)',ascending=False) #4
 fta = pd.concat([ta_sort.head(8),ta_sort.tail(2)]).drop_duplicates(subset='StockCode').reset_index(drop=True)
 
 
 import plotly.graph_objects as go
 categories = data.cnName.tolist()
 
-import plotly.graph_objects as go
-categories = data.cnName.tolist()
 
 fig3 = go.Figure()
-
 fig3.add_trace(go.Barpolar(
     r=list(data['mean']),
     theta=categories,
@@ -159,11 +161,11 @@ fig1 = go.Figure(data=[go.Table(
     ])
 
 fig4 = go.Figure(data=[go.Table(
-    header=dict(values=list(ta.columns),
+    header=dict(values=list(fta.columns),
                 line_color='darkslategray',
                 fill_color='lightskyblue',
                 align='left'),
-    cells=dict(values=list(round(ta,2).values.T),
+    cells=dict(values=list(round(fta,2).values.T),
                 line_color='darkslategray',
                 fill_color='lightcyan',
                 align='left'))
@@ -171,11 +173,12 @@ fig4 = go.Figure(data=[go.Table(
 
 tab1, tab2, tab3 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0],'tt'])
 with tab1:
-    st.subheader(tasel.L1Name.head(1).values[0]+' : '+ tasel.L2Name.head(1).values+' : '+tasel.L3Name.head(1).values+' : '+tasel.L4Name.head(1).values)
+    st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
     st.plotly_chart(fig4, theme=None)
 with tab2:
     st.plotly_chart(fig, theme=None)
-with tab3:
     st.plotly_chart(fig3, theme=None)
+# with tab3:
+#     st.plotly_chart(fig3, theme=None)
 
 
