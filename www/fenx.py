@@ -1,6 +1,9 @@
 import pandas as pd
 from sqlalchemy import create_engine
 import streamlit as st
+import plotly
+
+colors = plotly.colors.qualitative.Pastel
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
@@ -47,6 +50,14 @@ ll = ['StockCode','StockName']
 ta = mfinsel[ll + anafin.Code.tolist()].reset_index(drop=True)
 ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
 
+ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('扣非每股收益同比(%)',ascending=False)
+
+fta = pd.concat([ta_sort.head(8),ta_sort.tail(2)]).drop_duplicates(subset='StockCode').reset_index(drop=True)
+
+
+import plotly.graph_objects as go
+categories = data.cnName.tolist()
+
 import plotly.graph_objects as go
 categories = data.cnName.tolist()
 
@@ -56,29 +67,48 @@ fig3.add_trace(go.Barpolar(
     r=list(data['mean']),
     theta=categories,
     name='行业均值',
+    marker_color='rgb(0,152,255)',
     # base='stack'
-    # marker_color='rgb(106,81,163)'
 ))
 fig3.add_trace(go.Barpolar(
     r=list(data['vol']),
     theta=categories,
     name=StockName,
-    base='stack'
-    # marker_color='rgb(158,154,200)'
+    marker_color='rgb(251,106,78)',
+    # base='stack'
 ))
+i = 0
+while i<len(fta):
+    fig3.add_trace(go.Barpolar(
+        r=list(fta.loc[i])[3:],
+        theta=categories,
+        name=list(fta.loc[i])[1],
+        marker_color=colors[i],
+        visible='legendonly',
+        # opacity=0.5
+        # base='overlay'
+    ))
+    i = i+1
 
 # fig.update_traces(text=list(data['cnName']))
 fig3.update_layout(
     # title='Wind Speed Distribution in Laurel, NE',
+    activeshape_opacity=0.2,
     font_size=12,
-    legend_font_size=16,
+    legend_font_size=12,
+    # legend_title='tee',
+    # legend_itemclick='toggleothers',
+
+
+    # legend_visible=False,
+    # showlegend=False,
+    # legend_activeselection=False,
+    
 
     # polar_radialaxis_ticksuffix='%',
     # polar_angularaxis_rotation=90,
 
 )
-
-
 
 fig = go.Figure()
 
@@ -95,11 +125,25 @@ fig.add_trace(go.Scatterpolar(
       name=StockName
 ))
 
+i = 0
+while i<len(fta):
+    fig.add_trace(go.Scatterpolar(
+        r=list(fta.loc[i])[3:],
+        theta=categories,
+        name=list(fta.loc[i])[1],
+        marker_color=colors[i],
+        visible='legendonly',
+        fill='toself'
+        # opacity=0.5
+        # base='overlay'
+    ))
+    i = i+1
+
 fig.update_layout(
   polar=dict(
     radialaxis=dict(
       visible=True,
-      range=[round((min(anafin.vol)-(3*lens)),2), max(anafin.vol)+lens]
+    #   range=[round((min(anafin.vol)-(3*lens)),2), max(anafin.vol)+lens]
     )),
   # showlegend=False
 )
