@@ -171,10 +171,11 @@ fig4 = go.Figure(data=[go.Table(
 
 tab1, tab2, tab3 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0],'tt'])
 with tab1:
-    st.plotly_chart(fig1, theme=None)
+    st.subheader(tasel.L1Name.head(1).values[0]+' : '+ tasel.L2Name.head(1).values+' : '+tasel.L3Name.head(1).values+' : '+tasel.L4Name.head(1).values)
+    st.plotly_chart(fig4, theme=None)
 with tab2:
     st.plotly_chart(fig, theme=None)
 with tab3:
     st.plotly_chart(fig3, theme=None)
-    st.plotly_chart(fig4, theme=None)
+
 
