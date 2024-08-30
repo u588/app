@@ -3,13 +3,18 @@ from sqlalchemy import create_engine
 import streamlit as st
 import plotly
 
-colors = plotly.colors.qualitative.Pastel
+st.set_page_config(
+    page_title="分析",
+    layout="wide"
+)
+
+colors = plotly.colors.qualitative.Light24
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 StockIC = pd.read_sql("StockIC", engB)
 
-StockCode = '600489'
+StockCode = '002202'
 day = 20231231
 
 l4name = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
@@ -58,7 +63,7 @@ ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('净利润率(非金融类指标)',ascending=False) #3
 ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('存货周转率(非金融类指标)',ascending=False) #4
 fta = pd.concat([ta_sort.head(8),ta_sort.tail(2)]).drop_duplicates(subset='StockCode').reset_index(drop=True)
-Tta = ta.T.reset_index()
+Tta = pd.concat([fta,ta[ta['StockCode']==StockCode]]).T.reset_index()
 
 import plotly.graph_objects as go
 categories = data.cnName.tolist()
@@ -130,7 +135,7 @@ fig.add_trace(go.Scatterpolar(
 i = 0
 while i<len(fta):
     fig.add_trace(go.Scatterpolar(
-        r=list(fta.loc[i])[3:],
+        r=list(fta.loc[i])[2:],
         theta=categories,
         name=list(fta.loc[i])[1],
         marker_color=colors[i],
@@ -173,10 +178,10 @@ fig4 = go.Figure(data=[go.Table(
 
 fig5 = go.Figure()
 i =2 
-while i<len(ta):
+while i<len(Tta):
     fig5.add_trace(go.Bar(
-        name=list(Tta.loc[i])[0], 
-        x=list(Tta.loc[1])[1:], 
+        name=list(Tta.loc[i])[0],
+        x=list(Tta.loc[1])[1:],
         # y=list(ta.loc[i])[2:]+abs(tamin)+8,
         y=list(Tta.loc[i])[1:],
         legendgroup="group"+str(i),
@@ -199,7 +204,7 @@ fig5.update_xaxes(zeroline=True, zerolinewidth=2, zerolinecolor='LightPink')
 fig5.update_layout(yaxis_tickformat=',d',legend_itemclick='toggleothers',)    
 
 
-tab1, tab2, tab3 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0],'tt'])
+tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0]])
 with tab1:
     st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
     st.plotly_chart(fig4, theme=None)
