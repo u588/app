@@ -82,9 +82,17 @@ git config --global user.email u588@sina.com
 git clone https://gitee.com/u588/App.git
 
 
-========= Rapdias ============
+========= Rapdias  GTX.2 cuda12.1============
 CUDA 11.8 with Driver 520.61.05 or newer
 CUDA 12.0 with Driver 525.60.13 or newer 
+
+pip install \
+    --extra-index-url=https://pypi.nvidia.com \
+    cudf-cu12==23.12.* dask-cudf-cu12==23.12.* cuml-cu12==23.12.* \
+    cugraph-cu12==23.12.* cuspatial-cu12==23.12.* cuproj-cu12==23.12.* \
+    cuxfilter-cu12==23.12.* cucim-cu12==23.12.* pylibraft-cu12==23.12.* \
+    raft-dask-cu12==23.12.* 
+
 
 pip install \
     --extra-index-url=https://pypi.nvidia.com \
@@ -98,6 +106,15 @@ pip install \
     cugraph-cu11==23.12.* cuspatial-cu11==23.12.* cuproj-cu11==23.12.* \
     cuxfilter-cu11==23.12.* cucim-cu11==23.12.* pylibraft-cu11==23.12.* \
     raft-dask-cu11==23.12.*    
+
+---------- 1080 后 ----------
+pip install \
+    --extra-index-url=https://pypi.nvidia.com \
+    cudf-cu12==24.8.* dask-cudf-cu12==24.8.* cuml-cu12==24.8.* \
+    cugraph-cu12==24.8.* cuspatial-cu12==24.8.* cuproj-cu12==24.8.* \
+    cuxfilter-cu12==24.8.* cucim-cu12==24.8.* pylibraft-cu12==24.8.* \
+    raft-dask-cu12==24.8.* cuvs-cu12==24.8.*
+
 
 pip uninstall \
     cudf-cu11 dask-cudf-cu11 cuml-cu11 \
