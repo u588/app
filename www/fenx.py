@@ -63,7 +63,8 @@ ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('净利润率(非金融类指标)',ascending=False) #3
 ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('存货周转率(非金融类指标)',ascending=False) #4
 fta = pd.concat([ta_sort.head(8),ta_sort.tail(2)]).drop_duplicates(subset='StockCode').reset_index(drop=True)
-Tta = pd.concat([fta,ta[ta['StockCode']==StockCode]]).T.reset_index()
+ffta = pd.concat([ta[ta['StockCode']==StockCode],fta]).reset_index(drop=True)
+Tta = ffta.T.reset_index()
 
 import plotly.graph_objects as go
 categories = data.cnName.tolist()
@@ -166,11 +167,11 @@ fig1 = go.Figure(data=[go.Table(
     ])
 
 fig4 = go.Figure(data=[go.Table(
-    header=dict(values=list(fta.columns),
+    header=dict(values=list(ffta.columns),
                 line_color='darkslategray',
                 fill_color='lightskyblue',
                 align='left'),
-    cells=dict(values=list(round(fta,2).values.T),
+    cells=dict(values=list(round(ffta,2).values.T),
                 line_color='darkslategray',
                 fill_color='lightcyan',
                 align='left'))
@@ -207,7 +208,10 @@ fig5.update_layout(yaxis_tickformat=',d',legend_itemclick='toggleothers',)
 tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0]])
 with tab1:
     st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
-    st.plotly_chart(fig4, theme=None)
+    # st.plotly_chart(fig4, theme=None)
+    st.dataframe(ffta.style.highlight_max(axis=0))
+    # st.table(ffta.style.highlight_max(axis=0))
+
 with tab2:
     st.plotly_chart(fig, theme=None)
     st.plotly_chart(fig5, theme=None)
