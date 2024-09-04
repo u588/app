@@ -48,7 +48,9 @@ tasel = mfinsel[['StockCode','StockName','L1Name','L2Name','L3Name','L4Name']]
 # anafin = fin.query('L1Code=="FZNL" and L3Code!="EMP"') #1
 # anafin = fin.query('L1Code=="CZNL" and L3Code!="EMP"')#2
 # anafin = fin.query('L1Code=="HLNL" and L3Code!="EMP"')#3
-anafin = fin.query('L1Code=="JYNL" and L3Code!="EMP"')#4
+# anafin = fin.query('L1Code=="JYNL" and L3Code!="EMP"')#4
+# anafin = fin.query('L1Code=="XJL" and L3Code!="EMP"')#5
+anafin = fin.query('L1Code=="ZBJG" and L3Code!="EMP"')#6
 
 data = pd.merge(anafin, desel.reset_index(drop=False),left_on='Code',right_on='index',how='inner')
 
@@ -61,7 +63,9 @@ ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('扣非每股收益同比(%)',ascending=False) #1
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('速动比率(非金融类指标)',ascending=False) #2
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('净利润率(非金融类指标)',ascending=False) #3
-ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('存货周转率(非金融类指标)',ascending=False) #4
+# ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('存货周转率(非金融类指标)',ascending=False) #4
+# ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('经营活动产生的现金流量净额/营业收入',ascending=False) #5
+ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('资产负债率(%)',ascending=True) #6
 fta = pd.concat([ta_sort.head(8),ta_sort.tail(2)]).drop_duplicates(subset='StockCode').reset_index(drop=True)
 ffta = pd.concat([ta[ta['StockCode']==StockCode],fta]).reset_index(drop=True)
 Tta = ffta.T.reset_index()
@@ -209,7 +213,7 @@ tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+
 with tab1:
     st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
     # st.plotly_chart(fig4, theme=None)
-    st.dataframe(ffta.style.highlight_max(axis=0))
+    st.dataframe(ta.style.highlight_max(axis=0))
     # st.table(ffta.style.highlight_max(axis=0))
 
 with tab2:
