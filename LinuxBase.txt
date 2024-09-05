@@ -1,5 +1,5 @@
 查看硬件
-sudo lshw --short
+sudo lshw -short
 
 ps pkill --> apt install procps
 
