@@ -1,0 +1,42 @@
+potplayer配置建议
+选项 ==> 全局滤镜优先权 ==> 
+
+
+
+
+
+https://zhuanlan.zhihu.com/p/73960527
+
+
+1、lavfilters(0.79.2)
+https://bgithub.xyz/Nevcairiel/LAVFilters
+
+2、madvr(0.92.17)
+https://forum.doom9.org/showthread.php?t=146228
+http://madshi.net/madVR.zip
+
+========= LAV 视频解码 =======
+3、NV 硬解技术为PureVideo: 硬解4K HEVC 10－bit视频 需要PureVideo VP7或以上规格的技术,2016年 10系后 PureVideo VP8  
+
+4、AMD 硬解技术是UVD: 硬解4K HEVC 10－bit视频 UVD 6．3或以上的版本, 2016年 RX 400系统后
+
+5、Intel GPU硬解技术是Intel Quick Sync Video: 硬解4K HEVC 10－bit视频 2017年 第七代酷睿
+
+
+使用DXVAChecker这款小软件即可 ==> HEVC＿VLD＿Main10 ==> 显示“4K”或者“QFHD”
+
+
+https://blog.csdn.net/xiaoyafang123/article/details/89087087
+6、LAV解码器 ==> Hardware Acceleration ==> 推荐使用DXVA2 copy－back , native会把数据完全交给GPU处理,而copy－back会多出一个回传到内存给CPU处理的步骤,硬解10bit视频，并不推荐使用native;用native解码会强制使用YUV输出（在LAV设置了RGB输出也不行），如果使用EVR渲染器画质会比较差。
+   6.1 如果性能足够强劲，还是推荐使用CPU软解，最不容易出错。
+    6.2 无论哪种硬解，都只对色彩空间是YUV 4：2：0的视频有效
+    6.3 madVR在0．9之后的版本才开始支持DXVA YUV 4：2：0的10bit解码输入
+    6.4 软解虽然费CPU，但也可以把更多的GPU资源留给madVR渲染器，以获取更高的画质
+
+========= madVR 视频渲染 ==========
+    7、播放HDR如何才能不偏色
+    7.1 HDR视频的色域是BT．2020，这是一个广色域，绝大多数的显示器只能支持色域BT．709（SDR级别色域）
+    madVR 设置  ==> devices ==>  选择“let madVR decide”
+
+======== 音频  ============
+8.1     目前只有正版的PowerDVD才可以播放UHD BD，破解版的无法播放。
