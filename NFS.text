@@ -59,8 +59,15 @@ sudo vim /etc/fstab
 
 
 -------------- mount命令 ---------------
+mount --bind olddir newdir
 
+递归的挂载
+mount --rbind olddir newdir
 
+mount --bind olddir newdir
+mount -o remount,ro,bind olddir newdir
+在使用 -o 的时候，是对一个已经挂载的
 
-
-
+umount ==> biyz  
+ 1、fuser命令可执行fuser -m mount的目录 查看有什么进程在使用它
+ 2、umount -l mount的目录
