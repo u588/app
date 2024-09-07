@@ -1,0 +1,15 @@
+https://blog.51cto.com/u_16099267/9831223
+1、apt install samba
+
+添加samba用户 xxx 在Linux用户中
+  sudo smbpasswd -a xxx
+
+ vi /etc/samba/smb.conf ==>
+   [共享目录名]
+   path = /nas
+   browseable = yes
+   writable = yes
+   available = yes
+   valid users = xxx
+ 
+restart samba
