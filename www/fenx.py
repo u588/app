@@ -14,13 +14,6 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 StockIC = pd.read_sql("StockIC", engB)
 
-StockCode = '002202'
-day = 20231231
-
-l4name = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
-StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-
-
 def GetFin(StockCode, day):
     finRAW = pd.read_sql(StockCode, eng)
     finRAW['report_date']=finRAW['report_date'].astype(object)
@@ -37,6 +30,41 @@ def GetFin(StockCode, day):
         fin.loc[fin.cnName==ite,"vol"] = fin[fin.cnName==ite]["vol"]*10000
     return fin
 
+def getfenCode(fenCode):    
+    match fenCode:
+            case 'FZNL':
+                svCode='扣非每股收益同比(%)'
+                asCode=False
+                return(svCode,asCode)
+            case 'CZNL':
+                svCode='速动比率(非金融类指标)'
+                asCode=False
+                return(svCode,asCode)
+            case 'HLNL':
+                svCode='净利润率(非金融类指标)'
+                asCode=False
+                return(svCode,asCode)
+            case 'JYNL':
+                svCode='存货周转率(非金融类指标)'
+                asCode=False
+                return(svCode,asCode)
+            case 'XJL':
+                svCode='经营活动产生的现金流量净额/营业收入'
+                asCode=False
+                return(svCode,asCode)
+            case 'ZBJG':
+                svCode='资产负债率(%)'
+                asCode=True
+                return(svCode,asCode)
+
+fxCode = 'XJL'
+StockCode = '002202'
+day = 20231231
+
+svCode,asCode=getfenCode(fxCode)
+l4name = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
+StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+
 finF = pd.read_sql('gpcw'+str(day), eng)
 mfin = pd.merge(finF,StockIC, left_on='code',right_on='StockCode', how='inner')
 mfinsel = mfin[mfin['L4Name']==l4name]
@@ -44,13 +72,13 @@ desel = mfin[mfin['L4Name']==l4name].describe().T
 fin = GetFin(StockCode,day)
 
 tasel = mfinsel[['StockCode','StockName','L1Name','L2Name','L3Name','L4Name']]
-
 # anafin = fin.query('L1Code=="FZNL" and L3Code!="EMP"') #1
 # anafin = fin.query('L1Code=="CZNL" and L3Code!="EMP"')#2
 # anafin = fin.query('L1Code=="HLNL" and L3Code!="EMP"')#3
 # anafin = fin.query('L1Code=="JYNL" and L3Code!="EMP"')#4
 # anafin = fin.query('L1Code=="XJL" and L3Code!="EMP"')#5
-anafin = fin.query('L1Code=="ZBJG" and L3Code!="EMP"')#6
+# anafin = fin.query('L1Code=="ZBJG" and L3Code!="EMP"')#6
+anafin = fin.query('L1Code=="'+ fxCode + '" and L3Code!="EMP"')
 
 data = pd.merge(anafin, desel.reset_index(drop=False),left_on='Code',right_on='index',how='inner')
 
@@ -65,7 +93,8 @@ ta = ta.rename(columns=dict(zip(ta.columns,(ll+anafin.cnName.tolist()))))
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('净利润率(非金融类指标)',ascending=False) #3
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('存货周转率(非金融类指标)',ascending=False) #4
 # ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('经营活动产生的现金流量净额/营业收入',ascending=False) #5
-ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('资产负债率(%)',ascending=True) #6
+# ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values('资产负债率(%)',ascending=True) #6
+ta_sort = ta.drop(index=ta[ta['StockCode']==StockCode].index).sort_values(svCode,ascending=asCode)
 fta = pd.concat([ta_sort.head(8),ta_sort.tail(2)]).drop_duplicates(subset='StockCode').reset_index(drop=True)
 ffta = pd.concat([ta[ta['StockCode']==StockCode],fta]).reset_index(drop=True)
 Tta = ffta.T.reset_index()
