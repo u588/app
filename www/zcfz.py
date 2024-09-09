@@ -45,6 +45,26 @@ for i,ite in enumerate(zzcfz.vol.to_list()):
 
 
 import plotly.express as px
+# import plotly.graph_objects as go
+# from plotly.subplots import make_subplots
+# fig = make_subplots(
+#     rows=2, cols=2,
+#     subplot_titles=("Plot 1", "Plot 2", "Plot 3", "Plot 4"))
+
+# fig.add_trace(px.sunburst(zcfz, path=['L2Name','L3Name','cnName'], values="vol"),
+#               row=1,col=1
+#               )
+# fig.add_trace(px.sunburst(zzcfz, path=['L2Name','cnName'], values="vol"),
+#               row=1,col=2)
+# fig.add_trace(go.Sunburst(zcfz, path=['L2Name','L3Name','cnName'], values="vol"),
+#               row=1,col=1
+#               )
+# fig.add_trace(go.Sunburst(zzcfz, path=['L2Name','cnName'], values="vol"),
+#               row=1,col=2)
+
+# fig.update_layout(title_text=stockCode)
+
+# st.plotly_chart(fig)
 
 fig = px.sunburst(zcfz, path=['L2Name','L3Name','cnName'], values="vol")
 # fig = px.treemap(zcfz, path=['L2Name','L3Name','cnName'], values="vol")
@@ -57,8 +77,17 @@ fig1.update_layout(title=stockCode)
 fig1.update_traces(textinfo='percent parent +label')
 # fig1.update_traces(textinfo='percent root +label')
 
-tab1, tab2 = st.tabs([stockCode+' : '+str(day)+" : Streamlit theme (default)", stockCode+" : Plotly native theme"])
-with tab1:
-    st.plotly_chart(fig1, theme="streamlit")
-with tab2:
-    st.plotly_chart(fig, theme=None)
+# # tab1, tab2 = st.tabs([stockCode+' : '+str(day)+" : Streamlit theme (default)", stockCode+" : Plotly native theme"])
+# # with tab1:
+# #     st.plotly_chart(fig1, theme="streamlit")
+# # with tab2:
+# #     st.plotly_chart(fig, theme=None)
+
+row1 = st.columns(2)
+row2 = st.columns(2)
+
+row1[0].container().plotly_chart(fig1)
+row1[1].container().plotly_chart(fig)
+# for col in row1+row2:
+#     cont=col.container()
+#     cont.plotly_chart(fig1)
