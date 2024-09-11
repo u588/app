@@ -10,7 +10,7 @@ sudo systemctl restart ollama
 
 ----------------0.3.8 后 -------------
 sudo systemctl stop ollama
-curl -fsSL https://bgithub.xyz/ollama/ollama/releases/download/v0.3.8/ollama-linux-amd64.tgz | sudo tar zx -C /usr
+curl -fsSL https://bgithub.xyz/ollama/ollama/releases/download/v0.3.10/ollama-linux-amd64.tgz | sudo tar zx -C /usr
 sudo useradd -r -s /bin/false -m -d /usr/share/ollama ollama
 
 
