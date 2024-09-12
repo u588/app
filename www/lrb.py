@@ -165,9 +165,9 @@ fig.update_layout(title_text="Sankey分析<br>"+"Code: "+str(day),
                   font_size=10)
 
 fig.update_layout(title = "Profit and loss statement", waterfallgap = 0.3)
-
+fig.update_layout(dragmode='pan')
 tab1, tab2 = st.tabs([stockCode+' : '+str(day)+" : Streamlit theme (default)", stockCode+" : Plotly native theme"])
 with tab1:
-    st.plotly_chart(fig, theme=None)
+    st.plotly_chart(fig, theme=None,config={'scrollZoom':True})
 with tab2:
     st.plotly_chart(fig1, theme=None)

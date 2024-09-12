@@ -9,7 +9,7 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 FSCode = pd.read_sql('FSCode',eng)
 wCode  = pd.read_sql('wCode', eng)
 stockCode = '600409'
-anCode = 'MGZB'
+anCode = 'CZNL'
 
 finRAW = pd.read_sql(stockCode, eng)
 finRAW = pd.concat([finRAW,finRAW['report_date'].rename('Index')],axis=1)
@@ -27,6 +27,9 @@ def getDF(anCode):
     match anCode:
         case "JYNL":
             df = sfin.query('L2Code=="JYNL" ')
+            return(df)
+        case "CZNL":
+            df = sfin.query('L3Code=="CZNL" ')
             return(df)
         case "HLNL":
             df = sfin.query('L2Code=="HLNL" ')
@@ -61,4 +64,5 @@ def getDF(anCode):
 df = getDF(anCode)
 import plotly.express as px
 fig = px.bar(df, x='cnName', y=list(df.columns[-84:]) ,barmode='group')
-st.plotly_chart(fig)
+fig.update_layout(dragmode='pan')
+st.plotly_chart(fig,config={'scrollZoom':True})
