@@ -12,3 +12,7 @@ screen -R
 
 退出
 Ctrl+a+d
+
+滚屏
+vi ~/.screenrc
+termcapinfo xterm* ti@:te@
