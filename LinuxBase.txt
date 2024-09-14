@@ -27,7 +27,29 @@ vi /etc/fstab
 UUID=id   挂载点  ext4 defaults 0 0
 
 
-============ 磁盘调整 =============
+============ debain 磁盘调整 =============
+root 
+fdisk -l 查看磁盘剩余空间
+
+fdisk /dev/sda
+> p 命令显示原有分配表 
+
+d 删除 Extended 分区
+n 重建 Extended 分区并扩容
+
+按照原分区表建立 逻辑分区  要保持分区起始位置一致
+p 查看新分区情况
+
+w 存盘退出
+
+刷新分区表
+partprobe
+
+调整分区大小
+resize2fs /dev/sdaX 
+
+
+============ ubuntu 磁盘调整 =============
 
 1、200G的硬盘，安装完后发现只有不足100G可用
 2、fdisk查看明明有个198GB
