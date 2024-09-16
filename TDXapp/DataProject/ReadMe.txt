@@ -93,6 +93,8 @@ print(pd.DataFrame(data=list_data))
 
 2024.5.12  --> gpcw20240331.zip 4786722
 2024.6.21  --> gpcw20240331.zip 4788337
+并入======== /home/ts/app/TDXapp/MtdxGetFS.py 
+
 
 2、手动更新数据库数据 
     更改以下程序中 ls = ["gpcwxxxxxxx.zip"]

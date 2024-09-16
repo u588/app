@@ -12,15 +12,13 @@ api.connect('119.147.212.81', 7709)
 mon = date.today().strftime('%m')
 year = date.today().strftime('%Y')
 match mon:
-    case mon if mon == '12':
-        filename='gpcw'+year+'1231.zip'
-    case mon if mon < '03':
-        filename='gpcw'+year+'1231.zip'
-    case mon if '03'<= mon < '06':
+    case mon if mon <= '03':
+        filename='gpcw'+str(int(year)-1)+'1231.zip'
+    case mon if '03'< mon <= '06':
         filename='gpcw'+year+'0331.zip'
-    case mon if '06'<= mon < '09':
+    case mon if '06'< mon <= '09':
         filename='gpcw'+year+'0630.zip'
-    case mon if '09'<= mon < '12':
+    case mon if '09'< mon <= '12':
         filename='gpcw'+year+'0930.zip'
 
 datacrawler = HistoryFinancialCrawler()
@@ -32,6 +30,7 @@ dd = datacrawler.to_df(data=result)
 dd['report_date']= dd['report_date'].astype(object)
 upday = dd['report_date'][0]
 dd = dd.round(2)
+dd.to_sql(filename[:-4], eng, if_exists='replace')
 for j,l in enumerate(dd.index.values.tolist()):
     try:
         day = pd.read_sql(l, eng)['report_date'].tail(1).tolist()[0]

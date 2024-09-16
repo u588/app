@@ -15,23 +15,22 @@ api.connect('119.147.212.81', 7709)
 
 
 '''
-检查系统更新
-import pandas as pd 
-from pytdx.crawler.history_financial_crawler import HistoryFinancialListCrawler
-crawler = HistoryFinancialListCrawler()
-list_data = crawler.fetch_and_parse()
-print(pd.DataFrame(data=list_data))
+/home/ts/app/test.ipynb 
+数据更新==> 
 
+gpcw2024.zip 1231 0930 0630 0331
 
 2024.2.21 5218
 2024.3.25 346077
 2024.5.12  --> gpcw20240331.zip 4786722
+2024.6.21  --> gpcw20240331.zip 4788337
+2024.9.16  --> gpcw20240331.zip 4806195
+2024.9.16  --> gpcw20240630.zip 5389032
 
-gpcw2024.zip 1231 0930 0630 0331
 
 '''
 
-ls = ['gpcw20240331.zip']
+ls = ['gpcw20240630.zip']
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 

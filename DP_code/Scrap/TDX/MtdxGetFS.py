@@ -1,3 +1,5 @@
+# ========= 移步 /home/ts/app/TDXapp/MtdxGetFS.py  此废止
+
 import pandas as pd
 from sqlalchemy import create_engine
 from pytdx.hq import TdxHq_API
@@ -11,7 +13,7 @@ api.connect('119.147.212.81', 7709)
 
 # lsD = pd.read_excel('G:/Gitee/App/MathAn/tdxFSls.xlsx')
 # ls = lsD['filename'].to_list() 2024.2.21 5218
-ls = ['gpcw20231231.zip']
+# ls = ['gpcw20231231.zip']
 
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
