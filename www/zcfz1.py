@@ -5,23 +5,40 @@ import streamlit as st
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 
 FSCode = pd.read_sql('FSCode',eng)
-stockCode = '600409'
-day = 20240331
+wCode  = pd.read_sql('wCode', eng)
+stockCode = '002202'
+day = 20240630
+
 
 finRAW = pd.read_sql(stockCode, eng)
+eng.dispose()
 finRAW = pd.concat([finRAW,finRAW['report_date'].rename('Index')],axis=1)
-trsfin = finRAW.set_index('Index').T
+
+midf = finRAW[wCode['Code']]*10000
+rdf = finRAW[list(set(finRAW.columns).difference(set(wCode['Code'])))]
+finW = pd.concat([rdf,midf],axis=1)
+
+trsfin = finW.set_index('Index').T
 trsfin = trsfin.reset_index().rename(columns={'index':'Code'})
 
 sfin = pd.merge(FSCode,trsfin,on='Code',how='inner')
+
+
+
+# finRAW = pd.read_sql(stockCode, eng)
+# finRAW = pd.concat([finRAW,finRAW['report_date'].rename('Index')],axis=1)
+# trsfin = finRAW.set_index('Index').T
+# trsfin = trsfin.reset_index().rename(columns={'index':'Code'})
+
+# sfin = pd.merge(FSCode,trsfin,on='Code',how='inner')
 
 ll = ['Index','L1Code','L1Name','L2Code','L2Name','L3Code','L3Name','Code','cnName']
 fin = pd.concat([sfin[ll],sfin[day].rename('vol')],axis=1)
 items = fin.cnName.to_list()
 sumite = [item for item in items if any(substr in item for substr in "万")]
 
-for ite in sumite:
-    fin.loc[fin.cnName==ite,"vol"] = fin[fin.cnName==ite]["vol"]*10000
+# for ite in sumite:
+#     fin.loc[fin.cnName==ite,"vol"] = fin[fin.cnName==ite]["vol"]*10000
 zcfz = fin.query('L1Code=="ZCFZ" and L3Code!="EMP" and L3Code!="HJ" and L3Code!="ZJ" and L3Code!="XJ"')
 
 zcfz = zcfz[~(zcfz["vol"]==0)].reset_index(drop=True)

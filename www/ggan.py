@@ -64,7 +64,7 @@ def getDF(anCode):
         case "JGCG":
             df = sfin.query('L1Code=="JGCG" ')
             return(df)
-df = getDF(anCode)
+df = getDF(anCode).reset_index(drop=True)
 
 import plotly.express as px
 fig = px.bar(df, x='cnName', y=list(df.columns[-84:]) ,barmode='group')
@@ -86,7 +86,6 @@ fig4.update_layout(dragmode='pan',legend_itemclick='toggleothers')
 tab1, tab2 = st.tabs(['1','2'])
 with tab1:
     st.plotly_chart(fig,config={'scrollZoom':True})
-with tab2:
     st.plotly_chart(fig1,config={'scrollZoom':True})
     st.plotly_chart(fig2,config={'scrollZoom':True})
     st.plotly_chart(fig3,config={'scrollZoom':True})

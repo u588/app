@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
-from chart import Kpro,getCsIndex,csIndexChart,getCsStock,d3plt,gganChart
+from chart import Kpro,getCsIndex,csIndexChart,getCsStock,d3plt,gganChart,gganPx,fenX
 from mootdx.quotes import Quotes
 import pandas as pd
 import re
@@ -83,10 +83,28 @@ def app():
         anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
         with st.sidebar:
             anName = st.selectbox(
-                '分析选项',
+                '专业财务信息',
                 (list(anData['L1Name']))
             )   
             submitted = st.form_submit_button('确认')
 
     if submitted:
-        st_pyecharts(gganChart.gChart(stockCodeSel[:6],list(anData[anData['L1Name']==anName]['L1Code'])[0]),height='600px')
+        tab1,tab2,tab3 = st.tabs(['历史数据Line','历史数据Bar','3'], )
+        with tab1:
+            st_pyecharts(gganChart.gChart(stockCodeSel[:6],list(anData[anData['L1Name']==anName]['L1Code'])[0]),height='600px')
+        with tab2:        
+            gganPx.ggPx(stockCodeSel[:6],list(anData[anData['L1Name']==anName]['L1Code'])[0])
+
+
+    with st.form('form4'):
+        # FSCode = pd.read_sql('FSCode',eng)
+        # eng.dispose()
+        # anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
+        with st.sidebar:
+            fenCode = st.selectbox(
+                '聚类分析',
+                ('FZNL','CZNL','HLNL','JYNL','XJL','ZBJG')
+            )   
+            submitted = st.form_submit_button('确认')
+        if submitted:
+            fenX.fenChart(stockCodeSel[:6], fenCode)

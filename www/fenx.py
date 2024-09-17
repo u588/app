@@ -57,9 +57,9 @@ def getfenCode(fenCode):
                 asCode=True
                 return(svCode,asCode)
 
-fxCode = 'XJL'
+fxCode = 'ZBJG'
 StockCode = '002202'
-day = 20231231
+day = 20240630
 
 svCode,asCode=getfenCode(fxCode)
 l4name = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
