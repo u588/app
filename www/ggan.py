@@ -9,7 +9,7 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 FSCode = pd.read_sql('FSCode',eng)
 wCode  = pd.read_sql('wCode', eng)
 stockCode = '600409'
-anCode = 'XJL'
+anCode = 'XJLL'
 
 finRAW = pd.read_sql(stockCode, eng)
 finRAW = pd.concat([finRAW,finRAW['report_date'].rename('Index')],axis=1)
