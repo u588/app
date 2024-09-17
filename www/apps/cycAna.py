@@ -1,8 +1,12 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
-from chart import Kpro,getCsIndex,csIndexChart,getCsStock,d3plt,detailChart
+from chart import Kpro,getCsIndex,csIndexChart,getCsStock,d3plt,gganChart
 from mootdx.quotes import Quotes
+import pandas as pd
 import re
+from sqlalchemy import create_engine
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxFS')
+
 
 def app():
     with st.form('form1'):
@@ -61,8 +65,8 @@ def app():
         with tab1:
             # st.header('Kpro')         
             st_pyecharts(Kpro.Kchart(stockCodeSel[:6]),renderer='canvas',height='750px',key='k')
-            st.header('财务分析')
-            st_pyecharts(detailChart.line(stockCodeSel[:6]),renderer="canvas",key='f')
+            # st.header('财务分析')
+            # st_pyecharts(detailChart.line(stockCodeSel[:6]),renderer="canvas",key='f')
 
         with tab2:
             # st.header('D3plt')
@@ -72,3 +76,17 @@ def app():
         with tab3:
             st.subheader(qf10)
             st.text(txt)
+
+    with st.form('form3'):
+        FSCode = pd.read_sql('FSCode',eng)
+        eng.dispose()
+        anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
+        with st.sidebar:
+            anName = st.selectbox(
+                '分析选项',
+                (list(anData['L1Name']))
+            )   
+            submitted = st.form_submit_button('确认')
+
+    if submitted:
+        st_pyecharts(gganChart.gChart(stockCodeSel[:6],list(anData[anData['L1Name']==anName]['L1Code'])[0]),height='600px')

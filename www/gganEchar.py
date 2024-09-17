@@ -73,6 +73,7 @@ def getDF(anCode):
         case "JGCG":
             df = sfin.query('L1Code=="JGCG" ')
             return(df)
+
 df = getDF(anCode).reset_index(drop=True)
 d = list(df['cnName'])
 
