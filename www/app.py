@@ -57,11 +57,11 @@ if __name__ == "__main__":
         else:
             default_index = 0
         # with st.expander('分析'):
-            # with st.sidebar:
+        with st.sidebar:
             selected = option_menu(
                 "工作室",
                 options=titles,
-                orientation='horizontal', 
+                # orientation='horizontal', 
                 icons=icons,
                 menu_icon="bank2",
                 default_index=default_index,

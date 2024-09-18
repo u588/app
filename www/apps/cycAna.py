@@ -103,8 +103,8 @@ def app():
         with st.sidebar:
             fenCode = st.selectbox(
                 '聚类分析',
-                ('FZNL','CZNL','HLNL','JYNL','XJL','ZBJG')
+                ('发展能力分析','偿债能力分析','获利能力分析','经营能力分析','现金流分析','资本结构分析')
             )   
             submitted = st.form_submit_button('确认')
         if submitted:
-            fenX.fenChart(stockCodeSel[:6], fenCode)
+            fenX.fenChart(stockCodeSel[:6], list(anData[anData['L1Name']==fenCode]['L1Code'])[0])
