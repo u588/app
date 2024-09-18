@@ -41,7 +41,7 @@ def d3(d,yie):
     data['name'] = data.IndexName + '：' + data.IndexCode
     data['pct'] = data[yie]
 
-    TOOLS="hover,crosshair,pan,box_zoom,undo,redo,reset,tap,save"
+    TOOLS="hover,crosshair,pan,box_zoom,undo,ywheel_zoom,redo,reset,tap,save"
 
     TOOLTIPS = [
         ("名称", "@name"),
