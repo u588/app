@@ -21,6 +21,7 @@ def ggPx(stockCode, anCode):
     trsfin = trsfin.reset_index().rename(columns={'index':'Code'})
 
     sfin = pd.merge(FSCode,trsfin,on='Code',how='inner')
+    N = sfin.shape[1]-9
 
     def getDF(anCode):
         match anCode:
@@ -67,7 +68,7 @@ def ggPx(stockCode, anCode):
 
 
     
-    fig = px.bar(df, x='cnName', y=list(df.columns[-84:]) ,barmode='group')
+    fig = px.bar(df, x='cnName', y=list(df.columns[-N:]) ,barmode='group')
     fig.update_layout(dragmode='pan',legend_itemclick='toggleothers')
 
     lis1 = list(filter(lambda x: '0331' in x, list(map(str,df.columns))))

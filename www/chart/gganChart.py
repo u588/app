@@ -24,6 +24,7 @@ def gChart(stockCode, anCode):
     trsfin = trsfin.reset_index().rename(columns={'index':'Code'})
 
     sfin = pd.merge(FSCode,trsfin,on='Code',how='inner')
+    N = sfin.shape[1]-9
 
     def getDF(anCode):
         match anCode:
@@ -70,8 +71,8 @@ def gChart(stockCode, anCode):
     df = getDF(anCode).reset_index(drop=True)
     d = list(df['cnName'])
 
-    dateA = list(map(str, df.columns[-85:]))
-    DataA = df[df.columns[-85:]]
+    dateA = list(map(str, df.columns[-N:]))
+    DataA = df[df.columns[-N:]]
 
     dateD = list(filter(lambda x: '1231' in x, list(map(str,df.columns))))
     DataD = df[list(map(int,dateD))]
