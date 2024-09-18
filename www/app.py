@@ -5,7 +5,8 @@ from apps import cycAna, recom, trend,qInfo,llmAna
 
 st.set_page_config(
     page_title="分析",
-    layout="wide"
+    layout="wide",
+    # menu_items={None}
 )
 
 USER = 'root'
@@ -38,27 +39,29 @@ if __name__ == "__main__":
             {"func": cycAna.app, "title": "周  期", "icon": "clock"},
             {"func": recom.app, "title": "推  荐", "icon": "cup-hot"},
             {"func": trend.app, "title": "趋  势", "icon": "graph-up-arrow"},
+            {"title": "---", "icon": "graph-up-arrow"},
             {"func": qInfo.app, "title": "查  询", "icon": "search"},
             {"func": llmAna.app, "title": "智 能 体", "icon": "robot"},
+            {"title": "---", "icon": "graph-up-arrow"},
             {"func": st.cache_data.clear, "title": "缓存清理", "icon": "recycle"},
         ]
 
         titles = [app["title"] for app in apps]
-        titles_lower = [title.lower() for title in titles]
+        # titles_lower = [title.lower() for title in titles]
         icons = [app["icon"] for app in apps]
 
         params = st.session_state
 
         if "page" in params:
-            default_index = int(titles_lower.index(params["page"][0].lower()))
+            default_index = int(titles.index(params["page"][0]))
         else:
             default_index = 0
-
-        with st.sidebar:
-
+        # with st.expander('分析'):
+            # with st.sidebar:
             selected = option_menu(
                 "工作室",
-                options=titles, 
+                options=titles,
+                orientation='horizontal', 
                 icons=icons,
                 menu_icon="bank2",
                 default_index=default_index,
