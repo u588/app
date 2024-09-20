@@ -8,6 +8,11 @@ container v.1.7.1:latest  updates runc v.1.1.7
 https://github.com/containerd/containerd/releases/download/v1.7.1/containerd-1.7.1-linux-amd64.tar.gz   
 https://github.com/containerd/containerd/blob/main/docs/RUNC.md
 
+
+======= 2024.9.20 container 1.7.22
+wget https://bgithub.xyz/containerd/containerd/releases/download/v1.7.22/containerd-1.7.22-linux-amd64.tar.gz
+
+
 -------------------- Step 1: Installing containerd ------------------------
 $ tar Cxzvf /usr/local containerd-1.7.1-linux-amd64.tar.gz
 bin/
@@ -18,18 +23,26 @@ bin/containerd-shim-runc-v1
 bin/containerd
 bin/containerd-stress
 
-https://raw.githubusercontent.com/containerd/containerd/main/containerd.service -->
+wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service -->
 cp containerd.service /usr/lib/systemd/system/containerd.service
 
 -------------------- Step 2: Installing runc ---------------------------
 runc v.1.1.7:latest
-https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64 -->
+https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64 
+
+======= 2024.9.20 container 1.7.22  runc 1.1.14
+wget https://bgithub.xyz/opencontainers/runc/releases/download/v1.1.14/runc.amd64
+
+-->
 /usr/local/sbin/runc
 $ install -m 755 runc.amd64 /usr/local/sbin/runc
 $ install -m 755 runc.amd64 /usr/local/bin/runc
 
 --------------------- Step 3: Installing CNI plugins -----------------------
 https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
+
+========== 2024.9.20 1.5.1
+wget https://bgithub.xyz/containernetworking/plugins/releases/download/v1.5.1/cni-plugins-linux-amd64-v1.5.1.tgz
 $ mkdir -p /opt/cni/bin
 $ tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
 ./

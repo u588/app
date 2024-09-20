@@ -63,3 +63,7 @@ cat file1 | grep 'name' > file2
 
 
 nerdctl
+
+============ 过滤删除 
+ctr -n k8s.io i del $(ctr -n k8s.io i ls | grep wstreamlim)
+docker rmi $(docker images ls | grep wstreamlim)

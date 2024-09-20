@@ -27,6 +27,9 @@ spec:
           server: 10.145.254.55
           path: /home/nfsroot/www
           readOnly: false
+      nodeSelector:
+        kubernetes.io/hostname: node-95.k8s.tsdc.io
+
 ---
 apiVersion: v1
 kind: Service
