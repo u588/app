@@ -18,6 +18,8 @@ spec:
         volumeMounts:
         - mountPath: /home 
           name: home
+      nodeSelector:
+        kubernetes.io/hostname: node-98.k8s.tsdc.io
 
       volumes:
       - name: home
