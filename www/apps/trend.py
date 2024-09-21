@@ -13,12 +13,14 @@ def app():
 
     tdxData = pd.read_sql('tdxIndexsData', engTDX)
     fig = px.scatter_ternary(tdxData,a='3D',b='5D',c='21D',hover_name='IndexName')
+    fig1 = px.scatter_3d(tdxData,x='3D',y='5D',z='21D',color='55D',hover_name='IndexName')
     # with st.form('form'):
     tab1,tab2 =st.tabs(['1','2'])
     with tab1:
         st.plotly_chart(fig)
     with tab2:
-        st_pyecharts(makSum.testti(),height='500px',width="100%")
+        st.plotly_chart(fig1)
+        # st_pyecharts(makSum.testti(),height='500px',width="100%")
 
 
 
