@@ -1,0 +1,13 @@
+https://hf-mirror.com/
+
+pip install -U huggingface_hub
+
+
+export HF_ENDPOINT=https://hf-mirror.com
+建议将上面这一行写入 ~/.bashrc
+
+
+huggingface-cli download --repo-type model --resume-download       --local-dir-use-symlinks False  --local-dir ./
+
+
+huggingface-cli download stabilityai/stable-cascade stage_a.safetensors --local-dir ./
