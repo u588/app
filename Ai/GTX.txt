@@ -36,3 +36,86 @@ NVIDIA T4	7.5   F16-65T     F32-8.1T                           5200
 NVIDIA A2	8.6               F32-4.5T
 NVIDIA A10	8.6               F32-4.5T                           21600
 NVIDIA L4 	8.9   F16-31.33T  F32-31.33T             24G         17000
+
+
+================= 显卡 温度 
+nvidia-smi -q -i 0,1 -d TEMPERATURE
+==>  P4
+Attached GPUs                             : 2
+GPU 00000000:05:00.0
+    Temperature
+        GPU Current Temp                  : 45 C
+        GPU T.Limit Temp                  : N/A
+        GPU Shutdown Temp                 : 94 C
+        GPU Slowdown Temp                 : 91 C
+        GPU Max Operating Temp            : N/A
+        GPU Target Temperature            : N/A
+        Memory Current Temp               : N/A
+        Memory Max Operating Temp         : N/A
+---------------------------------
+
+1、安装ipmitool
+sudo apt install ipmitool -Yes
+
+2、开机自动加载模块
+cat > /etc/modules-load.d/ipmi.conf << 'EOF'
+ipmi_si
+ipmi_devintf
+ipmi_msghandler
+EOF
+
+3、手动加载
+
+modprobe ipmi_poweroff
+modprobe ipmi_watchdog
+
+4、启动服务
+sudo systemctl restart ipmievd.service
+
+
+5、关闭自动调速
+#关闭自动调速
+sudo ipmitool -I lanplus -U root -P calvin -H 192.168.168.9 raw 0x30 0x30 0x01 0x00 
+ #35%   0x23 6120
+#40%转速 0x28 6720
+#50%转速 0x32
+#60%转速 0x3c
+#85%转速 0x55
+
+sudo ipmitool -I lanplus -U root -P calvin -H 192.168.168.9 raw 0x30 0x30 0x02 0xff 0x23
+ 
+
+
+
+--------------------
+/home/ts/ipmi_gpu.sh 
+#!/bin/bash
+# GPU个数
+gpu_count=2
+current_time=$(date "+%Y-%m-%d %H:%M")
+users="ts"
+max_temperature=0  # 用于记录最高的GPU温度
+max_temperature_gpu=0  # 用于记录最高温度的GPU编号
+ 
+# 遍历每个GPU，获取温度并记录最高温度的GPU编号和温度值
+for ((i=0; i<gpu_count; i++))
+do
+    # 获取第i个GPU的温度
+    temperature=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | sed -n "${i+1}p")
+ 
+    if [ $temperature -gt $max_temperature ]; then
+        max_temperature=$temperature
+        max_temperature_gpu=$i
+    fi
+done
+# 根据最高温度的GPU进行对应的调速操作
+if [ $max_temperature -gt 90 ]; then
+    # 设置风扇速度为100%
+    ipmitool -I lanplus -U root -P xxx -H 192.168.0.120 raw 0x30 0x30 0x02 0xff 0x64 && echo "$current_time - GPU $max_temperature_gpu 温度$max_temperature 过高 风扇转速已调整为100%" >> /home/$users/ipmi.log
+elif [ $max_temperature -gt 80 ]; then
+    # 设置风扇速度为80%
+    ipmitool -I lanplus -U root -P xxx -H 192.168.0.120 raw 0x30 0x30 0x02 0xff 0x50 && echo "$current_time - GPU $max_temperature_gpu 温度$max_temperature 过高 风扇转速已调整为80%" >> /home/$users/ipmi.log
+else
+    # 设置风扇速度为50%
+    ipmitool -I lanplus -U root -P xxx -H 192.168.0.120 raw 0x30 0x30 0x02 0xff 0x28 && echo "$current_time - GPU $max_temperature_gpu 温度$max_temperature过高 风扇转速已调整为50%" >> /home/$users/ipmi.log
+fi
