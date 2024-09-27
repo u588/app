@@ -7,12 +7,12 @@ from langchain_community.llms import Ollama
 from langchain.docstore.document import Document
 
 
-modls = requests.get("http://10.3.68.3:11434/v1/models", timeout=10).json()['data']
+models = requests.get("http://10.3.68.3:11434/v1/models", timeout=10).json()['data']
 
 ls = []
 n = 0
-while n < len(modls):
-    ls.append(modls[n]['id'])
+while n < len(models):
+    ls.append(models[n]['id'])
     n = n + 1
 
 def rag(txt, model): 
