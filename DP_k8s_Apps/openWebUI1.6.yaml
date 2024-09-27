@@ -39,6 +39,8 @@ spec:
             - name: openwebui-data
               mountPath: /app/backend/data
           # imagePullPolicy: IfNotPresent
+      nodeSelector:
+        kubernetes.io/hostname: node-96.k8s.tsdc.io
 
       volumes:
       - name: openwebui-data
