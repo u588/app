@@ -6,7 +6,7 @@ import streamlit as st
 
 
 qf10='行业分析'
-anCode = '财务状况排名'
+anCode = '估值水平排名'
 StockCode = '600996'
 
 
@@ -47,7 +47,14 @@ while i < len(dd):
         i=i+1
 Data.reset_index(drop=True,inplace=True)
 Data = Data.replace('---',0)
-ddf  = Data.apply(pd.to_numeric, errors='ignore')
+
+def to_numeric_safe(value):
+    try:
+        return pd.to_numeric(value)
+    except (ValueError, TypeError):
+        return value
+
+ddf  = Data.map(to_numeric_safe)
 
 
 fig = px.bar(ddf, y=ddf.columns[0], x=ddf.columns[1:], title=anCode,
