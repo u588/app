@@ -54,6 +54,14 @@ def fenChart(StockCode, fxCode):
                     svCode='资产负债率(%)'
                     asCode=True
                     return(svCode,asCode)
+                case 'MGZB':
+                    svCode='基本每股收益'
+                    asCode=True
+                    return(svCode,asCode)
+                case 'GB':
+                    svCode='已上市流通A股'
+                    asCode=True
+                    return(svCode,asCode)
 
     # fxCode = 'ZBJG'
     # StockCode = '002202'
@@ -239,8 +247,9 @@ def fenChart(StockCode, fxCode):
     tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0]])
     with tab1:
         st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
-        # st.plotly_chart(fig4, theme=None)
-        st.dataframe(ta.style.highlight_max(axis=0))
+        stta = ta.style.background_gradient(cmap='Blues')
+        stta = stta.format('{:,.2f}', subset=list(ta.columns[2:]))
+        st.dataframe(stta,selection_mode='single-row', hide_index=True)
         # st.table(ffta.style.highlight_max(axis=0))
 
     with tab2:
