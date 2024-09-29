@@ -17,12 +17,12 @@ while n < len(models):
 
 def rag(txt, model): 
     model = Ollama(base_url='http://10.3.68.2:11434', model=model, num_predict=-1, num_ctx=8192, temperature=0,num_thread=8)
-    prompt_template = """根据以下文本给出专业分析报告:
+    prompt_template = """你是一个高级金融分析师，专门负责使用机器学习模型进行股市预测。你的任务是基于以下文本生成详细的专业分析报告:
     {text}
     用中文撰写:"""
     # prompt_template = """Write a professional text analysis of the following:
     # {text}
-    # PROFESSIONAL TEXT ANALYSIS IN CHINESE:"""
+    # PROFESSIONAL TEXT ANALYSIS REPORTS IN CHINESE:"""
     # prompt_template = """Write a professional verbose summary of the following:
     # {text}
     # PROFESSIONAL VERBOSE SUMMARY IN CHINESE:"""
