@@ -62,6 +62,18 @@ def fenChart(StockCode, fxCode):
                     svCode='已上市流通A股'
                     asCode=True
                     return(svCode,asCode)
+                case 'ZCFZ':
+                    svCode='所有者权益（或股东权益）合计'
+                    asCode=True
+                    return(svCode,asCode)
+                case 'LRB':
+                    svCode='净利润'
+                    asCode=True
+                    return(svCode,asCode)
+                case 'XJLL':
+                    svCode='现金及现金等价物净增加额'
+                    asCode=True
+                    return(svCode,asCode)
 
     # fxCode = 'ZBJG'
     # StockCode = '002202'
@@ -84,7 +96,55 @@ def fenChart(StockCode, fxCode):
     # anafin = fin.query('L1Code=="JYNL" and L3Code!="EMP"')#4
     # anafin = fin.query('L1Code=="XJL" and L3Code!="EMP"')#5
     # anafin = fin.query('L1Code=="ZBJG" and L3Code!="EMP"')#6
-    anafin = fin.query('L1Code=="'+ fxCode + '" and L3Code!="EMP"')
+
+    def getQ(fxCode):
+        match fxCode:
+            case "JYNL":
+                df = 'L2Code=="JYNL" '
+                return(df)
+            case "CZNL":
+                df = 'L3Code=="CZNL" '
+                return(df)
+            case "HLNL":
+                df = 'L2Code=="HLNL" '
+                return(df)
+            case "FZNL":
+                df = 'L2Code=="FZNL" '
+                return(df)
+            case "GB":
+                df = 'L2Code=="GB" '
+                return(df)
+            case "DJ":
+                df = 'L2Code=="DJ" '
+                return(df)
+            case "MGZB":
+                df = 'L3Code=="MGZB" '
+                return(df)
+            case "XJL":
+                df = 'L1Code=="XJL" and L3Code=="XJL" '
+                return(df)
+            case "XJLL":
+                df = 'L1Code=="XJLL" and (L3Code=="JE" or L3Code=="ZJE") '
+                return(df)
+            case "LRB":
+                df = 'L1Code=="LRB" and (L3Code=="TZSY" or L3Code=="YYLRHJ"  or L3Code=="LRZE" or L3Code=="JLR" or L3Code=="HJ" or L3Code=="ZHSYZE"  or L3Code=="JLRL") '
+                return(df)
+            case "ZCFZ":
+                df = 'L1Code=="ZCFZ" and (L3Code=="HJ" or L3Code=="ZJ") '
+                return(df)
+            case "ZBJG":
+                df = 'L1Code=="ZBJG" '
+                return(df)
+            case "JGCG":
+                df = 'L1Code=="JGCG" '
+                return(df)
+
+
+
+
+
+    # anafin = fin.query('L1Code=="'+ fxCode + '" and L3Code!="EMP"')
+    anafin = fin.query(getQ(fxCode))
 
     data = pd.merge(anafin, desel.reset_index(drop=False),left_on='Code',right_on='index',how='inner')
 
