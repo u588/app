@@ -12,6 +12,8 @@ StockCode = '600996'
 
 client = Quotes.factory(market='std')
 txt = client.F10(StockCode, qf10)[116:]
+txt = txt.replace('│',' ')                
+txt = re.sub('([\u2500-\u25f7])','',txt)
 
 def getFind(anCode):
     match anCode:

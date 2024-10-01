@@ -11,7 +11,9 @@ def getBiz(StockCode, StockName):
     qf10='经营分析'
     client = Quotes.factory(market='std')
     txtRaw = client.F10(StockCode, qf10)
-    txt = txtRaw[116:]
+
+    txt = txtRaw.replace('│',' ')                
+    txt = re.sub('([\u2500-\u25f7])','',txt)[116:]
 
     # StockName = re.findall(r'\b'+StockCode+'\s+([^\s]*)',txtRaw)[0]
     try:
