@@ -8,7 +8,7 @@ engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
 
 
-def getTop(StockCode, StockName):
+def getFcast(StockCode, StockName):
     qf10='价值分析'
     client = Quotes.factory(market='std')
     txtRaw = client.F10(StockCode, qf10)[116:]
@@ -25,17 +25,15 @@ def getTop(StockCode, StockName):
     while i < len(dd):
         lis = dd[i].split()
         if len(lis)!=7:
-            i = i+1
-            # pass
+            pass
         else:
             df = pd.DataFrame(lis).T
-            # df.columns=["股票名称", "一周涨跌幅%","一月涨跌幅%","三月涨跌幅%","半年涨跌幅%","一年涨跌幅%"]
             Data = pd.concat([Data, df],axis=0)
-            i=i+1
+        i=i+1
     Data.reset_index(drop=True,inplace=True)
     Data = Data.replace('---',pd.NA)
 
-    Data.columns=[Data.loc[0]]
+    Data.columns=list(Data.loc[0])
     Data['StockCode'] = StockCode
     Data['StockName'] = StockName
 
@@ -46,7 +44,7 @@ StockList = pd.read_sql('StocksList', engs)[['code','name']]
 n = 0
 while n < len(StockList):
     try:
-        getTop(StockList.iloc[n,0], StockList.iloc[n,1])
+        getFcast(StockList.iloc[n,0], StockList.iloc[n,1])
         print(StockList.iloc[n,0]+ 'OK !')
         
     except:
