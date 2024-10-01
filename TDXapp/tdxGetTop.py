@@ -9,17 +9,15 @@ engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 def getTop(StockCode, StockName):
     qf10='热点题材'
     client = Quotes.factory(market='std')
-    txtRaw = client.F10(StockCode, qf10)
-
+    txtRaw = client.F10(StockCode, qf10)[116:]
     txt = re.findall(r'│(.*)│(关联度.*☆{4,})',txtRaw)
     txDF = pd.DataFrame(txt)
-    txDF = txDF.applymap(lambda x: x.rstrip() if isinstance(x, str) else x)
+    txDF = txDF.map(lambda x: x.rstrip() if isinstance(x, str) else x)
     txDF[1]=txDF[1].str.len()-4
     txDF.columns=['题材','相关度']
-
     txDF['StockCode'] = StockCode
     txDF['StockName'] = StockName
-    txDF.set_index('StockCode').to_sql('Top', eng, if_exist='append')
+    txDF.set_index('StockCode').to_sql('Top', eng, if_exists='append')
 
 
 StockList = pd.read_sql('StocksList', engs)[['code','name']]
