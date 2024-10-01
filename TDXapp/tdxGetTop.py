@@ -1,0 +1,36 @@
+from mootdx.quotes import Quotes
+import pandas as pd
+import re
+from sqlalchemy import create_engine
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
+engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+
+def getTop(StockCode, StockName):
+    qf10='热点题材'
+    client = Quotes.factory(market='std')
+    txtRaw = client.F10(StockCode, qf10)
+
+    txt = re.findall(r'│(.*)│(关联度.*☆{4,})',txtRaw)
+    txDF = pd.DataFrame(txt)
+    txDF = txDF.applymap(lambda x: x.rstrip() if isinstance(x, str) else x)
+    txDF[1]=txDF[1].str.len()-4
+    txDF.columns=['题材','相关度']
+
+    txDF['StockCode'] = StockCode
+    txDF['StockName'] = StockName
+    txDF.set_index('StockCode').to_sql('Top', eng, if_exist='append')
+
+
+StockList = pd.read_sql('StocksList', engs)[['code','name']]
+n = 0
+while n < len(StockList):
+    try:
+        getTop(StockList.iloc[n,0], StockList.iloc[n,1])
+        print(StockList.iloc[n,0]+ 'OK !')
+        
+    except:
+        print(StockList.iloc[n,0] + 'Failure ! ')
+       
+        pass
+    n = n + 1

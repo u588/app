@@ -6,7 +6,7 @@ import streamlit as st
 
 
 qf10='行业分析'
-anCode = '估值水平排名'
+anCode = '公司规模排名'
 StockCode = '600996'
 
 
@@ -67,6 +67,8 @@ fig.update_layout(dragmode='pan',)
 
 tab1, tab2 = st.tabs(['1','2'])
 with tab1:
-    st.dataframe(ddf.style.highlight_max(axis=0))
+    stta = ddf.style.background_gradient(cmap='Blues')
+    stta = stta.format('{:,.2f}', subset=list(ddf.columns[1:]))    
+    st.dataframe(stta, hide_index=True)
 with tab2:
     st.plotly_chart(fig,config={'scrollZoom':True})
