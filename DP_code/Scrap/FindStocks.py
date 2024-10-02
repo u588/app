@@ -4,6 +4,11 @@ import talib as tb
 import datetime
 from sqlalchemy import create_engine
 
+from chinese_calendar import is_holiday
+import sys
+while is_holiday(datetime.date.today()):
+    sys.exit(0)
+
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxStocks')
 engS = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/FindStocks')
