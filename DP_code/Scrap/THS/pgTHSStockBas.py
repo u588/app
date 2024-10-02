@@ -15,12 +15,12 @@ Exp = str(time.localtime()[0])+str(time.localtime()[1])
 for stockID in StockLists:
     try:
         stockDetail.getDetail(stockID).to_sql('StocksDetail'+Exp , eng, if_exists='append')
-        stockDetail.getManag(stockID).to_sql('StocksManags'+Exp, eng, if_exists='append')
-        a,b=stockDetail.getAff(stockID)
-        a.to_sql('StocksAffs'+Exp, eng, if_exists='append')
-        b['code'] = stockID
-        bb = b.reset_index().set_index('code')
-        bb.to_sql('AffManags'+Exp, eng, if_exists='append')
+        # stockDetail.getManag(stockID).to_sql('StocksManags'+Exp, eng, if_exists='append')
+        # a,b=stockDetail.getAff(stockID)
+        # a.to_sql('StocksAffs'+Exp, eng, if_exists='append')
+        # b['code'] = stockID
+        # bb = b.reset_index().set_index('code')
+        # bb.to_sql('AffManags'+Exp, eng, if_exists='append')
         # print(stockID, 'Saved to sql !')
         time.sleep(random.randint(0,2))
 

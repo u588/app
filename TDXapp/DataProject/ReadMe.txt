@@ -62,7 +62,7 @@ https://www.csindex.com.cn/#/indices/family/list -->导出列表
 shm.tnf  szm.tnf 
 
 
-======================= 每年 6.20  12.20 日 更新 =====================
+======================= 每年 6、12月 第三个星期日 更新 =====================
 1、中证列表(2)导出 编辑后存==> G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx
 2、tdx板块列表(3)导出后 运行==>       python  G:\Gitee\App\TDXapp\DataProject\tdxBLKIndex_StcokCode.py
 3、tdx中证指数列表(4)导出 编辑后存==> G:/Gitee/App/TDXapp/tdxAppData/tdxZZindexs.xlsx
