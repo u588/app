@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
-engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
+# engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
 
 from bokeh.models import ColumnDataSource, RangeTool, WheelZoomTool
 from bokeh.plotting import figure, show ,output_file
@@ -22,9 +22,9 @@ def d3(CodeId):
 
     df = pd.read_sql(CodeId, eng).reset_index(drop=True).reset_index()
     eng.dispose()
-    StocksList = pd.read_sql('StocksDetail20236', engB)
-    engB.dispose()
-    St = StocksList.loc[StocksList['code']==CodeId]
+    # StocksList = pd.read_sql('StocksDetail20236', engB)
+    # engB.dispose()
+    # St = StocksList.loc[StocksList['code']==CodeId]
     size =  ((preprocessing.minmax_scale(df.vol))*38).round(2)
     dates = pd.to_datetime(df.datetime.str[:10])
     sdate = df['datetime'].str[:10]
