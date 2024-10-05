@@ -309,7 +309,7 @@ def fenChart(StockCode, fxCode):
         st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
         stta = ta.style.background_gradient(cmap='Blues')
         stta = stta.format('{:,.2f}', subset=list(ta.columns[2:]))
-        st.dataframe(stta,selection_mode='single-row', hide_index=True)
+        st.dataframe(stta,on_select='rerun', hide_index=True)
         # st.table(ffta.style.highlight_max(axis=0))
 
     with tab2:
