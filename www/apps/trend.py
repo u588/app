@@ -1,6 +1,8 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
+from mootdx.quotes import Quotes
 from chart import makSum
+import re
 import plotly.express as px
 import pandas as pd
 from sqlalchemy import create_engine
@@ -41,18 +43,30 @@ def app():
             submitted1 = st.form_submit_button('确认')
         if submitted1:
             txtDF = topDF[topDF['题材'].str.contains(txt, na=False)].sort_values(by=['相关度','StockCode'], ascending=False).reset_index(drop=True)
+            prdDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            prdDF['项目名'] = prdDF['项目名'].str.replace('(产品)', '')
+            prDF = prdDF[prdDF['StockCode'].isin(list(txtDF['StockCode']))]
+            plData = prDF[prDF['收入比例(%)'].astype(float)>15]
+
+            tab11,tab12 =st.tabs(['1','2'])
+            with tab11:
+                st.dataframe(txtDF, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+            with tab12:
+                st.dataframe(plData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
             # txDF = txtDF.style.background_gradient(cmap='Blues')
             # txDF = txDF.format('{:,.2f}', subset=list(txtDF.columns[2:]))
             # st.dataframe(txtDF, hide_index=True,use_container_width=True,height=600,on_select='rerun')
-            st.dataframe(txtDF, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+            
 
     with st.form('form2'):
         with st.sidebar:
             txt = st.text_input(label='行业模糊查询', value='')
+            trdDate = st.selectbox('日期',('2024-06-30','2023-12-31'))
             submitted1 = st.form_submit_button('确认')
+
         if submitted1:
-            trdDF = bizDF[bizDF['项目名'].str.endswith('(行业)')][bizDF[bizDF['项目名'].str.endswith('(行业)')]['日期']=='2023-12-31'].reset_index(drop=True)
+            trdDF = bizDF[bizDF['项目名'].str.endswith('(行业)')][bizDF[bizDF['项目名'].str.endswith('(行业)')]['日期']==trdDate].reset_index(drop=True)
             trdDF['项目名'] = trdDF['项目名'].str.replace('(行业)', '')
             trdSe = trdDF[trdDF['项目名'].str.contains(txt, na=False)]
             pltData = trdSe[trdSe['收入比例(%)'].astype(float)>15]
@@ -63,8 +77,9 @@ def app():
         with st.sidebar:
             txt = st.text_input(label='产品模糊查询', value='')
             submitted1 = st.form_submit_button('确认')
+
         if submitted1:
-            prdDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']=='2023-12-31'].reset_index(drop=True)
+            prdDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']==trdDate].reset_index(drop=True)
 
             prdDF['项目名'] = prdDF['项目名'].str.replace('(产品)', '')
             prdSe = prdDF[prdDF['项目名'].str.contains(txt, na=False)]
@@ -72,5 +87,34 @@ def app():
 
             st.dataframe(pltData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
+    with st.form('form4'):
+        with st.sidebar:
+            stockCode = st.text_input(label='股票查询', value='')
+            qf10 = st.selectbox(
+                            'F10信息',
+                            ('最新提示',
+                            '公司概况',
+                            '热点题材',
+                            '公司公告',
+                            '公司报道',
+                            '经营分析',
+                            '行业分析',
+                            '价值分析',)
+                        )            
+            submitted4 = st.form_submit_button('确认')
+    if submitted4:
+        client = Quotes.factory(market='std')
+        # a = client.F10C(symbol=stockCode)
+        txt = client.F10(stockCode, qf10)
+        try:
+            txt = txt[:txt.find('〖免责条款〗')]
+        except:
+            pass
+        txt = txt.replace('│',' ')                
+        txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
 
+
+        st.subheader(qf10)
+        st.text(txt)
+            # st.markdown(txt)
 
