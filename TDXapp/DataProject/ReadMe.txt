@@ -76,6 +76,10 @@ shm.tnf  szm.tnf
 9、最终指数列表，由于在指数获取时服务器返回数据为空，需优化列表。 
         ==>  python G:\Gitee\App\TDXapp\optIndex.py
 
+10、tdx个股题材相关度 ==>              python   G:\Gitee\App\TDXapp\tdxGetTop.py
+11、tdx个股主营占比及前五大合作商占比  python    G:\Gitee\App\TDXapp\tdxGetBiz.py
+12、tdx个股3年业绩预测                 python    G:\Gitee\App\TDXapp\tdxFcast.py
+
 ============================ tdx 历史专业财务数据 1231 0930 0630 0331  =====================
 
 1、获取历史专业财务数据列表

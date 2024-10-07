@@ -12,7 +12,11 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
 engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
 
 topDF = pd.read_sql('Top', engB)
-bizDF = pd.read_sql('mBiz', engB)
+bizDF = pd.read_sql('mBiz', engB).dropna(subset='营业收入(元)')
+bizDF.loc[bizDF[bizDF['营业收入(元)'].str.endswith('万')].index,'营业收入(元)'] = bizDF[bizDF['营业收入(元)'].str.endswith('万')]['营业收入(元)'].str.replace('万','').astype(float)/10000
+bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'] = bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'].str.replace('亿','').astype(float)
+
+bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']].astype('float') 
 tdxData = pd.read_sql('tdxIndexsData', engTDX)
 
 def app():

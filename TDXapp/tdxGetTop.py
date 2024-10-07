@@ -14,11 +14,13 @@ def getTop(StockCode, StockName):
     txt = txtRaw.replace('│',' ')                
     txt = re.sub('([\u2500-\u25f7])','',txt)
     
-    txt = re.findall(r'│(.*)│(关联度.*☆{4,})',txt)
+    # txt = re.findall(r'│(.*)│(关联度.*☆{4,})',txt)
+    txt = re.findall(r'(\S+)\s+(\S+)\s+关联度.*(☆{4,})',txt)
     txDF = pd.DataFrame(txt)
-    txDF = txDF.map(lambda x: x.rstrip() if isinstance(x, str) else x)
-    txDF[1]=txDF[1].str.len()-4
-    txDF.columns=['题材','相关度']
+    # txDF = txDF.map(lambda x: x.rstrip() if isinstance(x, str) else x)
+
+    txDF[2]=txDF[2].str.len()
+    txDF.columns=['日期','题材','相关度']
     txDF['StockCode'] = StockCode
     txDF['StockName'] = StockName
     txDF.set_index('StockCode').to_sql('Top', eng, if_exists='append')
