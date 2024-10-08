@@ -23,7 +23,7 @@ def getTop(StockCode, StockName):
     txDF.columns=['日期','题材','相关度']
     txDF['StockCode'] = StockCode
     txDF['StockName'] = StockName
-    txDF.set_index('StockCode').to_sql('Top', eng, if_exists='append')
+    txDF[['StockCode','StockName','日期','题材','相关度']].set_index('日期').to_sql('Top', eng, if_exists='append')
 
 
 StockList = pd.read_sql('StocksList', engs)[['code','name']]

@@ -37,7 +37,7 @@ def getFcast(StockCode, StockName):
     Data['StockCode'] = StockCode
     Data['StockName'] = StockName
 
-    Data.tail(-1).set_index('StockCode').to_sql('Fcast', eng, if_exists='append')
+    Data[['StockCode','StockName', '财务指标', '2021年', '2022年', '2023年', '2024年预测', '2025年预测','2026年预测' ]].tail(-1).set_index('StockCode').to_sql('Fcast', eng, if_exists='append')
 
 
 StockList = pd.read_sql('StocksList', engs)[['code','name']]

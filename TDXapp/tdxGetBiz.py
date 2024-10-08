@@ -23,7 +23,7 @@ def getBiz(StockCode, StockName):
         csdf.columns = ["营收额","营收占比",'采购额',"采购占比"]
         csdf['StockCode'] = StockCode
         csdf['StockName'] = StockName
-        csdf.set_index('StockCode').to_sql('BizP', eng, if_exists='append')
+        csdf[['StockCode','StockName',"营收额","营收占比",'采购额',"采购占比"]].set_index('StockCode').to_sql('BizP', eng, if_exists='append')
 
     except:
         pass
@@ -61,7 +61,7 @@ def getBiz(StockCode, StockName):
 
     raDF['StockCode'] = StockCode
     raDF['StockName'] = StockName
-    raDF.set_index('日期').to_sql('mBiz', eng, if_exists='append')
+    raDF[['StockCode','StockName','日期',"项目名","营业收入(元)","收入比例(%)","营业利润(元)","利润比例(%)","毛利率(%)"]].set_index('日期').to_sql('mBiz', eng, if_exists='append')
 
 
 
