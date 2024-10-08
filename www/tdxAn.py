@@ -6,7 +6,7 @@ import streamlit as st
 
 
 qf10='行业分析'
-anCode = '公司规模排名'
+anCode = '估值水平排名'
 StockCode = '600996'
 
 
