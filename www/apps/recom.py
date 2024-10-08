@@ -107,7 +107,7 @@ def app():
             fig.update_layout(dragmode='pan',)
 
 
-            tab3, tab4 = st.tabs([titlCode[8:],stockCodeSel+' : '+stockName])
+            tab3, tab4 = st.tabs([titlCode[7:],stockCodeSel+' : '+stockName])
             with tab3:
                 stta = dddf.style.background_gradient(cmap='Blues')
                 stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))    
