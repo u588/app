@@ -5,6 +5,12 @@ from mootdx.quotes import Quotes
 import re
 import pandas as pd
 import plotly.express as px
+from sqlalchemy import create_engine
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+
+StockList = pd.read_sql('StocksList', eng)[['code','name']]
+StockList.columns=['股票编码','股票名称']
 
 
 def app():
@@ -20,49 +26,16 @@ def app():
                 '选择股票',
                 (selCode['code'])
             )
-            # qf10 = st.selectbox(
-            #                 'F10信息',
-            #                 ('最新提示',
-            #                 '公司概况',
-            #                 '财务分析',
-            #                 '股本结构',
-            #                 '股东研究',
-            #                 '机构持股',
-            #                 '分红融资',
-            #                 '高管治理',                                
-            #                 '资金动向',
-            #                 '资本运作',
-            #                 '热点题材',
-            #                 '公司公告',
-            #                 '公司报道',
-            #                 '经营分析',
-            #                 '行业分析',
-            #                 '价值分析',)
-            #             ) 
             submitted = st.form_submit_button('确认')
         if submitted:
-            # client = Quotes.factory(market='std')
-            # # a = client.F10C(symbol=stockCode)
-            # txt = client.F10(stockCodeSel, qf10)
-            # try:
-            #     txt = txt[:txt.find('〖免责条款〗')]
-            # except:
-            #     pass
-            # txt = txt.replace('│',' ')                
-            # txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符 
             tab1,tab2 = st.tabs(['Kpro','D3plt'])
             with tab1:
-                # st.header('Kpro')         
+      
                 st_pyecharts(Kpro.Kchart(stockCodeSel),height='750px')
-                # st.header('财务分析')
-                # st_pyecharts(detailChart.line(stockCodeSel))
-            with tab2:
-                # st.header('D3plt')
-                st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
 
-            # with tab3:
-            #     st.subheader(qf10)
-            #     st.text(txt)
+            with tab2:
+
+                st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
 
     with st.form('form1'):    
         with st.sidebar:
@@ -77,6 +50,9 @@ def app():
             txt = txt.replace('│',' ')                
             txt = re.sub('([\u2500-\u25f7])','',txt)
 
+            titlCode = re.findall(r'所属研究行业\S+', txt)[0]
+            stockName = list(StockList[StockList['股票编码'] == stockCodeSel]['股票名称'])[0]
+            
             def getFind(anCode):
                 match anCode:
                     case "市场表现排名":
@@ -100,7 +76,7 @@ def app():
             Data = pd.DataFrame(columns=lsCode[2])
             i = 3
             while i < len(dd):
-                lis = re.split(r"\s+", dd[i])[-6:]
+                lis = re.split(r"\s{3,}", dd[i])[-6:]
                 if len(lis)!=6:
                     i = i+1
                     # pass
@@ -111,6 +87,7 @@ def app():
                     i=i+1
             Data.reset_index(drop=True,inplace=True)
             Data = Data.replace('---',0)
+            Data['股票名称'] = Data['股票名称'].str.strip().str.replace(r'\s+', '', regex=True).str.replace('Ａ','A')
 
             def to_numeric_safe(value):
                 try:
@@ -120,17 +97,20 @@ def app():
 
             ddf  = Data.map(to_numeric_safe)
 
+            meddf = pd.merge(StockList,ddf,how='inner', on='股票名称')
+            dddf = pd.concat([meddf,ddf]).drop_duplicates(subset=['股票名称']).reset_index(drop=True)
 
-            fig = px.bar(ddf, y=ddf.columns[0], x=ddf.columns[1:], title=anCode,
+
+            fig = px.bar(dddf, y=dddf.columns[1], x=dddf.columns[1:], title=anCode,
                         barmode='relative', hover_name=ddf.columns[0],text_auto='')
             # fig.update_layout(dragmode='pan',legend_itemclick='toggleothers',)
             fig.update_layout(dragmode='pan',)
 
 
-            tab3, tab4 = st.tabs(['3','4'])
+            tab3, tab4 = st.tabs([titlCode[8:],stockCodeSel+' : '+stockName])
             with tab3:
-                stta = ddf.style.background_gradient(cmap='Blues')
-                stta = stta.format('{:,.2f}', subset=list(ddf.columns[1:]))    
+                stta = dddf.style.background_gradient(cmap='Blues')
+                stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))    
                 st.dataframe(stta, hide_index=True)
             with tab4:
                 st.plotly_chart(fig,config={'scrollZoom':True})
