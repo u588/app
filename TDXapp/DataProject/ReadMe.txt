@@ -89,7 +89,8 @@ from pytdx.hq import TdxHq_API
 from pytdx.crawler.history_financial_crawler import HistoryFinancialListCrawler
 
 api = TdxHq_API()
-api.connect('119.147.212.81', 7709)
+# api.connect('119.147.212.81', 7709) 2024.9.30废弃
+api.connect('180.153.18.170', 7709)
 
 crawler = HistoryFinancialListCrawler()
 list_data = crawler.fetch_and_parse()
