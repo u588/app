@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_echarts import st_pyecharts
 from chart import getData,d3plt,Kpro,detailChart
 from mootdx.quotes import Quotes
+import numpy as np 
 import re
 import pandas as pd
 import plotly.express as px
@@ -11,6 +12,14 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
 StockList = pd.read_sql('StocksList', eng)[['code','name']]
 StockList.columns=['股票编码','股票名称']
+
+def norm(df, column_name):
+    min_val = df[column_name].min()
+    max_val = df[column_name].max()
+    normalized_column = (df[column_name] - min_val) / (max_val - min_val)
+    scaled_column = normalized_column * (89 - 1) + 1
+    discrete_scaled_column = scaled_column.round().astype(int)
+    return discrete_scaled_column
 
 
 def app():
@@ -29,13 +38,24 @@ def app():
             submitted = st.form_submit_button('确认')
         if submitted:
             tab1,tab2 = st.tabs(['Kpro','D3plt'])
+
             with tab1:
-      
                 st_pyecharts(Kpro.Kchart(stockCodeSel),height='750px')
 
             with tab2:
+                scDF = pd.read_sql(stockCodeSel, eng)
+                scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
+                figsc = px.scatter(scDF, x='datetime', y='open',size='amount', opacity=0.6, color='close',trendline='ewm',trendline_options={'ignore_na': True,'span':3, 'min_periods':8})
+                figsc.update_layout(dragmode='pan',)
+                st.plotly_chart(figsc, config={'scrollZoom': True,'displaylogo':False},theme=None)                
 
-                st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
+                n = 21
+                weights = norm(scDF.tail(n),'amount')
+                weighted_data = np.repeat(scDF['close'].tail(n), repeats=weights)
+                figwt = px.violin(weighted_data,box=True)
+                st.plotly_chart(figwt,theme=None)
+
+                # st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
 
     with st.form('form1'):    
         with st.sidebar:
@@ -101,8 +121,8 @@ def app():
             dddf = pd.concat([meddf,ddf]).drop_duplicates(subset=['股票名称']).reset_index(drop=True)
 
 
-            fig = px.bar(dddf, y=dddf.columns[1], x=dddf.columns[1:], title=anCode,
-                        barmode='relative', hover_name=ddf.columns[0],text_auto='')
+            fig = px.bar(dddf, y=dddf.columns[1], x=dddf.columns[2:], title=anCode,
+                        barmode='relative', hover_name=dddf.columns[1],text_auto='')
             # fig.update_layout(dragmode='pan',legend_itemclick='toggleothers',)
             fig.update_layout(dragmode='pan',)
 
@@ -111,6 +131,6 @@ def app():
             with tab3:
                 stta = dddf.style.background_gradient(cmap='Blues')
                 stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))    
-                st.dataframe(stta, hide_index=True)
+                st.dataframe(stta, hide_index=True, on_select='rerun',use_container_width=True)
             with tab4:
                 st.plotly_chart(fig,config={'scrollZoom':True})
