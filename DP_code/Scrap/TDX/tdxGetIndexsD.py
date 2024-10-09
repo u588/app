@@ -67,7 +67,8 @@ sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
 
 
-with api.connect('119.147.212.81', 7709):
+# with api.connect('119.147.212.81', 7709):
+with api.connect('180.153.18.170', 7709):
     IndexLists=sh.IndexCode.to_list()     
     for i, IndexCode in enumerate(IndexLists):
         # print('Index', i, '/', len(IndexLists))
