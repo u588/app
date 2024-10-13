@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from apps import cycAna, recom, trend,qInfo,llmAna,indAna
+from apps import cycAna, recom, trend,qInfo,llmAna,bcAna,scAna
 
 
 st.set_page_config(
@@ -42,7 +42,8 @@ if __name__ == "__main__":
             {"title": "---", "icon": "graph-up-arrow"},
             {"func": qInfo.app, "title": "查  询", "icon": "search"},
             {"func": llmAna.app, "title": "智 能 体", "icon": "robot"},
-            {"func": indAna.app, "title": "大盘分析", "icon": "robot"},
+            {"func": bcAna.app, "title": "长 周 期", "icon": "robot"},
+            {"func": scAna.app, "title": "短 周 期", "icon": "robot"},
             {"title": "---", "icon": "graph-up-arrow"},
             {"func": st.cache_data.clear, "title": "缓存清理", "icon": "recycle"},
         ]
