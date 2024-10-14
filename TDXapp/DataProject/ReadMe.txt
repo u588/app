@@ -73,6 +73,7 @@ shm.tnf  szm.tnf
 7、获取cs成分股列表 ==>               python G:\Gitee\App\TDXapp\pgTDXCons.py
 8、生成股票成分股 更新数据库==>        python G:\Gitee\App\TDXapp\MergeCsTdxCons.py
 
+? 获取返回数据为空 的列表 ==>          python /home/ts/app/TDXapp/DataProject/getEMPIndexs.py
 9、最终指数列表，由于在指数获取时服务器返回数据为空，需优化列表。 
         ==>  python G:\Gitee\App\TDXapp\optIndex.py
 
