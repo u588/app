@@ -4,8 +4,8 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
-engI = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxIndex')
+engS = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxStocks')
+engI = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex')
 
 
 
