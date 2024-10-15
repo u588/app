@@ -1,0 +1,83 @@
+参考：==>  /home/ts/App/Keras_Torch/preInstall.txt
+
+官方 ==> Pascal(1080,P4 6.0算力)显卡推荐配置 cuDNN 9.0.0 CUDA11.8  
+        Volta(2080,7.0算力)   cuDNN 9.0.0 CUDA12.3
+
+一、系统环境：
+=========  CUDA ============== 
+https://developer.nvidia.com/cuda-downloads
+wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+wget https://developer.download.nvidia.com/compute/cuda/12.1.0/local_installers/cuda_12.1.0_530.30.02_linux.run
+
+1、 cuda
+GTX:/srv/CUDA
+sudo sh cuda_11.8.0_520.61.05_linux.run
+sudo sh cuda_12.1.0_530.30.02_linux.run
+
+vi ~/.bashrc
+export PATH=$PATH:/usr/local/cuda-11.8/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64
+
+2、cuDNN
+wget https://developer.download.nvidia.com/compute/cudnn/9.1.0/local_installers/cudnn-local-repo-ubuntu2204-9.1.0_1.0-1_amd64.deb
+下载包
+GTX:/srv/CUDA 
+sudo dpkg -i cudnn-9.1.0.deb
+sudo cp /var/cudnn-local-repo-ubuntu2204-9.0.0/cudnn-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+
+CUDA11 ==> sudo apt-get -y install cudnn-cuda-11
+CUDA12 ==> sudo apt-get -y install cudnn-cuda-12
+
+3、nccl 
+https://developer.download.nvidia.cn/compute/cuda/repos/ubuntu2204/x86_64/
+#配置网络存储库
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo apt-get update
+
+#安装特定版本
+sudo apt install libnccl2=2.15.5-1+cuda11.8 libnccl-dev=2.15.5-1+cuda11.8
+
+
+
+二、python环境：
+软件包==> GTX : /srv/nfs4/CUDA   P4: /srv/CUDA  
+
+1、========= Torch ============
+download.pytorch.org
+52.84.229.89
+52.84.229.13
+52.84.229.87
+52.84.229.68
+
+下载包
+https://download.pytorch.org/whl/cu118
+wget https://download.pytorch.org/whl/cu118/torchaudio-2.2.0%2Bcu118-cp310-cp310-linux_x86_64.whl
+
+
+2、============ Xformers ==============
+https://github.com/facebookresearch/xformers 确定版本  在1、的地址下载whl包
+v0.0.23.post1 ==> PyTorch 2.1.2 
+源码安装
+pip install ninja
+pip install -v -U git+https://github.com/facebookresearch/xformers.git@main#egg=xformers
+
+3、========== 编译安装 Llama ==========
+git clone https://github.com/ggerganov/llama.cpp
+
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir --verbose 
+
+======== 源码安装 exllamav2 ===========
+git clone https://github.com/turboderp/exllamav2
+cd exllamav2
+pip install .
+
+pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu118/
+
+======== 源码 autoAWQ ========
+git clone https://github.com/casper-hansen/AutoAWQ
+cd AutoAWQ
+pip install -e .
