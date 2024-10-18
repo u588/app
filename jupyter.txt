@@ -4,17 +4,19 @@ jupyter lab --generate-config
 
 
 cat ~/.jupyter/jupyter_lab_config.py
-c.NotebookApp.allow_remote_access = True
+c.ServerApp.allow_remote_access = True
 c.NotebookApp.open_browser = False
-c.NotebookApp.ip = '0.0.0.0'
-
+c.ServerApp.ip = '0.0.0.0'
 
 jupyter server password
 ===> ~/.jupyter/jupyter_server_config.json
 
+
 ========= run ========
 10.3.68.2 screen 
-source  /home/ts/Jupyter/bin/activate
+cd ==> 相应jupyter目录
+pipenv run jupyter lab
+# source  /home/ts/Jupyter/bin/activate
 jupyter lab 
 
 ======== 10.3.68.2:8888 ==============

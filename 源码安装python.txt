@@ -1,0 +1,24 @@
+1、https://www.python.org/ftp/python
+
+sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.12.7/Python-3.12.7.tgz
+sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
+
+2、 依赖项
+sudo apt-get update
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+
+3、解压源码包
+tar xvf Python-3.x.x.tgz
+
+4、编译和安装
+cd ==> 相应目录
+./configure --enable-optimization
+sudo make -j $(nporc)
+sudo make altinstall
+
+
+
+
+

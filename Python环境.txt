@@ -9,6 +9,43 @@ index-url = https://pypi.tuna.tsinghua.edu.cn/simple/
 [install]
 trusted-host = pypi.tuna.tsinghua.edu.cn
     
+
+=========== pipenv 虚拟环境管理 =============
+1、安装
+pip install pipenv
+2、创建虚拟环境
+建立目录
+cd ==> 目录
+pipenv install --python 3.12（版本）
+
+pipenv install (python包)
+
+3、激活环境
+ 在相应目录中  ==> pipenv shell
+ 
+ 退出虚拟环境 exit
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ================================
 1、设置默认python
 #查看python3 的安装位置
