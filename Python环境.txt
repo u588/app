@@ -25,28 +25,11 @@ pipenv install (python包)
  
  退出虚拟环境 exit
 
- 
+ 4、查看环境安装的包
+ pipenv run pip list
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-================================
+==========原生虚拟环境 
 1、设置默认python
 #查看python3 的安装位置
 which python3  
