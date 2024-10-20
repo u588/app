@@ -6,6 +6,7 @@ import re
 import plotly.express as px
 import pandas as pd
 from sqlalchemy import create_engine
+from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX
 
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
@@ -19,27 +20,37 @@ bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'�
 bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']].astype('float') 
 tdxData = pd.read_sql('tdxIndexsData', engTDX)
 
+
+
+
+
+
 def app():
+
+    tdxData = pd.read_sql('tdxIndexsData', engTDX).sort_values('3D',ascending=False)
+    ptData = tdxData.style.background_gradient(cmap='Blues')
+    ptData = ptData.format('{:,.2f}', subset=list(tdxData.columns[2:]))
+    # fig = px.scatter_ternary(tdxData,a='3D',b='5D',c='21D',hover_name='IndexName')
+    fig1 = px.scatter_3d(tdxData,x='3D',y='5D',z='21D',color='55D',hover_name='IndexName',height=600)
+    # with st.form('form'):
+    tab1,tab2 =st.tabs(['1','2'])
+    with tab1:
+        # st.plotly_chart(fig)
+        st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
+    with tab2:
+        st.plotly_chart(fig1, use_container_width=True)
+        # st_pyecharts(makSum.testti(),height='500px',width="100%")
+    # with tab3:
+    #     st_pyecharts(makSum.testti(),height='600px',width="100%")
+
     with st.form('form0'):
         with st.sidebar:
-            submitted0 = st.form_submit_button('趋势')
+            indexCode = st.text_input(label='指数代码',value='')
+            submitted0 = st.form_submit_button('确认')
         if submitted0:
-            tdxData = pd.read_sql('tdxIndexsData', engTDX).sort_values('3D',ascending=False)
-            ptData = tdxData.style.background_gradient(cmap='Blues')
-            ptData = ptData.format('{:,.2f}', subset=list(tdxData.columns[2:]))
-            # fig = px.scatter_ternary(tdxData,a='3D',b='5D',c='21D',hover_name='IndexName')
-            fig1 = px.scatter_3d(tdxData,x='3D',y='5D',z='21D',color='55D',hover_name='IndexName',height=600)
-            # with st.form('form'):
-            tab1,tab2,tab3 =st.tabs(['1','2','3'])
-            with tab1:
-                # st.plotly_chart(fig)
-                st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
-            with tab2:
-                st.plotly_chart(fig1, use_container_width=True)
-                # st_pyecharts(makSum.testti(),height='500px',width="100%")
-            with tab3:
-                st_pyecharts(makSum.testti(),height='600px',width="100%")
-        
+
+            st_pyecharts(indexChart.Kchart(indexCode),height='600px')
+
 
     with st.form('form1'):
         with st.sidebar:
