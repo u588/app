@@ -12,6 +12,7 @@ engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
 engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
 
+opIndex= pd.read_sql('optIndexs',engTDX)
 topDF = pd.read_sql('Top', engB)
 bizDF = pd.read_sql('mBiz', engB).dropna(subset='营业收入(元)')
 bizDF.loc[bizDF[bizDF['营业收入(元)'].str.endswith('万')].index,'营业收入(元)'] = bizDF[bizDF['营业收入(元)'].str.endswith('万')]['营业收入(元)'].str.replace('万','').astype(float)/10000
@@ -21,7 +22,8 @@ bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(
 tdxData = pd.read_sql('tdxIndexsData', engTDX)
 
 
-
+def normalize(x):
+    return (x - x.min()) / (x.max() - x.min())
 
 
 
@@ -48,8 +50,43 @@ def app():
             indexCode = st.text_input(label='指数代码',value='')
             submitted0 = st.form_submit_button('确认')
         if submitted0:
+            indexName = opIndex[opIndex['IndexCode']==indexCode]['IndexName'].values[0]
+            selDF = pd.read_sql(indexCode, engTDX)
 
-            st_pyecharts(indexChart.Kchart(indexCode),height='600px')
+            shDF = pd.read_sql('000001', engTDX)
+            szDF = pd.read_sql('399001', engTDX)
+            hs300DF = pd.read_sql('000300', engTDX)
+            csa500DF = pd.read_sql('000510', engTDX)
+            cs500DF = pd.read_sql('000905', engTDX)
+            sh50DF = pd.read_sql('000016', engTDX)
+            kc50DF = pd.read_sql('000688', engTDX)
+            cs1000DF = pd.read_sql('000852', engTDX)
+            plData = pd.DataFrame()
+            plData['datetime'] = shDF.tail(1150)['datetime'].reset_index(drop=True)
+
+            plData = pd.merge(plData,selDF.tail(1150)[['datetime','close']].rename(columns={'close':indexName}),on='datetime',how='outer')
+            plData = pd.merge(plData,shDF.tail(1150)[['datetime','close']].rename(columns={'close':'上证指数'}),on='datetime',how='outer')
+            plData = pd.merge(plData,szDF.tail(1150)[['datetime','close']].rename(columns={'close':'深证成指'}),on='datetime',how='outer')
+            plData = pd.merge(plData,hs300DF.tail(1150)[['datetime','close']].rename(columns={'close':'沪深300'}),on='datetime',how='outer')
+            plData = pd.merge(plData,csa500DF.tail(1150)[['datetime','close']].rename(columns={'close':'中证A500'}),on='datetime',how='outer')
+            plData = pd.merge(plData,cs500DF.tail(1150)[['datetime','close']].rename(columns={'close':'中证500'}),on='datetime',how='outer')
+            plData = pd.merge(plData,sh50DF.tail(1150)[['datetime','close']].rename(columns={'close':'上证50'}),on='datetime',how='outer')
+            plData = pd.merge(plData,kc50DF.tail(1150)[['datetime','close']].rename(columns={'close':'科创50'}),on='datetime',how='outer')
+            plData = pd.merge(plData,cs1000DF.tail(1150)[['datetime','close']].rename(columns={'close':'中证1000'}),on='datetime',how='outer')
+
+            ddd = plData.set_index('datetime').apply(normalize, axis=0)                     
+            fig = px.line(ddd.reset_index(),x='datetime', y=plData.columns,line_shape='linear')
+            fig.update_xaxes(showspikes=True, spikecolor="black", spikesnap="cursor", spikemode="across",spikethickness=0.6)
+            fig.update_yaxes(showspikes=True, spikecolor="black", spikesnap="cursor", spikemode="across",spikethickness=0.6)
+            fig.update_traces(hovertemplate='%{y:.2f}')
+            fig.update_layout(hovermode='x')
+            # fig.show(config={'scrollZoom': True,'displaylogo':False})
+
+            tab1,tab2 = st.tabs(['1','2'])
+            with tab1:
+                st_pyecharts(indexChart.Kchart(indexCode),height='600px')
+            with tab2:
+                st.plotly_chart(fig,config={'scrollZoom': True,'displaylogo':False},theme=None)
 
 
     with st.form('form1'):
