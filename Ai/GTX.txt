@@ -23,11 +23,15 @@ CUDA Example	TF32	FP32	FP16	INT8	FP16 Tensor Cores	INT8 Tensor Cores	DLA
 GeForce GTX 1080	6.1     F16-          F32-8.8T             870
 Geforce RTX 2080	7.5     F16-20.14T    F32-10.07T  215W     1500
 GeForce RTX 3080	8.6     F16-29.7T     F32-29.7T   320W     3000 
-GeForce RTX 3070	8.6     F16-20.4T     F32-20.4T   220W     1950
-GeForce RTX 3060	8.6     F16-13T       F32-13T     170W     1600
-GeForce RTX 4080	8.9     F16-48.7T     F32-48.7T   320W     8599    
-GeForce RTX 4070	8.9     F16-29.7T     F32-29T     200W     4700 
+
+GeForce RTX 3070	8.6     F16-20T       F32-20T     220W                   0%   2000
+GeForce RTX 4060Ti	8.9     F16-22T       F32-22T     160W     3199   2697   10%  2200  3000 36%   50%
+GeForce RTX 4070	8.9     F16-29T       F32-29T     200W     4799   3969   45%  2900  4000 38%  100%
+GeForce RTX 4070s	8.9     F16-36T       F32-36T     220W     4899   4348   80%  3600  4700 30%  135%
+
 GeForce RTX 4070Ti	8.9     F16-40.1T     F32-40.1T   285W     6300 
+GeForce RTX 4080	8.9     F16-48.7T     F32-48.7T   320W     8599 
+
 
 Tesla P100	6.0   F16-21.2T   F32-10.6T   F64-5.3T 
 Tesla P4	6.1   I8-22T      F32-5.5T 
