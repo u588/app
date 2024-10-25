@@ -1,0 +1,2 @@
+1、百度网盘
+aria2c -x8 -s8 https://pan.baidu.com/s/xxxxx  password=xxx
