@@ -28,6 +28,9 @@ pipenv install (python包)
  4、查看环境安装的包
  pipenv run pip list
 
+ 5、运行
+ cd 到目录 python3.13版 不兼容 ==> 用 python3.12
+ pipenv run jupyter lab
 
 ==========原生虚拟环境 
 1、设置默认python
