@@ -48,11 +48,25 @@ ALTER ROLE rep REPLICATION;
 
 
 ============ 数据库升级 ==========
-1、安装旧库
+
+1、安装新库
+2、数据库初始化 
+    ==> su postgres
+        mkdir /data/pg17
+        /usr/lib/postgresql/17/bin/initdb -D /data/pg17
+3、安装pgvector https://bgithub.xyz/pgvector/pgvector
+    export PATH=$/usr/lib/postgresql/17/bin/pg_config
+    /usr/bin/apt install  postgresql-17-pgvector
+4、安装https://bgithub.xyz/EnterpriseDB/system_stats
+    cd /home/ts/system_stats
+    PATH="/usr/lib/postgresql/17/bin/:$PATH" make install USE_PGXS=1
+
+旧库停库 /usr/lib/postgresql/16/bin/pg_ctl stop -D /data/pg16
+
 2、流式复制库 postgres$ pg_basebackup -h 10.3.18.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg12
-3、主从分离  停库从起 /usr/lib/postgresql/12/bin/pg_ctl stop -D /datat/pg12
+3、主从分离  停库从起 /usr/lib/postgresql/12/bin/pg_ctl stop -D /data/pg12
 3、改名旧库 /data/pg12/postgresql.auto.conf /data/pg12/standby.signal --> .bak
-4、主从分离  停库从起 /usr/lib/postgresql/12/bin/pg_ctl start -D /datat/pg12
+4、主从分离  停库从起 /usr/lib/postgresql/12/bin/pg_ctl start -D /data/pg12
 5、升级 /usr/lib/postgresql/16/bin/pg_upgrade --old-datadir /data/pg12/ --new-datadir /data/pg16/ --old-bindir /usr/lib/postgresql/12/bin/ --new-bindir /usr/lib/postgresql/16/bin/
 
 Upgrade Complete
