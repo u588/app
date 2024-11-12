@@ -10,16 +10,11 @@ def getTop(StockCode, StockName):
     qf10='热点题材'
     client = Quotes.factory(market='std')
     txtRaw = client.F10(StockCode, qf10)[116:]
-
     txt = txtRaw.replace('│',' ')                
     txt = re.sub('([\u2500-\u25f7])','',txt)
-    
-    # txt = re.findall(r'│(.*)│(关联度.*☆{4,})',txt)
-    txt = re.findall(r'(\S+)\s+(\S+)\s+关联度.*(☆{4,})',txt)
+    txt = re.findall(r'(\S+)\s+(\S+)\s+(关联度.☆{4,})',txt)
     txDF = pd.DataFrame(txt)
-    # txDF = txDF.map(lambda x: x.rstrip() if isinstance(x, str) else x)
-
-    txDF[2]=txDF[2].str.len()
+    txDF[2]=txDF[2].str.len()-4
     txDF.columns=['日期','题材','相关度']
     txDF['StockCode'] = StockCode
     txDF['StockName'] = StockName
