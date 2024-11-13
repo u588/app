@@ -10,7 +10,7 @@ slmgr /ipk WX4NM-KYWYW-QJJR4-XV3QB-6VM33
 
 slmgr.vbs -upk 删除key
 slmgr.vbs -ipk WX4NM-KYWYW-QJJR4-XV3QB-6VM33
-slmgr.vbs -skms 10.18.1.8
+slmgr.vbs -skms 10.18.1.5
 slmgr.vbs -ato
 slmgr.vbs -dlv
 slmgr.vbs -dli
