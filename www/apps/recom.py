@@ -8,16 +8,27 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
+
+from pytdx.hq import TdxHq_API
+import pandas as pd
+import plotly.express as px
+
+import numpy as np 
+
+api = TdxHq_API()
+
+
+
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
 StockList = pd.read_sql('StocksList', eng)[['code','name']]
 StockList.columns=['股票编码','股票名称']
 
-def norm(df, column_name):
+def norm(df, column_name, n):
     min_val = df[column_name].min()
     max_val = df[column_name].max()
     normalized_column = (df[column_name] - min_val) / (max_val - min_val)
-    scaled_column = normalized_column * (89 - 1) + 1
+    scaled_column = normalized_column * (n - 1) + 1
     discrete_scaled_column = scaled_column.round().astype(int)
     return discrete_scaled_column
 
@@ -35,7 +46,16 @@ def app():
                 '选择股票',
                 (selCode['code'])
             )
-            submitted = st.form_submit_button('确认')
+            submitted = st.form_submit_button('选择确认')
+            
+            anCode = st.selectbox(
+                '行业分析',
+                (["市场表现排名","公司规模排名","估值水平排名","财务状况排名"])
+            )
+            submitted1 = st.form_submit_button('分析确认')
+
+
+
         if submitted:
             tab1,tab2 = st.tabs(['Kpro','D3plt'])
 
@@ -47,24 +67,104 @@ def app():
                 scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
                 figsc = px.scatter(scDF, x='datetime', y='open',size='amount', opacity=0.6, color='close',trendline='ewm',trendline_options={'ignore_na': True,'span':3, 'min_periods':8})
                 figsc.update_layout(dragmode='pan',)
-                st.plotly_chart(figsc, config={'scrollZoom': True,'displaylogo':False},theme=None)                
+                st.plotly_chart(figsc, config={'scrollZoom': True,'displaylogo':False},theme=None)
 
-                n = 21
-                weights = norm(scDF.tail(n),'amount')
-                weighted_data = np.repeat(scDF['close'].tail(n), repeats=weights)
-                figwt = px.violin(weighted_data,box=True)
-                st.plotly_chart(figwt,theme=None)
+                if stockCodeSel < '600000':
+                    m = 0
+                else:
+                    m = 1 
+
+                api.connect('121.36.81.195', 7709)               
+
+                df3 = api.to_df(api.get_security_bars(8, m, stockCodeSel, 0, 720))
+                df5 = api.to_df(api.get_security_bars(0, m, stockCodeSel, 0, 240))
+                df13 = api.to_df(api.get_security_bars(0, m, stockCodeSel, 0, 624))
+                df21 = api.to_df(api.get_security_bars(9, m, stockCodeSel, 0, 21))
+                df55 = api.to_df(api.get_security_bars(9, m, stockCodeSel, 0, 55))
+                df144 = api.to_df(api.get_security_bars(9, m, stockCodeSel, 0, 144))
+
+                lsDF = [df3,df5,df13,df21,df55,df144]
+                lsD = ['3D','5D',"13D","21D","55D","144D"]
+                con = [720,240,624,21,55,144]
+                plDF = pd.DataFrame()
+                for n, df in enumerate(lsDF):
+                    weights = norm(df,'vol',con[n])
+                    weighted_data = np.repeat(df['close'], repeats=weights)
+                    dDF = pd.DataFrame(weighted_data)
+                    dDF['周期'] = lsD[n]
+                    plDF = pd.concat([plDF,dDF])
+                fig = px.violin(plDF,y='close',facet_col='周期',facet_col_spacing=0.01,box=True,violinmode='overlay',title='价格加权')
+                st.plotly_chart(fig,theme=None)
+
+
+                # n = 21
+                # weights = norm(scDF.tail(n),'amount')
+                # weighted_data = np.repeat(scDF['close'].tail(n), repeats=weights)
+                # figwt = px.violin(weighted_data,box=True)
+                # st.plotly_chart(figwt,theme=None)
 
                 # st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
 
-    with st.form('form1'):    
-        with st.sidebar:
-            anCode = st.selectbox(
-                '行业分析',
-                (["市场表现排名","公司规模排名","估值水平排名","财务状况排名"])
-            )
-            submitted1 = st.form_submit_button('确认')
+    # with st.form('form1'):    
+    #     with st.sidebar:
+    #         anCode = st.selectbox(
+    #             '行业分析',
+    #             (["市场表现排名","公司规模排名","估值水平排名","财务状况排名"])
+    #         )
+    #         submitted1 = st.form_submit_button('确认')
         if submitted1:
+
+            tab1,tab2 = st.tabs(['Kpro','D3plt'])
+
+            with tab1:
+                st_pyecharts(Kpro.Kchart(stockCodeSel),height='750px')
+
+            with tab2:
+                scDF = pd.read_sql(stockCodeSel, eng)
+                scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
+                figsc = px.scatter(scDF, x='datetime', y='open',size='amount', opacity=0.6, color='close',trendline='ewm',trendline_options={'ignore_na': True,'span':3, 'min_periods':8})
+                figsc.update_layout(dragmode='pan',)
+                st.plotly_chart(figsc, config={'scrollZoom': True,'displaylogo':False},theme=None)
+
+                if stockCodeSel < '600000':
+                    m = 0
+                else:
+                    m = 1 
+
+                api.connect('121.36.81.195', 7709)               
+
+                df3 = api.to_df(api.get_security_bars(8, m, stockCodeSel, 0, 720))
+                df5 = api.to_df(api.get_security_bars(0, m, stockCodeSel, 0, 240))
+                df13 = api.to_df(api.get_security_bars(0, m, stockCodeSel, 0, 624))
+                df21 = api.to_df(api.get_security_bars(9, m, stockCodeSel, 0, 21))
+                df55 = api.to_df(api.get_security_bars(9, m, stockCodeSel, 0, 55))
+                df144 = api.to_df(api.get_security_bars(9, m, stockCodeSel, 0, 144))
+
+                lsDF = [df3,df5,df13,df21,df55,df144]
+                lsD = ['3D','5D',"13D","21D","55D","144D"]
+                con = [720,240,624,21,55,144]
+                plDF = pd.DataFrame()
+                for n, df in enumerate(lsDF):
+                    weights = norm(df,'vol',con[n])
+                    weighted_data = np.repeat(df['close'], repeats=weights)
+                    dDF = pd.DataFrame(weighted_data)
+                    dDF['周期'] = lsD[n]
+                    plDF = pd.concat([plDF,dDF])
+                fig = px.violin(plDF,y='close',facet_col='周期',facet_col_spacing=0.01,box=True,violinmode='overlay',title='价格加权')
+                st.plotly_chart(fig,theme=None)
+                
+                # scDF = pd.read_sql(stockCodeSel, eng)
+                # scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
+                # figsc = px.scatter(scDF, x='datetime', y='open',size='amount', opacity=0.6, color='close',trendline='ewm',trendline_options={'ignore_na': True,'span':3, 'min_periods':8})
+                # figsc.update_layout(dragmode='pan',)
+                # st.plotly_chart(figsc, config={'scrollZoom': True,'displaylogo':False},theme=None)                
+
+                # n = 21
+                # weights = norm(scDF.tail(n),'amount')
+                # weighted_data = np.repeat(scDF['close'].tail(n), repeats=weights)
+                # figwt = px.violin(weighted_data,box=True)
+                # st.plotly_chart(figwt,theme=None)
+
             client = Quotes.factory(market='std')
             txt = client.F10(stockCodeSel, '行业分析')[116:]
             txt = txt.replace('│',' ')                

@@ -11,7 +11,7 @@ from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getCon
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
 engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
-engT = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks')
+engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
 opIndex= pd.read_sql('optIndexs',engTDX)
 topDF = pd.read_sql('Top', engB)
@@ -62,6 +62,32 @@ def plfig(nday,indexCode):
     fig.update_layout(hovermode='x')
     return(fig)    
 
+def sData(Data):
+    # D = pd.read_sql('IndexCons',engTDX)
+    # # d = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
+    # Data = D.loc[D['IndexCode']== indexCode].reset_index(drop=True)
+    StockLists = Data[['StockCode','StockName']].values.tolist()
+    shDF = pd.read_sql('000001', engTDX)
+    plData = pd.DataFrame()
+    plData['datetime'] = shDF['datetime'].reset_index(drop=True)
+    plData = pd.merge(plData,shDF[['datetime','close']].rename(columns={'close':'上证指数'}),on='datetime',how='outer')
+    for Stock in StockLists:
+        plData = pd.merge(plData,pd.read_sql(Stock[0],engS)[['datetime','close']].rename(columns={'close':Stock[1]}),on='datetime',how='outer')
+    return(plData)
+        
+def pltsData(nday,Data):
+    plData = sData(Data).tail(nday)
+    ddd = plData.set_index('datetime').apply(normalize, axis=0)                  
+    fig = px.line(ddd.reset_index(),x='datetime', y=plData.columns,line_shape='linear')
+    fig.update_xaxes(showspikes=True, spikecolor="black", spikesnap="cursor", spikemode="across",spikethickness=0.6)
+    fig.update_yaxes(showspikes=True, spikecolor="black", spikesnap="cursor", spikemode="across",spikethickness=0.6)
+    fig.update_traces(hovertemplate='%{y:.2f}')
+    fig.update_layout(hovermode='x')
+    fig.update_layout(dragmode='pan',legend_itemclick='toggleothers')
+    return(fig)    
+
+
+
 def app():
     tdxData = pd.read_sql('tdxIndexsData', engTDX).sort_values('3D',ascending=False)
     ptData = tdxData.style.background_gradient(cmap='Blues')
@@ -91,7 +117,7 @@ def app():
             pltCode = stockCode.style.background_gradient(cmap='Blues')
             pltCode = pltCode.format('{:,.2f}', subset=list(tdxData.columns[2:]))
         if submitted0:
-            tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8 = st.tabs(['K 线','13天指数比较','21天指数比较','3个月指数比较','半年指数比较','1年指数比较','3年数比较','5年指数比较'])
+            tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8 = st.tabs(['K 线','13天指数比较','21天指数比较','3个月指数比较','半年指数比较','1年指数比较','3年指数比较','5年指数比较'])
             with tab1:
                 st_pyecharts(indexChart.Kchart(indexCode),height='600px')
             with tab2:
@@ -124,16 +150,19 @@ def app():
                 st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
             with tab2c:
                 st.plotly_chart(fig1c, use_container_width=True)
-            tab1s, tab2s= st.tabs(['K 线','2'])
-            # tab1s(st.text(stockCodesel))
+            tab1s,tab2s,tab3s,tab4s,tab5s,tab6s = st.tabs(['K 线','13天比较','21天比较','3个月比较','半年比较','1年比较'])
             with tab1s:    
                 st_pyecharts(Kpro.Kchart(stockCodesel),renderer='canvas',height='750px',key='k')
-
-
-                
-
-            
-
+            with tab2s:
+                st.plotly_chart(pltsData(13,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
+            with tab3s:
+                st.plotly_chart(pltsData(21,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
+            with tab4s:
+                st.plotly_chart(pltsData(55,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
+            with tab5s:
+                st.plotly_chart(pltsData(144,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
+            with tab6s:
+                st.plotly_chart(pltsData(233,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
 
     with st.form('form1'):
         with st.sidebar:
