@@ -1,12 +1,13 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
 from mootdx.quotes import Quotes
-from chart import makSum
+# from chart import makSum
 import re
 import plotly.express as px
 import pandas as pd
 from sqlalchemy import create_engine
-from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getConsStock
+# from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getConsStock
+from chart import Kpro,indexChart,getConsStock
 
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
@@ -108,10 +109,10 @@ def app():
     with st.form('form0'):
         with st.sidebar:
             indexCode = st.text_input(label='指数代码',value='')
-            submitted0 = st.form_submit_button('确认')
+            submitted0 = st.form_submit_button('指数查询')
 
             stockCodesel = st.text_input(label='股票查询', value='')
-            submitted5 = st.form_submit_button('确')
+            submitted5 = st.form_submit_button('股票查询')
 
             stockCode = getConsStock.getStock(indexCode)
             pltCode = stockCode.style.background_gradient(cmap='Blues')
