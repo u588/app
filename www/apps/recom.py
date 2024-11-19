@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
-from chart import getData,d3plt,Kpro,detailChart
+# from chart import getData,d3plt,Kpro,detailChart
+from chart import getData,Kpro
 from mootdx.quotes import Quotes
 import numpy as np 
 import re
@@ -8,16 +9,8 @@ import pandas as pd
 import plotly.express as px
 from sqlalchemy import create_engine
 
-
 from pytdx.hq import TdxHq_API
-import pandas as pd
-import plotly.express as px
-
-import numpy as np 
-
 api = TdxHq_API()
-
-
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
@@ -103,22 +96,10 @@ def app():
                 # figwt = px.violin(weighted_data,box=True)
                 # st.plotly_chart(figwt,theme=None)
 
-                # st.bokeh_chart(d3plt.d3(stockCodeSel),use_container_width=True)
-
-    # with st.form('form1'):    
-    #     with st.sidebar:
-    #         anCode = st.selectbox(
-    #             '行业分析',
-    #             (["市场表现排名","公司规模排名","估值水平排名","财务状况排名"])
-    #         )
-    #         submitted1 = st.form_submit_button('确认')
         if submitted1:
-
             tab1,tab2 = st.tabs(['Kpro','D3plt'])
-
             with tab1:
                 st_pyecharts(Kpro.Kchart(stockCodeSel),height='750px')
-
             with tab2:
                 scDF = pd.read_sql(stockCodeSel, eng)
                 scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
@@ -152,18 +133,6 @@ def app():
                     plDF = pd.concat([plDF,dDF])
                 fig = px.violin(plDF,y='close',facet_col='周期',facet_col_spacing=0.01,box=True,violinmode='overlay',title='价格加权')
                 st.plotly_chart(fig,theme=None)
-                
-                # scDF = pd.read_sql(stockCodeSel, eng)
-                # scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
-                # figsc = px.scatter(scDF, x='datetime', y='open',size='amount', opacity=0.6, color='close',trendline='ewm',trendline_options={'ignore_na': True,'span':3, 'min_periods':8})
-                # figsc.update_layout(dragmode='pan',)
-                # st.plotly_chart(figsc, config={'scrollZoom': True,'displaylogo':False},theme=None)                
-
-                # n = 21
-                # weights = norm(scDF.tail(n),'amount')
-                # weighted_data = np.repeat(scDF['close'].tail(n), repeats=weights)
-                # figwt = px.violin(weighted_data,box=True)
-                # st.plotly_chart(figwt,theme=None)
 
             client = Quotes.factory(market='std')
             txt = client.F10(stockCodeSel, '行业分析')[116:]
