@@ -6,26 +6,28 @@ eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxInd
 engT = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
 IndexLists = pd.read_sql('optIndexs', eng).IndexCode.to_list()
 
-# @st.cache_data
-def getStock(Code,ID):
+@st.cache_data
+def getStock(Code):
     D = pd.read_sql('IndexCons',eng)
-    d = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
-    n = int(ID.strip('D'))
+    df = pd.DataFrame(columns=['StockCode', 'StockName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float}) 
     Data = D.loc[D['IndexCode']== Code].reset_index(drop=True)
-    StockLists = Data['StockCode'].to_list()
+    StockLists = Data[['StockCode','StockName']].values.tolist()
     for Stock in StockLists:
         try:
-            DD = pd.read_sql(Stock, engT)
-            dd = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
-            dd['code'] = [Stock] 
-            dd['PCB'] = [(DD.close.pct_change(1)*100).tail(n).sum().round(2)]
+            DD = pd.read_sql(Stock[0], engT)
+            dd = pd.DataFrame(columns=['StockCode', 'StockName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
+            dd['3D'] = [(DD.close.pct_change(1)*100).tail(3).sum().round(2)]
+            dd['5D'] = [(DD.close.pct_change(1)*100).tail(5).sum().round(2)]
+            dd['21D'] = [(DD.close.pct_change(1)*100).tail(21).sum().round(2)]
+            dd['55D'] = [(DD.close.pct_change(1)*100).tail(55).sum().round(2)]
+            dd['StockCode'] = Stock[0] 
+            dd['StockName'] = Stock[1]
             dd.reset_index(drop=True, inplace =True)
             # d = d.append(dd[['code','PCB']])
-            d = pd.concat([d, dd[['code','PCB']]])
+            df = pd.concat([df, dd])
         except:
             pass
-    d.reset_index(drop=True,inplace=True)
-    d['StockName']= Data['StockName']
-    d.sort_values(by='PCB', ascending=0, inplace=True)
+    df.sort_values(by='3D', ascending=0, inplace=True)
+    df.reset_index(drop=True,inplace=True)
     # data = d.to_json(orient='records')
-    return d
+    return df

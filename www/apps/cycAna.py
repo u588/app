@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
-from chart import Kpro,getCsIndex,csIndexChart,getConsStock,d3plt,gganChart,gganPx,fenX
+from chart import Kpro,getCsIndex,csIndexChart,getCsStock,d3plt,gganChart,gganPx,fenX
 from mootdx.quotes import Quotes
 import pandas as pd
 import re

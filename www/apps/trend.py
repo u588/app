@@ -6,11 +6,12 @@ import re
 import plotly.express as px
 import pandas as pd
 from sqlalchemy import create_engine
-from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getCsStock
+from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getConsStock
 
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
 engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
+engT = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks')
 
 opIndex= pd.read_sql('optIndexs',engTDX)
 topDF = pd.read_sql('Top', engB)
@@ -24,8 +25,8 @@ tdxData = pd.read_sql('tdxIndexsData', engTDX)
 
 def normalize(x):
     return (x - x.min()) / (x.max() - x.min())
-
-def plfig(nday,indexCode):
+@st.cache_data
+def plD(indexCode):
     indexName = opIndex[opIndex['IndexCode']==indexCode]['IndexName'].values[0]
     selDF = pd.read_sql(indexCode, engTDX)
 
@@ -38,19 +39,22 @@ def plfig(nday,indexCode):
     kc50DF = pd.read_sql('000688', engTDX)
     cs1000DF = pd.read_sql('000852', engTDX)
     plData = pd.DataFrame()
-    plData['datetime'] = shDF.tail(nday)['datetime'].reset_index(drop=True)
+    plData['datetime'] = shDF['datetime'].reset_index(drop=True)
 
-    plData = pd.merge(plData,selDF.tail(nday)[['datetime','close']].rename(columns={'close':indexName}),on='datetime',how='outer')
-    plData = pd.merge(plData,shDF.tail(nday)[['datetime','close']].rename(columns={'close':'上证指数'}),on='datetime',how='outer')
-    plData = pd.merge(plData,szDF.tail(nday)[['datetime','close']].rename(columns={'close':'深证成指'}),on='datetime',how='outer')
-    plData = pd.merge(plData,hs300DF.tail(nday)[['datetime','close']].rename(columns={'close':'沪深300'}),on='datetime',how='outer')
-    plData = pd.merge(plData,csa500DF.tail(nday)[['datetime','close']].rename(columns={'close':'中证A500'}),on='datetime',how='outer')
-    plData = pd.merge(plData,cs500DF.tail(nday)[['datetime','close']].rename(columns={'close':'中证500'}),on='datetime',how='outer')
-    plData = pd.merge(plData,sh50DF.tail(nday)[['datetime','close']].rename(columns={'close':'上证50'}),on='datetime',how='outer')
-    plData = pd.merge(plData,kc50DF.tail(nday)[['datetime','close']].rename(columns={'close':'科创50'}),on='datetime',how='outer')
-    plData = pd.merge(plData,cs1000DF.tail(nday)[['datetime','close']].rename(columns={'close':'中证1000'}),on='datetime',how='outer')
-
-    ddd = plData.set_index('datetime').apply(normalize, axis=0)                     
+    plData = pd.merge(plData,selDF[['datetime','close']].rename(columns={'close':indexName}),on='datetime',how='outer')
+    plData = pd.merge(plData,shDF[['datetime','close']].rename(columns={'close':'上证指数'}),on='datetime',how='outer')
+    plData = pd.merge(plData,szDF[['datetime','close']].rename(columns={'close':'深证成指'}),on='datetime',how='outer')
+    plData = pd.merge(plData,hs300DF[['datetime','close']].rename(columns={'close':'沪深300'}),on='datetime',how='outer')
+    plData = pd.merge(plData,csa500DF[['datetime','close']].rename(columns={'close':'中证A500'}),on='datetime',how='outer')
+    plData = pd.merge(plData,cs500DF[['datetime','close']].rename(columns={'close':'中证500'}),on='datetime',how='outer')
+    plData = pd.merge(plData,sh50DF[['datetime','close']].rename(columns={'close':'上证50'}),on='datetime',how='outer')
+    plData = pd.merge(plData,kc50DF[['datetime','close']].rename(columns={'close':'科创50'}),on='datetime',how='outer')
+    plData = pd.merge(plData,cs1000DF[['datetime','close']].rename(columns={'close':'中证1000'}),on='datetime',how='outer')
+    return(plData)   
+ 
+def plfig(nday,indexCode):
+    plData = plD(indexCode).tail(nday)
+    ddd = plData.set_index('datetime').apply(normalize, axis=0)                  
     fig = px.line(ddd.reset_index(),x='datetime', y=plData.columns,line_shape='linear')
     fig.update_xaxes(showspikes=True, spikecolor="black", spikesnap="cursor", spikemode="across",spikethickness=0.6)
     fig.update_yaxes(showspikes=True, spikecolor="black", spikesnap="cursor", spikemode="across",spikethickness=0.6)
@@ -59,7 +63,6 @@ def plfig(nday,indexCode):
     return(fig)    
 
 def app():
-
     tdxData = pd.read_sql('tdxIndexsData', engTDX).sort_values('3D',ascending=False)
     ptData = tdxData.style.background_gradient(cmap='Blues')
     ptData = ptData.format('{:,.2f}', subset=list(tdxData.columns[2:]))
@@ -80,7 +83,13 @@ def app():
         with st.sidebar:
             indexCode = st.text_input(label='指数代码',value='')
             submitted0 = st.form_submit_button('确认')
-            stockCode = getCsStock.getStock(indexCode,"3D")
+
+            stockCodesel = st.text_input(label='股票查询', value='')
+            submitted5 = st.form_submit_button('确')
+
+            stockCode = getConsStock.getStock(indexCode)
+            pltCode = stockCode.style.background_gradient(cmap='Blues')
+            pltCode = pltCode.format('{:,.2f}', subset=list(tdxData.columns[2:]))
         if submitted0:
             tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8 = st.tabs(['K 线','13天指数比较','21天指数比较','3个月指数比较','半年指数比较','1年指数比较','3年数比较','5年指数比较'])
             with tab1:
@@ -99,7 +108,31 @@ def app():
                 st.plotly_chart(plfig(610,indexCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
             with tab8:
                 st.plotly_chart(plfig(1597,indexCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
-            st.dataframe(stockCode, hide_index=True,use_container_width=True,height=600)
+
+            fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name='StockName',height=600)
+            tab1c,tab2c =st.tabs(['详 单','分 布'])
+            with tab1c:
+                # st.plotly_chart(fig)
+                st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
+            with tab2c:
+                st.plotly_chart(fig1c, use_container_width=True)
+        if submitted5:
+            fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name='StockName',height=600)
+            tab1c,tab2c =st.tabs(['详 单','分 布'])
+            with tab1c:
+                # st.plotly_chart(fig)
+                st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
+            with tab2c:
+                st.plotly_chart(fig1c, use_container_width=True)
+            tab1s, tab2s= st.tabs(['K 线','2'])
+            # tab1s(st.text(stockCodesel))
+            with tab1s:    
+                st_pyecharts(Kpro.Kchart(stockCodesel),renderer='canvas',height='750px',key='k')
+
+
+                
+
+            
 
 
     with st.form('form1'):
