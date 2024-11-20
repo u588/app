@@ -126,6 +126,19 @@ def app():
             stockCodesel = st.text_input(label='股票查询', value='')
             submitted5 = st.form_submit_button('股票查询')
 
+            qf10 = st.selectbox(
+                            'F10信息',
+                            ('最新提示',
+                            '公司概况',
+                            '热点题材',
+                            '公司公告',
+                            '公司报道',
+                            '经营分析',
+                            '行业分析',
+                            '价值分析',)
+                        )            
+            submitted4 = st.form_submit_button('F10查询')            
+
             stockCode = getConsStock.getStock(indexCode)
             pltCode = stockCode.style.background_gradient(cmap='Blues')
             pltCode = pltCode.format('{:,.2f}', subset=list(tdxData.columns[2:]))
@@ -180,6 +193,30 @@ def app():
             with tab6s:
                 st.plotly_chart(pltsData(233,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
 
+        if submitted4:
+            client = Quotes.factory(market='std')
+            # a = client.F10C(symbol=stockCode)
+            txt = client.F10(stockCodesel, qf10)
+            try:
+                txt = txt[:txt.find('〖免责条款〗')]
+            except:
+                pass
+            txt = txt.replace('│',' ')                
+            txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
+            st.subheader(qf10)
+            st.text(txt)       
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     with st.form('form1'):
         with st.sidebar:
             txt = st.text_input(label='题材模糊查询', value='')
@@ -230,34 +267,34 @@ def app():
 
             st.dataframe(pltData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
-    with st.form('form4'):
-        with st.sidebar:
-            stockCode = st.text_input(label='股票查询', value='')
-            qf10 = st.selectbox(
-                            'F10信息',
-                            ('最新提示',
-                            '公司概况',
-                            '热点题材',
-                            '公司公告',
-                            '公司报道',
-                            '经营分析',
-                            '行业分析',
-                            '价值分析',)
-                        )            
-            submitted4 = st.form_submit_button('确认')
-    if submitted4:
-        client = Quotes.factory(market='std')
-        # a = client.F10C(symbol=stockCode)
-        txt = client.F10(stockCode, qf10)
-        try:
-            txt = txt[:txt.find('〖免责条款〗')]
-        except:
-            pass
-        txt = txt.replace('│',' ')                
-        txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
+    # with st.form('form4'):
+    #     with st.sidebar:
+    #         stockCode = st.text_input(label='股票查询', value='')
+    #         qf10 = st.selectbox(
+    #                         'F10信息',
+    #                         ('最新提示',
+    #                         '公司概况',
+    #                         '热点题材',
+    #                         '公司公告',
+    #                         '公司报道',
+    #                         '经营分析',
+    #                         '行业分析',
+    #                         '价值分析',)
+    #                     )            
+    #         submitted4 = st.form_submit_button('确认')
+    # if submitted4:
+    #     client = Quotes.factory(market='std')
+    #     # a = client.F10C(symbol=stockCode)
+    #     txt = client.F10(stockCode, qf10)
+    #     try:
+    #         txt = txt[:txt.find('〖免责条款〗')]
+    #     except:
+    #         pass
+    #     txt = txt.replace('│',' ')                
+    #     txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
 
 
-        st.subheader(qf10)
-        st.text(txt)
-            # st.markdown(txt)
+    #     st.subheader(qf10)
+    #     st.text(txt)
+    #         # st.markdown(txt)
 
