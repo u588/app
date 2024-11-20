@@ -92,7 +92,7 @@ def viData(tdxData):
     cl=['3D','5D','21D','55D']
     for ls in cl:
         dff = pd.DataFrame()
-        dff = tdxData[list(tdxData.columns[:2])+[ls]]
+        dff = tdxData[list(tdxData.columns[:2])+[ls]].copy()
         dff.rename(columns={ls:'vol'},inplace=True)
         dff['周期'] = ls
         df = pd.concat([df,dff])
