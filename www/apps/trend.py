@@ -87,7 +87,16 @@ def pltsData(nday,Data):
     fig.update_layout(dragmode='pan',legend_itemclick='toggleothers')
     return(fig)    
 
-
+def viData(tdxData):
+    df=pd.DataFrame()
+    cl=['3D','5D','21D','55D']
+    for ls in cl:
+        dff = pd.DataFrame()
+        dff = tdxData[list(tdxData.columns[:2])+[ls]]
+        dff.rename(columns={ls:'vol'},inplace=True)
+        dff['周期'] = ls
+        df = pd.concat([df,dff])
+    return(df)
 
 def app():
     tdxData = pd.read_sql('tdxIndexsData', engTDX).sort_values('3D',ascending=False)
@@ -100,6 +109,9 @@ def app():
     with tab1:
         # st.plotly_chart(fig)
         st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
+        vdf = viData(tdxData)
+        figv = px.violin(vdf,y='vol',box=True,points='all',hover_name=vdf.IndexCode+' : '+vdf.IndexName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
+        st.plotly_chart(figv)
     with tab2:
         st.plotly_chart(fig1, use_container_width=True)
         # st_pyecharts(makSum.testti(),height='500px',width="100%")
@@ -141,6 +153,9 @@ def app():
             with tab1c:
                 # st.plotly_chart(fig)
                 st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
+                sdf = viData(stockCode)
+                figs = px.violin(sdf,y='vol',box=True,points='all',hover_name=sdf.StockCode+' : '+sdf.StockName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
+                st.plotly_chart(figs)
             with tab2c:
                 st.plotly_chart(fig1c, use_container_width=True)
         if submitted5:
