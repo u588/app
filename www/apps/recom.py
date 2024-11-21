@@ -191,7 +191,7 @@ def app():
 
 
             fig = px.bar(dddf, y=dddf.columns[1], x=dddf.columns[2:], title=anCode,
-                        barmode='relative', hover_name=dddf.columns[1],text_auto='')
+                        barmode='relative', hover_name=dddf.columns[0],text_auto='')
             # fig.update_layout(dragmode='pan',legend_itemclick='toggleothers',)
             fig.update_layout(dragmode='pan',)
 

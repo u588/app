@@ -31,7 +31,7 @@ def fenChart(StockCode, fxCode):
     def getfenCode(fenCode):    
         match fenCode:
                 case 'FZNL':
-                    svCode='扣非每股收益同比(%)'
+                    svCode='净利润增长率(%)'
                     asCode=False
                     return(svCode,asCode)
                 case 'CZNL':
