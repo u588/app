@@ -24,8 +24,10 @@ def getStock(Code,ID):
             d = pd.concat([d, dd[['code','PCB']]])
         except:
             pass
+
+    d.reset_index(drop=True,inplace=True)
+    d = pd.merge(d,Data,left_on='code',right_on='StockCode',how='inner')[['code','PCB','StockName']]
     d.sort_values(by='PCB', ascending=0, inplace=True)
-    dd = pd.concat([d.head(10), d.tail(5)]).drop_duplicates(subset='code')
-    data = dd.to_json(orient='records')
+    # data = d.to_json(orient='records')
     engT.dispose()
-    return data
+    return d

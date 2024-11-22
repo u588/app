@@ -25,7 +25,7 @@ def getStock(Code,ID):
         except:
             pass
     d.reset_index(drop=True,inplace=True)
-    d['StockName']= Data['StockName']
+    d = pd.merge(d,Data,left_on='code',right_on='StockCode',how='inner')[['code','PCB','StockName']]
     d.sort_values(by='PCB', ascending=0, inplace=True)
     # data = d.to_json(orient='records')
     return d
