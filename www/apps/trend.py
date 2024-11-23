@@ -103,16 +103,16 @@ def app():
     ptData = tdxData.style.background_gradient(cmap='Blues')
     ptData = ptData.format('{:,.2f}', subset=list(tdxData.columns[2:]))
     # fig = px.scatter_ternary(tdxData,a='3D',b='5D',c='21D',hover_name='IndexName')
-    fig1 = px.scatter_3d(tdxData,x='3D',y='5D',z='21D',color='55D',hover_name='IndexName',height=600)
+    fig1 = px.scatter_3d(tdxData,x='3D',y='5D',z='21D',color='55D',hover_name=tdxData.IndexCode +' : '+tdxData.IndexName,height=600)
     # with st.form('form'):
-    tab1,tab2 =st.tabs(['详 单','分 布'])
-    with tab1:
+    tab1m,tab2m =st.tabs(['详 单','分 布'])
+    with tab1m:
         # st.plotly_chart(fig)
         st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
         vdf = viData(tdxData)
         figv = px.violin(vdf,y='vol',box=True,points='all',hover_name=vdf.IndexCode+' : '+vdf.IndexName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
         st.plotly_chart(figv)
-    with tab2:
+    with tab2m:
         st.plotly_chart(fig1, use_container_width=True)
         # st_pyecharts(makSum.testti(),height='500px',width="100%")
     # with tab3:
@@ -161,7 +161,7 @@ def app():
             with tab8:
                 st.plotly_chart(plfig(1597,indexCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
 
-            fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name='StockName',height=600)
+            fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name=stockCode.StockCode + ' : '+ stockCode.StockName,height=600)
             tab1c,tab2c =st.tabs(['详 单','分 布'])
             with tab1c:
                 # st.plotly_chart(fig)
@@ -172,7 +172,7 @@ def app():
             with tab2c:
                 st.plotly_chart(fig1c, use_container_width=True)
         if submitted5:
-            fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name='StockName',height=600)
+            fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name=stockCode.StockCode + ' : '+ stockCode.StockName,height=600)
             tab1c,tab2c =st.tabs(['详 单','分 布'])
             with tab1c:
                 # st.plotly_chart(fig)
@@ -193,6 +193,18 @@ def app():
             with tab6s:
                 st.plotly_chart(pltsData(233,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
 
+
+
+
+
+
+
+
+
+
+
+
+
         if submitted4:
             client = Quotes.factory(market='std')
             # a = client.F10C(symbol=stockCode)
@@ -205,18 +217,7 @@ def app():
             txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
             st.subheader(qf10)
             st.text(txt)       
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
     with st.form('form1'):
         with st.sidebar:
             txt = st.text_input(label='题材模糊查询', value='')

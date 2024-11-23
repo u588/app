@@ -36,12 +36,12 @@ def login_page():
 if __name__ == "__main__":
     if st.session_state.logged_in:
         apps = [
-            {"func": cycAna.app, "title": "周  期", "icon": "clock"},
-            {"func": recom.app, "title": "推  荐", "icon": "cup-hot"},
             {"func": trend.app, "title": "趋  势", "icon": "graph-up-arrow"},
+            {"func": recom.app, "title": "推  荐", "icon": "cup-hot"},
+            # {"func": cycAna.app, "title": "周  期", "icon": "clock"},
             {"title": "---", "icon": "graph-up-arrow"},
             {"func": qInfo.app, "title": "查  询", "icon": "search"},
-            {"func": llmAna.app, "title": "智 能 体", "icon": "robot"},
+            # {"func": llmAna.app, "title": "智 能 体", "icon": "robot"},
             {"func": bcAna.app, "title": "长 周 期", "icon": "robot"},
             {"func": scAna.app, "title": "短 周 期", "icon": "robot"},
             {"title": "---", "icon": "graph-up-arrow"},
