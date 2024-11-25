@@ -12,6 +12,21 @@ api = TdxHq_API()
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxFS')
 engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
+
+
+
+topDF = pd.read_sql('Top', engB)
+bizDF = pd.read_sql('mBiz', engB).dropna(subset='营业收入(元)')
+bzPDF = pd.read_sql('BizP', engB)
+
+
+bizDF.loc[bizDF[bizDF['营业收入(元)'].str.endswith('万')].index,'营业收入(元)'] = bizDF[bizDF['营业收入(元)'].str.endswith('万')]['营业收入(元)'].str.replace('万','').astype(float)/10000
+bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'] = bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'].str.replace('亿','').astype(float)
+
+bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']].astype('float')
+bizDF.rename(columns={'营业收入(元)':'营业收入(亿元)'},inplace=True) 
+
 
 StockList = pd.read_sql('StocksList', engS)[['code','name']]
 StockList.columns=['股票编码','股票名称']
@@ -32,8 +47,9 @@ def app():
             stockCode = st.text_input(label='股票查询', value='')
             qf10 = st.selectbox(
                             'F10信息',
-                            ('最新提示',
+                            (
                             '公司概况',
+                            '最新提示',
                             '财务分析',
                             '股本结构',
                             '股东研究',
@@ -59,9 +75,17 @@ def app():
         except:
             pass
         txt = txt.replace('│',' ')                
-        txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符         
+        txt = re.sub('([\u2500-\u25f7])','',txt) #删除制表符
 
-        tab1,tab2 ,tab3= st.tabs(['Kpro','D3plt','F10'])
+        bzdf = bzPDF[bzPDF['StockCode'] == stockCode]
+        bidf = bizDF[bizDF['StockCode'] == stockCode]
+        topdf = topDF[topDF['StockCode'] == stockCode]
+        dqdf = bidf[bidf['项目名'].str.endswith('(地区)')]
+        hydf = bidf[bidf['项目名'].str.endswith('(行业)')]
+        cpdf = bidf[bidf['项目名'].str.endswith('(产品)')]
+
+
+        tab1,tab2 ,tab3,tab4,tab5,tab6 = st.tabs(['Kpro','D3plt','F10','题材','主营','前五商业占比'])
         with tab1:
             st_pyecharts(Kpro.Kchart(stockCode),height='750px')
             if stockCode < '600000':
@@ -110,6 +134,23 @@ def app():
             st.subheader(qf10)
             st.text(txt)
             # st.markdown(txt)
+        with tab4:
+            topstl = topdf.style.background_gradient(cmap='Blues')
+            # stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))
+            st.dataframe(topstl, hide_index=True,use_container_width=True)
+        with tab5:
+            # bistl = bidf.style.background_gradient(cmap='Blues')
+            # sbistl = bistl.format('{:,.2f}', subset=list(bistl.columns[5:]))
+            st.subheader('行 业')
+            st.dataframe(hydf, hide_index=True,use_container_width=True)
+            st.subheader('产 品')
+            st.dataframe(cpdf, hide_index=True,use_container_width=True)
+            st.subheader('地 区')
+            st.dataframe(dqdf, hide_index=True,use_container_width=True)
+        with tab6:
+            bzstl = bzdf.style.background_gradient(cmap='Blues')
+            # stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))
+            st.dataframe(bzstl, hide_index=True,use_container_width=True)
 
     with st.form('form3'):
         FSCode = pd.read_sql('FSCode',eng)
@@ -117,10 +158,10 @@ def app():
         anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
         with st.sidebar:
             anName = st.selectbox(
-                '专业财务信息',
+                '个股专业财务分析',
                 (list(anData['L1Name']))
             )   
-            submitted = st.form_submit_button('确认')
+            submitted = st.form_submit_button('个股分析')
 
     if submitted:
         tab1,tab2,tab3 = st.tabs([anName+'Line',anName+'Bar','3'], )
@@ -136,28 +177,32 @@ def app():
         # anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
         with st.sidebar:
             fenCode = st.selectbox(
-                '聚类分析',
+                '中证分类聚合分析',
                 ('每股指标',"资产负债表","利润表",'现金流量表','股本股东','发展能力分析','偿债能力分析','获利能力分析','经营能力分析','现金流分析','资本结构分析')
+            )
+            day = st.selectbox(
+                '分析日期',
+                (20230331,20230630,20230930,20231231,20240331,20240630,20240930)
+            )
+            leve = st.selectbox(
+                '分类层级',
+                (
+                    'L3Name',
+                    'L4Name'
+                )
             )   
-            submitted = st.form_submit_button('聚类分析')
+            submitted = st.form_submit_button('分类聚合')
 
             anCode = st.selectbox(
-                '行业分析',
+                '通达信行业分析',
                 (["市场表现排名","公司规模排名","估值水平排名","财务状况排名"])
             )
             submitted1 = st.form_submit_button('行业分析')
         if submitted:
-            fenX.fenChart(stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0])
+            fenX.fenChart(stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0],day, leve)
 
-    # with st.form('form1'):
-    #     with st.sidebar:
-    #         anCode = st.selectbox(
-    #             '行业分析',
-    #             (["市场表现排名","公司规模排名","估值水平排名","财务状况排名"])
-    #         )
-    #         submitted1 = st.form_submit_button('确认')
         if submitted1:
-            fenX.fenChart(stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0])
+            fenX.fenChart(stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0],day,leve)
             client = Quotes.factory(market='std')
             txt = client.F10(stockCode, '行业分析')[116:]
             txt = txt.replace('│',' ')                

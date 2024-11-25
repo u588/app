@@ -3,22 +3,29 @@ from sqlalchemy import create_engine
 import streamlit as st
 import plotly
 
+#以中证分类L4为基准的，股票分类分析
+
+
 colors = plotly.colors.qualitative.Light24
-def fenChart(StockCode, fxCode):
+def fenChart(StockCode, fxCode,day, leve):
     eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
     engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
+    #读取股票中证分类
     StockIC = pd.read_sql("StockIC", engB)
 
     def GetFin(StockCode, day):
         FSCode = pd.read_sql('FSCode',eng)
         wCode  = pd.read_sql('wCode', eng)
+        #wCode 单位为万元的数据项
         finRAW = pd.read_sql(StockCode, eng)
         eng.dispose()
 
         finRAW = pd.concat([finRAW,finRAW['report_date'].rename('Index')],axis=1)
         midf = finRAW[wCode['Code']]*10000
         rdf = finRAW[list(set(finRAW.columns).difference(set(wCode['Code'])))]
+        #筛选非万元数据项
         finW = pd.concat([rdf,midf],axis=1)
+        #所有数据项转换为元
 
         trsfin = finW.set_index('Index').T
         trsfin = trsfin.reset_index().rename(columns={'index':'Code'})
@@ -77,16 +84,26 @@ def fenChart(StockCode, fxCode):
 
     # fxCode = 'ZBJG'
     # StockCode = '002202'
-    day = 20240630
-
-    svCode,asCode=getfenCode(fxCode)
-    l4name = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
-    StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-
+    # day = 20240630
+    #读取给出日期市场历史专业财务数据
     finF = pd.read_sql('gpcw'+str(day), eng)
     mfin = pd.merge(finF,StockIC, left_on='code',right_on='StockCode', how='inner')
-    mfinsel = mfin[mfin['L4Name']==l4name]
-    desel = mfin[mfin['L4Name']==l4name].describe().T
+    svCode,asCode=getfenCode(fxCode)
+ 
+    if leve=='L4Name':
+        lname = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
+        StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+        mfinsel = mfin[mfin['L4Name']==lname]
+        desel = mfin[mfin['L4Name']==lname].describe().T
+    else:
+        lname = StockIC[StockIC['StockCode']==StockCode]['L3Name'].tolist()[0]
+        StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+        mfinsel = mfin[mfin['L4Name']==lname]
+        desel = mfin[mfin['L4Name']==lname].describe().T        
+
+
+
+
     fin = GetFin(StockCode,day)
 
     tasel = mfinsel[['StockCode','StockName','L1Name','L2Name','L3Name','L4Name']]
