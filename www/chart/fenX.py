@@ -98,10 +98,8 @@ def fenChart(StockCode, fxCode,day, leve):
     else:
         lname = StockIC[StockIC['StockCode']==StockCode]['L3Name'].tolist()[0]
         StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-        mfinsel = mfin[mfin['L4Name']==lname]
-        desel = mfin[mfin['L4Name']==lname].describe().T        
-
-
+        mfinsel = mfin[mfin['L3Name']==lname]
+        desel = mfin[mfin['L3Name']==lname].describe().T
 
 
     fin = GetFin(StockCode,day)
