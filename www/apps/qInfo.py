@@ -1,7 +1,8 @@
 import streamlit as st
 import plotly.express as px
 from streamlit_echarts import st_pyecharts
-from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX
+# from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX
+from chart import Kpro,gganChart,gganPx,fenX
 from mootdx.quotes import Quotes
 import pandas as pd
 import numpy as np 
@@ -19,7 +20,7 @@ engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
 topDF = pd.read_sql('Top', engB)
 bizDF = pd.read_sql('mBiz', engB).dropna(subset='营业收入(元)')
 bzPDF = pd.read_sql('BizP', engB)
-
+engB.dispose()
 
 bizDF.loc[bizDF[bizDF['营业收入(元)'].str.endswith('万')].index,'营业收入(元)'] = bizDF[bizDF['营业收入(元)'].str.endswith('万')]['营业收入(元)'].str.replace('万','').astype(float)/10000
 bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'] = bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'].str.replace('亿','').astype(float)
@@ -124,6 +125,7 @@ def app():
             # st_pyecharts(detailChart.line(stockCode))
         with tab2:
             scDF = pd.read_sql(stockCode, engS)
+            engS.dispose()
             scDF['datetime'] = scDF['datetime'].astype('datetime64[ns]')
             figsc = px.scatter(scDF, x='datetime', y='open',size='amount', opacity=0.6, color='close',trendline='ewm',trendline_options={'ignore_na': True,'span':3, 'min_periods':8})
             figsc.update_layout(dragmode='pan',)
@@ -182,13 +184,13 @@ def app():
             )
             day = st.selectbox(
                 '分析日期',
-                (20230331,20230630,20230930,20231231,20240331,20240630,20240930)
+                (20240930,20240630,20240331,20231231,20230930,20230630,20230331)
             )
             leve = st.selectbox(
                 '分类层级',
                 (
-                    'L3Name',
-                    'L4Name'
+                    'L4Name',
+                    'L3Name'
                 )
             )   
             submitted = st.form_submit_button('分类聚合')

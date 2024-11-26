@@ -1,29 +1,29 @@
 import streamlit as st
-from streamlit_echarts import st_pyecharts
-from mootdx.quotes import Quotes
+# from streamlit_echarts import st_pyecharts
+# from mootdx.quotes import Quotes
 # from chart import makSum
-import re
-import plotly.express as px
+# import re
+# import plotly.express as px
 import pandas as pd
 from sqlalchemy import create_engine
 # from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getConsStock
-from chart import Kpro,indexChart,getConsStock
+# from chart import Kpro,indexChart,getConsStock
 
 engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
-engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+# eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
+# engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
+# engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
 
-opIndex= pd.read_sql('optIndexs',engTDX)
+# opIndex= pd.read_sql('optIndexs',engTDX)
 topDF = pd.read_sql('Top', engB)
 bizDF = pd.read_sql('mBiz', engB).dropna(subset='营业收入(元)')
 bizDF.loc[bizDF[bizDF['营业收入(元)'].str.endswith('万')].index,'营业收入(元)'] = bizDF[bizDF['营业收入(元)'].str.endswith('万')]['营业收入(元)'].str.replace('万','').astype(float)/10000
 bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'] = bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'].str.replace('亿','').astype(float)
 bizDF.rename(columns={'营业收入(元)':'营业收入(亿元)'},inplace=True) 
 bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']].astype('float') 
-tdxData = pd.read_sql('tdxIndexsData', engTDX)
 
 
+# tdxData = pd.read_sql('tdxIndexsData', engTDX)
 # def normalize(x):
 #     return (x - x.min()) / (x.max() - x.min())
 # @st.cache_data
@@ -192,19 +192,6 @@ def app():
         #         st.plotly_chart(pltsData(144,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
         #     with tab6s:
         #         st.plotly_chart(pltsData(233,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
-
-
-
-
-
-
-
-
-
-
-
-
-
         # if submitted4:
         #     client = Quotes.factory(market='std')
         #     # a = client.F10C(symbol=stockCode)
@@ -224,16 +211,31 @@ def app():
             submitted1 = st.form_submit_button('确认')
         if submitted1:
             txtDF = topDF[topDF['题材'].str.contains(txt, na=False)].sort_values(by=['相关度','StockCode'], ascending=False).reset_index(drop=True)
-            prdDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']=='2024-06-30'].reset_index(drop=True)
-            prdDF['项目名'] = prdDF['项目名'].str.replace('(产品)', '')
-            prDF = prdDF[prdDF['StockCode'].isin(list(txtDF['StockCode']))]
-            plData = prDF[prDF['收入比例(%)'].astype(float)>15]
 
-            tab11,tab12 =st.tabs(['热点题材','主营业务'])
+            cpDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            cpDF['项目名'] = cpDF['项目名'].str.replace('(产品)', '')
+            cpmDF = cpDF[cpDF['StockCode'].isin(list(txtDF['StockCode']))]
+            plcpm = cpmDF[cpmDF['收入比例(%)'].astype(float)>15]
+
+            ywDF = bizDF[bizDF['项目名'].str.endswith('(业务)')][bizDF[bizDF['项目名'].str.endswith('(业务)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            ywDF['项目名'] = ywDF['项目名'].str.replace('(业务)', '')
+            ywmDF = ywDF[ywDF['StockCode'].isin(list(txtDF['StockCode']))]
+            plywm = ywmDF[ywmDF['收入比例(%)'].astype(float)>15]
+
+            hyDF = bizDF[bizDF['项目名'].str.endswith('(行业)')][bizDF[bizDF['项目名'].str.endswith('(行业)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            hyDF['项目名'] = hyDF['项目名'].str.replace('(行业)', '')
+            hymDF = hyDF[hyDF['StockCode'].isin(list(txtDF['StockCode']))]
+            plhym = hymDF[hymDF['收入比例(%)'].astype(float)>15]
+
+            tab11,tab12,tab13,tab14 =st.tabs(['热点题材','行 业','产 品','业 务'])
             with tab11:
                 st.dataframe(txtDF, hide_index=True,use_container_width=True,height=600,on_select='rerun')
             with tab12:
-                st.dataframe(plData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+                st.dataframe(plhym, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+            with tab13:
+                st.dataframe(plcpm, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+            with tab14:
+                st.dataframe(plywm, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
             # txDF = txtDF.style.background_gradient(cmap='Blues')
             # txDF = txDF.format('{:,.2f}', subset=list(txtDF.columns[2:]))
