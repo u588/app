@@ -270,7 +270,7 @@ def app():
             tab3, tab4 = st.tabs([titlCode[7:],stockCode+' : '+stockName])
             with tab3:
                 stta = dddf.style.background_gradient(cmap='Blues')
-                stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))    
+                stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))
                 st.dataframe(stta, hide_index=True, on_select='rerun',use_container_width=True)
             with tab4:
                 st.plotly_chart(fig,config={'scrollZoom':True})
