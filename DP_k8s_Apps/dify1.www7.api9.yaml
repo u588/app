@@ -1,6 +1,7 @@
 ###############################################################################
 # Author: Winson Li
 # Email: mail@winson.dev
+#admin@163.com pas 123@syslog
 ###############################################################################
 # Namespace
 apiVersion: v1
@@ -145,7 +146,8 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: dify-sandbox
-        image: langgenius/dify-sandbox:0.2.1
+        # image: langgenius/dify-sandbox:0.2.1
+        image: 10.3.18.60/docker/dify-sandbox:0.2.10
         env:
         - name: API_KEY
           value: "dify-sandbox"
@@ -228,7 +230,8 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: 10.3.18.60/docker/dify-api:0.6.15
+        image: 10.3.18.60/docker/dify-api:0.12.1
+        # image: 10.3.18.60/docker/dify-api:0.6.15
         env:
         - name: MODE
           value: api
@@ -358,7 +361,8 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-worker
-        image: 10.3.18.60/docker/dify-api:0.6.15
+        # image: 10.3.18.60/docker/dify-api:0.6.15
+        image: 10.3.18.60/docker/dify-api:0.12.1
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -471,7 +475,8 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: dify-web
-        image: 10.3.18.60/docker/dify-web:0.6.15
+        # image: 10.3.18.60/docker/dify-web:0.6.15
+        image: 10.3.18.60/docker/dify-web:0.12.1
         env:
         - name: EDITION
           value: SELF_HOSTED
