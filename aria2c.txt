@@ -4,4 +4,6 @@ aria2c -x3 -s3 https://pan.baidu.com/s/1i7IpRaxlmT3z9w_f3rHA5A password=1234
 
 sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.12.7/Python-3.12.7.tgz
 
+sudo aria2c -x2 -s2 -k 1M -c  https://bgithub.xyz/ollama/ollama/releases/download/v0.4.6/ollama-linux-amd64.tgz
+
 aria2c --confi=./a.config -i ./a.txt

@@ -1,5 +1,13 @@
+sudo aria2c -x2 -s2 -k 1M -c  https://bgithub.xyz/ollama/ollama/releases/download/v0.4.6/ollama-linux-amd64.tgz
+
+sudo tar xzf ollama-linux-amd64.tgz -C /usr
+
+
+
+
 ========= 安装 =================
 1、下载升级
+
 sudo systemctl stop ollama
 curl -fsSL https://bgithub.xyz/ollama/ollama/releases/download/v0.4.0/ollama-linux-amd64.tgz | sudo tar zx -C /usr
 
