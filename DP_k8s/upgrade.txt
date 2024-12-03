@@ -1,3 +1,14 @@
+================== k8s 证书更新 ===============
+1、检查集群证书是否过期
+kubeadm certs check-expiration
+
+2、 更新集群中所有的证书
+#更新所有证书
+kubeadm certs renew all 
+#检查集群证书信息
+kubeadm certs check-expiration
+
+
 https://kubernetes.io/zh-cn/releases/download/
 1、 下载 kubeadm 、 kubectl 、kubelet
     ==> chmod 755 
