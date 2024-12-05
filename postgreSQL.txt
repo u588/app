@@ -87,6 +87,7 @@ ALTER DATABASE      REFRESH COLLATION VERSION;
 
 
 =========== 主备库查询 ==========
+-p 5433 or 5432 选择进程
 sudo -i -u postgres psql
 master ==> SELECT * FROM pg_stat_replication;
 salve ==> SELECT * FROM pg_stat_wal_receiver;
