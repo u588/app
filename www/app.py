@@ -3,7 +3,6 @@ from streamlit_option_menu import option_menu
 # from apps import cycAna, recom, trend,qInfo,llmAna,bcAna,scAna
 from apps import  recom, trend,qInfo,bcAna,scAna,fuzQ
 
-
 st.set_page_config(
     page_title="分析",
     layout="wide",
