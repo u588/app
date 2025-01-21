@@ -62,3 +62,5 @@ FROM ./MiniCPM-V-2_5/model/ggml-model-Q4_K_M.gguf
 
 ============ 管理  ========
 工作空间   模型命名
+
+出现系统内部问题  删除 /usr/lib/ollama  目录后，重新安装ollama
