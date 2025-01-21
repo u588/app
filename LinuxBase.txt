@@ -1,3 +1,6 @@
+======= 系统风扇调速 ==> /home/ts/app/Ai/GTX.txt
+
+
 查看硬件
 sudo lshw -short
 

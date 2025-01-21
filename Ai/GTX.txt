@@ -59,6 +59,7 @@ GPU 00000000:05:00.0
         Memory Max Operating Temp         : N/A
 ---------------------------------
 
+============= 系统风扇 ============
 1、安装ipmitool
 sudo apt install ipmitool -Yes
 
