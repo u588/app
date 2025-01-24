@@ -1,3 +1,6 @@
+use:admin   pass:syslog6^
+
+
 https://goharbor.io/docs/2.8.0/install-config/
 4CPU 8GB  Docker-Engine Docker-compose openssl
 
