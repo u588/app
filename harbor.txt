@@ -61,6 +61,8 @@ systemctl restart docker
 
 
 ------------------- install --------------------
+https://bgithub.xyz/goharbor/harbor/releases
+
 tar zxvf harbor-offline-installer-v2.8.1.tgz
 cd ./harbor
 cp harbor.yml.tmpl  harbor.yml 并编辑
