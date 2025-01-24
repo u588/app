@@ -114,7 +114,7 @@ scp ts@10.3.18.52:/home/ts/RegCert97/ca.crt /usr/local/share/ca-certificates/
 update-ca-certificates
 
 mkdir -p /etc/docker/cert.d/10.3.18.97
-scp ts@10.3.18.52:/home/ts/RegCert97/registry.tsdc.io.cert /etc/docker/certs.d/10.3.18.97
+scp  ts@10.3.18.52:/home/ts/RegCert97/registry.tsdc.io.cert /etc/docker/certs.d/10.3.18.97
 systemctl restart docker
 
 dns 10.3.18.99 Or /etc/hosts
