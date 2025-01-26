@@ -32,3 +32,7 @@ https://plotly.com/python/getting-started/
  import plotly.graph_objects as go
  fig_widget = go.FigureWidget(fig)
  fig_widget
+
+ ========= vscode ===========
+ http://10.3.68.2:8888/lab
+ pass 11111111
