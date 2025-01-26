@@ -15,7 +15,9 @@ time.sleep(5)
 
 def getData(codeID):
     # url = "http://www.csindex.com.cn/zh-CN/indices/index-detail/"+codeID
-    url = "https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/"+codeID[0]+"closeweight.xls"
+    # url = "https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/"+codeID[0]+"closeweight.xls"
+    url = 'https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/file/autofile/closeweight/' +codeID[0] +'closeweight.xls'
+
     r = requests.get(url, headers=header)
     # html= etree.HTML(r.content)
     # urlD = html.xpath("//ul[@class='download clearfix mb-10']//li/a[contains(text(),'成份列表')]")[0].xpath("@href")[0]
