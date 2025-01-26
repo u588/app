@@ -9,7 +9,8 @@ api = TdxHq_API()
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
 
-tdxIndexs = pd.read_sql('optIndexs', eng)
+# tdxIndexs = pd.read_sql('optIndexs', eng)
+tdxIndexs = pd.read_sql('tdxIndexs', eng)
 sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
@@ -59,6 +60,6 @@ with eapi.connect('47.112.95.207', 7720):
         except:
             print(IndexCode, 'EXCEPT !' )
             pass
-# pd.DataFrame(ll,columns=['IndexCode']).to_sql('EmpIndex', eng, if_exists='replace')     
+pd.DataFrame(ll,columns=['IndexCode']).to_sql('EmpIndex', eng, if_exists='replace')     
 print(ll)
 eng.dispose()
