@@ -76,7 +76,7 @@ https://www.csindex.com.cn/#/indices/family/list -->导出列表(中证、上证
 
 ? 获取返回数据为空 的列表 ==>          python /home/ts/app/TDXapp/DataProject/getEMPIndexs.py
 9、最终指数列表，由于在指数获取时服务器返回数据为空，需优化列表。 
-        ==>  python G:\Gitee\App\TDXapp\optIndex.py
+        ==>  python G:\Gitee\App\TDXapp\DataProject\optIndex.py
 
 10、tdx个股题材相关度 ==>              python   G:\Gitee\App\TDXapp\tdxGetTop.py
 11、tdx个股主营占比及前五大合作商占比  python    G:\Gitee\App\TDXapp\tdxGetBiz.py
