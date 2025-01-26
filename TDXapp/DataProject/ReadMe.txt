@@ -80,7 +80,7 @@ https://www.csindex.com.cn/#/indices/family/list -->导出列表(中证、上证
 
 10、tdx个股题材相关度 ==>              python   G:\Gitee\App\TDXapp\tdxGetTop.py
 11、tdx个股主营占比及前五大合作商占比  python    G:\Gitee\App\TDXapp\tdxGetBiz.py
-12、tdx个股3年业绩预测                 python    G:\Gitee\App\TDXapp\tdxFcast.py
+12、tdx个股3年业绩预测                 python    G:\Gitee\App\TDXapp\tdxGetFcast.py
 
 ============================ tdx 历史专业财务数据 1231 0930 0630 0331  =====================
 
