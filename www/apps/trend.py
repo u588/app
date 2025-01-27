@@ -135,7 +135,7 @@ def app():
                             '公司报道',
                             '经营分析',
                             '行业分析',
-                            '价值分析',)
+                            '研报评级',)
                         )
             submitted5 = st.form_submit_button('股票查询')            
             # submitted4 = st.form_submit_button('F10查询')            

@@ -67,7 +67,7 @@ with st.form('form2'):
                         '公司报道',
                         '经营分析',
                         '行业分析',
-                        '价值分析',)
+                        '研报评级',)
                     )
         modelSel = st.selectbox('选择模型',
                                 (

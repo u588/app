@@ -135,7 +135,7 @@ def app():
     #                         '公司报道',
     #                         '经营分析',
     #                         '行业分析',
-    #                         '价值分析',)
+    #                         '研报评级',)
     #                     )            
     #         submitted4 = st.form_submit_button('F10查询')            
 
@@ -282,7 +282,7 @@ def app():
     #                         '公司报道',
     #                         '经营分析',
     #                         '行业分析',
-    #                         '价值分析',)
+    #                         '研报评级',)
     #                     )            
     #         submitted4 = st.form_submit_button('确认')
     # if submitted4:
