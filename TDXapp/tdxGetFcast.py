@@ -9,7 +9,7 @@ engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
 
 def getFcast(StockCode, StockName):
-    qf10='价值分析'
+    qf10='研报评级'
     client = Quotes.factory(market='std')
     txtRaw = client.F10(StockCode, qf10)[116:]
 
