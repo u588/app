@@ -1,14 +1,11 @@
-scp ts@10.3.18.52:/home/ts/app/ta-lib-0.4.0-src.tar.gz ./
+=== 环境
+wget https://bgithub.xyz/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib-0.6.4-src.tar.gz
 
-tar -xzf ta-lib-0.4.0-src.tar.gz
-cd ta-lib
-
-
+tar -xzf ta-lib-0.6.4-src.tar.gz
+cd ta-lib-0.6.4/
 ./configure --prefix=/usr
 make
-sudo make install
+sudo make install 
 
-========== 兼容性 ==============
-python3.10   numpy==1.25.2 TA_Lib==0.4.24
-
+========== 安装 ==============
 pip install TA-Lib
