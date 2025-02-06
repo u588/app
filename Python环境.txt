@@ -16,7 +16,7 @@ pip install pipenv
 2、创建虚拟环境
 建立目录
 cd ==> 目录
-pipenv install --python 3.12（版本）
+pipenv install --python (3.12 版本）
 
 pipenv install (python包)
 
