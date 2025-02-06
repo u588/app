@@ -10,7 +10,7 @@ home = '10.145.254.55:5432'
 job = '10.3.18.56:5432'
 ip = job
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/FindStocks')
+eng = create_engine('postgresql+psycopg://sa:11111111@' + ip + '/FindStocks')
 
 def pie(date):
     data = pd.read_sql('FindStocks', eng).sort_values(by=['datetime'], ascending=False)

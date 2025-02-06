@@ -3,8 +3,8 @@ from sklearn import preprocessing
 from sqlalchemy import create_engine
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
-# engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/StockBas')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks')
+# engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/StockBas')
 
 from bokeh.models import ColumnDataSource, RangeTool, WheelZoomTool
 from bokeh.plotting import figure, show ,output_file

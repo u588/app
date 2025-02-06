@@ -7,9 +7,9 @@ import streamlit as st
 
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
-engD = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxFS')
-engF = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
+engD = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxFS')
+engF = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/Funds')
 
 @st.cache_data
 def line(StockID) -> Line:

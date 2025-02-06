@@ -11,8 +11,8 @@ from bokeh.models import ColumnDataSource, RangeTool, WheelZoomTool
 from bokeh.plotting import figure
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
-engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/smDaily')
+engTDX = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 def pie(d,yie):
     d.sort_values(by=yie, inplace=True)

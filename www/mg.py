@@ -2,8 +2,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 import streamlit as st
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
-engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxFS')
+engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
 StockIC = pd.read_sql("StockIC", engB)
 
 StockCode = '688349'

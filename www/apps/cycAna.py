@@ -5,7 +5,7 @@ from mootdx.quotes import Quotes
 import pandas as pd
 import re
 from sqlalchemy import create_engine
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxFS')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxFS')
 
 
 def app():

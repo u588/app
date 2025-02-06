@@ -8,8 +8,8 @@ import pandas as pd
 from pyecharts.charts import WordCloud
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/smDaily')
-engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/smDaily')
+engTDX = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 
 hs300Data = pd.read_sql('hs300', eng)

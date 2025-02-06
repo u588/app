@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 import pandas as pd
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/csIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/csIndex')
 IndexLists = pd.read_sql('csIndexs', eng).Index_code.to_list()
 
 

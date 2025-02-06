@@ -1,5 +1,4 @@
 import talib as tb
-import tushare as ts
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
@@ -13,8 +12,8 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 
 # get Data
-eng = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/tdxStocks')
-engF = create_engine('postgresql+psycopg2://sa:11111111@' + ip + '/StockFina')
+eng = create_engine('postgresql+psycopg://sa:11111111@' + ip + '/tdxStocks')
+engF = create_engine('postgresql+psycopg://sa:11111111@' + ip + '/StockFina')
 
 CodeId='600011'
 name = CodeId

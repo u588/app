@@ -2,8 +2,8 @@ from sqlalchemy import create_engine
 import pandas as pd
 import streamlit as st
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
-engT = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxStocks')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
+engT = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxStocks')
 IndexLists = pd.read_sql('optIndexs', eng).IndexCode.to_list()
 
 @st.cache_data

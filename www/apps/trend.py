@@ -9,10 +9,10 @@ from sqlalchemy import create_engine
 # from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getConsStock
 from chart import Kpro,indexChart,getConsStock
 
-engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/smDaily')
-engTDX = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxStocks')
+engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/smDaily')
+engTDX = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxIndex')
+engS = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks')
 
 opIndex= pd.read_sql('optIndexs',engTDX)
 topDF = pd.read_sql('Top', engB)

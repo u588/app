@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode

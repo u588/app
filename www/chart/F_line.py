@@ -1,5 +1,4 @@
 import talib as tb
-import tushare as ts
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
@@ -8,7 +7,7 @@ from pyecharts.globals import ThemeType
 from pyecharts.commons.utils import JsCode
 from pyecharts.charts import Kline, Line, Bar, Grid
 
-engFn = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/Funds')
+engFn = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/Funds')
 
 StockID = '000001'
 rData = pd.read_sql(StockID, engFn).tail(500).applymap(lambda x : x.replace('-%', '0')).applymap(lambda x : x.replace('%', '')).fillna('0').set_index('date')

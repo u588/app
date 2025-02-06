@@ -3,7 +3,7 @@ from pyecharts.charts import Pie
 import pandas as pd
 from sqlalchemy import create_engine
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 def pie(date):
     d = pd.read_sql('tdxIndexsData', eng)

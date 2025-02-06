@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 from pytdx.hq import TdxHq_API
 api = TdxHq_API()
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxStocks')
 
 StockList = pd.read_sql('StocksList', eng)[['code','name']]
 StockList.columns=['股票编码','股票名称']

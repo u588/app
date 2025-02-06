@@ -8,8 +8,8 @@ import plotly
 
 colors = plotly.colors.qualitative.Light24
 def fenChart(StockCode, fxCode,day, leve):
-    eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
-    engB = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
+    eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxFS')
+    engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
     #读取股票中证分类
     StockIC = pd.read_sql("StockIC", engB)
 

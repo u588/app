@@ -5,7 +5,7 @@ import streamlit as st
 
 @st.cache_data
 def ggPx(stockCode, anCode):
-    eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
+    eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxFS')
 
     FSCode = pd.read_sql('FSCode',eng)
     wCode  = pd.read_sql('wCode', eng)

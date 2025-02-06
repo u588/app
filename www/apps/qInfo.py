@@ -11,8 +11,8 @@ from sqlalchemy import create_engine
 from pytdx.hq import TdxHq_API
 api = TdxHq_API()
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxFS')
-engS = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxFS')
+engS = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxStocks')
 engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
 
 
