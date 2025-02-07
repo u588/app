@@ -2,7 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 import streamlit as st
 
-eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxIndex')
 # date = 3D 5D 21D
 @st.cache_data
 def csIndexData(date):

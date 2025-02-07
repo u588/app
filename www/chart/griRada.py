@@ -3,7 +3,7 @@ from pyecharts.charts import  Radar, Grid, Timeline, Page
 from sqlalchemy import create_engine
 import pandas as pd
 
-eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/smDaily')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/smDaily')
 
 Data = pd.read_sql('Market',eng)
 dd =  Data.drop(Data[(Data.date<'2021-03-01')].index)

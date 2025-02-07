@@ -3,10 +3,10 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
 
-eng = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxStocks')
-engF = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/tdxFS')
-engB = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/StockBas')
-engFn = create_engine('postgresql+psycopg://sa:11111111@10.145.254.56:5432/Funds')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks')
+engF = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxFS')
+engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/StockBas')
+engFn = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/Funds')
 
 from pyecharts import options as opts
 from pyecharts.globals import ThemeType
