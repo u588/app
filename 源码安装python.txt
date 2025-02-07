@@ -4,6 +4,8 @@ sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.12.7/Python-3.
 sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
 
 2、 依赖项
+AI提供 sudo apt update && sudo apt install build-essential libssl-dev libffi-dev python3-dev
+
 sudo apt-get update
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \

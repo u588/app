@@ -1,6 +1,17 @@
 =========== 基础环境 ===========
 1、apt-get install libpq-dev python3-dev openssh-client
-2、TA-Lib安装环境 源码安装0.4.0版后安装 Python版numpy==1.25.2 TA-Lib==0.4.24
+2、TA-Lib安装环境 
+ 2.1 安装系统环境 https://bgithub.xyz/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib-0.6.4-src.tar.gz
+              tar -xzf ta-lib-0.6.4-src.tar.gz
+              cd ta-lib-0.6.4/
+              ./configure --prefix=/usr
+              make
+              sudo make install
+  2.2 安装Python包
+      pip install TA-Lib
+
+
+
 3、pip 系统国内源
 
 cat > /etc/pip.conf <<EOF
