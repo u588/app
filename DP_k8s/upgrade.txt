@@ -10,11 +10,12 @@ kubeadm certs check-expiration
 
 
 https://kubernetes.io/zh-cn/releases/download/
+https://www.downloadkubernetes.com/
 1、 下载 kubeadm 、 kubectl 、kubelet
     ==> chmod 755 
     ==> /user/bin
 
- 2、 控制平面升级
+ 2、 控制平面升级(在一台master主机升级即可)
     kubeadm upgrade plan
     kubeadm upgrade apply v1.XX.x
 

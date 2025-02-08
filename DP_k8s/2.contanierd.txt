@@ -4,37 +4,52 @@ https://github.com/containerd/containerd/blob/main/docs/getting-started.md
 https://github.com/containerd/containerd/releases
 https://github.com/containernetworking/plugins/releases
 
-container v.1.7.1:latest  updates runc v.1.1.7
-https://github.com/containerd/containerd/releases/download/v1.7.1/containerd-1.7.1-linux-amd64.tar.gz   
-https://github.com/containerd/containerd/blob/main/docs/RUNC.md
-
-
-======= 2024.9.20 container 1.7.22
-wget https://bgithub.xyz/containerd/containerd/releases/download/v1.7.22/containerd-1.7.22-linux-amd64.tar.gz
-
 
 -------------------- Step 1: Installing containerd ------------------------
-$ tar Cxzvf /usr/local containerd-1.7.1-linux-amd64.tar.gz
+wget https://bgithub.xyz/containerd/containerd/releases/download/v2.0.2/containerd-2.0.2-linux-amd64.tar.gz
+$ tar Cxzvf /usr/local containerd-2.0.2-linux-amd64.tar.gz
 bin/
 bin/containerd-shim-runc-v2
-bin/containerd-shim
 bin/ctr
-bin/containerd-shim-runc-v1
 bin/containerd
 bin/containerd-stress
 
 wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service -->
 cp containerd.service /usr/lib/systemd/system/containerd.service
 
+-- 或手动编辑启动文件 --
+cat > /usr/lib/systemd/system/containerd.service <<EOF
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target local-fs.target dbus.service
+
+[Service]
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart=/usr/local/bin/containerd
+
+Type=notify
+Delegate=yes
+KillMode=process
+Restart=always
+RestartSec=5
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+OOMScoreAdjust=-999
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+--- 自启动 --
+systemctl daemon-reload
+systemctl enable --now containerd
+
+
 -------------------- Step 2: Installing runc ---------------------------
-runc v.1.1.7:latest
-https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64 
+wget https://bgithub.xyz/opencontainers/runc/releases/download/v1.2.3/runc.amd64
 
-======= 2024.9.20 container 1.7.22  runc 1.1.14
-wget https://bgithub.xyz/opencontainers/runc/releases/download/v1.1.14/runc.amd64
-
--->
-/usr/local/sbin/runc
 $ install -m 755 runc.amd64 /usr/local/sbin/runc
 $ install -m 755 runc.amd64 /usr/local/bin/runc
 
