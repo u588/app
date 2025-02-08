@@ -1,0 +1,103 @@
+# dask-scheduler-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dask-scheduler
+  labels:
+    app: dask
+    component: scheduler
+spec:
+  type: ClusterIP
+  ports:
+  - name: tcp-comm
+    port: 8786
+    targetPort: 8786
+  - name: dashboard
+    port: 8787
+    targetPort: 8787
+  selector:
+    app: dask
+    component: scheduler
+---
+# dask-scheduler-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-scheduler
+  labels:
+    app: dask
+    component: scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dask
+      component: scheduler
+  template:
+    metadata:
+      labels:
+        app: dask
+        component: scheduler
+    spec:
+      containers:
+      - name: scheduler
+        image: daskdev/dask:latest
+        command: ["dask-scheduler"]
+        ports:
+        - containerPort: 8786
+        - containerPort: 8787
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "0.5"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+---
+# dask-worker-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dask-worker
+  labels:
+    app: dask
+    component: worker
+spec:
+  replicas: 3  # 初始Worker数量
+  selector:
+    matchLabels:
+      app: dask
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: dask
+        component: worker
+    spec:
+      containers:
+      - name: worker
+        image: daskdev/dask:latest
+        command: ["dask-worker"]
+        args: ["--nthreads", "2", "--memory-limit", "4GB", "tcp://dask-scheduler:8786"]
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+---
+# 可选：仪表盘服务（NodePort类型）
+apiVersion: v1
+kind: Service
+metadata:
+  name: dask-dashboard
+spec:
+  type: NodePort
+  ports:
+  - port: 8787
+    targetPort: 8787
+    nodePort: 31000
+  selector:
+    app: dask
+    component: scheduler
