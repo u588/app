@@ -46,6 +46,8 @@ EOF
 systemctl daemon-reload
 systemctl enable --now containerd
 
+https://bgithub.xyz/containerd/containerd/blob/main/docs/man/containerd-config.toml.5.md
+
 
 -------------------- Step 2: Installing runc ---------------------------
 wget https://bgithub.xyz/opencontainers/runc/releases/download/v1.2.3/runc.amd64
