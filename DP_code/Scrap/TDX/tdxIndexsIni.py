@@ -51,7 +51,7 @@ IPAddress13=124.71.223.19
 """
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
+eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex')
 
 
 tdxIndexs = pd.read_sql('optIndexs', eng)
