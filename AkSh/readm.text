@@ -1,0 +1,13 @@
+===== 深圳市场 股票行业成交数据 
+初始化需要修改代码，2018年4月后数据不用修改
+/home/ts/.local/lib/python3.12/site-packages/akshare/stock/stock_summary.py
+
+92 def stock_szse_sector_summary()
+135 + 
+if 'http' in url :
+    pass
+else:
+    url = 'https://www.szse.cn'+url
+
+139 +
+r.encoding = 'GBK'
