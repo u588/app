@@ -1,6 +1,7 @@
 ###############################################################################
 # Author: Winson Li
 # Email: mail@winson.dev
+# https://bgithub.xyz/Winson-030/dify-kubernetes
 #admin@163.com pas 123@syslog
 ###############################################################################
 # Namespace
@@ -230,7 +231,7 @@ spec:
         #   type: DirectoryOrCreate
       containers:
       - name: dify-api
-        image: 10.3.18.60/docker/dify-api:0.12.1
+        image: 10.3.18.60/docker/dify-api:1.0.0
         # image: 10.3.18.60/docker/dify-api:0.6.15
         env:
         - name: MODE
@@ -362,7 +363,7 @@ spec:
       containers:
       - name: dify-worker
         # image: 10.3.18.60/docker/dify-api:0.6.15
-        image: 10.3.18.60/docker/dify-api:0.12.1
+        image: 10.3.18.60/docker/dify-api:1.0.0
         ports:
         - containerPort: 5001
           protocol: TCP
@@ -476,7 +477,7 @@ spec:
       containers:
       - name: dify-web
         # image: 10.3.18.60/docker/dify-web:0.6.15
-        image: 10.3.18.60/docker/dify-web:0.12.1
+        image: 10.3.18.60/docker/dify-web:1.0.0
         env:
         - name: EDITION
           value: SELF_HOSTED
@@ -700,3 +701,137 @@ spec:
     targetPort: 80
     nodePort: 30000
 # Dify Nginx Server End
+
+# Dify plugin daemon Start
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-plugin-daemon
+  namespace: dify
+  labels:
+    app: dify-plugin-daemon
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: dify-plugin-daemon
+  template:
+    metadata:
+      labels:
+        app: dify-plugin-daemon
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      automountServiceAccountToken: false
+      volumes:
+      - name: dify-plugin-daemon-storage
+        hostPath:
+          path: /root/dify/app/plugin/storage
+          type: DirectoryOrCreate
+      containers:
+      - name: dify-plugin-daemon
+        image: 10.3.18.60/docker/dify-plugin-daemon:0.0.3-local
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "2000m"
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5003
+          protocol: TCP
+          name: debug-port
+          
+        - containerPort: 5002
+          protocol: TCP
+          name: service-port
+        env:
+          - name: DB_USERNAME
+            value: sa
+
+          - name: DB_PASSWORD
+            value: '11111111'
+
+          - name: DB_HOST
+            value: '10.3.18.56'
+
+          - name: DB_PORT
+            value: '5432'
+
+          - name: REDIS_HOST
+            value: dify-redis
+
+          - name: REDIS_PORT
+            value: '6379'
+
+          - name: REDIS_USERNAME
+            value: ''
+
+          - name: REDIS_PASSWORD
+            value: difyai123456
+          - name: REDIS_USE_SSL
+            value: "false"
+          - name: REDIS_DB
+            value: "0"
+          - name: CELERY_BROKER_URL
+            value: >-
+              redis://$(REDIS_USERNAME):$(REDIS_PASSWORD)@$(REDIS_HOST):$(REDIS_PORT)/1
+          - name: 'DB_DATABASE'
+            value: 'dify_plugin'
+          - name: 'SERVER_PORT'
+            value: '5002'
+          - name: 'EXPOSE_PLUGIN_DAEMON_PORT'
+            value: '5002'
+          - name: 'SERVER_KEY'
+            value: 'lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi'
+          - name: 'MAX_PLUGIN_PACKAGE_SIZE'
+            value: '52428800'
+          - name: 'PPROF_ENABLED'
+            value: 'false'
+          - name: 'DIFY_INNER_API_URL'
+            value: 'http://dify-api:5001'
+          - name: 'DIFY_INNER_API_KEY'
+            value: 'QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1'
+          - name: 'PLUGIN_REMOTE_INSTALLING_HOST'
+            value: '0.0.0.0'
+          - name: 'PLUGIN_REMOTE_INSTALLING_PORT'
+            value: '5003'
+          - name: 'PLUGIN_WORKING_PATH'
+            value: '/app/storage/cwd'
+          - name: 'FORCE_VERIFYING_SIGNATURE'
+            value: 'true'
+          - name: 'EXPOSE_PLUGIN_DEBUGGING_HOST'
+            value: 'localhost'
+          - name: 'EXPOSE_PLUGIN_DEBUGGING_PORT'
+            value: '5003'
+          # - name: 'ENDPOINT_URL_TEMPLATE'
+          #   value: 'http://localhost/e/{hook_id}'
+        volumeMounts:
+        - name: dify-plugin-daemon-storage
+          mountPath: /app/storage
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dify-plugin-daemon
+  namespace: dify
+spec:
+  type: ClusterIP
+  selector:
+    app: dify-plugin-daemon
+  ports:
+  - port: 5003
+    targetPort: 5003
+    protocol: TCP
+    name: debug-port
+  - port: 5002
+    targetPort: 5002
+    protocol: TCP
+    name: service-port
+
+# Dify Plugin Daemon End
