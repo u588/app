@@ -64,3 +64,13 @@ FROM ./MiniCPM-V-2_5/model/ggml-model-Q4_K_M.gguf
 工作空间   模型命名
 
 出现系统内部问题  删除 /usr/lib/ollama  目录后，重新安装ollama
+
+
+
+============= 下载升级安装 ====================
+sudo aria2c -x2 -s2 -k 1M -c -o ollama-linux-amd64.0.6.5.tgz https://bgithub.xyz/ollama/ollama/releases/download/v0.6.5/ollama-linux-amd64.tgz
+scp ollama-linux-amd64.0.6.5.tgz  ts@192.168.168.3:/home/ts
+
+sudo systemctl stop ollama
+sudo tar xzf ollama-linux-amd64.0.6.5.tgz -C /usr
+sudo systemctl restart ollama.service
