@@ -20,9 +20,13 @@ cp kubelet 需  systemctl  stop  kubelet.service
     kubeadm upgrade plan
     kubeadm upgrade apply v1.XX.x
 
+    vi /etc/apt/sources.list.d/kubernetes.list ==> v1.xx 
+    apt upgrade 
+    
     systemctl daemon-reload
     systemctl  restart  kubelet.service
-
+    
+    其余master主机
     kubeadm upgrade node
 
 3、 node
