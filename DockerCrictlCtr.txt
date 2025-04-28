@@ -12,6 +12,8 @@ docker stop
 docker rm 
 
 ============ Docker Command ========
+docker run -d -p 80:8501 10.3.18.60/docker/wstreamlim:v0
+
 停止所有运行中的容器
 docker stop`docker ps -a -q`
 -a : 显示所有的容器，包括未运行的。
