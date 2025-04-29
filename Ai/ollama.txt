@@ -6,6 +6,12 @@ sudo tar xzf ollama-linux-amd64.tgz -C /usr
 
 
 ========= 安装 =================
+前提 建立 /usr/share/ollama 目录 chmod -R 777 /usr/share/ollama
+
+/usr/bin
+/usr/lib/ollama
+/usr/share/ollama
+
 1、下载升级
 
 sudo systemctl stop ollama
