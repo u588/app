@@ -15,8 +15,10 @@ api.connect('119.147.212.81', 7709)
 
 
 '''
+年报（1231） 1.1--4.30  一季报（0331）4.1--4.30 中报（0630）7.1--8.30 三季报（0930）10.1--10.31
+
 /home/ts/app/app/getFSlist.ipynb
-数据更新==> 
+数据更新==>年报、一季报（5.15）中报（9.15）三季报（11.15） 
 
 gpcw2024.zip 1231 0930 0630 0331
 
@@ -54,7 +56,8 @@ for i in ls:
                 print(l+'not Updated !')
                 pass
         except:
-            print(l+" =====  Excepts !!")
+            pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, conn, if_exists='append')
+            print(l+" =====  New Code add !!")
             pass
 
 conn.dispose()
