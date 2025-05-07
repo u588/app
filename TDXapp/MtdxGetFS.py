@@ -15,7 +15,7 @@ api.connect('119.147.212.81', 7709)
 
 
 '''
-/home/ts/app/test.ipynb 
+/home/ts/app/app/getFSlist.ipynb
 数据更新==> 
 
 gpcw2024.zip 1231 0930 0630 0331
@@ -27,10 +27,13 @@ gpcw2024.zip 1231 0930 0630 0331
 2024.9.16  --> gpcw20240331.zip 4806195
 2024.9.16  --> gpcw20240630.zip 5389032
 
-
+2025.5.7
+gpcw20240930.zip --> 5195779
+gpcw20241231.zip --> 5539530
+gpcw20250331.zip --> 4856246
 '''
 
-ls = ['gpcw20240630.zip']
+ls = ['gpcw20241231.zip','gpcw20250331.zip']
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 
@@ -38,8 +41,9 @@ for i in ls:
     result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename=i, path_to_download="/tmp/tmpfile.zip")
     dd = datacrawler.to_df(data=result)
     dd['report_date']= dd['report_date'].astype(object)
-    upday = dd['report_date'][0]
+    upday = dd['report_date'].iloc[0]
     dd = dd.round(2)
+    dd.to_sql(i[:12],conn,if_exists='replace')
     for j,l in enumerate(dd.index.values.tolist()):
         try:
             day = pd.read_sql(l, conn)['report_date'].tail(1).tolist()[0]
