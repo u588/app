@@ -86,6 +86,7 @@ https://www.csindex.com.cn/#/indices/family/list -->导出列表(中证、上证
 ============================ tdx 历史专业财务数据 1231 0930 0630 0331  =====================
 
 1、获取历史专业财务数据列表
+/home/ts/app/TDXapp/MtdxGetFS.py
 
 import pandas as pd
 from pytdx.hq import TdxHq_API
