@@ -52,7 +52,7 @@ kubectl create -f
 ===================== calicactl =================
 
 https://zhuanlan.zhihu.com/p/601763164
-curl -L https://github.com/projectcalico/calico/releases/download/v3.26.0/calicoctl-linux-amd64
+curl -L https://bgithub.xyz/projectcalico/calico/releases/download/v3.26.0/calicoctl-linux-amd64
 \ -o /usr/local/bin/calicoctl
 chmod +x /usr/local/bin/calicoctl
 
