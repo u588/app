@@ -1,3 +1,11 @@
+cd 相应目录
+pipenv shell
+jupyter labexentsion list
+jupyter lab clean  # 清理构建缓存 
+jupyter lab build  # 重新构建 
+jupyter lab        # 重新启动 
+
+
 pip install jupyterlab
 
 jupyter lab --generate-config
