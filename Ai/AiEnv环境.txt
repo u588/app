@@ -1,6 +1,7 @@
 参考：==>  /home/ts/App/Keras_Torch/preInstall.txt
 
-官方 ==> Pascal(1080,P4 6.0算力)显卡推荐配置 cuDNN 9.0.0 CUDA11.8  
+官方 ==> Pascal(1080,P4 6.0算力)显卡推荐配置 cuDNN 9.0.0 CUDA11.8   
+         CUDA 11.8，cuDNN 8.6.0，NCCL 2.18.1-1，这样兼容性较好
         Volta(2080,7.0算力)   cuDNN 9.0.0 CUDA12.3
 
 一、系统环境：

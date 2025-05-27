@@ -1,0 +1,40 @@
+====== gcc ===========
+1、安装 
+# 示例：同时安装 GCC 11/12/13/14（根据仓库实际版本调整）
+sudo apt install gcc-11 g++-11 \
+     gcc-12 g++-12 \
+     gcc-13 g++-13 \
+     gcc-14 g++-14 
+2、切换
+# 注册所有已安装版本到系统备选方案 
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 30 \
+--slave /usr/bin/g++ g++ /usr/bin/g++-11 
+ 
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 40 \
+--slave /usr/bin/g++ g++ /usr/bin/g++-12 
+ 
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 50 \
+--slave /usr/bin/g++ g++ /usr/bin/g++-13 
+ 
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 60 \
+--slave /usr/bin/g++ g++ /usr/bin/g++-14 
+ 
+# 交互式选择默认版本
+sudo update-alternatives --config gcc
+
+3、验证
+gcc --version  # 查看当前默认版本 
+gcc-13 --version  # 直接调用特定版本（无需切换）
+
+
+========= CUDA ==========
+1、安装
+sudo sh cuda_11.8.0_520.61.05_linux.run
+sudo sh cuda_12.1.0_530.30.02_linux.run
+
+2、切换
+vi ~/.bashrc
+export PATH=$PATH:/usr/local/cuda-11.8/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64
+
+
