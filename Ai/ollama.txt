@@ -15,6 +15,8 @@ sudo tar xzf ollama-linux-amd64.tgz -C /usr
 1、下载升级
 
 sudo systemctl stop ollama
+sudo tar -C /usr -xzf ollama-linux-amd64.0.6.8.tgz
+
 curl -fsSL https://bgithub.xyz/ollama/ollama/releases/download/v0.4.0/ollama-linux-amd64.tgz | sudo tar zx -C /usr
 
 sudo systemctl restart ollama
