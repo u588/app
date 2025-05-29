@@ -29,6 +29,12 @@ ls -l /dev/disk/by-uuid/
 vi /etc/fstab
 UUID=id   挂载点  ext4 defaults 0 0
 
+========== 磁盘日志报错 iscsi btrfs lvm2 =========
+sudo apt --reinstall udisks2-btrfs btrfs-progs udisks2-lvm2  open-iscsi
+
+sudo systemctl restart udisks2.service
+
+
 
 ============ debain 磁盘调整 =============
 root 
