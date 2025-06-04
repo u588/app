@@ -17,7 +17,7 @@ tar xvf Python-3.x.x.tgz
 4、编译和安装
 cd ==> 相应目录
 ./configure --enable-optimization
-sudo make -j $(nporc)
+sudo make -j $(nproc)
 sudo make altinstall
 
 
