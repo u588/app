@@ -8,7 +8,7 @@ AI提供 sudo apt update && sudo apt install build-essential libssl-dev libffi-d
 
 sudo apt-get update
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
-libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm lzma \
 libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
 
 3、解压源码包
