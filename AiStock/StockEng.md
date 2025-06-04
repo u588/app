@@ -88,10 +88,14 @@
 ### 1.SHAP交互值计算
 
 * SHAP（SHapley Additive exPlanations）可量化特征对预测的贡献，并揭示特征间的交互效应。
-* 例如：  
-    import shap  
-    explainer = shap.TreeExplainer(model)  
-    shap_interaction_values = explainer.shap_interaction_values(X)  
+* 例如：
+
+```python  
+import shap  
+explainer = shap.TreeExplainer(model)  
+shap_interaction_values = explainer.shap_interaction_values(X)  
+```
+
 结果可生成特征交互热力图，直观展示特征对的联合影响。
 
 ### 2.依赖图分析
@@ -163,9 +167,12 @@
 
 * 模型选择：使用预训练Transformer（如BERT）或自定义结构，编码器堆叠层数建议2-4层以平衡复杂度；
 * 特征生成：取Transformer最后一层输出的隐藏状态（如CLS token）作为时序特征向量；
-* 示例代码框架（PyTorch）：  
-    transformer = TransformerEncoder(d_model=64, nhead=4, num_layers=2)  
-    time_features = transformer(sequence_input)  # 输出 (batch_size, seq_len, d_model)  
+* 示例代码框架（PyTorch）：
+
+```python
+transformer = TransformerEncoder(d_model=64, nhead=4, num_layers=2)  
+time_features = transformer(sequence_input)  # 输出 (batch_size, seq_len, d_model) 
+```
 
 ### 3. XGBoost特征融合与预测
 
