@@ -1,86 +1,5 @@
 # TDX 数据更新
 
-## tdx 服务器
-
-* std:
-  * '180.153.18.170', 7709
-  * '110.41.147.114', 7709
-
-* ext:
-  * '182.175.240.157', 7727 2024.9.30废弃
-  * '47.112.95.207', 7720
-
-/new_tdx/connect.cfg
-
-## mootdx包
-
-* <https://github.com/mootdx/mootdx?tab=readme-ov-file>
-* <https://www.mootdx.com/zh-cn/latest/quick/>
-
-pip show mootdx  
-注销 ==> quotes.py  518行 logger.warning
-
-### 初始化
-
-mootdx bestip  
-/home/ts/.mootdx/config.json  
-ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询
-
-```python F10资料
-
-from mootdx.quotes import Quotes
-client = Quotes.factory(market='std')
-a = client.F10C(symbol='000001')
-file = open('g:/1.txt', 'w')
-n= 0
-while n < 16:
-    file.write(client.F10('600996',a[n].get('name')))
-    n = n+1
-
-client.F10(symbol='000001', name='最新提示')
-
-dict.get(list(dict.key())[x])
-
-```
-
-## 代码
-
-### 1、深圳
-
-```txt
-    股票:   主板 00  创业板 30  
-    指数:   39
-```
-
-### 2、上海
-
-```txt
-
-    股票:  主板 60  科创板 68
-    指数:  00 88
-
-```
-
-## 数据来源
-
-### 1、StockCode
-
-通达信软件 J:\new_tdx\T0002\hq_cache\
-infoharbor*
-
-### 2、csIndexs及成分股
-
-<https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协)
-
-### 3、tdxBolckIndexs及成分股
-
-通达信软件 -->选项(眉头) -->数据导出-->板块导出(逗号分隔)
-
-### 4、tdxIndex
-
-中证指数  -->其他(眉尾)-->中证指数--> 导出数据  
-中基协指数  -->其他(眉尾)-->中证指数板块-->中基协指数--> 导出数据
-
 ## 每年 6、12月 第三个星期日 更新
 
 ### 1、中证列表(2)导出 编辑后存
@@ -178,6 +97,87 @@ python G:\Gitee\App\TDXapp\tdxGetBiz.py
 python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
 ```
+
+## tdx 服务器
+
+* std:
+  * '180.153.18.170', 7709
+  * '110.41.147.114', 7709
+
+* ext:
+  * '182.175.240.157', 7727 2024.9.30废弃
+  * '47.112.95.207', 7720
+
+/new_tdx/connect.cfg
+
+## mootdx包
+
+* <https://github.com/mootdx/mootdx?tab=readme-ov-file>
+* <https://www.mootdx.com/zh-cn/latest/quick/>
+
+pip show mootdx  
+注销 ==> quotes.py  518行 logger.warning
+
+### 初始化
+
+mootdx bestip  
+/home/ts/.mootdx/config.json  
+ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询
+
+```python F10资料
+
+from mootdx.quotes import Quotes
+client = Quotes.factory(market='std')
+a = client.F10C(symbol='000001')
+file = open('g:/1.txt', 'w')
+n= 0
+while n < 16:
+    file.write(client.F10('600996',a[n].get('name')))
+    n = n+1
+
+client.F10(symbol='000001', name='最新提示')
+
+dict.get(list(dict.key())[x])
+
+```
+
+## 代码
+
+### 1、深圳
+
+```txt
+    股票:   主板 00  创业板 30  
+    指数:   39
+```
+
+### 2、上海
+
+```txt
+
+    股票:  主板 60  科创板 68
+    指数:  00 88
+
+```
+
+## 数据来源
+
+### 1、StockCode
+
+通达信软件 J:\new_tdx\T0002\hq_cache\
+infoharbor*
+
+### 2、csIndexs及成分股
+
+<https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协)
+
+### 3、tdxBolckIndexs及成分股
+
+通达信软件 -->选项(眉头) -->数据导出-->板块导出(逗号分隔)
+
+### 4、tdxIndex
+
+中证指数  -->其他(眉尾)-->中证指数--> 导出数据  
+中基协指数  -->其他(眉尾)-->中证指数板块-->中基协指数--> 导出数据
 
 ## tdx 历史专业财务数据 1231 0930 0630 0331
 
