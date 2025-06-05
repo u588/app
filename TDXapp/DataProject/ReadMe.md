@@ -147,7 +147,7 @@ python /home/ts/app/TDXapp/DataProject/getEMPIndexs.py
 
 ```
 
-### 11、最终指数列表，由于在指数获取时服务器返回数据为空，需优化列表。
+### 11、最终指数列表，由于在指数获取时服务器返回数据为空，需优化列表
 
 ```bash
 
