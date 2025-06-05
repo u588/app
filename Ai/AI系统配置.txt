@@ -5,3 +5,5 @@
 2、大模型服务器1台：64G内存，GPU 显存20G，GPU 计算能力（Compute Capability）8.0 ，固态硬盘500G，机械硬盘可用空间1T 。CUDA 12.1 ,cuDNN 9.1.1 , pytorch 2.1.2 ,torchvision 0.16.2 torchaudio 2.1.2 
 
 3、知识库服务器1台：32G内存，GPU 显存16G，GPU 计算能力（Compute Capability）8.0 ，固态硬盘500G，机械硬盘可用空间1T 。CUDA 12.1 ,cuDNN 9.1.1 , pytorch 2.1.2 ,torchvision 0.16.2 torchaudio 2.1.2 
+
+
