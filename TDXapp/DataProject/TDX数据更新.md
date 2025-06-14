@@ -4,6 +4,12 @@
 
 ### 1、中证列表(2)导出 编辑后存
 
+* <https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协。综合指数-人民币)
+
+|IndexCode|IndexName|MarketName|Num|IndexSTL|From|
+|-----|-------|-------|-------|------|----------|
+|指数代码|指数简称|指数系列|样本数量|指数类别|CS|
+
 G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx
 
 ### 2、tdx板块列表(3)导出后 运行
@@ -15,11 +21,15 @@ python G:\Gitee\App\TDXapp\DataProject\tdxBLKIndex_StcokCode.py
 ```
 
 ### 3、tdx中证指数列表(4)导出
+中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
 
-编辑中证指数列表+中基协指数列表+000001 后存  
-==> G:/Gitee/App/TDXapp/tdxAppData/tdxZZindexs.xlsx
+编辑中证指数列表+000001 后存
+|IndexCode|Market|MarketCode|
+|------|---------|---------|
+|000001| EX | 62 |  
+==> G:/Gitee/App/TDXapp/tdxAppData/tdxZZIndexs.xlsx
 
-### 4、tdx上证、深证指数列表生成 运行
+### 4、tdx软件，生成上证、深证指数列表
 
 ```bash
 
@@ -27,7 +37,7 @@ python G:\Gitee\App\TDXapp\DataProject\tdxSHSZIndex.py
 
 ```
 
-### 5、生成指数列表 运行
+### 5、生成指数列表
 
 ```bash
 
@@ -168,7 +178,7 @@ infoharbor*
 
 ### 2、csIndexs及成分股
 
-<https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协)
+<https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协。综合指数-人民币)
 
 ### 3、tdxBolckIndexs及成分股
 
@@ -176,8 +186,7 @@ infoharbor*
 
 ### 4、tdxIndex
 
-中证指数  -->其他(眉尾)-->中证指数--> 导出数据  
-中基协指数  -->其他(眉尾)-->中证指数板块-->中基协指数--> 导出数据
+中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
 
 ## tdx 历史专业财务数据 1231 0930 0630 0331
 

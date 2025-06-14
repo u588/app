@@ -38,7 +38,7 @@ dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True
 dfs = dfi[['IndexCode','IndexName','IndexSTL']].drop_duplicates().reset_index(drop=True)
 n = 0
 while n < dfs.shape[0]:
-    dfs.loc[[n],['Num']] = len(dfi.groupby('IndexCode').groups[dfs.loc[n][0]])
+    dfs.loc[n,'Num'] = len(dfi.groupby('IndexCode').groups[dfs.iloc[n,0]])
     n = n + 1
     # print(str(n) + '  ok !')
 
