@@ -21,9 +21,11 @@ python G:\Gitee\App\TDXapp\DataProject\tdxBLKIndex_StcokCode.py
 ```
 
 ### 3、tdx中证指数列表(4)导出
+
 中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
 
 编辑中证指数列表+000001 后存
+
 |IndexCode|Market|MarketCode|
 |------|---------|---------|
 |000001| EX | 62 |  
@@ -82,17 +84,23 @@ python /home/ts/app/TDXapp/DataProject/getEMPIndexs.py
 
 python G:\Gitee\App\TDXapp\DataProject\optIndex.py
 
+python /home/ts/app/TDXapp/DataProject/optIndex.py
+
 ```
 
 ### 10、tdx个股题材相关度
 
+* 删除 StockBas数据库Top数据表
+
 ```bash
 
 python G:\Gitee\App\TDXapp\tdxGetTop.py
-
+python /home/ts/app/TDXapp/tdxGetTop.py
 ```
 
 ### 11、tdx个股主营占比及前五大合作商占比
+
+* 删除 StockBas数据库mBiz数据表
 
 ```bash
 
@@ -101,6 +109,8 @@ python G:\Gitee\App\TDXapp\tdxGetBiz.py
 ```
 
 ### 12、tdx个股3年业绩预测
+
+* 删除 StockBas数据库Fcast数据表
 
 ```bash
 
