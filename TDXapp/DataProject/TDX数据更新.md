@@ -1,6 +1,6 @@
 # TDX 数据更新
 
-## 每年 6、12月 第三个星期日 更新
+## 每年 6、12月 第三个星期日 更新股指数据
 
 ### 1、中证列表(2)导出 编辑后存
 
@@ -88,9 +88,9 @@ python /home/ts/app/TDXapp/DataProject/optIndex.py
 
 ```
 
-### 10、tdx个股题材相关度
+## 更新题材数据库
 
-* 删除 StockBas数据库Top数据表
+### 10、tdx个股题材相关度 {Top}
 
 ```bash
 
@@ -98,9 +98,7 @@ python G:\Gitee\App\TDXapp\tdxGetTop.py
 python /home/ts/app/TDXapp/tdxGetTop.py
 ```
 
-### 11、tdx个股主营占比及前五大合作商占比
-
-* 删除 StockBas数据库mBiz数据表
+### 11、tdx个股主营占比及前五大合作商占比 {mBiz,BizP}
 
 ```bash
 
@@ -108,9 +106,8 @@ python G:\Gitee\App\TDXapp\tdxGetBiz.py
 
 ```
 
-### 12、tdx个股3年业绩预测
+### 12、tdx个股3年业绩预测 {Fcast}
 
-* 删除 StockBas数据库Fcast数据表
 
 ```bash
 

@@ -1,10 +1,17 @@
 from mootdx.quotes import Quotes
 import pandas as pd
 import re
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from datetime import datetime
+
+new_Top='Top'+datetime.now().strftime('%Y%m')
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
+
+with eng.connect() as conn:
+    conn.execute(text('ALTER TABLE Top RENAME TO '+ new_Top))
+    conn.commit() 
 
 def getTop(StockCode, StockName):
     qf10='热点题材'
@@ -33,3 +40,6 @@ while n < len(StockList):
        
         pass
     n = n + 1
+    
+eng.dispose()
+engs.dispose()

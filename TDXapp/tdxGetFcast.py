@@ -1,12 +1,17 @@
 from mootdx.quotes import Quotes
 import pandas as pd
 import re
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from datetime import datetime
+
+new_Fcast='Fcast'+datetime.now().strftime('%Y%m')
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
-
+with eng.connect() as conn:
+    conn.execute(text('ALTER TABLE Fcast RENAME TO '+ new_Fcast))
+    conn.commit() 
 
 def getFcast(StockCode, StockName):
     qf10='研报评级'
@@ -52,3 +57,6 @@ while n < len(StockList):
        
         pass
     n = n + 1
+    
+eng.dispose()
+engs.dispose()

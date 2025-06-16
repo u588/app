@@ -1,22 +1,20 @@
-from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 import requests
 import pandas as pd
 import random
 import time
 from io import BytesIO
+from datetime import datetime
 
+new_table='csIndexCons'+datetime.now().strftime('%Y%m')
 #header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',}
 header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67',}
 eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxIndex')
 
-with eng.connect()  as conn:
-    conn.execute(text('DROP  TABLE IF EXISTS "csIndexCons";'))
+with eng.connect() as conn:
+    conn.execute(text('ALTER TABLE csIndexCons RENAME TO '+ new_table))
     conn.commit()   # DDL语句通常自动提交，但显式提交更安全 
 
-
-# sql = 'DROP TABLE IF EXISTS "csIndexCons";'
-# eng.execute('DROP TABLE IF EXISTS "csIndexCons";')
     time.sleep(5)
 
     def getData(codeID):
@@ -54,3 +52,4 @@ with eng.connect()  as conn:
             pass
     conn.commit()
     print(' == 指数成份股 All Saved ! == ')
+eng.dispose()
