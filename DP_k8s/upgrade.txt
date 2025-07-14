@@ -35,3 +35,8 @@ cp kubelet 需  systemctl  stop  kubelet.service
     systemctl daemon-reload
     systemctl  restart  kubelet.service    
 
+
+4、admin.conf 是Kubernetes集群的核心管理凭证文件，通常由集群安装工具（如kubeadm）在初始化时生成，用于配置集群管理员（cluster-admin）的访问权限。
+    默认路径为/etc/kubernetes/admin.conf
+    证书更新后 admin.conf 需复制到用户目录（如~/.kube/config）供kubectl使用
+
