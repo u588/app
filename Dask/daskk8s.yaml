@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: scheduler
-        image: 10.3.18.60/docker/dask:2025.1.0
+        image: 10.3.18.60/docker/dask:2025.7.0-py3.12
         command: ["dask-scheduler"]
         ports:
         - containerPort: 8786
