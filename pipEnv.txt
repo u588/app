@@ -1,3 +1,19 @@
+======= windows pip =========
+C:\Users\an\pip\pip.ini
+
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+cache-dir = d:\\pip\\cache
+[install]
+trusted-host = https://pypi.tuna.tsinghua.edu.cn
+
+or 
+pip config set global.cache-dir  "D:\\pip\\cache"
+
+执行pip cache purge命令，删除所有缓存文件(不影响已安装包)
+
+查看缓存文件列表 pip cache list
+
 ========= 全局 =========
 /etc/pip.conf
 
