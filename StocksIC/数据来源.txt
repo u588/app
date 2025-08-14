@@ -1,5 +1,0 @@
-1、中证行业分类
-https://www.csindex.com.cn/#/dataService/industryClassification
-
-2、tdx财务数据字段对照表
-https://www.mootdx.com/zh-cn/latest/api/fields/
