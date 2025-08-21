@@ -10,7 +10,8 @@ api = TdxHq_API()
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
 
 # tdxIndexs = pd.read_sql('optIndexs', eng)
-tdxIndexs = pd.read_sql('tdxIndexs', eng)
+# tdxIndexs = pd.read_sql('tdxIndexs', eng)
+tdxIndexs = pd.read_sql('indexM', eng)
 sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
