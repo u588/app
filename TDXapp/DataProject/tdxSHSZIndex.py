@@ -38,6 +38,8 @@ qq.columns = ['IndexCode', 'IndexName']
 qq['Market'] = 'ST'
 qq['MarketName'] = 'SH'
 qq['MarketCode'] = '1'
+# qq['From'] = 'TDX'
+# qq['IndexSTL'] = '指数'
 qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
                .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSHIndexs.xlsx')
 print('=========> Indexs OK ')
@@ -72,6 +74,8 @@ qq.columns = ['IndexCode', 'IndexName']
 qq['Market'] = 'ST'
 qq['MarketName'] = 'SZ'
 qq['MarketCode'] = '0'
+# qq['From'] = 'TDX'
+# qq['IndexSTL'] = '指数'
 qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
                .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSZIndexs.xlsx')
 print('=========> Indexs OK ')
