@@ -5,9 +5,9 @@ sh = open('D:/new_tdx/T0002/hq_cache/shm.tnf', 'r',encoding="GBK", errors='ignor
 sz = open('D:/new_tdx/T0002/hq_cache/szm.tnf', 'r',encoding="GBK", errors='ignore').read()
 
 
-shIndex00 = re.findall("00\d{4}.{30}", sh)
-shIndex88 = re.findall("88\d{4}.{30}", sh)
-szIndex39 = re.findall("39\d{4}.{30}", sz)
+shIndex00 = re.findall(r"00\d{4}.{30}", sh)
+shIndex88 = re.findall(r"88\d{4}.{30}", sh)
+szIndex39 = re.findall(r"39\d{4}.{30}", sz)
 
 DataIndex = [shIndex00, shIndex88]
 qq = pd.DataFrame(['a','b']).T
@@ -38,7 +38,7 @@ qq.columns = ['IndexCode', 'IndexName']
 qq['Market'] = 'ST'
 qq['MarketName'] = 'SH'
 qq['MarketCode'] = '1'
-# qq['From'] = 'TDX'
+qq['From'] = 'TDX'
 # qq['IndexSTL'] = '指数'
 qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
                .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSHIndexs.xlsx')
@@ -74,7 +74,7 @@ qq.columns = ['IndexCode', 'IndexName']
 qq['Market'] = 'ST'
 qq['MarketName'] = 'SZ'
 qq['MarketCode'] = '0'
-# qq['From'] = 'TDX'
+qq['From'] = 'TDX'
 # qq['IndexSTL'] = '指数'
 qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
                .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSZIndexs.xlsx')

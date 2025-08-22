@@ -20,25 +20,45 @@ sz = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSZIndexs.xlsx', dtype={'In
 
 
 
-zz.drop_duplicates(subset='IndexCode',inplace=True)
+# zz.drop_duplicates(subset='IndexCode',inplace=True)
 m3 = pd.concat([sh, sz])
 m3.reset_index(drop=True, inplace=True)
 
-blkm = pd.merge(blk,m3, on=['IndexCode','IndexName'],how='inner')
+blkm = pd.merge(blk,m3.drop(columns='From'), on=['IndexCode','IndexName'],how='inner')
 blkm.reset_index(drop=True, inplace=True)
-zzm = pd.merge(cs,zz, on='IndexCode',how='inner')
-zzm.reset_index(drop=True, inplace=True)
 
-zm = pd.merge(m3,zzm[['IndexCode','IndexSTL','Num','From','DP']],on=['IndexCode'],how='inner')
+m3cs = pd.merge(m3,cs[['IndexCode','Num','IndexSTL','DP']], on='IndexCode',how='inner')
+m3zz = pd.merge(m3,zz['IndexCode'], on='IndexCode',how='inner')
+cszz = pd.merge(cs,zz, on='IndexCode',how='inner')
+m3cszz = pd.merge(m3,cszz[['IndexCode','Num','DP','IndexSTL']], on='IndexCode',how='inner')
 
-m3zz = pd.concat([zm,zzm]).drop_duplicates(subset='IndexCode',keep='first')
-zzm3 = pd.concat([m3zz,m3]).drop_duplicates(subset='IndexCode',keep='first').reset_index(drop=True)
+df1 = pd.concat([blkm,m3]).drop_duplicates(subset='IndexCode',keep='first')
+df2 = pd.concat([m3cs,df1]).drop_duplicates(subset='IndexCode',keep='first')
+df3 = pd.concat([m3zz,df2]).drop_duplicates(subset='IndexCode',keep='first')
+df4 = pd.concat([m3cszz,df3]).drop_duplicates(subset='IndexCode',keep='first')
+df5 = pd.concat([df4,cszz]).drop_duplicates(subset='IndexCode',keep='first').sort_values(by=['IndexCode','MarketCode'])
 
-finz = pd.concat([blkm,zzm3]).drop_duplicates(subset='IndexCode',keep='first').sort_values(by=['IndexCode','MarketCode']).reset_index(drop=True)
-finz['IndexSTL'] = finz['IndexSTL'].fillna('指数')
-finz['From'] = finz['From'].fillna('TDX')
+df5.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/IndexM.xlsx')
 
-finz.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/IndexM.xlsx')
+# df5.set_index('IndexCode').to_excel('/home/ts/app/TDXapp/tdxAppData/indexM.xlsx')
+
+df5.set_index('IndexCode').to_sql('indexM', eng, if_exists='replace')
+
+
+
+# zzm = pd.merge(cs,zz, on='IndexCode',how='inner')
+# zzm.reset_index(drop=True, inplace=True)
+
+# zm = pd.merge(m3,zzm[['IndexCode','IndexSTL','Num','From','DP']],on=['IndexCode'],how='inner')
+
+# m3zz = pd.concat([zm,zzm]).drop_duplicates(subset='IndexCode',keep='first')
+# zzm3 = pd.concat([m3zz,m3]).drop_duplicates(subset='IndexCode',keep='first').reset_index(drop=True)
+
+# finz = pd.concat([blkm,zzm3]).drop_duplicates(subset='IndexCode',keep='first').sort_values(by=['IndexCode','MarketCode']).reset_index(drop=True)
+# finz['IndexSTL'] = finz['IndexSTL'].fillna('指数')
+# finz['From'] = finz['From'].fillna('TDX')
+
+# finz.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/IndexM.xlsx')
 
 # finz.set_index('IndexCode').to_sql('indexM', eng, if_exists='replace')
 
