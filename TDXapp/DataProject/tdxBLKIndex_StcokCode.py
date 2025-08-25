@@ -48,6 +48,9 @@ while n < dfs.shape[0]:
 
 
 # dfs['Num'] = dfi.groupby('IndexCode').count()['IndexName'].reset_index(drop=True)
+dfs['Market'] = 'ST'
+dfs['MarketName'] = 'SH'
+dfs['MarketCode'] = 1
 dfs['From'] = 'TDXBLK'
 dfs['DP'] = current_date
 dfs.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsBLK.xlsx')
