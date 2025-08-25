@@ -1,3 +1,4 @@
+# pytdx标准市场可获得指数数据，上海（00XXXX， 88XXXX），深圳（39XXXX）
 import re
 import pandas as pd
 
