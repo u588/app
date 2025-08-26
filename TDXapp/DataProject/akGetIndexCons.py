@@ -5,8 +5,9 @@ import pandas as pd
 eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex')
 
 # IndexLists = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/optIndexs.xlsx', dtype={'IndexCode':object})[['IndexCode','IndexName']].values.tolist()
-IndexLists = pd.read_excel('/home/ts/app/TDXapp/tdxAppData/optIndexs.xlsx', dtype={'IndexCode':object})[['IndexCode','IndexName']].values.tolist()
 
+rawD = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/optIndexs.xlsx', dtype={'IndexCode':object})
+IndexLists = rawD[~rawD['From'].isin(['TDXBLK','EMP'])][['IndexCode','IndexName']].values.tolist()
 ll = []
 
 df = ak.index_stock_cons(IndexLists[1][0])
@@ -25,5 +26,5 @@ for i in IndexLists[2:]:
 
 df.rename(columns={'品种代码':'StockCode', '品种名称':'StockName', '纳入日期':'DP'},inplace=True)
 
-df[['IndexCode', 'IndexName','StockCode', 'StockName', 'DP']].set_index('IndexCode').to_sql('akIndexCons', eng)
+df[['IndexCode', 'IndexName','StockCode', 'StockName', 'DP']].set_index('IndexCode').to_sql('akIndexCons', eng, if_exists='replace')
 pd.DataFrame(ll,columns=['IndexCode']).to_sql('EmpIndex', eng, if_exists='replace')
