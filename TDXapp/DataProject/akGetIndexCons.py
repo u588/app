@@ -9,10 +9,10 @@ IndexLists = pd.read_excel('/home/ts/app/TDXapp/tdxAppData/optIndexs.xlsx', dtyp
 
 ll = []
 
-df = ak.index_stock_cons(IndexLists[0][0])
-df['IndexCode'] = IndexLists[0][0]
-df['IndexName'] = IndexLists[0][1] 
-for i in IndexLists[1:]:
+df = ak.index_stock_cons(IndexLists[1][0])
+df['IndexCode'] = IndexLists[1][0]
+df['IndexName'] = IndexLists[1][1] 
+for i in IndexLists[2:]:
     try:
         tmp = ak.index_stock_cons(i[0]).drop_duplicates(subset='品种代码',keep='first')
         tmp['IndexCode'] = i[0]
