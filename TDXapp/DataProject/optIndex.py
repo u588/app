@@ -3,14 +3,13 @@ from sqlalchemy import create_engine
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56:5432/tdxIndex')
 
-tdxIndex = pd.read_sql('tdxIndexs', eng)
-empIndex = pd.read_sql('EmpIndex', eng)
+dropdf = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/dropIndexs.xlsx', dtype={'IndexCode':object})
+empdf = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/empIndexs.xlsx', dtype={'IndexCode':object})
+tdxdf = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexs.xlsx', dtype={'IndexCode':object})
 
-df = pd.concat([tdxIndex,empIndex]).drop_duplicates(subset=['IndexCode'], keep=False).drop('index', axis=1)
+optDF = pd.concat([tdxdf,dropdf]).drop_duplicates(subset='IndexCode',keep=False).sort_values(by=['IndexCode','MarketCode'])
 
+optDF.loc[optDF['IndexCode'].isin(empdf['IndexCode']), 'From'] = 'EMP'
+optDF.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/optIndexs.xlsx')
 
-df.set_index('IndexCode').to_sql('optIndexs',eng, if_exists = 'replace')
-
-# df.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/optIndexs.xlsx')
-df.set_index('IndexCode').to_excel('/home/ts/app/TDXapp/tdxAppData/optIndexs.xlsx')
 print('Saved ! ')

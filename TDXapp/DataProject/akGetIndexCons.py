@@ -36,6 +36,6 @@ df.rename(columns={'品种代码':'StockCode', '品种名称':'StockName', '纳�
 
 df[['IndexCode', 'IndexName','StockCode', 'StockName', 'DP']].set_index('IndexCode').to_sql('akIndexCons', eng, if_exists='replace')
 print('to_sql OK !')
-pd.DataFrame(ll,columns=['IndexCode']).to_sql('EmpIndex', eng, if_exists='replace')
+# pd.DataFrame(ll,columns=['IndexCode']).to_sql('EmpIndex', eng, if_exists='replace')
 pd.DataFrame(ll,columns=['IndexCode']).to_excel('/home/ts/app/TDXapp/tdxAppData/akEMP.xlsx')
 pd.DataFrame(ll,columns=['IndexCode']).to_excel('/home/ts/app/TDXapp/tdxAppData/akEMPB.xlsx')
