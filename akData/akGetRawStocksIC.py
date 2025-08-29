@@ -14,3 +14,8 @@ for code in StocksCode[1:]:
     df_tmp = ak.stock_industry_change_cninfo(symbol=code, start_date="11000101", end_date="22000101")
     idf = pd.concat([idf,df_tmp])
     print('code '+code+' :concat !')
+
+idf.set_index('StockCode').to_sql('akRawStockIC', engB, if_exists='replace')
+
+eng.dispose()
+engB.dispose()
