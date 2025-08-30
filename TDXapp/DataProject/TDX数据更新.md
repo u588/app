@@ -71,7 +71,7 @@ python G:\Gitee\App\TDXapp\DataProject\IndexMerg.py
 * 需要去除的指数添加入（dropIndexs.xlsx）
 * 需要不参加后期指数成分股获得的加入（empIndexs.xlsx）
 
-### 8、优化指数列表
+### 8、优化指数列表(optIndexs.xlsx)
 
 ```bash
 

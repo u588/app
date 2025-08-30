@@ -14,3 +14,4 @@ akDF['IndexSTL'] = '指数'
 
 df = pd.concat([blkDF,akDF]).drop_duplicates(subset=['IndexCode','StockCode'])
 df.set_index('IndexCode').to_sql('IndexCons',eng, if_exists = 'replace')
+print('update OK !')
