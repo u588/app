@@ -30,18 +30,28 @@ gpcw2024.zip 1231 0930 0630 0331
 2024.9.16  --> gpcw20240630.zip 5389032
 
 2025.5.7
-gpcw20240930.zip --> 5195779
+
 gpcw20241231.zip --> 5539530
 gpcw20250331.zip --> 4856246
+
+2025.8.30
+gpcw20241231.zip --> 5592670
+gpcw20250331.zip --> 4954542
+gpcw20250630.zip --> 5525448
+gpcw20250930.zip -->
+
 '''
 
-ls = ['gpcw20241231.zip','gpcw20250331.zip']
+
+
+ls = ['gpcw20250331.zip']
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 
 for i in ls:
     result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename=i, path_to_download="/tmp/tmpfile.zip")
     dd = datacrawler.to_df(data=result)
+    dd = dd[dd.columns[:582]]
     dd['report_date']= dd['report_date'].astype(object)
     upday = dd['report_date'].iloc[0]
     dd = dd.round(2)
@@ -50,15 +60,18 @@ for i in ls:
         try:
             day = pd.read_sql(l, conn)['report_date'].tail(1).tolist()[0]
             if upday > day:
+                print(l + 'Updated !')
                 pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, conn, if_exists='append')
                 
             else:
                 print(l+'not Updated !')
                 pass
         except:
-            pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, conn, if_exists='append')
-            print(l+" =====  New Code add !!")
-            pass
+            try:
+                pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, conn, if_exists='append')
+                print(l+" =====  New Code add !!")
+            except:
+                pass
 
 conn.dispose()
 
