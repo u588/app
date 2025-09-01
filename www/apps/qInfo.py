@@ -185,7 +185,7 @@ def app():
             day = st.selectbox(
                 '分析日期',
                 # ('20250630')
-                (fxday['report_date'].tail(21).to_list())
+                (fxday['report_date'].tail(21).to_list())[::-1]
             )
             leve = st.selectbox(
                 '分类层级',
