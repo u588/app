@@ -118,7 +118,7 @@ python /home/ts/app/TDXapp/DataProject/ConsMerg.py
 ```
 
 
-## =======================
+## === 每年 4、8月 第三个星期日 更新个股财务数据
 
 ### 10、tdx个股题材相关度 {Top}
 
@@ -148,9 +148,9 @@ python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
 ```
 
-### ==================================
+## ======== tdx 服务器
 
-## tdx 服务器
+### tdx 服务器
 
 * std:
   * '180.153.18.170', 7709
@@ -162,7 +162,7 @@ python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
 /new_tdx/connect.cfg
 
-## mootdx包
+### mootdx包
 
 * <https://github.com/mootdx/mootdx?tab=readme-ov-file>
 * <https://www.mootdx.com/zh-cn/latest/quick/>
@@ -170,7 +170,7 @@ python G:\Gitee\App\TDXapp\tdxGetFcast.py
 pip show mootdx  
 注销 ==> quotes.py  518行 logger.warning
 
-### 初始化
+* 初始化
 
 mootdx bestip  
 /home/ts/.mootdx/config.json  
