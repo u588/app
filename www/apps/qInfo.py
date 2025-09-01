@@ -174,8 +174,8 @@ def app():
 
 
     with st.form('form4'):
-        # FSCode = pd.read_sql('FSCode',eng)
-        # eng.dispose()
+        fxday = pd.read_sql('000001',eng)
+        eng.dispose()
         # anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
         with st.sidebar:
             fenCode = st.selectbox(
@@ -184,7 +184,8 @@ def app():
             )
             day = st.selectbox(
                 '分析日期',
-                (20240930,20240630,20240331,20231231,20230930,20230630,20230331)
+                # ('20250630')
+                (fxday['report_date'].tail(21).to_list())
             )
             leve = st.selectbox(
                 '分类层级',
