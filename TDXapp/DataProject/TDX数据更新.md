@@ -130,6 +130,9 @@ python /home/ts/app/TDXapp/tdxGetTop.py
 
 ### 11、tdx个股主营占比及前五大合作商占比 {mBiz,BizP}
 
+* 年报集中披露时间: 3月下旬至4月中旬（占全年披露量的70%以上）(4.30最终披露截止日)
+* 半年报集中披露时间: 7月下旬至8月中下旬（尤其最后一周为高峰期）(8.31最终披露截止日)
+
 ```bash
 
 python G:\Gitee\App\TDXapp\tdxGetBiz.py
@@ -144,6 +147,8 @@ python G:\Gitee\App\TDXapp\tdxGetBiz.py
 python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
 ```
+
+### ==================================
 
 ## tdx 服务器
 

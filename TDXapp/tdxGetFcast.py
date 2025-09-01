@@ -9,9 +9,12 @@ new_Fcast='Fcast'+datetime.now().strftime('%Y%m')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
+rawFcast = pd.read_sql('Fcast',eng)
+rawFcast.set_index('StockCode').to_sql(new_Fcast, eng, if_exists='replace')
+
 with eng.connect() as conn:
-    conn.execute(text('ALTER TABLE Fcast RENAME TO '+ new_Fcast))
-    conn.commit() 
+    conn.execute(text('DROP TABLE IF EXISTS "Fcast" CASCADE;'))
+    conn.commit()
 
 def getFcast(StockCode, StockName):
     qf10='研报评级'
