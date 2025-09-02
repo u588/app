@@ -108,12 +108,14 @@ def app():
     tab1m,tab2m =st.tabs(['详 单','分 布'])
     with tab1m:
         # st.plotly_chart(fig)
-        st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
+        st.dataframe(ptData, hide_index=True,width='stretch',height=600)
+        # st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
         vdf = viData(tdxData)
         figv = px.violin(vdf,y='vol',box=True,points='all',hover_name=vdf.IndexCode+' : '+vdf.IndexName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
         st.plotly_chart(figv)
     with tab2m:
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width='stretch')
+        # st.plotly_chart(fig1, use_container_width=True)
         # st_pyecharts(makSum.testti(),height='500px',width="100%")
     # with tab3:
     #     st_pyecharts(makSum.testti(),height='600px',width="100%")
@@ -166,20 +168,24 @@ def app():
             tab1c,tab2c =st.tabs(['详 单','分 布'])
             with tab1c:
                 # st.plotly_chart(fig)
-                st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
+                st.dataframe(pltCode, hide_index=True,width='stretch',height=600)
+                # st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
                 sdf = viData(stockCode)
                 figs = px.violin(sdf,y='vol',box=True,points='all',hover_name=sdf.StockCode+' : '+sdf.StockName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
                 st.plotly_chart(figs)
             with tab2c:
-                st.plotly_chart(fig1c, use_container_width=True)
+                st.plotly_chart(fig1c, width='stretch')
+                # st.plotly_chart(fig1c, use_container_width=True)
         if submitted5:
             fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name=stockCode.StockCode + ' : '+ stockCode.StockName,height=600)
             tab1c,tab2c =st.tabs(['详 单','分 布'])
             with tab1c:
                 # st.plotly_chart(fig)
-                st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
+                st.dataframe(pltCode, hide_index=True,width='stretch',height=600)
+                # st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
             with tab2c:
-                st.plotly_chart(fig1c, use_container_width=True)
+                st.plotly_chart(fig1c, width='stretch')
+                # st.plotly_chart(fig1c, use_container_width=True)
             tab1s,tab2s,tab3s,tab4s,tab5s,tab6s,tab7s = st.tabs(['K 线','13天比较','21天比较','3个月比较','半年比较','1年比较','F10'])
             with tab1s:    
                 st_pyecharts(Kpro.Kchart(stockCodesel),renderer='canvas',height='750px',key='k')

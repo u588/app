@@ -70,7 +70,8 @@ def app():
 
         with tab2:
             # st.header('D3plt')
-            st.bokeh_chart(d3plt.d3(stockCodeSel[:6]),use_container_width=True)
+            # st.bokeh_chart(d3plt.d3(stockCodeSel[:6]),use_container_width=True)
+            st.bokeh_chart(d3plt.d3(stockCodeSel[:6]),width='stretch')
         
 
         with tab3:

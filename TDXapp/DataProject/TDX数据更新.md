@@ -137,6 +137,8 @@ python /home/ts/app/TDXapp/tdxGetTop.py
 
 python G:\Gitee\App\TDXapp\tdxGetBiz.py
 
+python /home/ts/app/TDXapp/tdxGetBiz.py
+
 ```
 
 ### 12、tdx个股3年业绩预测 {Fcast}
@@ -146,6 +148,7 @@ python G:\Gitee\App\TDXapp\tdxGetBiz.py
 
 python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
+python /home/ts/app/TDXapp/tdxGetFcast.py
 ```
 
 ## ======== tdx 服务器
