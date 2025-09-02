@@ -19,7 +19,7 @@ cat > /etc/pip.conf <<EOF
 index-url = https://pypi.tuna.tsinghua.edu.cn/simple/
 [install]
 trusted-host = pypi.tuna.tsinghua.edu.cn
-    
+EOF
 
 =========== pipenv 虚拟环境管理 =============
 1、安装
