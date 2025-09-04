@@ -9,17 +9,18 @@ api = TdxHq_API()
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
 
-
+optO = pd.read_excel('/home/ts/app/TDXapp/tdxAppData/optIndexsO.xlsx',dtype={'IndexCode':object} )
+opt = pd.read_sql('optIndexs', eng)
 # tdxIndexs = pd.read_sql('optIndexs', eng)
-# sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
-# sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
-# zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
-sh = ['000510']
-sz = []
-zz = []
+tdxIndexs = opt[~(opt['IndexCode'].isin(optO['IndexCode']))]
 
-with api.connect('110.41.147.114', 7709):
-    IndexLists=sh   
+sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
+sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
+zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
+gz = tdxIndexs[tdxIndexs['MarketCode'] == 102 ]
+
+with api.connect('180.153.18.170', 7709):
+    IndexLists=sh['IndexCode']   
     for i, IndexCode in enumerate(IndexLists):
         try:                
             print('Index', i, '/', len(IndexLists))
@@ -41,7 +42,7 @@ with api.connect('110.41.147.114', 7709):
             print(IndexCode, 'no saved to sql !' )
             pass
         
-    IndexLists=sz   
+    IndexLists=sz['IndexCode']    
     for i, IndexCode in enumerate(IndexLists):
         try:                
             print('Index', i, '/', len(IndexLists))
@@ -64,8 +65,8 @@ with api.connect('110.41.147.114', 7709):
             pass
         
 
-with eapi.connect('182.175.240.157', 7727):
-    IndexLists=zz   
+with eapi.connect('47.112.95.207', 7720):
+    IndexLists=zz['IndexCode']    
     for i, IndexCode in enumerate(IndexLists):
         try:                
             print('Index', i, '/', len(IndexLists))
@@ -73,6 +74,27 @@ with eapi.connect('182.175.240.157', 7727):
             start = 5500
             while start >= 0:
                 df = eapi.to_df(eapi.get_instrument_bars(9, 62, IndexCode, start, 500))
+                start = start - 500
+                if df.empty:
+                    pass
+                else:
+                    IndexData = pd.concat([IndexData.astype(df.dtypes),df])
+            IndexData.dropna(thresh=6, inplace=True)
+            IndexData.set_index('datetime', inplace=True)
+            IndexData.to_sql(IndexCode, eng, if_exists='replace')
+            print(IndexCode,'saved to sql !')
+
+        except:
+            print(IndexCode, 'no saved to sql !' )
+            pass
+    IndexLists=gz['IndexCode']    
+    for i, IndexCode in enumerate(IndexLists):
+        try:                
+            print('Index', i, '/', len(IndexLists))
+            IndexData = pd.DataFrame(columns=['open', 'high', 'low', 'close', 'position', 'trade','price', 'year', 'month', 'day', 'hour', 'minute', 'datetime', 'amount'])
+            start = 5500
+            while start >= 0:
+                df = eapi.to_df(eapi.get_instrument_bars(9, 102, IndexCode, start, 500))
                 start = start - 500
                 if df.empty:
                     pass

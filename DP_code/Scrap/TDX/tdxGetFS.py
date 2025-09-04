@@ -33,6 +33,7 @@ pd.set_option('display.max_columns', None)
 for i in ls:
     result = datacrawler.fetch_and_parse(reporthook=demo_reporthook, filename=i, path_to_download="/tmp/tmpfile.zip")
     dd = datacrawler.to_df(data=result)
+    dd = dd[dd.columns[:582]]
     dd['report_date']= dd['report_date'].astype(object)
     upday = dd['report_date'].iloc[0]
     dd = dd.round(2)
@@ -47,8 +48,10 @@ for i in ls:
                 print(l+'not Updated !')
                 pass
         except:
-            pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, eng, if_exists='append')
-            print(l+" =====  New Code add !!")
-            pass
+            try:
+                pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, eng, if_exists='append')
+                print(l+" =====  New Code add !!")
+            except:
+                pass
 
 eng.dispose()

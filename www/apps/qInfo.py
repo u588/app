@@ -139,20 +139,25 @@ def app():
         with tab4:
             topstl = topdf.style.background_gradient(cmap='Blues')
             # stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))
-            st.dataframe(topstl, hide_index=True,use_container_width=True)
+            st.dataframe(topstl, hide_index=True,width='stretch')
+            # st.dataframe(topstl, hide_index=True,use_container_width=True)
         with tab5:
             # bistl = bidf.style.background_gradient(cmap='Blues')
             # sbistl = bistl.format('{:,.2f}', subset=list(bistl.columns[5:]))
             st.subheader('行 业')
-            st.dataframe(hydf, hide_index=True,use_container_width=True)
+            st.dataframe(hydf, hide_index=True,width='stretch')
+            # st.dataframe(hydf, hide_index=True,use_container_width=True)
             st.subheader('产 品')
-            st.dataframe(cpdf, hide_index=True,use_container_width=True)
+            st.dataframe(cpdf, hide_index=True,width='stretch')
+            # st.dataframe(cpdf, hide_index=True,use_container_width=True)
             st.subheader('地 区')
-            st.dataframe(dqdf, hide_index=True,use_container_width=True)
+            st.dataframe(dqdf, hide_index=True,width='stretch')
+            # st.dataframe(dqdf, hide_index=True,use_container_width=True)
         with tab6:
             bzstl = bzdf.style.background_gradient(cmap='Blues')
             # stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))
-            st.dataframe(bzstl, hide_index=True,use_container_width=True)
+            st.dataframe(bzstl, hide_index=True,width='stretch')
+            # st.dataframe(bzstl, hide_index=True,use_container_width=True)
 
     with st.form('form3'):
         FSCode = pd.read_sql('FSCode',eng)
@@ -174,17 +179,22 @@ def app():
 
 
     with st.form('form4'):
-        # FSCode = pd.read_sql('FSCode',eng)
-        # eng.dispose()
+        fxday = pd.read_sql('000001',eng)
+        eng.dispose()
         # anData = FSCode[['L1Code','L1Name']].drop_duplicates().reset_index(drop=True).loc[1:13].reset_index(drop=True)
         with st.sidebar:
+            ics = st.selectbox(
+                '分类标准',
+                ('中国上市公司协会上市公司行业分类标准','巨潮行业分类标准','申银万国行业分类标准','中证行业分类标准')
+            )
             fenCode = st.selectbox(
-                '中证分类聚合分析',
+                '分析项目',
                 ('每股指标',"资产负债表","利润表",'现金流量表','股本股东','发展能力分析','偿债能力分析','获利能力分析','经营能力分析','现金流分析','资本结构分析')
             )
             day = st.selectbox(
                 '分析日期',
-                (20240930,20240630,20240331,20231231,20230930,20230630,20230331)
+                # ('20250630')
+                (fxday['report_date'].tail(21).to_list())[::-1]
             )
             leve = st.selectbox(
                 '分类层级',
@@ -201,10 +211,10 @@ def app():
             )
             submitted1 = st.form_submit_button('行业分析')
         if submitted:
-            fenX.fenChart(stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0],day, leve)
+            fenX.fenChart(ics, stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0],day, leve)
 
         if submitted1:
-            fenX.fenChart(stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0],day,leve)
+            fenX.fenChart(ics, stockCode, list(anData[anData['L1Name']==fenCode]['L1Code'])[0],day,leve)
             client = Quotes.factory(market='std')
             txt = client.F10(stockCode, '行业分析')[116:]
             txt = txt.replace('│',' ')                
@@ -271,6 +281,7 @@ def app():
             with tab3:
                 stta = dddf.style.background_gradient(cmap='Blues')
                 stta = stta.format('{:,.2f}', subset=list(dddf.columns[2:]))
-                st.dataframe(stta, hide_index=True, on_select='rerun',use_container_width=True)
+                st.dataframe(stta, hide_index=True, on_select='rerun',width='stretch')
+                # st.dataframe(stta, hide_index=True, on_select='rerun',use_container_width=True)
             with tab4:
                 st.plotly_chart(fig,config={'scrollZoom':True})

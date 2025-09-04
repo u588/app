@@ -10,9 +10,15 @@ new_mBiz='mBiz'+datetime.now().strftime('%Y%m')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
+rawBizP = pd.read_sql('BizP',eng)
+rawBizP.set_index('StockCode').to_sql(new_BizP, eng, if_exists='replace')
+
+rawmBiz = pd.read_sql('mBiz',eng)
+rawmBiz.set_index('日期').to_sql(new_mBiz, eng, if_exists='replace')
+
 with eng.connect() as conn:
-    conn.execute(text('ALTER TABLE BizP RENAME TO '+ new_BizP))
-    conn.execute(text('ALTER TABLE mBiz RENAME TO '+ new_mBiz))
+    conn.execute(text('DROP TABLE IF EXISTS "BizP" CASCADE;'))
+    conn.execute(text('DROP TABLE IF EXISTS "mBiz" CASCADE;'))
     conn.commit()
 
 def getBiz(StockCode, StockName):

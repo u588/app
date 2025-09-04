@@ -65,6 +65,7 @@ tdxIndexs = pd.read_sql('optIndexs', eng)
 sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
+gz = tdxIndexs[tdxIndexs['MarketCode'] == 102 ]
 
 
 # with api.connect('119.147.212.81', 7709):
@@ -121,6 +122,26 @@ with eapi.connect('47.112.95.207', 7720):
         sql = 'select * from "'+IndexCode+'" order by datetime desc limit 1 ;'
 
         IndexData = eapi.to_df(eapi.get_instrument_bars(9, 62, IndexCode, 0, 1))
+        try:
+            DayUp = IndexData.head(1)['datetime'].tolist()[0]
+            Day = pd.read_sql(sql, eng)['datetime'].tolist()[0]
+        
+            if DayUp > Day:
+                IndexData.set_index('datetime', inplace=True)
+                IndexData.to_sql(IndexCode, eng, if_exists='append')
+                # print(IndexCode,'saved to sql !')
+            else:
+                # print(IndexCode,'nosaved to sql')
+                pass
+        except:
+            print(IndexCode,'except !!')
+            pass
+    IndexLists=gz.IndexCode.to_list()     
+    for i, IndexCode in enumerate(IndexLists):
+        # print('Index', i, '/', len(IndexLists))
+        sql = 'select * from "'+IndexCode+'" order by datetime desc limit 1 ;'
+
+        IndexData = eapi.to_df(eapi.get_instrument_bars(9, 102, IndexCode, 0, 1))
         try:
             DayUp = IndexData.head(1)['datetime'].tolist()[0]
             Day = pd.read_sql(sql, eng)['datetime'].tolist()[0]

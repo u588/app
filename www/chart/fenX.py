@@ -4,14 +4,16 @@ import streamlit as st
 import plotly
 
 #以中证分类L4为基准的，股票分类分析
-
+# 根据分类标准ics，分析股票
 
 colors = plotly.colors.qualitative.Light24
-def fenChart(StockCode, fxCode,day, leve):
+def fenChart(ics,StockCode, fxCode,day, leve):
     eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxFS')
     engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
     #读取股票中证分类
-    StockIC = pd.read_sql("StockIC", engB)
+    # StockIC = pd.read_sql("StockIC", engB)
+    akStockIC = pd.read_sql("akStockIC", engB).bfill( axis=1, limit=1)
+    StockIC = akStockIC[akStockIC['ICS']==ics]
 
     def GetFin(StockCode, day):
         FSCode = pd.read_sql('FSCode',eng)
@@ -91,20 +93,27 @@ def fenChart(StockCode, fxCode,day, leve):
     svCode,asCode=getfenCode(fxCode)
  
     if leve=='L4Name':
-        lname = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
+        # lname = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
+        lname = StockIC[StockIC['StockCode']==StockCode]['IC4'].tolist()[0]
         StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-        mfinsel = mfin[mfin['L4Name']==lname]
-        desel = mfin[mfin['L4Name']==lname].describe().T
+        mfinsel = mfin[mfin['IC4']==lname]
+        desel = mfin[mfin['IC4']==lname].describe().T
+        # mfinsel = mfin[mfin['L4Name']==lname]
+        # desel = mfin[mfin['L4Name']==lname].describe().T
     else:
-        lname = StockIC[StockIC['StockCode']==StockCode]['L3Name'].tolist()[0]
+        lname = StockIC[StockIC['StockCode']==StockCode]['IC3'].tolist()[0]
+        # lname = StockIC[StockIC['StockCode']==StockCode]['L3Name'].tolist()[0]
         StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-        mfinsel = mfin[mfin['L3Name']==lname]
-        desel = mfin[mfin['L3Name']==lname].describe().T
+        mfinsel = mfin[mfin['IC3']==lname]
+        desel = mfin[mfin['IC3']==lname].describe().T
+        # mfinsel = mfin[mfin['L3Name']==lname]
+        # desel = mfin[mfin['L3Name']==lname].describe().T
 
 
     fin = GetFin(StockCode,day)
 
-    tasel = mfinsel[['StockCode','StockName','L1Name','L2Name','L3Name','L4Name']]
+    tasel = mfinsel[['StockCode','StockName','IC1','IC2','IC3','IC4']]
+    # tasel = mfinsel[['StockCode','StockName','L1Name','L2Name','L3Name','L4Name']]
     # anafin = fin.query('L1Code=="FZNL" and L3Code!="EMP"') #1
     # anafin = fin.query('L1Code=="CZNL" and L3Code!="EMP"')#2
     # anafin = fin.query('L1Code=="HLNL" and L3Code!="EMP"')#3
@@ -274,7 +283,8 @@ def fenChart(StockCode, fxCode,day, leve):
             header=dict(values=list(tasel.columns),
                         fill_color='lightskyblue',
                         ),
-            cells=dict(values=[tasel.StockCode,tasel.StockName,tasel.L1Name,tasel.L2Name,tasel.L3Name,tasel.L4Name],
+            # cells=dict(values=[tasel.StockCode,tasel.StockName,tasel.L1Name,tasel.L2Name,tasel.L3Name,tasel.L4Name],
+            cells=dict(values=[tasel.StockCode,tasel.StockName,tasel.IC1,tasel.IC2,tasel.IC3,tasel.IC4],
                     fill_color='lightcyan',
                     )
             )
@@ -320,6 +330,7 @@ def fenChart(StockCode, fxCode,day, leve):
 
 
     tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['L1Name'].head(1).tolist()[0]])
+    # tab1, tab2 = st.tabs([StockCode+' : 共'+str(len(tasel))+"支", StockName+' : '+data['IC1'].head(1).tolist()[0]])
     with tab1:
         st.subheader(' — '.join(list(tasel.head(1).values[0][2:])))
         stta = ta.style.background_gradient(cmap='Blues')

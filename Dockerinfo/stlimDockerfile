@@ -1,4 +1,4 @@
-FROM 10.3.18.60/docker/wstrearlim:v1
+FROM docker/trixie3.13:v0
 WORKDIR /home/www
 EXPOSE 8501
 ENTRYPOINT [ "streamlit","run" ]

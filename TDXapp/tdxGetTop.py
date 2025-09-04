@@ -9,9 +9,12 @@ new_Top='Top'+datetime.now().strftime('%Y%m')
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 
+rawTop = pd.read_sql('Top',eng)
+rawTop.set_index('日期').to_sql(new_Top, eng, if_exists='replace')
+
 with eng.connect() as conn:
-    conn.execute(text('ALTER TABLE Top RENAME TO '+ new_Top))
-    conn.commit() 
+    conn.execute(text('DROP TABLE IF EXISTS "Top" CASCADE;'))
+    conn.commit()
 
 def getTop(StockCode, StockName):
     qf10='热点题材'

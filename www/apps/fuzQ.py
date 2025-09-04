@@ -207,35 +207,40 @@ def app():
    
     with st.form('form1'):
         with st.sidebar:
+            trdDate = st.selectbox('日期',(bizDF.head(200)['日期'].drop_duplicates().to_list()))
             txt = st.text_input(label='题材模糊查询', value='')
             submitted1 = st.form_submit_button('确认')
         if submitted1:
             txtDF = topDF[topDF['题材'].str.contains(txt, na=False)].sort_values(by=['相关度','StockCode'], ascending=False).reset_index(drop=True)
 
-            cpDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            cpDF = bizDF[bizDF['项目名'].str.endswith('(产品)')][bizDF[bizDF['项目名'].str.endswith('(产品)')]['日期']==trdDate].reset_index(drop=True)
             cpDF['项目名'] = cpDF['项目名'].str.replace('(产品)', '')
             cpmDF = cpDF[cpDF['StockCode'].isin(list(txtDF['StockCode']))]
             plcpm = cpmDF[cpmDF['收入比例(%)'].astype(float)>15]
 
-            ywDF = bizDF[bizDF['项目名'].str.endswith('(业务)')][bizDF[bizDF['项目名'].str.endswith('(业务)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            ywDF = bizDF[bizDF['项目名'].str.endswith('(业务)')][bizDF[bizDF['项目名'].str.endswith('(业务)')]['日期']==trdDate].reset_index(drop=True)
             ywDF['项目名'] = ywDF['项目名'].str.replace('(业务)', '')
             ywmDF = ywDF[ywDF['StockCode'].isin(list(txtDF['StockCode']))]
             plywm = ywmDF[ywmDF['收入比例(%)'].astype(float)>15]
 
-            hyDF = bizDF[bizDF['项目名'].str.endswith('(行业)')][bizDF[bizDF['项目名'].str.endswith('(行业)')]['日期']=='2024-06-30'].reset_index(drop=True)
+            hyDF = bizDF[bizDF['项目名'].str.endswith('(行业)')][bizDF[bizDF['项目名'].str.endswith('(行业)')]['日期']==trdDate].reset_index(drop=True)
             hyDF['项目名'] = hyDF['项目名'].str.replace('(行业)', '')
             hymDF = hyDF[hyDF['StockCode'].isin(list(txtDF['StockCode']))]
             plhym = hymDF[hymDF['收入比例(%)'].astype(float)>15]
 
             tab11,tab12,tab13,tab14 =st.tabs(['热点题材','行 业','产 品','业 务'])
             with tab11:
-                st.dataframe(txtDF, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+                st.dataframe(txtDF, hide_index=True,width='stretch',height=600,on_select='rerun')
+                # st.dataframe(txtDF, hide_index=True,use_container_width=True,height=600,on_select='rerun')
             with tab12:
-                st.dataframe(plhym, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+                st.dataframe(plhym, hide_index=True,width='stretch',height=600,on_select='rerun')
+                # st.dataframe(plhym, hide_index=True,use_container_width=True,height=600,on_select='rerun')
             with tab13:
-                st.dataframe(plcpm, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+                st.dataframe(plcpm, hide_index=True,width='stretch',height=600,on_select='rerun')
+                # st.dataframe(plcpm, hide_index=True,use_container_width=True,height=600,on_select='rerun')
             with tab14:
-                st.dataframe(plywm, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+                st.dataframe(plywm, hide_index=True,width='stretch',height=600,on_select='rerun')
+                # st.dataframe(plywm, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
             # txDF = txtDF.style.background_gradient(cmap='Blues')
             # txDF = txDF.format('{:,.2f}', subset=list(txtDF.columns[2:]))
@@ -245,7 +250,7 @@ def app():
     with st.form('form2'):
         with st.sidebar:
             txt = st.text_input(label='行业模糊查询', value='')
-            trdDate = st.selectbox('日期',('2024-06-30','2023-12-31'))
+            # trdDate = st.selectbox('日期',('2024-06-30','2023-12-31'))
             submitted1 = st.form_submit_button('确认')
 
         if submitted1:
@@ -254,7 +259,8 @@ def app():
             trdSe = trdDF[trdDF['项目名'].str.contains(txt, na=False)]
             pltData = trdSe[trdSe['收入比例(%)'].astype(float)>15]
 
-            st.dataframe(pltData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+            st.dataframe(pltData, hide_index=True,width='stretch',height=600,on_select='rerun')
+            # st.dataframe(pltData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
     with st.form('form3'):
         with st.sidebar:
@@ -268,7 +274,8 @@ def app():
             prdSe = prdDF[prdDF['项目名'].str.contains(txt, na=False)]
             pltData = prdSe[prdSe['收入比例(%)'].astype(float)>15]
 
-            st.dataframe(pltData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
+            st.dataframe(pltData, hide_index=True,width='stretch',height=600,on_select='rerun')
+            # st.dataframe(pltData, hide_index=True,use_container_width=True,height=600,on_select='rerun')
 
     # with st.form('form4'):
     #     with st.sidebar:

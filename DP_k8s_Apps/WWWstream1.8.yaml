@@ -15,7 +15,7 @@ spec:
       containers:
       - name: wwwlim
         # image: 10.3.18.60/docker/wstreamlim:v0
-        image: 10.3.18.60/docker/wstreamlim:2025.5
+        image: 10.3.18.60/docker/wstreamlim:2025.8
         ports:
           - containerPort: 8501
         volumeMounts:

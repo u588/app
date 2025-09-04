@@ -210,7 +210,8 @@ def data_frame_demo():
                     color="Region:N",
                 )
             )
-            st.altair_chart(chart, use_container_width=True)
+            # st.altair_chart(chart, use_container_width=True)
+            st.altair_chart(chart, width='stretch')
     except URLError as e:
         st.error(
             """

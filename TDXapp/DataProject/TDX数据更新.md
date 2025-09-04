@@ -2,7 +2,9 @@
 
 ## 每年 6、12月 第三个星期日 更新股指数据
 
-### 1、中证列表(2)导出 编辑后存
+## 以下程序在PC上完成
+
+### 1、中证列表导出->编辑后存（csIndex.xlsx）
 
 * <https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协。综合指数-人民币)
 
@@ -12,7 +14,9 @@
 
 G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx
 
-### 2、tdx板块列表(3)导出后 运行
+### 2、tdx软件，板块列表导出后->运行(tdxIndexsBLK.xlsx tdxIndexsConsBLK.xlsx)
+
+* 通达信软件 -->选项(眉头) -->数据导出-->板块导出(逗号分隔)
 
 ```bash  
 
@@ -20,18 +24,24 @@ python G:\Gitee\App\TDXapp\DataProject\tdxBLKIndex_StcokCode.py
 
 ```
 
-### 3、tdx中证指数列表(4)导出
+### 3、tdx接口，生成中证、国证指数列表(tdxZZGZIndexs.xlsx)
 
-中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
+```bash
+
+python G:\Gitee\App\TDXapp\DataProject\tdxZZGHIndex.py
+
+```
+
+(中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
 
 编辑中证指数列表+000001 后存
 
 |IndexCode|Market|MarketCode|
 |------|---------|---------|
 |000001| EX | 62 |  
-==> G:/Gitee/App/TDXapp/tdxAppData/tdxZZIndexs.xlsx
+==> G:/Gitee/App/TDXapp/tdxAppData/tdxZZIndexs.xlsx)
 
-### 4、tdx软件，生成上证、深证指数列表
+### 4、tdx软件，生成上证、深证指数列表(tdxSHSZIndexs.xlsx)
 
 ```bash
 
@@ -39,7 +49,15 @@ python G:\Gitee\App\TDXapp\DataProject\tdxSHSZIndex.py
 
 ```
 
-### 5、生成指数列表
+### 5、获取akshare, 股指DP，Num数据(akIndexDP.xlsx akIndexNum.xlsx)
+
+```bash
+
+python G:\Gitee\App\TDXapp\DataProject\akIndexsDPNum.py
+
+```
+
+### 6、生成指数列表(tdxIndexs.xlsx)
 
 ```bash
 
@@ -47,48 +65,60 @@ python G:\Gitee\App\TDXapp\DataProject\IndexMerg.py
 
 ```
 
-### 6、生成最终指数列表  更新数据库
+### 7、编辑（tdxIndexs.xlsx），生成（dropIndexs.xlsx empIndexs.xlsx）
+
+* 编辑生成的此两表不用大动
+* 需要去除的指数添加入（dropIndexs.xlsx）
+* 需要不参加后期指数成分股获得的加入（empIndexs.xlsx）
+
+### 8、优化指数列表(optIndexs.xlsx)
 
 ```bash
 
-python G:\Gitee\App\TDXapp\DataProject\Finalndex.py
+python G:\Gitee\App\TDXapp\DataProject\optlndex.py
 
 ```
 
-### 7、获取cs成分股列表
+## 以下程序在Linux完成
+
+### 7、获取akshare成分股列表(akIndexCons),存入数据库
+
+* 执行程序，由于网站保护需多次执行
+* 初始化
 
 ```bash
 
-python G:\Gitee\App\TDXapp\pgTDXCons.py
+python /home/ts/app/TDXapp/DataProject/akGetIndexCons.py
 
 ```
 
-### 8、生成股票成分股 更新数据库
+* 多次执行，获取全部数据
 
 ```bash
 
-python G:\Gitee\App\TDXapp\MergeCsTdxCons.py
+python /home/ts/app/TDXapp/DataProject/akGetIndexConsB.py
 
 ```
 
-### 10、获取返回数据为空 的列表
+### 8、生成最终股指列表（FinaIndexs.xlsx） 更新数据库（optIndexs）
 
-```bash
-python /home/ts/app/TDXapp/DataProject/getEMPIndexs.py
-
-```
-
-### 11、最终指数列表，由于在指数获取时服务器返回数据为空，需优化列表
+* 由于历史原因服务器中为（FinaIndexs.xlsx），数据库中为（optIndexs）
 
 ```bash
 
-python G:\Gitee\App\TDXapp\DataProject\optIndex.py
-
-python /home/ts/app/TDXapp/DataProject/optIndex.py
+python /home/ts/app/TDXapp/DataProject/Finalndex.py
 
 ```
 
-## 更新题材数据库
+### 9、生成最终股指成分股，更新数据库（IndexCons）
+
+```bash
+python /home/ts/app/TDXapp/DataProject/ConsMerg.py
+
+```
+
+
+## === 每年 4、8月 第三个星期日 更新个股财务数据
 
 ### 10、tdx个股题材相关度 {Top}
 
@@ -100,9 +130,14 @@ python /home/ts/app/TDXapp/tdxGetTop.py
 
 ### 11、tdx个股主营占比及前五大合作商占比 {mBiz,BizP}
 
+* 年报集中披露时间: 3月下旬至4月中旬（占全年披露量的70%以上）(4.30最终披露截止日)
+* 半年报集中披露时间: 7月下旬至8月中下旬（尤其最后一周为高峰期）(8.31最终披露截止日)
+
 ```bash
 
 python G:\Gitee\App\TDXapp\tdxGetBiz.py
+
+python /home/ts/app/TDXapp/tdxGetBiz.py
 
 ```
 
@@ -113,9 +148,12 @@ python G:\Gitee\App\TDXapp\tdxGetBiz.py
 
 python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
+python /home/ts/app/TDXapp/tdxGetFcast.py
 ```
 
-## tdx 服务器
+## ======== tdx 服务器
+
+### tdx 服务器
 
 * std:
   * '180.153.18.170', 7709
@@ -127,7 +165,7 @@ python G:\Gitee\App\TDXapp\tdxGetFcast.py
 
 /new_tdx/connect.cfg
 
-## mootdx包
+### mootdx包
 
 * <https://github.com/mootdx/mootdx?tab=readme-ov-file>
 * <https://www.mootdx.com/zh-cn/latest/quick/>
@@ -135,7 +173,7 @@ python G:\Gitee\App\TDXapp\tdxGetFcast.py
 pip show mootdx  
 注销 ==> quotes.py  518行 logger.warning
 
-### 初始化
+* 初始化
 
 mootdx bestip  
 /home/ts/.mootdx/config.json  
@@ -176,24 +214,7 @@ dict.get(list(dict.key())[x])
 
 ```
 
-## 数据来源
-
-### 1、StockCode
-
-通达信软件 J:\new_tdx\T0002\hq_cache\
-infoharbor*
-
-### 2、csIndexs及成分股
-
-<https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协。综合指数-人民币)
-
-### 3、tdxBolckIndexs及成分股
-
-通达信软件 -->选项(眉头) -->数据导出-->板块导出(逗号分隔)
-
-### 4、tdxIndex
-
-中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
+## ===========================
 
 ## tdx 历史专业财务数据 1231 0930 0630 0331
 
