@@ -24,4 +24,8 @@ rawDF.loc[rawDF['indextype'].str.contains('04'),'IndexSTL'] = '策略'
 rawDF.loc[rawDF['indextype'].str.contains('05'),'IndexSTL'] = '综合'
 rawDF.loc[rawDF['indextype'].str.contains('08'),'IndexSTL'] = '定制指数'
 
-rawDF[~(rawDF['IndexSTL']=='STL')].rename(columns={'indexcode':'IndexCode','indexname':'IndexName','samplesize':'Num','sampleshowdate':'DP'}).drop('indextype',axis=1)
+df = rawDF[~(rawDF['IndexSTL']=='STL')].rename(columns={'indexcode':'IndexCode','indexname':'IndexName','samplesize':'Num','sampleshowdate':'DP'})
+df['MarketName'] = 'SZ'
+df.loc[df['indextype'].str.startswith('2'), 'MarketName'] = 'GZ'
+df.drop('indextype',axis=1).set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/akGzSzIndexs.xlsx')
+print('OK !')
