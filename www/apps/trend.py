@@ -105,7 +105,7 @@ def app():
         with st.sidebar:
             mark = st.multiselect(
                 "市场",
-                ["GZ","ZZ","SH","SZ"],
+                ["GZ","ZZ","SH","SZ","TDXBLK"],
                 default=['ZZ'],
             )
             indSTL = st.multiselect(
