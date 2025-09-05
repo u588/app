@@ -22,8 +22,7 @@ bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'�
 
 bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']].astype('float') 
 tdxData = pd.read_sql('tdxIndexsData', engTDX)
-optData = pd.read_sql('optIndexs', engTDX)
-rawData = pd.merge(tdxData,optData.drop('IndexName',axis=1),on='IndexCode',how='inner')
+
 
 def normalize(x):
     return (x - x.min()) / (x.max() - x.min())
@@ -100,41 +99,26 @@ def viData(tdxData):
     return(df)
 
 def app():
-
-    with st.form('form1'):
-        with st.sidebar:
-            mark = st.multiselect(
-                "市场",
-                ["GZ","ZZ","SH","SZ"],
-                default=['ZZ'],
-            )
-            indSTL = st.multiselect(
-                "类型",
-                ["综合","规模","行业","策略","主题","风格","定制指数","地区","概念"],
-                default=["概念"],
-            )
-            submitted2 = st.form_submit_button('综合分析')
-        if submitted2:
-            tData = rawData[rawData['MarketName'].isin(mark)]
-            ttData = tData[tData['IndexSTL'].isin(indSTL)]
-            ptData = ttData.style.background_gradient(cmap='Blues')
-            ptData = ptData.format('{:,.2f}', subset=list(ttData.columns[2:6]))
-            fig1 = px.scatter_3d(ttData,x='3D',y='5D',z='21D',color='55D',hover_name=ttData.IndexCode +' : '+ttData.IndexName,height=600)
-            # with st.form('form'):
-            tab1m,tab2m =st.tabs(['详 单','分 布'])
-            with tab1m:
-                # st.plotly_chart(fig)
-                st.dataframe(ptData, hide_index=True,width='stretch',height=600)
-                # st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
-                vdf = viData(ttData)
-                figv = px.violin(vdf,y='vol',box=True,points='all',hover_name=vdf.IndexCode+' : '+vdf.IndexName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
-                st.plotly_chart(figv)
-            with tab2m:
-                st.plotly_chart(fig1, width='stretch')
-                # st.plotly_chart(fig1, use_container_width=True)
-                # st_pyecharts(makSum.testti(),height='500px',width="100%")
-            # with tab3:
-            #     st_pyecharts(makSum.testti(),height='600px',width="100%")
+    tdxData = pd.read_sql('tdxIndexsData', engTDX).sort_values('3D',ascending=False)
+    ptData = tdxData.style.background_gradient(cmap='Blues')
+    ptData = ptData.format('{:,.2f}', subset=list(tdxData.columns[2:]))
+    # fig = px.scatter_ternary(tdxData,a='3D',b='5D',c='21D',hover_name='IndexName')
+    fig1 = px.scatter_3d(tdxData,x='3D',y='5D',z='21D',color='55D',hover_name=tdxData.IndexCode +' : '+tdxData.IndexName,height=600)
+    # with st.form('form'):
+    tab1m,tab2m =st.tabs(['详 单','分 布'])
+    with tab1m:
+        # st.plotly_chart(fig)
+        st.dataframe(ptData, hide_index=True,width='stretch',height=600)
+        # st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
+        vdf = viData(tdxData)
+        figv = px.violin(vdf,y='vol',box=True,points='all',hover_name=vdf.IndexCode+' : '+vdf.IndexName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
+        st.plotly_chart(figv)
+    with tab2m:
+        st.plotly_chart(fig1, width='stretch')
+        # st.plotly_chart(fig1, use_container_width=True)
+        # st_pyecharts(makSum.testti(),height='500px',width="100%")
+    # with tab3:
+    #     st_pyecharts(makSum.testti(),height='600px',width="100%")
 
     with st.form('form0'):
         with st.sidebar:
