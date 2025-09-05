@@ -47,6 +47,7 @@ python G:\Gitee\App\TDXapp\DataProject\tdxShSzIndex.py
 python G:\Gitee\App\TDXapp\DataProject\akIndexsDP.py
 
 ```
+
 ### 6、国证网获取深证、国证指数数据
 
 * <https://www.cnindex.com.cn/>
@@ -117,7 +118,6 @@ python /home/ts/app/TDXapp/DataProject/ConsMerg.py
 
 ```
 
-
 ## === 每年 4、8月 第三个星期日 更新个股财务数据
 
 ### 10、tdx个股题材相关度 {Top}
@@ -143,12 +143,11 @@ python /home/ts/app/TDXapp/tdxGetBiz.py
 
 ### 12、tdx个股3年业绩预测 {Fcast}
 
-
 ```bash
 
 python G:\Gitee\App\TDXapp\tdxGetFcast.py
-
 python /home/ts/app/TDXapp/tdxGetFcast.py
+
 ```
 
 ## ======== tdx 服务器
