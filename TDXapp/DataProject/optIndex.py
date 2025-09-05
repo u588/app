@@ -10,6 +10,6 @@ tdxdf = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexs.xlsx', dtype={'I
 optDF = pd.concat([tdxdf,dropdf]).drop_duplicates(subset='IndexCode',keep=False).sort_values(by=['IndexCode','MarketCode'])
 
 optDF.loc[optDF['IndexCode'].isin(empdf['IndexCode']), 'From'] = 'EMP'
-optDF.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/optIndexs.xlsx')
+optDF.dropna(subset='IndexSTL').set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/optIndexs.xlsx')
 
 print('Saved ! ')

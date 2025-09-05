@@ -27,5 +27,6 @@ rawDF.loc[rawDF['indextype'].str.contains('08'),'IndexSTL'] = '定制指数'
 df = rawDF[~(rawDF['IndexSTL']=='STL')].rename(columns={'indexcode':'IndexCode','indexname':'IndexName','samplesize':'Num','sampleshowdate':'DP'})
 df['MarketName'] = 'SZ'
 df.loc[df['indextype'].str.startswith('2'), 'MarketName'] = 'GZ'
-df.drop('indextype',axis=1).set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/akGzSzIndexs.xlsx')
+df['From'] = 'CNI'
+df.drop('indextype',axis=1).set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/cniGzSzIndexs.xlsx')
 print('OK !')

@@ -44,7 +44,7 @@ qq['From'] = 'TDX'
 shdf = qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
                .set_index('IndexCode')
 # shdf.to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSHIndexs.xlsx')
-print('=========> Indexs OK ')
+# print('=========> Indexs OK ')
 
 
 DataIndex = [szIndex39]
@@ -83,4 +83,4 @@ szdf = qq.sort_values(by = 'IndexCode' ,ascending=True,ignore_index=True)\
 # szdf.to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSZIndexs.xlsx')
 print('=========> Indexs OK ')
 
-pd.concat([shdf,szdf]).to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxSHSZIndexs.xlsx')
+pd.concat([shdf,szdf]).to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxShSzIndexs.xlsx')

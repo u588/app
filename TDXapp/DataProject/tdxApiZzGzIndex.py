@@ -20,14 +20,14 @@ zzdf = df[df['market']==62][['code','name']].rename(columns={'code':'IndexCode',
 zzdf['Market']='EX'
 zzdf['MarketName'] = 'ZZ'
 zzdf['MarketCode'] = 62
-zzdf['From'] = 'TDX'
+zzdf['From'] = 'tdxApi'
 
 gzdf = df[df['market']==102][['code','name']].rename(columns={'code':'IndexCode','name':'IndexName'}).reset_index(drop=True)
 gzdf['Market'] = 'EX'
 gzdf['MarketName'] = 'GZ'
 gzdf['MarketCode'] = 102
-gzdf['From'] = 'TDX'
+gzdf['From'] = 'tdxApi'
 
 zzgz = pd.concat([zzdf, gzdf]).set_index('IndexCode')
-zzgz.to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxZZGZIndexs.xlsx')
+zzgz.to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxApiZzGzIndexs.xlsx')
 print('OK !')

@@ -24,36 +24,36 @@ python G:\Gitee\App\TDXapp\DataProject\tdxBLKIndex_StcokCode.py
 
 ```
 
-### 3、tdx接口，生成中证、国证指数列表(tdxZZGZIndexs.xlsx)
+### 3、tdxApi，生成中证、国证指数列表(tdxApiZzGzIndexs.xlsx)
 
 ```bash
 
-python G:\Gitee\App\TDXapp\DataProject\tdxZZGHIndex.py
+python G:\Gitee\App\TDXapp\DataProject\tdxApiZzGzIndex.py
 
 ```
 
-(中证指数（包含中基协指数）  -->其他(眉尾)-->中证指数--> 导出数据  
-
-编辑中证指数列表+000001 后存
-
-|IndexCode|Market|MarketCode|
-|------|---------|---------|
-|000001| EX | 62 |  
-==> G:/Gitee/App/TDXapp/tdxAppData/tdxZZIndexs.xlsx)
-
-### 4、tdx软件，生成上证、深证指数列表(tdxSHSZIndexs.xlsx)
+### 4、tdx软件，生成上证、深证指数列表(tdxShSzIndexs.xlsx)
 
 ```bash
 
-python G:\Gitee\App\TDXapp\DataProject\tdxSHSZIndex.py
+python G:\Gitee\App\TDXapp\DataProject\tdxShSzIndex.py
 
 ```
 
-### 5、获取akshare, 股指DP，Num数据(akIndexDP.xlsx akIndexNum.xlsx)
+### 5、获取akshare, 股指DP(akIndexDP.xlsx)
 
 ```bash
 
-python G:\Gitee\App\TDXapp\DataProject\akIndexsDPNum.py
+python G:\Gitee\App\TDXapp\DataProject\akIndexsDP.py
+
+```
+### 6、国证网获取深证、国证指数数据
+
+* <https://www.cnindex.com.cn/>
+
+```bash
+
+python G:\Gitee\App\TDXapp\DataProject\cniGzSzIndexs.py
 
 ```
 
