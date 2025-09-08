@@ -80,8 +80,6 @@ python G:\Gitee\App\TDXapp\DataProject\optlndex.py
 
 ```
 
-## 以下程序在Linux完成
-
 ### 7、获取akshare成分股列表(akIndexCons),存入数据库
 
 * 执行程序，由于网站保护需多次执行
@@ -100,6 +98,7 @@ python /home/ts/app/TDXapp/DataProject/akGetIndexCons.py
 python /home/ts/app/TDXapp/DataProject/akGetIndexConsB.py
 
 ```
+## 在Linu服务器执行
 
 ### 8、生成最终股指列表（FinaIndexs.xlsx） 更新数据库（optIndexs）
 
