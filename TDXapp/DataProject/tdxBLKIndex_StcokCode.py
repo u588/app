@@ -1,4 +1,5 @@
 import re
+from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
 
@@ -18,7 +19,8 @@ def getCons(data, STL):
     dfi = pd.DataFrame(columns=['IndexCode', 'IndexName', 'StockCode', 'StockName','IndexSTL'])
     l = data.replace('\n','#').split('#')
     n = 0
-    while n < len(l)-1:
+    # while n < len(l)-1:
+    for n in tqdm(range(len(1)-1)):
         dfl = pd.DataFrame(l[n].split(',')).T
         dfl.columns=['IndexCode', 'IndexName', 'StockCode', 'StockName']
         dfi = pd.concat([dfi, dfl])
