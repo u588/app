@@ -20,7 +20,7 @@ def getCons(data, STL):
     l = data.replace('\n','#').split('#')
     n = 0
     # while n < len(l)-1:
-    for n in tqdm(range(len(1)-1)):
+    for n in tqdm(range(len(l)-1)):
         dfl = pd.DataFrame(l[n].split(',')).T
         dfl.columns=['IndexCode', 'IndexName', 'StockCode', 'StockName']
         dfi = pd.concat([dfi, dfl])
