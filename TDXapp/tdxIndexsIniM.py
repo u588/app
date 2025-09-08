@@ -9,10 +9,11 @@ api = TdxHq_API()
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
 
-optO = pd.read_excel('/home/ts/app/TDXapp/tdxAppData/optIndexsO.xlsx',dtype={'IndexCode':object} )
+# optO = pd.read_excel('/home/ts/app/TDXapp/tdxAppData/optIndexsO.xlsx',dtype={'IndexCode':object} )
 opt = pd.read_sql('optIndexs', eng)
 # tdxIndexs = pd.read_sql('optIndexs', eng)
-tdxIndexs = opt[~(opt['IndexCode'].isin(optO['IndexCode']))]
+# tdxIndexs = opt[~(opt['IndexCode'].isin(optO['IndexCode']))]
+tdxIndexs = opt[opt['IndexCode'].str.startswith('881')]
 
 sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
