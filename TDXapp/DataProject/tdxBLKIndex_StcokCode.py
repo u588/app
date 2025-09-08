@@ -35,7 +35,7 @@ for i in data:
     df = getCons(i[0], i[1])
     print(i[1] + 'ok ! ')
     dfi = pd.concat([dfi, df])
-
+dfi['DP'] = current_date
 dfi.sort_values(by = ['IndexCode', 'StockCode'],ascending=True,ignore_index=True)\
     .set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsConsBLK.xlsx')
 
