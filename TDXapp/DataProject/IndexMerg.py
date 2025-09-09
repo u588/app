@@ -1,9 +1,9 @@
 import pandas as pd
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
 
 # eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxIndex')
-eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex')
+# eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex')
 
 
 blk = pd.read_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsBLK.xlsx', dtype={'IndexCode':object})
