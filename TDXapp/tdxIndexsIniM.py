@@ -109,5 +109,5 @@ with eapi.connect('47.112.95.207', 7720):
         except:
             print(IndexCode, 'no saved to sql !' )
             pass
-        
+eng.dispose()        
 print(' == 通达信 指数 行情初始化完成 ! ==')

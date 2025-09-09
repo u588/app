@@ -13,4 +13,5 @@ finaDF = OPTdf[~OPTdf['IndexCode'].isin(EMPdf['IndexCode'])]
 finaDF.set_index('IndexCode').to_sql('optIndexs',eng, if_exists = 'replace')
 finaDF.set_index('IndexCode').to_excel('/home/ts/app/TDXapp/tdxAppData/FinaIndexs.xlsx')
 
+eng.dispose()
 print('Saved ! ')
