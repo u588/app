@@ -17,10 +17,13 @@ G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx
 ### 2、tdx软件，板块列表导出后->运行(tdxIndexsBLK.xlsx tdxIndexsConsBLK.xlsx)
 
 * 通达信软件 -->选项(眉头) -->数据导出-->板块导出(逗号分隔)
+* 行业板块  --> ctr+D --> 系统设置（设置4）--> 行业分类
+* 通达信研究行业--> 编辑 --> D:/new_tdx/T0002/export/行业板块.txt -->  行业板块81.txt
+* 通达信普通细分--> 编辑 --> D:/new_tdx/T0002/export/行业板块.txt -->  行业板块80.txt
 
 ```bash  
 
-python G:\Gitee\App\TDXapp\DataProject\tdxBLKIndex_StcokCode.py
+python G:\Gitee\App\TDXapp\DataProject\tdxBLK.py
 
 ```
 
