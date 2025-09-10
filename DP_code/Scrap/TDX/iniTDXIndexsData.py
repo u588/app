@@ -9,6 +9,7 @@ while is_holiday(datetime.date.today()):
 
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+current_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
 Data = pd.read_sql('optIndexs', eng)
 IndexLists = Data.loc[~(Data['From']=='EMP')].reset_index(drop=True)
@@ -36,6 +37,7 @@ while i < n :
         i = i + 1
         pass
 
-D.set_index('IndexCode').to_sql('tdxIndexsData', eng, if_exists = 'replace')
+D['date'] = current_date
+D.set_index('IndexCode').to_sql('tdxIndexsData', eng, if_exists = 'append')
 eng.dispose()
 

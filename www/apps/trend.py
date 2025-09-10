@@ -103,19 +103,21 @@ def app():
 
     with st.form('form1'):
         with st.sidebar:
+            aDate = st.date_input('分析日期',value=None,format='YYYY-MM-DD')
             mark = st.multiselect(
                 "市场",
                 ["GZ","ZZ","SH","SZ","TDXBLK"],
-                default=['ZZ'],
+                default=['TDXBLK'],
             )
             indSTL = st.multiselect(
                 "类型",
                 ["综合","规模","行业","策略","主题","风格","定制指数","地区","概念"],
-                default=["概念"],
+                default=["行业"],
             )
             submitted2 = st.form_submit_button('综合分析')
         if submitted2:
-            tData = rawData[rawData['MarketName'].isin(mark)]
+            rwData = rawData[rawData['date']==str(aDate)]
+            tData = rwData[rwData['MarketName'].isin(mark)]
             ttData = tData[tData['IndexSTL'].isin(indSTL)]
             ptData = ttData.style.background_gradient(cmap='Blues')
             ptData = ptData.format('{:,.2f}', subset=list(ttData.columns[2:6]))
@@ -160,7 +162,7 @@ def app():
 
             stockCode = getConsStock.getStock(indexCode)
             pltCode = stockCode.style.background_gradient(cmap='Blues')
-            pltCode = pltCode.format('{:,.2f}', subset=list(tdxData.columns[2:]))
+            pltCode = pltCode.format('{:,.2f}', subset=list(tdxData.columns[2:6]))
         if submitted0:
             tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8 = st.tabs(['K 线','13天指数比较','21天指数比较','3个月指数比较','半年指数比较','1年指数比较','3年指数比较','5年指数比较'])
             with tab1:
