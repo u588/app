@@ -1,0 +1,43 @@
+from sqlalchemy import create_engine
+import pandas as pd
+
+import datetime
+from chinese_calendar import is_holiday
+import sys
+while is_holiday(datetime.date.today()):
+    sys.exit(0)
+
+
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
+current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+Data = pd.read_sql('optIndexs', eng)
+IndexLists = Data.loc[~(Data['From']=='EMP')].reset_index(drop=True)
+n = IndexLists.shape[0]
+i = 0
+D = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
+
+while i < n :
+    try:
+        Data = pd.read_sql(IndexLists.loc[i]['IndexCode'], eng)
+        d  = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
+        d['IndexCode'] = [IndexLists.loc[i]['IndexCode']]
+        d['IndexName'] = [IndexLists.loc[i]['IndexName']]
+
+        d['3D'] = [(Data.close.pct_change(1)*100).tail(3).sum().round(2)]
+        d['5D'] = [(Data.close.pct_change(1)*100).tail(5).sum().round(2)]
+        d['21D'] = [(Data.close.pct_change(1)*100).tail(21).sum().round(2)]
+        d['55D'] = [(Data.close.pct_change(1)*100).tail(55).sum().round(2)]       
+
+        D = pd.concat([D,d])
+        print(IndexLists.loc[i]['IndexCode'] + ' Concated !')
+        i = i + 1
+
+    except:
+        i = i + 1
+        pass
+
+D['date'] = current_date
+D.set_index('IndexCode').to_sql('tdxIndexsData', eng, if_exists = 'append')
+eng.dispose()
+

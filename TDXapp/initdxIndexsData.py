@@ -1,12 +1,13 @@
 from sqlalchemy import create_engine
 import pandas as pd
+import tqdm
 
 engI = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56:5432/tdxIndex')
 
 IndexLists = pd.read_sql('optIndexs', engI)[['IndexCode','IndexName']].values.tolist()
 D = pd.DataFrame(columns=['IndexCode', 'IndexName','3D','5D','21D','55D','date']).astype(dtype={'3D':float,'5D':float,'21D':float,'55D':float})
 
-for i in IndexLists:
+for i in tqdm.tqdm(IndexLists):
     try:
         Data = pd.read_sql(i[0], engI)
 
@@ -26,3 +27,4 @@ for i in IndexLists:
 # D.sort_values(by=['date','IndexCode']).set_index('IndexCode').to_excel('/home/ts/app/TDXapp/tdxAppData/indexData.xlsx')
 D.sort_values(by=['date','IndexCode']).set_index('IndexCode').to_sql('tdxIndexsData', engI, if_exists = 'replace')
 engI.dispose()
+
