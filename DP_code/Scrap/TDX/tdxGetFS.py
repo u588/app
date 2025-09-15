@@ -13,7 +13,7 @@ while mon in ('06','12'):
 
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
 api = TdxHq_API()
-api.connect('119.147.212.81', 7709)
+api.connect('180.153.18.170', 7709)
 
 
 match mon:
