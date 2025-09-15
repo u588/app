@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pansou-web
+spec:
+  selector:
+    matchLabels:
+      app: pansou-web
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: pansou-web
+    spec:
+      containers:
+      - name: pansou-web
+        image: 10.3.18.60/docker/pansou-web:v0
+        env:
+          - name: ENABLED_PLUGINS
+            value: labi,zhizhen,shandian,duoduo,muou,wanou
+        ports:
+          - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: pansou-web
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.18.1.7
+   selector:
+      app: pansou-web
+   ports:
+   - name: pansou-http
+     protocol: TCP
+     port: 80
+     targetPort: 80

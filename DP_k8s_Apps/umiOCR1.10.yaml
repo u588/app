@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umi-ocr
+spec:
+  selector:
+    matchLabels:
+      app: umi-ocr
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: umi-ocr
+    spec:
+      containers:
+      - name: umi-ocr
+        image: 10.3.18.60/docker/umi-ocr:2.1.5
+        env:
+          - name: HEADLESS
+            value: 'true'
+        ports:
+          - containerPort: 1224
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: umi-ocr
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.18.1.10
+   selector:
+      app: umi-ocr
+   ports:
+   - name: ocr-http
+     protocol: TCP
+     port: 80
+     targetPort: 1224
