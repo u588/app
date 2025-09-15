@@ -36,7 +36,7 @@ for i in ls:
     dd = dd[dd.columns[:582]]
     dd['report_date']= dd['report_date'].astype(object)
     upday = dd['report_date'].iloc[0]
-    dd = dd.round(2)
+    dd = dd.round(4)
     dd.to_sql(i[:12],eng,if_exists='replace')
     for j,l in enumerate(dd.index.values.tolist()):
         try:
