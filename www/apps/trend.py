@@ -1,12 +1,10 @@
 import streamlit as st
 from streamlit_echarts import st_pyecharts
 from mootdx.quotes import Quotes
-# from chart import makSum
 import re
 import plotly.express as px
 import pandas as pd
 from sqlalchemy import create_engine
-# from chart import Kpro,indexChart,d3plt,detailChart,gganChart,gganPx,fenX,getConsStock
 from chart import Kpro,indexChart,getConsStock
 
 engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
@@ -14,21 +12,12 @@ eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/smDaily')
 engTDX = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxIndex')
 engS = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks')
 
-opIndex= pd.read_sql('optIndexs',engTDX)
-topDF = pd.read_sql('Top', engB)
-bizDF = pd.read_sql('mBiz', engB).dropna(subset='营业收入(元)')
-bizDF.loc[bizDF[bizDF['营业收入(元)'].str.endswith('万')].index,'营业收入(元)'] = bizDF[bizDF['营业收入(元)'].str.endswith('万')]['营业收入(元)'].str.replace('万','').astype(float)/10000
-bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'] = bizDF.loc[list(bizDF['营业收入(元)'].str.endswith('亿').dropna().index),'营业收入(元)'].str.replace('亿','').astype(float)
-
-bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']] = bizDF[['毛利率(%)','收入比例(%)','利润比例(%)']].astype('float') 
-tdxData = pd.read_sql('tdxIndexsData', engTDX)
-optData = pd.read_sql('optIndexs', engTDX)
-rawData = pd.merge(tdxData,optData.drop('IndexName',axis=1),on='IndexCode',how='inner')
 
 def normalize(x):
     return (x - x.min()) / (x.max() - x.min())
-@st.cache_data
+@st.cache_data()
 def plD(indexCode):
+    opIndex= pd.read_sql('optIndexs',engTDX)
     indexName = opIndex[opIndex['IndexCode']==indexCode]['IndexName'].values[0]
     selDF = pd.read_sql(indexCode, engTDX)
 
@@ -53,7 +42,8 @@ def plD(indexCode):
     plData = pd.merge(plData,kc50DF[['datetime','close']].rename(columns={'close':'科创50'}),on='datetime',how='outer')
     plData = pd.merge(plData,cs1000DF[['datetime','close']].rename(columns={'close':'中证1000'}),on='datetime',how='outer')
     return(plData)   
- 
+
+@st.cache_data() 
 def plfig(nday,indexCode):
     plData = plD(indexCode).tail(nday)
     ddd = plData.set_index('datetime').apply(normalize, axis=0)                  
@@ -63,11 +53,8 @@ def plfig(nday,indexCode):
     fig.update_traces(hovertemplate='%{y:.2f}')
     fig.update_layout(hovermode='x')
     return(fig)    
-
+@st.cache_data()
 def sData(Data):
-    # D = pd.read_sql('IndexCons',engTDX)
-    # # d = pd.DataFrame(columns=['code','PCB']).astype(dtype={'PCB':float})
-    # Data = D.loc[D['IndexCode']== indexCode].reset_index(drop=True)
     StockLists = Data[['StockCode','StockName']].values.tolist()
     shDF = pd.read_sql('000001', engTDX)
     plData = pd.DataFrame()
@@ -76,7 +63,8 @@ def sData(Data):
     for Stock in StockLists:
         plData = pd.merge(plData,pd.read_sql(Stock[0],engS)[['datetime','close']].rename(columns={'close':Stock[1]}),on='datetime',how='outer')
     return(plData)
-        
+
+@st.cache_data()       
 def pltsData(nday,Data):
     plData = sData(Data).tail(nday)
     ddd = plData.set_index('datetime').apply(normalize, axis=0)                  
@@ -88,6 +76,7 @@ def pltsData(nday,Data):
     fig.update_layout(dragmode='pan',legend_itemclick='toggleothers')
     return(fig)    
 
+@st.cache_data()
 def viData(tdxData):
     df=pd.DataFrame()
     cl=['3D','5D','21D','55D']
@@ -100,7 +89,9 @@ def viData(tdxData):
     return(df)
 
 def app():
-
+    tdxData = pd.read_sql('tdxIndexsData', engTDX)
+    optData = pd.read_sql('optIndexs', engTDX)
+    rawData = pd.merge(tdxData,optData.drop('IndexName',axis=1),on='IndexCode',how='inner')
     with st.form('form1'):
         with st.sidebar:
             aDate = st.date_input('分析日期',value=None,format='YYYY-MM-DD')
@@ -116,35 +107,27 @@ def app():
             )
             submitted2 = st.form_submit_button('综合分析')
         if submitted2:
+
             rwData = rawData[rawData['date']==str(aDate)]
             tData = rwData[rwData['MarketName'].isin(mark)]
             ttData = tData[tData['IndexSTL'].isin(indSTL)]
             ptData = ttData.style.background_gradient(cmap='Blues')
             ptData = ptData.format('{:,.2f}', subset=list(ttData.columns[2:6]))
             fig1 = px.scatter_3d(ttData,x='3D',y='5D',z='21D',color='55D',hover_name=ttData.IndexCode +' : '+ttData.IndexName,height=600)
-            # with st.form('form'):
             tab1m,tab2m =st.tabs(['详 单','分 布'])
             with tab1m:
-                # st.plotly_chart(fig)
                 st.dataframe(ptData, hide_index=True,width='stretch',height=600)
-                # st.dataframe(ptData, hide_index=True,use_container_width=True,height=600)
                 vdf = viData(ttData)
                 figv = px.violin(vdf,y='vol',box=True,points='all',hover_name=vdf.IndexCode+' : '+vdf.IndexName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
                 st.plotly_chart(figv)
             with tab2m:
                 st.plotly_chart(fig1, width='stretch')
-                # st.plotly_chart(fig1, use_container_width=True)
-                # st_pyecharts(makSum.testti(),height='500px',width="100%")
-            # with tab3:
-            #     st_pyecharts(makSum.testti(),height='600px',width="100%")
 
     with st.form('form0'):
         with st.sidebar:
             indexCode = st.text_input(label='指数代码',value='')
             submitted0 = st.form_submit_button('指数查询')
-
             stockCodesel = st.text_input(label='股票查询', value='')
-
 
             qf10 = st.selectbox(
                             'F10信息',
@@ -158,8 +141,6 @@ def app():
                             '研报评级',)
                         )
             submitted5 = st.form_submit_button('股票查询')            
-            # submitted4 = st.form_submit_button('F10查询')            
-
             stockCode = getConsStock.getStock(indexCode)
             pltCode = stockCode.style.background_gradient(cmap='Blues')
             pltCode = pltCode.format('{:,.2f}', subset=list(tdxData.columns[2:6]))
@@ -185,9 +166,7 @@ def app():
             fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name=stockCode.StockCode + ' : '+ stockCode.StockName,height=600)
             tab1c,tab2c =st.tabs(['详 单','分 布'])
             with tab1c:
-                # st.plotly_chart(fig)
                 st.dataframe(pltCode, hide_index=True,width='stretch',height=600)
-                # st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
                 sdf = viData(stockCode)
                 figs = px.violin(sdf,y='vol',box=True,points='all',hover_name=sdf.StockCode+' : '+sdf.StockName,facet_col='周期',facet_col_spacing=0.03,violinmode='overlay')
                 st.plotly_chart(figs)
@@ -198,7 +177,6 @@ def app():
             fig1c = px.scatter_3d(stockCode,x='3D',y='5D',z='21D',color='55D',hover_name=stockCode.StockCode + ' : '+ stockCode.StockName,height=600)
             tab1c,tab2c =st.tabs(['详 单','分 布'])
             with tab1c:
-                # st.plotly_chart(fig)
                 st.dataframe(pltCode, hide_index=True,width='stretch',height=600)
                 # st.dataframe(pltCode, hide_index=True,use_container_width=True,height=600)
             with tab2c:
@@ -219,7 +197,6 @@ def app():
                 st.plotly_chart(pltsData(233,stockCode),config={'scrollZoom': True,'displaylogo':False},theme=None)
             with tab7s:
                 client = Quotes.factory(market='std')
-                # a = client.F10C(symbol=stockCode)
                 txt = client.F10(stockCodesel, qf10)
                 try:
                     txt = txt[:txt.find('〖免责条款〗')]
