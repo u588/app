@@ -1,4 +1,76 @@
+======= postgres 升级 =========
+准备 pg_basebackup -h 1.1.1.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg16bak
+
+1、16、17版安装
+
+2、 初始化数据库
+sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D /data/pg16 
+sudo -u postgres /usr/lib/postgresql/17/bin/initdb -D /data/pg17 
+
+3、修改/data/pg17 下的 postgres.conf 端口号 17:5432 16:5433
+cp -a /data/pg16bak /data/pg16
+删除/data/pg16下的 standby.signal recovery.signal  
+# 验证模式 
+sudo -u postgres psql -c "SELECT pg_is_in_recovery()"
+
+4、启动测试
+/usr/lib/postgresql/16/bin/pg_ctl -D /data/pg16 start
+有问题查看 /data/pg16/log/ 中日志
+/usr/lib/postgresql/17/bin/pg_ctl -D /data/pg17 start
+
+5、重建16版索引 原因为Linux系统升级所至
+su postgres
+reindexdb --concurrently --all --port 5433
+
+6、刷新索引版本
+psql -p 5433
+SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;
+ 
+template1
+ AffManagers2024_DP
+ DB-GPT
+ DataAn
+ FindStocks
+ Funds
+ MarkCap2024_DP
+ StockAffs2024_DP
+ StockBas
+ StockFina2024_DP
+ StockFund
+ StockHolders2024_DP
+ StockManagers2024_DP
+ csIndex2024_discard
+ dify
+ dify_plugin
+ harbor
+ langchain_chatchat
+ postgres
+smDaily
+tdxFS
+tdxIndex
+tdxStocks
+
+ALTER DATABASE "DataAn"  REFRESH COLLATION VERSION;
+
+7、停库
+/usr/lib/postgresql/16/bin/pg_ctl -D /data/pg16 stop
+/usr/lib/postgresql/17/bin/pg_ctl -D /data/pg17 stop
+
+8、升级库
+退到 ts用户
+sudo -iu postgres /usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/tmppg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin
+
+
+
 ============== 安装 =============
+apt 安装数据库后
+1.初始化数据库
+/usr/lib/postgresql/16/bin/pg_ctl -D /data/
+
+2、运行数据库
+/usr/lib/postgresql/16/bin/pg_ctl -D /data/tmppg16  start
+
+
 sudo vi /etc/postgresql/16/main/postgresql.conf 
 ==> listen_addresses = '*'  
 
@@ -33,6 +105,7 @@ host all all 0.0.0.0/0
 
 
 /usr/lib/postgresql/16/bin/pg_upgrade --old-datadir /data/pg12/ --new-datadir /data/pg16/ --old-bindir /usr/lib/postgresql/12/bin/ --new-bindir /usr/lib/postgresql/16/bin/ --check
+/usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/pg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin/ --check
 pg_basebackup -h 1.1.1.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg16
 
 sudo -i -u postgres psql
