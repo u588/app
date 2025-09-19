@@ -58,7 +58,7 @@ ALTER DATABASE "tdxStocks"  REFRESH COLLATION VERSION;
 
 8、升级库
 退到 ts用户
-sudo -iu postgres /usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/tmppg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin
+sudo -iu postgres /usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/pg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin
 
 9、问题 template1
 -- 1. psql -p 5433
@@ -77,13 +77,16 @@ CREATE DATABASE template1 TEMPLATE = template0;
 -- 6. 恢复模板属性 
 UPDATE pg_database SET datistemplate = true WHERE datname = 'template1'; 
 
+============ 升级后 ===============
+
+
 ============== 安装 =============
 apt 安装数据库后
 1.初始化数据库
-/usr/lib/postgresql/16/bin/pg_ctl -D /data/
+/usr/lib/postgresql/17/bin/initdb -D /data/pg17
 
 2、运行数据库
-/usr/lib/postgresql/16/bin/pg_ctl -D /data/tmppg16  start
+/usr/lib/postgresql/16/bin/pg_ctl -D /data/pg16  start
 
 
 sudo vi /etc/postgresql/16/main/postgresql.conf 
