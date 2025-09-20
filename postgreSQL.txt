@@ -80,7 +80,11 @@ CREATE DATABASE template1 TEMPLATE = template0;
 UPDATE pg_database SET datistemplate = true WHERE datname = 'template1'; 
 
 ============ 升级后 ===============
-
+  Upgrade Complete
+----------------
+Optimizer statistics are not transferred by pg_upgrade.
+Once you start the new server, consider running:
+/usr/lib/postgresql/17/bin/vacuumdb --all --analyze-in-stages
 
 ============== 安装 =============
 apt 安装数据库后
