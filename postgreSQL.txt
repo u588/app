@@ -25,22 +25,25 @@ reindexdb --concurrently --all --port 5433
 6、刷新索引版本
 psql -p 5433
 SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;
- 
-
-ALTER DATABASE "template1"  REFRESH COLLATION VERSION;
-ALTER DATABASE "AffManagers2024_DP"  REFRESH COLLATION VERSION;
-ALTER DATABASE "DB-GPT"  REFRESH COLLATION VERSION;
-ALTER DATABASE "DataAn"  REFRESH COLLATION VERSION;
-ALTER DATABASE "FindStocks"  REFRESH COLLATION VERSION;
-ALTER DATABASE "Funds"  REFRESH COLLATION VERSION;
 ALTER DATABASE "MarkCap2024_DP"  REFRESH COLLATION VERSION;
-ALTER DATABASE "StockAffs2024_DP"  REFRESH COLLATION VERSION;
-ALTER DATABASE "StockBas"  REFRESH COLLATION VERSION;
-ALTER DATABASE "StockFina2024_DP"  REFRESH COLLATION VERSION;
-ALTER DATABASE "StockFund"  REFRESH COLLATION VERSION;
+ALTER DATABASE "StockAffs2024_DP"  REFRESH COLLATION VERSION; 
+ALTER DATABASE "AffManagers2024_DP"  REFRESH COLLATION VERSION;
 ALTER DATABASE "StockHolders2024_DP"  REFRESH COLLATION VERSION;
 ALTER DATABASE "StockManagers2024_DP"  REFRESH COLLATION VERSION;
 ALTER DATABASE "csIndex2024_discard"  REFRESH COLLATION VERSION;
+ALTER DATABASE "StockFina2024_DP"  REFRESH COLLATION VERSION;
+ALTER DATABASE "DataAn"  REFRESH COLLATION VERSION;
+
+
+
+
+
+ALTER DATABASE "template1"  REFRESH COLLATION VERSION;
+ALTER DATABASE "DB-GPT"  REFRESH COLLATION VERSION;
+ALTER DATABASE "FindStocks"  REFRESH COLLATION VERSION;
+ALTER DATABASE "Funds"  REFRESH COLLATION VERSION;
+ALTER DATABASE "StockBas"  REFRESH COLLATION VERSION;
+ALTER DATABASE "StockFund"  REFRESH COLLATION VERSION;
 ALTER DATABASE "dify"  REFRESH COLLATION VERSION;
 ALTER DATABASE "dify_plugin"  REFRESH COLLATION VERSION;
 ALTER DATABASE "harbor"  REFRESH COLLATION VERSION;
@@ -57,8 +60,7 @@ ALTER DATABASE "tdxStocks"  REFRESH COLLATION VERSION;
 /usr/lib/postgresql/17/bin/pg_ctl -D /data/pg17 stop
 
 8、升级库
-退到 ts用户
-sudo -iu postgres /usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/pg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin
+/usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/pg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin
 
 9、问题 template1
 -- 1. psql -p 5433
@@ -125,6 +127,8 @@ host all all 0.0.0.0/0
 /usr/lib/postgresql/16/bin/pg_upgrade --old-datadir /data/pg12/ --new-datadir /data/pg16/ --old-bindir /usr/lib/postgresql/12/bin/ --new-bindir /usr/lib/postgresql/16/bin/ --check
 /usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/pg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin/ --check
 pg_basebackup -h 1.1.1.56 -p 5432 -U rep -Fp -Xs -Pv -R -D /data/pg16
+
+pg_basebackup  -p 5432 -U rep -Fp -Xs -Pv   -D /data/pg16B
 
 sudo -i -u postgres psql
 
