@@ -1,8 +1,12 @@
-# TDX 数据更新
+# 数据更新
 
 ## 每年 6、12月 第三个星期日 更新股指数据
 
-## 以下程序在PC上完成
+## ak股票分类更新
+
+/home/ts/app/akData/akGetStockIC.py
+
+## TDX 数据更新 以下程序在PC上完成
 
 ### 1、中证列表导出->编辑后存（csIndex.xlsx）
 
