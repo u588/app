@@ -91,23 +91,45 @@ def fenChart(ics,StockCode, fxCode,day, leve):
     finF = pd.read_sql('gpcw'+str(day), eng)
     mfin = pd.merge(finF,StockIC, left_on='code',right_on='StockCode', how='inner')
     svCode,asCode=getfenCode(fxCode)
+    
+    match leve:
+        case 'L4Name':
+            lname = StockIC[StockIC['StockCode']==StockCode]['IC4'].tolist()[0]
+            StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+            mfinsel = mfin[mfin['IC4']==lname]
+            desel = mfin[mfin['IC4']==lname].describe().T            
+        case 'L3Name':
+            lname = StockIC[StockIC['StockCode']==StockCode]['IC3'].tolist()[0]
+            StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+            mfinsel = mfin[mfin['IC3']==lname]
+            desel = mfin[mfin['IC3']==lname].describe().T            
+        case 'L2Name':
+            lname = StockIC[StockIC['StockCode']==StockCode]['IC2'].tolist()[0]
+            StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+            mfinsel = mfin[mfin['IC2']==lname]
+            desel = mfin[mfin['IC2']==lname].describe().T            
+        case 'L1Name':
+            lname = StockIC[StockIC['StockCode']==StockCode]['IC1'].tolist()[0]
+            StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+            mfinsel = mfin[mfin['IC1']==lname]
+            desel = mfin[mfin['IC1']==lname].describe().T            
  
-    if leve=='L4Name':
-        # lname = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
-        lname = StockIC[StockIC['StockCode']==StockCode]['IC4'].tolist()[0]
-        StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-        mfinsel = mfin[mfin['IC4']==lname]
-        desel = mfin[mfin['IC4']==lname].describe().T
-        # mfinsel = mfin[mfin['L4Name']==lname]
-        # desel = mfin[mfin['L4Name']==lname].describe().T
-    else:
-        lname = StockIC[StockIC['StockCode']==StockCode]['IC3'].tolist()[0]
-        # lname = StockIC[StockIC['StockCode']==StockCode]['L3Name'].tolist()[0]
-        StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
-        mfinsel = mfin[mfin['IC3']==lname]
-        desel = mfin[mfin['IC3']==lname].describe().T
-        # mfinsel = mfin[mfin['L3Name']==lname]
-        # desel = mfin[mfin['L3Name']==lname].describe().T
+    # if leve=='L4Name':
+    #     # lname = StockIC[StockIC['StockCode']==StockCode]['L4Name'].tolist()[0]
+    #     lname = StockIC[StockIC['StockCode']==StockCode]['IC4'].tolist()[0]
+    #     StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+    #     mfinsel = mfin[mfin['IC4']==lname]
+    #     desel = mfin[mfin['IC4']==lname].describe().T
+    #     # mfinsel = mfin[mfin['L4Name']==lname]
+    #     # desel = mfin[mfin['L4Name']==lname].describe().T
+    # else:
+    #     lname = StockIC[StockIC['StockCode']==StockCode]['IC3'].tolist()[0]
+    #     # lname = StockIC[StockIC['StockCode']==StockCode]['L3Name'].tolist()[0]
+    #     StockName = StockIC[StockIC['StockCode']==StockCode]['StockName'].tolist()[0]
+    #     mfinsel = mfin[mfin['IC3']==lname]
+    #     desel = mfin[mfin['IC3']==lname].describe().T
+    #     # mfinsel = mfin[mfin['L3Name']==lname]
+    #     # desel = mfin[mfin['L3Name']==lname].describe().T
 
 
     fin = GetFin(StockCode,day)
