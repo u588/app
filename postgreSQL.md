@@ -5,7 +5,9 @@
 sudo dpkg -l | grep postgre*
 sudo apt install postgresql-18 postgresql-client-18  postgresql-server-dev-18 postgresql-18-pgvector
 sudo -u postgres /usr/lib/postgresql/18/bin/initdb --no-data-checksums -D /data/pg18
-
+sudo systemctl start postgresql@18-main
+sudo systemctl enable postgresql@18-main
+sudo systemctl status postgresql@18-main
 
 ## ======= postgres 升级 =========
 
@@ -134,6 +136,10 @@ UPDATE pg_database SET datistemplate = true WHERE datname = 'template1';
 
 ```bash
 /usr/lib/postgresql/17/bin/vacuumdb --all --analyze-in-stages
+
+/usr/lib/postgresql/18/bin/vacuumdb --all --analyze-in-stages --missing-stats-only
+/usr/lib/postgresql/18/bin/vacuumdb --all --analyze-only
+
 ```
 
 ## postgresql 配置参数
