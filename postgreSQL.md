@@ -9,6 +9,12 @@ sudo systemctl start postgresql@18-main
 sudo systemctl enable postgresql@18-main
 sudo systemctl status postgresql@18-main
 
+## 安装postgresql
+
+sudo apt install postgresql-18 postgresql-client-18  postgresql-server-dev-18  postgresql-18-pgvector
+初始化数据库集群
+sudo pg_createcluster 18 main --start
+
 ## ======= postgres 升级 =========
 
 ### 升级准备
