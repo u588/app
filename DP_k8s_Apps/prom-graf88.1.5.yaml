@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: graf
-        image: 10.3.18.60/docker/grafana:latest
+        # image: 10.3.18.60/docker/grafana:latest
+        image: 10.3.18.60/docker/grafana-enterprise:latest
         ports:
         - containerPort: 3000
 
