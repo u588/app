@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager-deployment
+spec:
+  selector:
+    matchLabels:
+      app: alertmanager
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+      - name: alertmanager
+        image: 10.3.18.60/docker/alertmanager:latest
+        ports:
+        - containerPort: 9093
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: alertmanager-svc
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.88.1.8
+   selector:
+      app: alertmanager
+   ports:
+   - name: alertmanager-port
+     protocol: TCP
+     port: 9093
+     targetPort: 9093
