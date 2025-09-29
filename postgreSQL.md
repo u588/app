@@ -1,5 +1,12 @@
 #
 
+## 常用命令
+
+sudo dpkg -l | grep postgre*
+sudo apt install postgresql-18 postgresql-client-18  postgresql-server-dev-18 postgresql-18-pgvector
+sudo -u postgres /usr/lib/postgresql/18/bin/initdb --no-data-checksums -D /data/pg18
+
+
 ## ======= postgres 升级 =========
 
 ### 升级准备
@@ -95,6 +102,7 @@ ALTER DATABASE "tdxStocks"  REFRESH COLLATION VERSION;
 
 ```bash
 /usr/lib/postgresql/17/bin/pg_upgrade --old-datadir /data/pg16/ --new-datadir /data/pg17/ --old-bindir /usr/lib/postgresql/16/bin/ --new-bindir /usr/lib/postgresql/17/bin
+/usr/lib/postgresql/18/bin/pg_upgrade --old-datadir /data/pg17/ --new-datadir /data/pg18/ --old-bindir /usr/lib/postgresql/17/bin/ --new-bindir /usr/lib/postgresql/18/bin -c
 ```
 
 ### 问题汇总

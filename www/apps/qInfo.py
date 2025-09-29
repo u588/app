@@ -185,7 +185,7 @@ def app():
         with st.sidebar:
             ics = st.selectbox(
                 '分类标准',
-                ('中国上市公司协会上市公司行业分类标准','巨潮行业分类标准','申银万国行业分类标准','中证行业分类标准')
+                ('中国上市公司协会上市公司行业分类标准','申银万国行业分类标准','中证行业分类标准')
             )
             fenCode = st.selectbox(
                 '分析项目',
@@ -200,7 +200,9 @@ def app():
                 '分类层级',
                 (
                     'L4Name',
-                    'L3Name'
+                    'L3Name',
+                    'L2Name',
+                    'L1Name',
                 )
             )   
             submitted = st.form_submit_button('分类聚合')

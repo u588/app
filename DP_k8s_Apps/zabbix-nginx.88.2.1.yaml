@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zabbix-nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: zabbix-nginx
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: zabbix-nginx
+    spec:
+      containers:
+      - name: zabbix-nginx
+        image: 10.3.18.60/docker/zabbix-web-nginx-pgsql:latest
+        env:
+          - name: ZBX_SERVER_HOST
+            value: "10.88.2.2"
+          - name: DB_SERVER_HOST
+            value: "10.3.18.59"
+          - name: POSTGRES_USER
+            value: 'sa'
+          - name:  POSTGRES_PASSWORD
+            value: '11111111'
+          - name: PHP_TZ
+            value: "Asia/Shanghai"
+          # - name: PGADMIN_CONFIG_LOGIN_BANNER
+          #   value: "Authorised users only!"
+          # - name: PGADMIN_CONFIG_CONSOLE_LOG_LEVEL
+          #   value: '10'
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: zabbix-nginx-svc
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.88.2.1
+   selector:
+      app: zabbix-nginx
+   ports:
+   - name: zabbix-nginx-http
+     protocol: TCP
+     port: 80
+     targetPort: 8080
