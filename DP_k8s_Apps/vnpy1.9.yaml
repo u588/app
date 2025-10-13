@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vnpy-deployment
+spec:
+  selector:
+    matchLabels:
+      app: vnpy
+  replicas: 1 # 告知 Deployment 运行 2 个与该模板匹配的 Pod
+  template:
+    metadata:
+      labels:
+        app: vnpy
+    spec:
+      containers:
+      - name: vnpy
+        image: 10.3.18.60/docker/dehim/veighna:latest
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 8888
+          name: tools
+        volumeMounts:
+        - mountPath: /shareVolume
+          name: var
+      volumes:
+      - name: var
+        nfs:
+          server: 10.145.254.55
+          path: /home/nfsroot/vnpy
+          readOnly: false   
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: vnpy-svc
+   namespace: default
+spec:
+   type: ClusterIP
+   clusterIP: 10.18.1.9
+   selector:
+      app: vnpy
+   ports:
+   - name: http
+     protocol: TCP
+     port: 80
+     targetPort: 80
+   - name: tools
+     protocol: TCP
+     port: 8888
+     targetPort: 8888
