@@ -14,6 +14,17 @@ pip config set global.cache-dir  "D:\\pip\\cache"
 
 查看缓存文件列表 pip cache list
 
+=========== pipenv 虚拟环境管理 =============
+1、安装
+pip install pipenv
+2、创建虚拟环境
+建立目录
+cd ==> 目录
+pipenv  --python 版本
+pipenv --rm 
+安装位置 /home/ts/.local/share/virtualenvs/
+pipenv install (python包)
+
 
 ============= 系统中配置Pipenv的虚拟环境安装目录 ========
 
