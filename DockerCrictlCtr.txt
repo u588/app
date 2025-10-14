@@ -1,3 +1,6 @@
+====== 用户加入docker组 ===
+usermod -aG docker ${USER}
+
 ====== Docker login ========
 u588 ==> syslog6^^
 
