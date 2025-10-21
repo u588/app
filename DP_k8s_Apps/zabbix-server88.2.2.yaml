@@ -16,6 +16,8 @@ spec:
       - name: zabbix-server
         image: 10.3.18.60/docker/zabbix-server-pgsql:latest
         env:
+          - name: ZBX_ALLOWUNSUPPORTEDDBVERSIONS
+            value: "1"
           - name: DB_SERVER_HOST
             value: "10.3.18.59"
           - name: POSTGRES_USER
