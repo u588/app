@@ -1,6 +1,6 @@
 import akshare as ak
 from sqlalchemy import create_engine
-import pandas as pd
+# import pandas as pd
 
 eng = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxStocks')
 

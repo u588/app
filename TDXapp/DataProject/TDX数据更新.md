@@ -105,6 +105,7 @@ python /home/ts/app/TDXapp/DataProject/akGetIndexCons.py
 python /home/ts/app/TDXapp/DataProject/akGetIndexConsB.py
 
 ```
+
 ## 在Linu服务器执行
 
 ### 8、生成最终股指列表（FinaIndexs.xlsx） 更新数据库（optIndexs）
