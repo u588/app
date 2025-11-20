@@ -84,7 +84,7 @@ sudo systemctl restart ipmievd.service
 sudo ipmitool -I lanplus -U root -P calvin -H 192.168.168.9 raw 0x30 0x30 0x01 0x00 
  #35%   0x23 6120
 #40%转速 0x28 6720
-#50%转速 0x32
+#50%转速 0x32 8040
 #60%转速 0x3c
 #85%转速 0x55
 
