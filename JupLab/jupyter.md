@@ -1,4 +1,8 @@
-cd 相应目录
+# jupyter安装及环境搭建
+
+## cd 虚拟环境目录
+
+``` bash
 pipenv shell
 jupyter labexentsion list
 jupyter lab clean  # 清理构建缓存 
@@ -18,17 +22,20 @@ c.ServerApp.ip = '0.0.0.0'
 
 jupyter server password
 ===> ~/.jupyter/jupyter_server_config.json
+```
 
+## ========= run ========
 
-========= run ========
+```bash
 10.3.68.2 screen 
 cd ==> 相应jupyter目录
 pipenv run jupyter lab
 # source  /home/ts/Jupyter/bin/activate
 jupyter lab 
+```
 
+```text
 ======== 10.3.68.2:8888 ==============
-
 
 https://plotly.com/python/getting-started/
 ================ plotly JupyterLab Support
@@ -44,3 +51,4 @@ https://plotly.com/python/getting-started/
  ========= vscode ===========
  http://10.3.68.2:8888/lab
  pass 11111111
+ ```
