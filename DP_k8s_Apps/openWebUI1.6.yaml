@@ -22,7 +22,7 @@ spec:
 
       containers:
         - name: container-kaxnqv
-          image: '10.3.18.60/docker/open-webui:0.6.40'
+          image: '10.3.18.60/docker/open-webui:0.6.41'
           ports:
             - name: http-0
               containerPort: 8080
