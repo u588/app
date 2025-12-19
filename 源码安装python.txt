@@ -4,12 +4,8 @@ sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.12.7/Python-3.
 sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
 
 2、 依赖项
-AI提供 sudo apt update && sudo apt install build-essential libssl-dev libffi-dev python3-dev
-
-sudo apt-get update
-sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
-libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm lzma \
-libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+sudo apt update
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev liblzma-dev tk-dev libgdbm-compat-dev
 
 3、解压源码包
 tar xvf Python-3.x.x.tgz
@@ -20,7 +16,7 @@ cd ==> 相应目录
 sudo make -j $(nproc)
 sudo make altinstall
 
-
-
+5、如果需要重新编译安装，建议先执行以下命令：
+sduo make clean       # 清理旧构建文件
 
 
