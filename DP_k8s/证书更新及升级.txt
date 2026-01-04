@@ -17,6 +17,7 @@ kubeadm certs check-expiration
 3、 重启 kubelet（会自动加载新证书）
 sudo systemctl restart kubelet
 
+cp /etc/kubernetes/admin.conf ~/.kube/config
 
 4、各控制节点重复上述步骤2-3
 
