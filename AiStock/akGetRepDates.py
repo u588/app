@@ -1,0 +1,28 @@
+import akshare as ak
+from sqlalchemy import create_engine
+import pandas as pd
+from tqdm import tqdm
+
+engS = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxStocks')
+# engS = create_engine('postgresql+psycopg://sa:11111111@111.61.77.88:65123/qfqStock')
+engI = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex')
+engB = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/StockBas')
+engF = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxFS')
+
+
+StockList = pd.read_sql('StocksList', engS)
+
+
+cl = ['年报', '半年报', '一季报', '三季报']
+df = pd.DataFrame()
+for code in tqdm(StockList['code'].tolist()):
+    for category in cl:
+        dff = pd.DataFrame()
+        try:
+            dftmp = ak.stock_zh_a_disclosure_report_cninfo(symbol=code, market="沪深京", category=category, start_date="19990101", end_date="20301231")[['代码', '简称', '公告时间']].drop_duplicates(subset=['公告时间'])
+            dff = pd.concat([dff, dftmp])
+        except:
+            continue
+    df = pd.concat([df, dff.drop_duplicates(subset=['公告时间'])])
+df.set_index('代码').to_excel('./AllStockReportDates.xlsx')
+
