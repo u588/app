@@ -23,7 +23,10 @@ for code in tqdm(StockList['code'].tolist()):
             dff = pd.concat([dff, dftmp])
         except:
             continue
-    dff['公告时间'] = dff['公告时间'].astype(str).str[:10]
-    dff.drop_duplicates(subset=['公告时间']).sort_values(by='公告时间',ascending=True).to_sql('fsDP', engF, if_exists='append', index=False)
+    if dff.empty:
+        continue
+    else:
+        dff['公告时间'] = dff['公告时间'].astype(str).str[:10]
+        dff.drop_duplicates(subset=['公告时间']).sort_values(by='公告时间',ascending=True).to_sql('fsDP', engF, if_exists='append', index=False)
 # df.set_index('代码').to_excel('./AllStockReportDates.xlsx')
 
