@@ -10,7 +10,7 @@ api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
 
-M  = 13
+M  = 5
 
 
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)
@@ -70,7 +70,7 @@ M  = 13
 """
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxStocks')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
 StockLists =  pd.read_sql('StocksList', eng).code.tolist()
 
 with api.connect('180.153.18.170', 7709):

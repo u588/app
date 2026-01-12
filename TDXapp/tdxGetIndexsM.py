@@ -51,7 +51,7 @@ IPAddress13=124.71.223.19
 """
 
 
-eng = create_engine('postgresql+psycopg2://sa:11111111@10.145.254.56/tdxIndex')
+eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxIndex')
 
 
 tdxIndexs = pd.read_sql('optIndexs', eng)
@@ -59,7 +59,7 @@ sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
 
-M = 25
+M = 5
 
 with api.connect('180.153.18.170', 7709):
     IndexLists=sh.IndexCode.to_list()     
