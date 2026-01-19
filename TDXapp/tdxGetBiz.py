@@ -93,6 +93,6 @@ while n < len(StockList):
         FailureList.append(n)
         pass
     n = n + 1
-StockList[[FailureList]].to_excel('/home/ts/app/TDXapp/Biz_FailureList.xlsx', index=False)    
+StockList.iloc[FailureList].to_excel('/home/ts/app/TDXapp/Biz_FailureList.xlsx', index=False)
 eng.dispose()
 engs.dispose()
