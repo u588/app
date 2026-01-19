@@ -4,23 +4,8 @@ import re
 from sqlalchemy import create_engine, text
 from datetime import datetime
 
-new_BizP='BizP'+datetime.now().strftime('%Y%m')
-new_mBiz='mBiz'+datetime.now().strftime('%Y%m')
-
 eng = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/StockBas')
 engs = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxStocks')
-
-# 原表改名为运行月份表
-rawBizP = pd.read_sql('BizP',eng)
-rawBizP.set_index('StockCode').to_sql(new_BizP, eng, if_exists='replace')
-
-rawmBiz = pd.read_sql('mBiz',eng)
-rawmBiz.set_index('日期').to_sql(new_mBiz, eng, if_exists='replace')
-
-with eng.connect() as conn:
-    conn.execute(text('DROP TABLE IF EXISTS "BizP" CASCADE;'))
-    conn.execute(text('DROP TABLE IF EXISTS "mBiz" CASCADE;'))
-    conn.commit()
 
 def getBiz(StockCode, StockName):
     qf10='经营分析'
@@ -78,11 +63,10 @@ def getBiz(StockCode, StockName):
     raDF['StockName'] = StockName
     raDF[['StockCode','StockName','日期',"项目名","营业收入(元)","收入比例(%)","营业利润(元)","利润比例(%)","毛利率(%)"]].set_index('日期').to_sql('mBiz', eng, if_exists='append')
 
+# 读取获取失败的股票列表
 
 
-
-StockList = pd.read_sql('StocksList', engs)[['code','name']]
-n = 0
+StockList = pd.read_excel('/home/ts/app/TDXapp/Biz_FailureList.xlsx', dtype={'code':str})
 FailureList = []
 while n < len(StockList):
     try:
@@ -93,6 +77,6 @@ while n < len(StockList):
         FailureList.append(n)
         pass
     n = n + 1
-StockList[[FailureList]].to_excel('/home/ts/app/TDXapp/Biz_FailureList.xlsx', index=False)    
+FailureList[[FailureList]].to_excel('./Biz_FailureListB.xlsx', index=False)    
 eng.dispose()
 engs.dispose()
