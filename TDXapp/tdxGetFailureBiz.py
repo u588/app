@@ -67,6 +67,7 @@ def getBiz(StockCode, StockName):
 
 
 StockList = pd.read_excel('/home/ts/app/TDXapp/Biz_FailureList.xlsx', dtype={'code':str})
+n = 0
 FailureList = []
 while n < len(StockList):
     try:
@@ -77,6 +78,6 @@ while n < len(StockList):
         FailureList.append(n)
         pass
     n = n + 1
-FailureList[[FailureList]].to_excel('./Biz_FailureListB.xlsx', index=False)    
+StockList[[FailureList]].to_excel('/home/ts/app/TDXapp/Biz_FailureListB.xlsx', index=False)    
 eng.dispose()
 engs.dispose()
