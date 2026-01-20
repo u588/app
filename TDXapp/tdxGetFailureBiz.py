@@ -53,11 +53,14 @@ def getBiz(StockCode, StockName):
     ddfindex = ddf[ddf[0]=='项目名'].index
     raDF = pd.DataFrame(columns=['日期',"项目名","营业收入(元)","收入比例(%)","营业利润(元)","利润比例(%)","毛利率(%)"])
 
-    for i in [0,1,2]:
-        dfd = ddf.loc[(ddfindex[i]+1):(ddfindex[i+1]-1)].reset_index(drop=True)
-        dfd.columns = ["项目名","营业收入(元)","收入比例(%)","营业利润(元)","利润比例(%)","毛利率(%)"]
-        dfd['日期'] = datetimes[i]
-        raDF = pd.concat([raDF,dfd], axis=0)
+    for i in [0,1,2,3]:
+        try:
+            dfd = ddf.loc[(ddfindex[i]+1):(ddfindex[i+1]-1)].reset_index(drop=True)
+            dfd.columns = ["项目名","营业收入(元)","收入比例(%)","营业利润(元)","利润比例(%)","毛利率(%)"]
+            dfd['日期'] = datetimes[i]
+            raDF = pd.concat([raDF,dfd], axis=0)
+        except:
+            continue
 
     raDF['StockCode'] = StockCode
     raDF['StockName'] = StockName
@@ -66,7 +69,7 @@ def getBiz(StockCode, StockName):
 # 读取获取失败的股票列表
 
 
-StockList = pd.read_excel('/home/ts/app/TDXapp/Biz_FailureList.xlsx', dtype={'code':str})
+StockList = pd.read_excel('/home/ts/app/TDXapp/Biz_FailureListB.xlsx', dtype={'code':str})
 n = 0
 FailureList = []
 while n < len(StockList):
