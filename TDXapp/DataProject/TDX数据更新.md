@@ -4,7 +4,10 @@
 
 ## ak股票分类更新
 
-/home/ts/app/akData/akGetStockIC.py
+* 2026年简化股票分类只用申万分类方案
+* /home/ts/app/TDXapp/akSwStockIC.py
+
+/home/ts/app/akData/akGetStockIC.py  2026.1.20废除
 
 ## TDX 数据更新 以下程序在PC上完成
 
