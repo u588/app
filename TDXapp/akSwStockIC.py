@@ -9,7 +9,7 @@ Stocks = pd.read_sql('StocksList', engS)
 # 获取申万行业分类
 swRAW = ak.stock_industry_category_cninfo(symbol="申银万国行业分类标准")[['类目编码', '类目名称', '终止日期',  '父类编码', '分级']]
 # 获取申万行业分类历史数据
-swStockICRAW = ak.stock_industry_clf_hist_sw().sort_values(by=['symbol','start_date'], ascending=[True,False]).drop_duplicates(subset=['symbol'], keep='first')
+swStockICRAW = ak.stock_industry_clf_hist_sw().sort_values(by=['symbol','start_date'], ascending=[True,False])
 
 code_to_info = swRAW.set_index('类目编码')[['类目名称', '父类编码']].to_dict('index')
 
@@ -39,7 +39,8 @@ def get_ic_levels(third_code_raw):
 ic_tuples = swStockICRAW['industry_code'].apply(get_ic_levels)
 swStockICRAW[['IC1', 'IC2', 'IC3']] = pd.DataFrame(ic_tuples.tolist(), index=swStockICRAW.index)
 
-df = Stocks[['code', 'name', 'area','market','list_date', 'act_name', 'act_ent_type']].merge(swStockICRAW[['symbol', 'IC1','IC2', 'IC3']], left_on='code', right_on='symbol', how='left').drop(columns=['symbol']).rename(columns={'code':'StockCode', 'name':'StockName','list_date':'ListDate', 'area':'Area', 'market':'Market', 'act_name':'ActName', 'act_ent_type':'ActEntType '})
+drop_swStockICRAW = swStockICRAW.dropna(subset=['IC3']).sort_values(by=['symbol','start_date'],ascending=[True,False]).drop_duplicates(subset=['symbol'], keep='first')
+df = Stocks[['code', 'name', 'area','market','list_date', 'act_name', 'act_ent_type']].merge(drop_swStockICRAW[['symbol', 'IC1','IC2', 'IC3']], left_on='code', right_on='symbol', how='left').drop(columns=['symbol']).rename(columns={'code':'StockCode', 'name':'StockName','list_date':'ListDate', 'area':'Area', 'market':'Market', 'act_name':'ActName', 'act_ent_type':'ActEntType '})
 
 df.to_sql('swStockIC', engB, if_exists='replace', index=False)
 print("申万行业分类数据已成功写入 StockBas 数据库的 swStockIC 表中。")
