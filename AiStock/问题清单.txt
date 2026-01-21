@@ -394,6 +394,11 @@ DIMENSION_NAMES = [
     "Efficiency", "Growth", "EquityStructure", "Size"
 ]
 
-DIMENSION_NAMES是对上市公司财务健康度分析的7个评分维度。
+DIMENSION_NAMES是对上市公司财务健康度评分的7个评分维度。
+目标：建立财务评分体系
 
-任务：1、考虑近期的a股市场特点及国内经济政策，详细专业的按照USED_COLS给出的财报指标项，给出各维度的不少于3项的指标组合。
+任务一：生成7维度权重。1、分析industry_hierarchy行业分类信息，生成7维度基础权重SUPER_INDUSTRY_WEIGHTS、SUB_INDUSTRY_WEIGHTS。要求：1、各权重要反应行业特征。2、SUPER_INDUSTRY_WEIGHTS是13个大行业分类的权重。3、SUB_INDUSTRY_WEIGHTS是根据细分行业特征对SUPER_INDUSTRY_WEIGHTS的优化补充。3、用字典形式构建这两个分层权重。
+
+任务二：1、考虑近期的国内经济特点及经济政策，详细专业的按照USED_COLS给出的69个财报核心指标项，给出各维度不少于3项的指标或组合指标。要求：1、指标或组合要反应此细分行业的特点。2、指标限定于69个给出的范围内。3、组合指标只可以由这69个指标计算获得。
+
+任务三：参考任务二结果，生成7维度内个指标或组合指标权重默认DEFAULT_INDICATORS、子类通用DIMENSION_INDICATORS_BASE、细分FULL_OVERRIDE_INDUSTRIES。要求：1、详细分析industry_hierarchy行业分类信息的体系结构，归纳总结优化结构生成三层次权重体系。2、即要权重体系的稳定性也要保持灵活性。
