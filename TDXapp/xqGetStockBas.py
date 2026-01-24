@@ -27,4 +27,7 @@ for df in ls:
 # 合并为新 DataFrame
 result = pd.DataFrame(rows)
  
-
+df = result[['代码', '名称','52周最高', '52周最低', '昨收','均价', '今年以来涨幅','每股收益',  '每股净资产','流通股','流通值', '基金份额/总股本', '资产净值/总市值','净资产中的商誉', '市盈率(动)','市净率', '市盈率(TTM)','市盈率(静)','股息(TTM)','股息率(TTM)',  '发行日期', '时间']].rename(columns={'名称':'StockName',})
+col = df.columns.tolist()
+df['StockCode']= df['代码'].str[2:]
+df[['StockCode']+col[1:]].to_sql('xqStockBas', engB,if_exists='replace',index=False)
