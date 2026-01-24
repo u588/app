@@ -9,15 +9,18 @@
 
 /home/ts/app/akData/akGetStockIC.py  2026.1.20废除
 
+* 更新个股时点基础信息流通市值、总股本、市净率、市盈率等
+* /home/ts/app/TDXapp/xqGetStockBas.py
+
 ## TDX 数据更新 以下程序在PC上完成
 
 ### 1、中证列表导出->编辑后存（csIndex.xlsx）
 
-* <https://www.csindex.com.cn/#/indices/family/list> -->导出列表(中证、上证、深证、中基协。综合指数-人民币)
+* [https://www.csindex.com.cn/#/indices/family/list](https://www.csindex.com.cn/#/indices/family/list) -->导出列表(中证、上证、深证、中基协。综合指数-人民币)
 
-|IndexCode|IndexName|MarketName|Num|IndexSTL|From|
-|-----|-------|-------|-------|------|----------|
-|指数代码|指数简称|指数系列|样本数量|指数类别|CS|
+| IndexCode | IndexName | MarketName | Num      | IndexSTL | From |
+| --------- | --------- | ---------- | -------- | -------- | ---- |
+| 指数代码  | 指数简称  | 指数系列   | 样本数量 | 指数类别 | CS   |
 
 G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx
 
@@ -28,7 +31,7 @@ G:/Gitee/App/TDXapp/tdxAppData/csIndex.xlsx
 * 通达信研究行业--> 编辑 --> D:/new_tdx/T0002/export/行业板块.txt -->  行业板块81.txt
 * 通达信普通细分--> 编辑 --> D:/new_tdx/T0002/export/行业板块.txt -->  行业板块80.txt
 
-```bash  
+```bash
 
 python G:\Gitee\App\TDXapp\DataProject\tdxBLK.py
 
@@ -60,7 +63,7 @@ python G:\Gitee\App\TDXapp\DataProject\akIndexsDP.py
 
 ### 6、国证网获取深证、国证指数数据
 
-* <https://www.cnindex.com.cn/>
+* [https://www.cnindex.com.cn/](https://www.cnindex.com.cn/)
 
 ```bash
 
@@ -130,7 +133,7 @@ python /home/ts/app/TDXapp/DataProject/ConsMerg.py
 
 ## === 每年 4、8月 第三个星期日 更新个股财务数据
 
-### 10、tdx个股题材相关度 {Top}
+### 10、tdx个股题材相关度
 
 ```bash
 
@@ -138,7 +141,7 @@ python G:\Gitee\App\TDXapp\tdxGetTop.py
 python /home/ts/app/TDXapp/tdxGetTop.py
 ```
 
-### 11、tdx个股主营占比及前五大合作商占比 {mBiz,BizP}
+### 11、tdx个股主营占比及前五大合作商占比
 
 * 年报集中披露时间: 3月下旬至4月中旬（占全年披露量的70%以上）(4.30最终披露截止日)
 * 半年报集中披露时间: 7月下旬至8月中下旬（尤其最后一周为高峰期）(8.31最终披露截止日)
@@ -151,7 +154,7 @@ python /home/ts/app/TDXapp/tdxGetBiz.py
 
 ```
 
-### 12、tdx个股3年业绩预测 {Fcast}
+### 12、tdx个股3年业绩预测
 
 ```bash
 
@@ -165,10 +168,11 @@ python /home/ts/app/TDXapp/tdxGetFcast.py
 ### tdx 服务器
 
 * std:
+
   * '180.153.18.170', 7709
   * '110.41.147.114', 7709
-
 * ext:
+
   * '182.175.240.157', 7727 2024.9.30废弃
   * '47.112.95.207', 7720
 
@@ -176,19 +180,18 @@ python /home/ts/app/TDXapp/tdxGetFcast.py
 
 ### mootdx包
 
-* <https://github.com/mootdx/mootdx?tab=readme-ov-file>
-* <https://www.mootdx.com/zh-cn/latest/quick/>
+* [https://github.com/mootdx/mootdx?tab=readme-ov-file](https://github.com/mootdx/mootdx?tab=readme-ov-file)
+* [https://www.mootdx.com/zh-cn/latest/quick/](https://www.mootdx.com/zh-cn/latest/quick/)
 
-pip show mootdx  
-注销 ==> quotes.py  518行 logger.warning
+pip show mootdx注销 ==> quotes.py  518行 logger.warning
 
 * 初始化
 
-mootdx bestip  
-/home/ts/.mootdx/config.json  
+mootdx bestip
+/home/ts/.mootdx/config.json
 ext  client.bars(9,62,'H50055', 0, 100) 扩展行情查询
 
-```python F10资料
+```python
 
 from mootdx.quotes import Quotes
 client = Quotes.factory(market='std')
@@ -249,8 +252,8 @@ print(pd.DataFrame(data=list_data))
 
 ```
 
-2024.5.12  --> gpcw20240331.zip 4786722  
-2024.6.21  --> gpcw20240331.zip 4788337  
+2024.5.12  --> gpcw20240331.zip 4786722
+2024.6.21  --> gpcw20240331.zip 4788337
 并入---> /home/ts/app/TDXapp/MtdxGetFS.py
 
 ### 2、手动更新数据库数据
