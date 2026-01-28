@@ -15,7 +15,7 @@ spec:
       containers:
       - name: tdx-crawler
         # image: 10.3.18.60/docker/tdx-crawler:v6
-        image: 10.3.18.60/docker/tdx-crawler:2025.5
+        image: 10.3.18.60/docker/tdx-crawler:2026.1
         volumeMounts:
         - mountPath: /home 
           name: home

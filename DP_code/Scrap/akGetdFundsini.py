@@ -54,6 +54,6 @@ for ID in tqdm(StockLists):
         continue
 
 
-print('All saved !'+ ls)
+print(ls)
 engDF.dispose()
 engS.dispose()
