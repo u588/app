@@ -1,4 +1,12 @@
 import pandas as pd
+
+'''
+使用TDXBLK时 
+  # df1 = pd.concat([blk,m3]).drop_duplicates(subset='IndexCode',keep='first')
+   df1 = m3.drop_duplicates(subset='IndexCode',keep='first')
+
+'''
+
 # from sqlalchemy import create_engine
 
 
@@ -24,7 +32,8 @@ m3zz = pd.merge(m3.drop('MarketName',axis=1),zzgz[['IndexCode','MarketName']], o
 cszz = pd.merge(cs,zzgz[['IndexCode','Market','MarketCode']], on='IndexCode',how='inner')
 m3cszz = pd.merge(m3.drop('MarketName',axis=1),cszz[['IndexCode','MarketName','Num','DP','IndexSTL']], on='IndexCode',how='inner')
 
-df1 = pd.concat([blk,m3]).drop_duplicates(subset='IndexCode',keep='first')
+# df1 = pd.concat([blk,m3]).drop_duplicates(subset='IndexCode',keep='first')
+df1 = m3.drop_duplicates(subset='IndexCode',keep='first')
 df2 = pd.concat([m3cs,df1]).drop_duplicates(subset='IndexCode',keep='first')
 df3 = pd.concat([m3zz,df2]).drop_duplicates(subset='IndexCode',keep='first')
 df4 = pd.concat([m3cszz,df3]).drop_duplicates(subset='IndexCode',keep='first')
@@ -39,6 +48,6 @@ mdf = pd.merge(df7[['IndexCode', 'IndexName', 'Market', 'MarketName', 'MarketCod
        'DP','From']],cnidf[['IndexCode','Num', 'IndexSTL']], on='IndexCode',how='inner')
 df8 = pd.concat([mdf,df7]).drop_duplicates(subset='IndexCode',keep='first').sort_values(by=['IndexCode','MarketCode'])
 
-df8.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexs.xlsx')
+df8.set_index('IndexCode').to_excel('G:/Gitee/App/TDXapp/tdxAppData/tdxIndexsRAW.xlsx')
 
 print('=========> Merged ! ')
