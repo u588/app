@@ -1,0 +1,24 @@
+{
+  "database": {
+    "url_template": "postgresql://{user}:{password}@{host}:{port}/{database}",
+    "credentials_file": ".db_credentials.json"
+  },
+  "akshare": {
+    "timeout": 30,
+    "retry_times": 3
+  },
+  "thresholds": {
+    "volume_ratio_base": 0.6,
+    "down_ratio_base": 0.5,
+    "vol_expansion_base": 1.8,
+    "micro_exposure_warning": 30.0
+  },
+  "persistence": {
+    "state_file": "liquidity_state_v37.pkl",
+    "pe_history_dir": "pe_history_cache"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "market_state_v37.log"
+  }
+}
