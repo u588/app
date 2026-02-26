@@ -8,5 +8,6 @@
     "CodeGPT.Autocomplete.enabled": true,
     "notebook.output.wordWrap": false,
     "notebook.output.scrolling": false,
-    "Codegeex.GenerationPreference": "automatic"
+    "Codegeex.GenerationPreference": "automatic",
+    "python.defaultInterpreterPath": "python3"
 }
