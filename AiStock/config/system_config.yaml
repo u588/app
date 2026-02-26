@@ -1,0 +1,481 @@
+# ============================================
+# A 股市场状态量化系统 V5.7
+# 系统配置文件（业务策略 + 系统参数）
+# ============================================
+
+# ==================== 数据库配置 ====================
+database:
+  main_db: "postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex"
+  pe_db: "postgresql+psycopg://sa:11111111@10.3.18.56/csiIndexPE"
+  cache_enabled: true
+  cache_ttl: 3600
+
+# ==================== TDX 接口配置 ====================
+tdx:
+  exhq_host: "47.112.95.207"
+  exhq_port: 7720
+  hq_host: "180.153.18.170"
+  hq_port: 7709
+  use_tdx: true
+  timeout: 30
+  retry_count: 3
+  parallel_workers: 5
+
+# ==================== 系统参数 ====================
+system:
+  base_date: null  # null=使用今天
+  visualize: true
+  degradation_mode: "auto"  # auto/strict/conservative
+  log_level: "INFO"
+  max_workers: 5
+  cache_ttl: 3600
+  data_min_days: 500  # 指数数据最小天数要求
+
+# ==================== 市值分层配置 ====================
+# 关联：index_name_mapping.yaml 中的指数代码
+market_benchmarks:
+  大盘:
+    code: "000300"
+    weight: 0.40
+    volatility_target: 20.0
+  中盘:
+    code: "000905"
+    weight: 0.30
+    volatility_target: 25.0
+  小盘:
+    code: "000852"
+    weight: 0.20
+    volatility_target: 30.0
+  微盘:
+    code: "932000"
+    weight: 0.10
+    volatility_target: 35.0
+
+# ==================== 微盘冗余配置 ====================
+micro_redundancy:
+  enabled: true
+  primary: "932000"
+  secondary: "399311"
+  correlation_threshold: 0.85
+  liquidity_check_days: 20
+
+# ==================== 微盘高暴露指数标记 ====================
+micro_cap_indices:
+  - "930901"
+  - "931588"
+  - "930707"
+  - "930662"
+
+# ==================== 九大战略方向配置 ====================
+# 关联：index_name_mapping.yaml 中的指数代码
+strategic_directions:
+  高端制造:
+    indices:
+      - "932042"
+      - "931865"
+      - "930850"
+      - "931866"
+      - "930599"
+    base_weight: 0.28
+    risk_level: "medium_high"
+    risk_score: 58
+    cap_weight: 0.20
+    commodity_exposure: ["CUL8", "ALL8", "NIL8"]
+    rebalance_frequency: "monthly"
+  信息技术:
+    indices:
+      - "931087"
+      - "930851"
+      - "930902"
+      - "931495"
+      - "931585"
+    base_weight: 0.25
+    risk_level: "medium_high"
+    risk_score: 55
+    cap_weight: 0.20
+    commodity_exposure: ["SIL8", "LCL8", "CUL8"]
+    rebalance_frequency: "monthly"
+  新能源:
+    indices:
+      - "931798"
+      - "931772"
+      - "931897"
+      - "931687"
+      - "931746"
+    base_weight: 0.15
+    risk_level: "medium"
+    risk_score: 45
+    cap_weight: 0.25
+    commodity_exposure: ["LCL8", "SIL8", "NIL8"]
+    rebalance_frequency: "monthly"
+  生物健康:
+    indices:
+      - "931140"
+      - "931152"
+      - "931992"
+      - "931166"
+      - "399812"
+    base_weight: 0.10
+    risk_level: "low"
+    risk_score: 35
+    cap_weight: 0.30
+    commodity_exposure: ["ML8", "CL8"]
+    rebalance_frequency: "quarterly"
+  供应链:
+    indices:
+      - "931465"
+      - "931235"
+      - "930716"
+      - "930725"
+    base_weight: 0.06
+    risk_level: "low"
+    risk_score: 30
+    cap_weight: 0.35
+    commodity_exposure: ["SCL8", "RBL8", "IL8"]
+    rebalance_frequency: "monthly"
+  现代农业:
+    indices:
+      - "930910"
+      - "930707"
+      - "930662"
+      - "000949"
+    base_weight: 0.01
+    risk_level: "medium"
+    risk_score: 48
+    cap_weight: 0.25
+    commodity_exposure: ["ML8", "CL8", "LHL8"]
+    rebalance_frequency: "quarterly"
+  公用事业:
+    indices:
+      - "000917"
+      - "000937"
+      - "930955"
+      - "932047"
+    base_weight: 0.08
+    risk_level: "low"
+    risk_score: 25
+    cap_weight: 0.40
+    commodity_exposure: ["SCL8", "TCL8", "AUL8"]
+    rebalance_frequency: "quarterly"
+  传统升级:
+    indices:
+      - "932039"
+      - "931231"
+      - "930838"
+      - "931463"
+    base_weight: 0.04
+    risk_level: "low"
+    risk_score: 30
+    cap_weight: 0.35
+    commodity_exposure: ["RBL8", "HCL8", "JL8"]
+    rebalance_frequency: "monthly"
+  文化消费:
+    indices:
+      - "931066"
+      - "931480"
+      - "930901"
+      - "930781"
+      - "931588"
+    base_weight: 0.03
+    risk_level: "high"
+    risk_score: 75
+    cap_weight: 0.15
+    commodity_exposure: ["SRL8", "CFL8", "LHL8"]
+    rebalance_frequency: "monthly"
+
+# ==================== 商品 - 战略方向映射 ====================
+# 关联：index_name_mapping.yaml 中的期货代码
+commodity_strategy_map:
+  CUL8:
+    name: "沪铜"
+    market_code: 30
+    directions: ["高端制造", "供应链"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 10.0
+    threshold_down: -10.0
+  ALL8:
+    name: "沪铝"
+    market_code: 30
+    directions: ["高端制造", "新能源"]
+    impact_type: "cost"
+    weight: 0.08
+    threshold_up: 8.0
+    threshold_down: -8.0
+  LCL8:
+    name: "碳酸锂"
+    market_code: 66
+    directions: ["新能源", "信息技术"]
+    impact_type: "cost"
+    weight: 0.12
+    threshold_up: 20.0
+    threshold_down: -20.0
+  SIL8:
+    name: "工业硅"
+    market_code: 66
+    directions: ["信息技术", "新能源"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 15.0
+    threshold_down: -15.0
+  SCL8:
+    name: "原油"
+    market_code: 30
+    directions: ["公用事业", "供应链", "传统升级"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 15.0
+    threshold_down: -15.0
+  RBL8:
+    name: "螺纹钢"
+    market_code: 30
+    directions: ["传统升级", "供应链"]
+    impact_type: "benefit"
+    weight: 0.08
+    threshold_up: 8.0
+    threshold_down: -8.0
+  ML8:
+    name: "豆粕"
+    market_code: 29
+    directions: ["现代农业", "生物健康", "文化消费"]
+    impact_type: "cost"
+    weight: 0.08
+    threshold_up: 10.0
+    threshold_down: -10.0
+  CL8:
+    name: "玉米"
+    market_code: 29
+    directions: ["现代农业", "文化消费"]
+    impact_type: "cost"
+    weight: 0.07
+    threshold_up: 10.0
+    threshold_down: -10.0
+  AUL8:
+    name: "黄金"
+    market_code: 30
+    directions: ["公用事业"]
+    impact_type: "benefit"
+    weight: 0.05
+    threshold_up: 8.0
+    threshold_down: -8.0
+
+# ==================== 风险阈值配置 ====================
+risk_thresholds:
+  pcr:
+    warning_high: 1.3
+    warning_low: 0.7
+    extreme_high: 1.5
+    extreme_low: 0.5
+    ma_window: 5
+  basis:
+    warning: -1.5
+    extreme: -2.0
+    ma_window: 10
+  valuation:
+    overvalued_pe_percentile: 75
+    undervalued_pe_percentile: 25
+    erp_warning: 1.5
+    erp_safe: 3.5
+  volatility:
+    warning_expansion: 1.8
+    extreme_expansion: 2.5
+    ma_window: 60
+  liquidity:
+    warning_shrink: 0.6
+    extreme_shrink: 0.4
+    ma_window: 5
+  correlation:
+    micro_primary_secondary: 0.85
+    direction_benchmark: 0.70
+
+# ==================== 仓位控制配置 ====================
+position_control:
+  # 市场状态对应的仓位限制
+  market_state_weights:
+    战略进攻区:
+      equity_min: 0.75
+      equity_max: 0.85
+      micro_exposure: 0.15
+      cash_min: 0.15
+    积极配置区:
+      equity_min: 0.75
+      equity_max: 0.85
+      micro_exposure: 0.15
+      cash_min: 0.15
+    防御进攻区:
+      equity_min: 0.60
+      equity_max: 0.65
+      micro_exposure: 0.10
+      cash_min: 0.35
+    左侧布局区:
+      equity_min: 0.70
+      equity_max: 0.75
+      micro_exposure: 0.12
+      cash_min: 0.25
+    均衡持有区:
+      equity_min: 0.55
+      equity_max: 0.65
+      micro_exposure: 0.10
+      cash_min: 0.35
+    防御观望区:
+      equity_min: 0.40
+      equity_max: 0.50
+      micro_exposure: 0.05
+      cash_min: 0.50
+    左侧防御区:
+      equity_min: 0.50
+      equity_max: 0.55
+      micro_exposure: 0.08
+      cash_min: 0.45
+    谨慎持有区:
+      equity_min: 0.35
+      equity_max: 0.45
+      micro_exposure: 0.05
+      cash_min: 0.55
+    战略防御区:
+      equity_min: 0.20
+      equity_max: 0.30
+      micro_exposure: 0.00
+      cash_min: 0.70
+  
+  # 微盘流动性熔断阶段
+  micro_liquidity_stages:
+    normal:
+      exposure_cap: 0.20
+      weight_primary: 0.6
+      weight_secondary: 0.4
+    early_warning:
+      exposure_cap: 0.15
+      weight_primary: 0.5
+      weight_secondary: 0.5
+    watch:
+      exposure_cap: 0.10
+      weight_primary: 0.3
+      weight_secondary: 0.7
+    melted:
+      exposure_cap: 0.00
+      weight_primary: 0.0
+      weight_secondary: 0.0
+  
+  # 单个方向仓位限制
+  direction_limits:
+    max_single_direction: 0.35
+    min_single_direction: 0.01
+    max_commodity_impact: 0.20
+    max_style_adjustment: 0.10
+
+# ==================== 期权市场配置 ====================
+# 关联：index_name_mapping.yaml 中的期权标的
+option_markets:
+  cffex:
+    market_code: 7
+    enabled: true
+    pcr_weight: 0.50
+    default_contracts_count: 10
+  sse:
+    market_code: 8
+    enabled: true
+    pcr_weight: 0.30
+    default_contracts_count: 10
+  szse:
+    market_code: 9
+    enabled: true
+    pcr_weight: 0.20
+    default_contracts_count: 10
+
+# ==================== 期货市场配置 ====================
+# 关联：index_name_mapping.yaml 中的期货代码
+futures_markets:
+  shfe:
+    market_code: 30
+    enabled: true
+    term_structure_weight: 0.40
+  dce:
+    market_code: 29
+    enabled: true
+    term_structure_weight: 0.25
+  czce:
+    market_code: 32
+    enabled: true
+    term_structure_weight: 0.20
+  gfex:
+    market_code: 66
+    enabled: true
+    term_structure_weight: 0.15
+  cffex:
+    market_code: 47
+    enabled: true
+    basis_weight: 1.00
+
+# ==================== 宏观指标配置 ====================
+# 关联：index_name_mapping.yaml 中的宏观指标代码
+macro_indicators:
+  bond_yield:
+    code: "8_ATY"
+    enabled: true
+    weight: 0.40
+  margin_balance:
+    code: "7_RZ"
+    enabled: true
+    weight: 0.30
+  north_flow:
+    code: "7_TON"
+    enabled: true
+    weight: 0.30
+  etf_scale:
+    code: "7_TETF"
+    enabled: true
+    weight: 0.20
+
+# ==================== 可视化配置 ====================
+visualization:
+  enabled: true
+  chinese_font_family: "Microsoft YaHei, SimHei, sans-serif"
+  chart_height_default: 600
+  chart_width_default: 1200
+  color_palette:
+    primary: "#3498db"
+    success: "#27ae60"
+    warning: "#f39c12"
+    danger: "#e74c3c"
+    info: "#9b59b6"
+  export_format: ["html", "png"]
+  export_path: "reports/"
+
+# ==================== 日志配置 ====================
+logging:
+  level: "INFO"
+  format: "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+  file_enabled: true
+  file_path: "logs/quant_system.log"
+  file_max_size: "10MB"
+  file_backup_count: 5
+
+# ==================== 性能配置 ====================
+performance:
+  parallel_loading: true
+  max_workers: 5
+  cache_enabled: true
+  cache_ttl: 3600
+  cache_max_size: 1000
+  timeout_seconds: 30
+  retry_count: 3
+  retry_delay_seconds: 2
+
+# ==================== 回测配置 ====================
+backtest:
+  enabled: false
+  start_date: "2020-01-01"
+  end_date: "2026-02-14"
+  rebalance_frequency: "monthly"
+  transaction_cost: 0.001
+  slippage: 0.0005
+  benchmark: "000300"
+
+# ==================== 版本信息 ====================
+version:
+  system_version: "5.7.0"
+  config_version: "1.0.0"
+  last_updated: "2026-02-14"
+  author: "Quant Team"

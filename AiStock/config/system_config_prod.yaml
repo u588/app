@@ -1,0 +1,4 @@
+system:
+  cache_ttl: 7200  # 更长的缓存时间
+  max_workers: 10  # 更多并行线程
+  visualize: false  # 禁用可视化
