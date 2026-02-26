@@ -409,23 +409,533 @@ futures_markets:
 
 # ==================== 宏观指标配置 ====================
 # 关联：index_name_mapping.yaml 中的宏观指标代码
+# 功能：通过多维度宏观指标综合判断市场状态
+
 macro_indicators:
-  bond_yield:
-    code: "8_ATY"
+  # ==================== 分类 1: 通胀指标 ====================
+  inflation:
     enabled: true
-    weight: 0.40
-  margin_balance:
-    code: "7_RZ"
+    weight: 0.20  # 在综合评分中的权重
+    description: "通胀水平影响货币政策预期和企业成本"
+    indicators:
+      CPI:
+        code: "2_CPI"
+        name: "居民消费价格指数"
+        direction: "negative"  # 通胀过高通常对股市负面
+        unit: "%"
+        thresholds:
+          warning_high: 3.0
+          warning_low: -1.0
+          extreme_high: 5.0
+          extreme_low: -2.0
+        update_frequency: "monthly"
+        lag_type: "lagging"  # 滞后指标
+        market_state_mapping:
+          extreme_high: "战略防御区"
+          warning_high: "防御观望区"
+          normal: "均衡持有区"
+          warning_low: "积极配置区"
+          extreme_low: "警惕通缩风险"
+        smoothing_window: 3  # 3 月移动平均
+      
+      PPI:
+        code: "2_PPI"
+        name: "工业出厂价格指数"
+        direction: "neutral"
+        unit: "%"
+        thresholds:
+          warning_high: 5.0
+          warning_low: -3.0
+          extreme_high: 8.0
+          extreme_low: -5.0
+        update_frequency: "monthly"
+        lag_type: "leading"  # 领先指标，预示企业利润变化
+        correlation_with_earnings: 0.75
+      
+      CGPI:
+        code: "2_CGPI"
+        name: "企业商品价格指数"
+        direction: "neutral"
+        unit: "%"
+        thresholds:
+          warning_high: 4.0
+          warning_low: -2.0
+        update_frequency: "monthly"
+        lag_type: "leading"
+      
+      RPI:
+        code: "2_RPI"
+        name: "商品零售价格指数"
+        direction: "neutral"
+        unit: "%"
+        thresholds:
+          warning_high: 3.5
+          warning_low: -1.5
+        update_frequency: "monthly"
+        lag_type: "coincident"
+
+  # ==================== 分类 2: 经济增长指标 ====================
+  growth:
     enabled: true
-    weight: 0.30
-  north_flow:
-    code: "7_TON"
+    weight: 0.25
+    description: "经济增长是股市长期向好的基础"
+    indicators:
+      GDP:
+        code: "1_GDPI"
+        name: "当季国内生产总值"
+        direction: "positive"
+        unit: "%"
+        thresholds:
+          warning_high: 6.0
+          warning_low: 4.0
+          extreme_high: 8.0
+          extreme_low: 2.0
+        update_frequency: "quarterly"
+        lag_type: "lagging"
+        market_state_mapping:
+          extreme_high: "战略进攻区"
+          warning_high: "积极配置区"
+          normal: "均衡持有区"
+          warning_low: "防御观望区"
+          extreme_low: "战略防御区"
+      
+      industrial_production:
+        code: "6_VAI"
+        name: "工业增加值"
+        direction: "positive"
+        unit: "%"
+        thresholds:
+          warning_high: 7.0
+          warning_low: 3.0
+        update_frequency: "monthly"
+        lag_type: "coincident"
+        sector_correlation:
+          高端制造: 0.85
+          传统升级: 0.75
+          新能源: 0.65
+      
+      electricity:
+        code: "6_TEG"
+        name: "全国发电量"
+        direction: "positive"
+        unit: "亿度"
+        thresholds:
+          warning_high: 8.0  # YoY 增长
+          warning_low: 2.0
+        update_frequency: "monthly"
+        lag_type: "coincident"
+        is_high_frequency: true
+      
+      fixed_investment:
+        code: "6_UFA"
+        name: "城镇固定资产投资"
+        direction: "positive"
+        unit: "%"
+        thresholds:
+          warning_high: 10.0
+          warning_low: 4.0
+        update_frequency: "monthly"
+        lag_type: "leading"
+        sector_correlation:
+          传统升级: 0.90
+          供应链: 0.70
+          公用事业: 0.60
+
+  # ==================== 分类 3: 流动性指标 ====================
+  liquidity:
     enabled: true
-    weight: 0.30
-  etf_scale:
-    code: "7_TETF"
+    weight: 0.25
+    description: "流动性是股市短期波动的核心驱动"
+    indicators:
+      shibor_3m:
+        code: "5_SHS3M"
+        name: "SHIBOR3 月"
+        direction: "negative"  # 利率上升通常对股市负面
+        unit: "%"
+        thresholds:
+          warning_high: 3.5
+          warning_low: 1.5
+          extreme_high: 5.0
+          extreme_low: 1.0
+        update_frequency: "daily"
+        lag_type: "leading"
+        market_state_mapping:
+          extreme_high: "战略防御区"
+          warning_high: "防御观望区"
+          normal: "均衡持有区"
+          warning_low: "积极配置区"
+          extreme_low: "警惕流动性陷阱"
+      
+      margin_balance:
+        code: "7_RZ"
+        name: "沪深融资余额"
+        direction: "positive"
+        unit: "亿元"
+        thresholds:
+          warning_high: 18000
+          warning_low: 14000
+          extreme_high: 20000
+          extreme_low: 12000
+        update_frequency: "daily"
+        lag_type: "coincident"
+        sentiment_indicator: true
+        correlation_with_turnover: 0.85
+      
+      etf_scale:
+        code: "7_TETF"
+        name: "ETF 基金规模"
+        direction: "positive"
+        unit: "亿元"
+        thresholds:
+          warning_high: 25000
+          warning_low: 15000
+        update_frequency: "daily"
+        lag_type: "coincident"
+        institutional_flow_indicator: true
+      
+      north_flow:
+        code: "7_TON"
+        name: "累计北上资金"
+        direction: "positive"
+        unit: "亿元"
+        thresholds:
+          warning_high: 20000
+          warning_low: 15000
+          flow_threshold_daily: 100  # 单日净流入阈值
+        update_frequency: "daily"
+        lag_type: "leading"
+        smart_money_indicator: true
+        sector_preference:
+          高端制造: 0.35
+          信息技术: 0.30
+          新能源: 0.20
+          生物健康: 0.15
+      
+      south_flow:
+        code: "7_TOS"
+        name: "累计南下资金"
+        direction: "positive"
+        unit: "亿元"
+        thresholds:
+          warning_high: 15000
+          warning_low: 10000
+        update_frequency: "daily"
+        lag_type: "leading"
+        cross_border_indicator: true
+
+  # ==================== 分类 4: 信心/情绪指标 ====================
+  sentiment:
     enabled: true
-    weight: 0.20
+    weight: 0.15
+    description: "市场情绪是短期波动的放大器"
+    indicators:
+      consumer_confidence:
+        code: "3_CCI"
+        name: "消费者信心指数"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 110
+          warning_low: 90
+          extreme_high: 120
+          extreme_low: 80
+        update_frequency: "monthly"
+        lag_type: "leading"
+        market_state_mapping:
+          extreme_high: "警惕过热"
+          warning_high: "积极配置区"
+          normal: "均衡持有区"
+          warning_low: "防御观望区"
+          extreme_low: "战略防御区"
+      
+      business_confidence:
+        code: "3_BCI"
+        name: "企业景气指数"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 115
+          warning_low: 95
+        update_frequency: "quarterly"
+        lag_type: "leading"
+        sector_correlation:
+          传统升级: 0.80
+          高端制造: 0.75
+          供应链: 0.70
+      
+      consumer_expectation:
+        code: "3_CEI"
+        name: "消费者预期指数"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 108
+          warning_low: 92
+        update_frequency: "monthly"
+        lag_type: "leading"
+      
+      consumer_satisfaction:
+        code: "3_CSI"
+        name: "消费者满意指数"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 105
+          warning_low: 95
+        update_frequency: "monthly"
+        lag_type: "coincident"
+
+  # ==================== 分类 5: 外部风险指标 ====================
+  external_risk:
+    enabled: true
+    weight: 0.15
+    description: "外部环境变化影响 A 股风险偏好"
+    indicators:
+      us_10y_yield:
+        code: "8_ATY"
+        name: "美国十年期国债收益率"
+        direction: "negative"
+        unit: "%"
+        thresholds:
+          warning_high: 4.5
+          warning_low: 3.0
+          extreme_high: 5.0
+          extreme_low: 2.5
+        update_frequency: "daily"
+        lag_type: "leading"
+        market_state_mapping:
+          extreme_high: "战略防御区"
+          warning_high: "防御观望区"
+          normal: "均衡持有区"
+          warning_low: "积极配置区"
+          extreme_low: "警惕通缩风险"
+        correlation_with_growth_stocks: -0.65
+      
+      usd_cny:
+        code: "5_RMBUS"
+        name: "人民币兑美元"
+        direction: "negative"
+        unit: "汇率"
+        thresholds:
+          warning_high: 7.3
+          warning_low: 6.8
+          extreme_high: 7.5
+          extreme_low: 6.6
+        update_frequency: "daily"
+        lag_type: "leading"
+        market_state_mapping:
+          extreme_high: "防御观望区"
+          warning_high: "均衡持有区"
+          normal: "均衡持有区"
+          warning_low: "积极配置区"
+          extreme_low: "警惕资本外流"
+      
+      us_pmi:
+        code: "8_APMI"
+        name: "美国制造业 PMI"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 55
+          warning_low: 45
+          extreme_high: 60
+          extreme_low: 40
+        update_frequency: "monthly"
+        lag_type: "leading"
+        global_demand_indicator: true
+      
+      euro_pmi:
+        code: "8_PMI-E"
+        name: "欧元区制造业 PMI"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 53
+          warning_low: 47
+        update_frequency: "monthly"
+        lag_type: "leading"
+      
+      us_unemployment:
+        code: "8_AUE"
+        name: "美国失业率"
+        direction: "negative"
+        unit: "%"
+        thresholds:
+          warning_high: 4.5
+          warning_low: 3.0
+        update_frequency: "monthly"
+        lag_type: "lagging"
+
+  # ==================== 分类 6: 基金情绪指标 ====================
+  fund_sentiment:
+    enabled: true
+    weight: 0.10
+    description: "基金发行和持仓反映机构情绪"
+    indicators:
+      equity_fund_index:
+        code: "9_990002"
+        name: "股票型基金指数"
+        direction: "positive"
+        unit: "指数"
+        thresholds:
+          warning_high: 110  # 相对基准
+          warning_low: 90
+        update_frequency: "daily"
+        lag_type: "coincident"
+        institutional_sentiment: true
+      
+      bond_fund_index:
+        code: "9_990003"
+        name: "债券型基金指数"
+        direction: "negative"  # 债基走强通常意味着风险偏好下降
+        unit: "指数"
+        thresholds:
+          warning_high: 108
+          warning_low: 92
+        update_frequency: "daily"
+        lag_type: "leading"
+        risk_off_indicator: true
+      
+      money_fund_index:
+        code: "9_990005"
+        name: "货币型基金指数"
+        direction: "negative"
+        unit: "指数"
+        thresholds:
+          warning_high: 105
+          warning_low: 95
+        update_frequency: "daily"
+        lag_type: "leading"
+        safe_haven_indicator: true
+
+  # ==================== 综合评分配置 ====================
+  composite_scoring:
+    method: "weighted_average"  # weighted_average / exponential_smoothing / bayesian
+    rebalance_frequency: "weekly"  # 每周重新计算综合评分
+    min_data_coverage: 0.8  # 至少 80% 指标有数据才计算
+    
+    # 市场状态阈值
+    market_state_thresholds:
+      strategic_offense: 80    # ≥80: 战略进攻区
+      active_allocation: 65    # 65-79: 积极配置区
+      balanced_hold: 50        # 50-64: 均衡持有区
+      defensive_watch: 35      # 35-49: 防御观望区
+      strategic_defense: 20    # <35: 战略防御区
+    
+    # 信号平滑配置
+    signal_smoothing:
+      enabled: true
+      method: "exponential_moving_average"
+      alpha: 0.3  # 平滑系数
+      min_confidence: 0.6  # 最低置信度要求
+      conflict_resolution: "majority_vote"  # 指标冲突时的解决策略
+    
+    # 指标权重动态调整
+    dynamic_weighting:
+      enabled: true
+      regime_based: true  # 根据市场状态调整权重
+      regimes:
+        high_volatility:
+          liquidity_weight: 0.35
+          sentiment_weight: 0.20
+          growth_weight: 0.20
+          inflation_weight: 0.15
+          external_weight: 0.10
+        low_volatility:
+          liquidity_weight: 0.20
+          sentiment_weight: 0.15
+          growth_weight: 0.30
+          inflation_weight: 0.20
+          external_weight: 0.15
+
+  # ==================== 预警规则系统 ====================
+  alert_rules:
+    # 规则 1: 通胀上行预警
+    - name: "通胀上行预警"
+      condition: "CPI > 3.0 AND PPI > 5.0"
+      action: "reduce_equity_exposure"
+      priority: "high"
+      suggested_adjustment: -0.10  # 建议降低权益仓位 10%
+      affected_directions: ["文化消费", "现代农业"]
+    
+    # 规则 2: 流动性收紧预警
+    - name: "流动性收紧预警"
+      condition: "shibor_3m > 3.5 AND margin_balance < 14000"
+      action: "increase_cash_position"
+      priority: "high"
+      suggested_adjustment: -0.15
+      affected_directions: ["高端制造", "信息技术", "新能源"]
+    
+    # 规则 3: 外部风险上升预警
+    - name: "外部风险上升预警"
+      condition: "us_10y_yield > 4.5 AND usd_cny > 7.3"
+      action: "reduce_overseas_exposure"
+      priority: "medium"
+      suggested_adjustment: -0.08
+      affected_directions: ["信息技术", "文化消费"]
+    
+    # 规则 4: 经济复苏确认
+    - name: "经济复苏确认"
+      condition: "GDP > 5.0 AND industrial_production > 5.0 AND consumer_confidence > 100"
+      action: "increase_equity_exposure"
+      priority: "medium"
+      suggested_adjustment: +0.10
+      affected_directions: ["高端制造", "传统升级", "供应链"]
+    
+    # 规则 5: 资金大幅流入
+    - name: "资金大幅流入确认"
+      condition: "north_flow_daily > 100 AND margin_balance_change_5d > 500"
+      action: "maintain_or_increase_exposure"
+      priority: "low"
+      suggested_adjustment: +0.05
+      affected_directions: ["高端制造", "信息技术"]
+    
+    # 规则 6: 通缩风险预警
+    - name: "通缩风险预警"
+      condition: "CPI < -1.0 AND PPI < -3.0"
+      action: "defensive_positioning"
+      priority: "high"
+      suggested_adjustment: -0.12
+      affected_directions: ["传统升级", "供应链"]
+
+  # ==================== 指标间相关性配置 ====================
+  correlation_matrix:
+    # 正相关指标组
+    positive_cluster:
+      - ["GDP", "industrial_production", "electricity", "fixed_investment"]
+      - ["consumer_confidence", "business_confidence", "consumer_expectation"]
+      - ["margin_balance", "etf_scale", "north_flow"]
+    
+    # 负相关指标组
+    negative_cluster:
+      - ["shibor_3m", "us_10y_yield"]
+      - ["CPI", "equity_fund_index"]  # 通胀高时权益基金可能流出
+    
+    # 跨市场传导
+    cross_market:
+      us_10y_yield_to_A_shares: -0.45
+      usd_cny_to_north_flow: -0.60
+      us_pmi_to_export_sectors: 0.55
+
+  # ==================== 数据质量配置 ====================
+  data_quality:
+    missing_value_handling: "interpolate"  # interpolate / forward_fill / exclude
+    outlier_detection:
+      enabled: true
+      method: "z_score"
+      threshold: 3.0
+    revision_handling:
+      enabled: true
+      use_latest: true  # 使用最新修订值
+      track_revisions: true  # 记录修订历史
+
+  # ==================== 输出配置 ====================
+  output:
+    include_component_scores: true  # 输出各分类得分
+    include_indicator_details: true  # 输出各指标详情
+    confidence_interval: 0.95  # 置信区间
+    export_format: ["json", "csv"]
+    alert_channels: ["log", "email", "webhook"]
 
 # ==================== 可视化配置 ====================
 visualization:
