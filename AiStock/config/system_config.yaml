@@ -66,6 +66,18 @@ micro_cap_indices:
   - "930707"
   - "930662"
 
+# ==================== 配置引擎权重配置 ====================
+allocation_config:
+  sentiment_weight: 0.35
+  trend_weight: 0.30
+  valuation_weight: 0.20
+  fund_weight: 0.15
+  risk_penalty_base: 0.10
+  commodity_adjustment_max: 0.20
+  micro_penalty_warning: 0.10
+  micro_penalty_melted: 0.20
+  cash_weight_defensive: 0.15
+
 # ==================== 九大战略方向配置 ====================
 # 关联：index_name_mapping.yaml 中的指数代码
 strategic_directions:
