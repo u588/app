@@ -195,6 +195,22 @@ strategic_directions:
     commodity_exposure: ["SRL8", "CFL8", "LHL8"]
     rebalance_frequency: "monthly"
 
+# ==================== 市场情绪配置 ====================
+sentiment:
+  enabled: true
+  weight: 0.15
+  indicators:
+    vix_alternative:
+      primary: "VHSI"      # 首选
+      fallback: "PCR"      # 回退
+      market_code: 27
+      direction: "negative"  # 波动率↑ → 情绪↓
+      thresholds:
+        calm: 15.0    # 低波动（情绪乐观）
+        normal: 20.0  # 正常波动
+        elevated: 25.0 # 升高波动（谨慎）
+        panic: 30.0   # 恐慌波动（防御）
+
 # ==================== 商品 - 战略方向映射 ====================
 # 关联：index_name_mapping.yaml 中的期货代码
 commodity_strategy_map:
