@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class MarketStateSystemV6_0:
     """V6.0主系统（修复版：消除属性归属混乱）"""
     
-    def __init__(self, config_path: str = './config/system_config_v6.yaml'):
+    def __init__(self, config_path: str = 'system_config_v6.yaml'):
         """初始化系统（修复版）"""
         self.config = ConfigService(config_path)
         self.logger = logger
@@ -60,7 +60,25 @@ class MarketStateSystemV6_0:
         
         # 预加载数据
         self._preload_data()
-    
+
+        # ✅ 新增：初始化ThresholdService（可选）
+        try:
+            from services.threshold_service.threshold_service import ThresholdService
+            self.threshold_service = ThresholdService(
+                config_service=self.config_service,
+                data_service=self.data_service
+            )
+            logger.info("✅ ThresholdService初始化成功")
+        except Exception as e:
+            self.threshold_service = None
+            logger.warning(f"⚠️ ThresholdService初始化失败（降级到静态阈值）: {str(e)}")
+        
+        # 传递给需要的服务（可选依赖）
+        self.risk_service = RiskAssessmentService(
+            data_service=self.data_service,
+            config_service=self.config_service,
+            threshold_service=self.threshold_service  # ✅ 传递（非强制）
+        )    
     def _preload_data(self):
         """预加载数据（修复版：数据加载到self.benchmark_data）"""
         self.logger.info("🔄 预加载基准数据...")

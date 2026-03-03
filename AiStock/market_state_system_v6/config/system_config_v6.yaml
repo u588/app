@@ -3,6 +3,17 @@
 # 系统配置文件（业务策略 + 系统参数）
 # ============================================
 
+# ====================动态阈值配置 ====================
+thresholds:
+  liquidity:
+    warning_shrink: 
+      type: "dynamic"  # dynamic/static
+      base_value: 0.6
+      volatility_adjustment:
+        enabled: true
+        low_vol_multiplier: 0.9
+        high_vol_multiplier: 1.1
+
 # ==================== V6.0新增：自适应配置 ====================
 adaptive_config:
   enabled: true
