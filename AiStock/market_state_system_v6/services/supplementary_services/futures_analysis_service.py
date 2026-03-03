@@ -19,7 +19,7 @@ V6.0 期货分析服务（完全独立微服务，扩展版）
 """
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from datetime import datetime
 import warnings
 import logging
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 class FuturesAnalysisService:
     """V6.0 期货分析服务（微服务化重构版，扩展股指期货）"""
     
-    def __init__(self, data_service, config: Optional[Dict] = None):
+    def __init__(self, data_service,config_service):
         """
         初始化期货分析服务
         
@@ -46,33 +46,7 @@ class FuturesAnalysisService:
                 }
         """
         self.data_service = data_service
-        self.config = {
-            'chinese_font': "Microsoft YaHei, SimHei, sans-serif",
-            'commodity_contracts': {
-                'copper': ('CU2603', 'CU2606', 30),
-                'aluminum': ('AL2603', 'AL2606', 30),
-                'lithium': ('LC2603', 'LC2606', 66),
-                'silicon': ('SI2603', 'SI2606', 66),
-                'crude': ('SC2603', 'SC2606', 30),
-                'rebar': ('RB2603', 'RB2606', 30),
-                'gold': ('AU2603', 'AU2606', 30),
-                'soybean': ('M2603', 'M2605', 29)
-            },
-            'index_futures_contracts': {
-                'if': ('IFL8', '000300', 47),  # 沪深300
-                'ih': ('IHL8', '000016', 47),  # 上证50
-                'ic': ('ICL8', '000905', 47),  # 中证500
-                'im': ('IML8', '000852', 47)   # 中证1000
-            },
-            'basis_threshold': {
-                'warning': -1.5,
-                'extreme': -2.0
-            }
-        }
-        
-        if config:
-            self.config.update(config)
-        
+        self.config_service = config_service
         self.logger = logger
         self.logger.info("✅ 期货分析服务初始化成功（含商品+股指）")
     
@@ -147,19 +121,9 @@ class FuturesAnalysisService:
     
     # ==================== 股指期货基差分析（V6.0新增） ====================
     
-    def calculate_index_futures_basis(
-        self,
-        index_futures_contracts: Optional[Dict] = None
-    ) -> Dict[str, Dict]:
+    def calculate_index_futures_basis(self) -> Dict[str, Dict]:
         """
         V6.0核心新增：计算股指期货基差
-        
-        参数:
-            index_futures_contracts: 股指期货合约配置（None=使用配置）
-                {
-                    'if': ('futures_code', 'spot_code', market_code),
-                    ...
-                }
         
         返回:
             {
@@ -175,11 +139,16 @@ class FuturesAnalysisService:
                 ...
             }
         """
-        contracts = index_futures_contracts or self.config['index_futures_contracts']
+        contracts = {
+            'if': ('IFL8', '000300', 47),  # 沪深300
+            'ih': ('IHL8', '000016', 47),  # 上证50
+            'ic': ('ICL8', '000905', 47),  # 中证500
+            'im': ('IML8', '000852', 47)   # 中证1000
+        }
         basis_results = {}
         
-        warning_threshold = self.config['basis_threshold']['warning']
-        extreme_threshold = self.config['basis_threshold']['extreme']
+        warning_threshold = self.config_service.config['risk_thresholds']['basis']['warning']
+        extreme_threshold = self.config_service.config['risk_thresholds']['basis']['extreme']
         
         for key, (futures_code, spot_code, market_code) in contracts.items():
             try:
@@ -209,10 +178,10 @@ class FuturesAnalysisService:
                             signal = '⚪ 平水（中性）'
                         
                         basis_results[key] = {
-                            'futures_price': float(futures_price),
-                            'spot_price': float(spot_price),
-                            'basis': float(basis),
-                            'basis_pct': float(basis_pct),
+                            'futures_price': float(futures_price),  # ⭐ 强制转换
+                            'spot_price': float(spot_price),        # ⭐ 强制转换
+                            'basis': float(basis),                  # ⭐ 强制转换
+                            'basis_pct': float(basis_pct),          # ⭐ 强制转换
                             'signal': signal,
                             'futures_code': futures_code,
                             'spot_code': spot_code,

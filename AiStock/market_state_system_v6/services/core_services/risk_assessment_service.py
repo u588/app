@@ -19,10 +19,11 @@ class RiskAssessmentService:
     - 不依赖MarketStateSystem或其他业务服务
     """
     
-    def __init__(self, data_service, config):
+    def __init__(self, data_service, config_service):
         """初始化（修复版：仅持有必要依赖）"""
         self.data_service = data_service
-        self.config = config
+        self.config_service = config_service
+        self.logger = logger
         logger.info("✅ 风险评估服务初始化成功")
     
     def assess_micro_liquidity(
