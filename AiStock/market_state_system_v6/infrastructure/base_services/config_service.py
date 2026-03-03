@@ -13,81 +13,51 @@ V6.0 配置服务（完全独立，无循环依赖）
 - 不依赖任何业务服务
 """
 import yaml
+from pathlib import Path
+from typing import Dict, Any, Optional, List
+import logging
+
+from utils.path_utils import get_config_path  # ✅ 关键修复：自动路径解析
+from utils.file_loader import file_loader
+
 import json
 import os
-from typing import Any, Dict, Optional, List
 from datetime import datetime
-import logging
+
 from copy import deepcopy
 
 logger = logging.getLogger(__name__)
 
 
 class ConfigService:
-    """V6.0 配置服务（修复版：完全独立）"""
+    """V6.0 配置服务（修复版：完全独立）
     
-    def __init__(self, config_path: str = './config/system_config_v6.yaml'):
-        """
-        初始化配置服务
+
+        初始化配置服务（无需指定完整路径！）
         
         参数:
-            config_path: 配置文件路径
+            config_file: 配置文件名（自动在 config/ 目录查找）
+                示例: 'system_config_v6.yaml'（无需 './config/' 前缀）
         """
-        self.config_path = config_path
-        self.config: Dict = {}
-        self.config_history: List[Dict] = []  # 配置历史（用于回滚）
-        self.version = "6.0.0"
-        self.last_modified: Optional[datetime] = None
-        self.logger = logger
+    def __init__(self, config_file: str = 'system_config_v6.yaml'):
+        # ✅ 核心修复：自动构建绝对路径
+        self.config_path = get_config_path(config_file)
         
         # 加载配置
-        self._load_config()
+        self.config = self._load_config()
+        self.version = self.config.get('version', {}).get('system_version', '6.0.0')
         
-        # 保存初始版本
-        self._save_version("initial_load")
-        
-        self.logger.info(f"✅ 配置服务初始化成功 | 版本={self.version} | 路径={config_path}")
+        logger.info(f"✅ 配置服务初始化成功 | 版本={self.version} | 路径={self.config_path}")
     
-    # ==================== 核心方法 ====================
-    
-    def _load_config(self) -> bool:
-        """加载配置文件"""
+    def _load_config(self) -> Dict:
+        """加载配置（自动路径解析）"""
         try:
-            if not os.path.exists(self.config_path):
-                self.logger.warning(f"⚠️ 配置文件不存在: {self.config_path}，使用默认配置")
-                self.config = self._get_default_config()
-                return True
-            
-            # 检查文件修改时间
-            modified_time = datetime.fromtimestamp(os.path.getmtime(self.config_path))
-            if self.last_modified and modified_time <= self.last_modified:
-                self.logger.debug("ℹ️ 配置文件未修改，跳过加载")
-                return True
-            
-            # 加载YAML配置
-            with open(self.config_path, 'r', encoding='utf-8') as f:
-                self.config = yaml.safe_load(f)
-            
-            self.last_modified = modified_time
-            self.logger.info(f"✅ 配置加载成功 | 路径={self.config_path} | 大小={len(str(self.config))}字节")
-            
-            # 验证配置
-            is_valid, errors = self.validate_config()
-            if not is_valid:
-                self.logger.warning(f"⚠️ 配置验证失败: {len(errors)}个错误")
-                for error in errors[:5]:  # 只显示前5个错误
-                    self.logger.warning(f"   - {error}")
-            
-            return True
-        
-        except yaml.YAMLError as e:
-            self.logger.error(f"❌ YAML解析失败: {str(e)[:100]}")
-            self.config = self._get_default_config()
-            return False
+            # ✅ 使用统一文件加载器（自动处理路径）
+            return file_loader.load_yaml(self.config_path.name, relative_to='config')
         except Exception as e:
-            self.logger.error(f"❌ 配置加载失败: {str(e)[:100]}")
-            self.config = self._get_default_config()
-            return False
+            logger.error(f"❌ 配置加载失败: {str(e)}")
+            # 回退到默认配置
+            return self._get_default_config()
     
     def get(self, key: str, default: Any = None) -> Any:
         """
