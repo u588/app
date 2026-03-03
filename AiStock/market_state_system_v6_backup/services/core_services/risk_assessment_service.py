@@ -1,39 +1,42 @@
-# services/core_services/risk_assessment_service_v6_1.py
+# services/core_services/risk_assessment_service.py
 """
-V6.1 风险评估服务（阈值动态化 + 配置统一化）
-核心变更：
-✅ 使用extract_and_validate_config统一配置提取
-✅ 集成ThresholdService动态获取阈值
-✅ 完整静态阈值回退机制
-✅ 所有数值强制Python原生类型
+V6.0 风险评估服务（优化版：使用config_utils工具）
+修复点：
+✅ 直接使用extract_and_validate_config（一行代码完成提取+验证）
+✅ 删除冗余的_extract_config_dict和_validate_config方法
+✅ 代码行数减少30%，逻辑更清晰
+✅ 与所有服务保持统一配置处理模式
 """
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime
 import logging
+import warnings
 
-from utils.config_utils import extract_and_validate_config, safe_config_get  # ✅ V6.1统一配置工具
-
+warnings.filterwarnings('ignore')
 logger = logging.getLogger(__name__)
+
+# ✅ 核心优化：直接导入配置工具（服务初始化更简洁）
+from utils.config_utils import extract_and_validate_config, safe_config_get
 
 
 class RiskAssessmentService:
-    """V6.1 风险评估服务（阈值动态化 + 配置统一化）"""
+    """V6.0 风险评估服务（优化版：配置处理集中化）"""
     
-    def __init__(self, data_service, config_service, threshold_service=None):
+    def __init__(self, data_service, config_service):
         """
-        初始化风险评估服务（V6.1增强版）
+        初始化风险评估服务（优化版）
         
-        参数:
-            data_service: DataLoadingService实例
-            config_service: ConfigService实例
-            threshold_service: ThresholdService实例（可选，None=使用静态阈值）
+        修复点:
+        ✅ 使用extract_and_validate_config一键完成配置提取+验证
+        ✅ 无需内部维护_extract_config_dict/_validate_config
+        ✅ 代码更简洁，专注业务逻辑
         """
         self.data_service = data_service
         self.logger = logger
         
-        # ✅ V6.1核心：统一配置提取（替代原有20+行验证逻辑）
+        # ✅ 核心优化：一行代码完成配置提取+验证（替代原有20+行代码）
         self.config, is_valid, missing_keys = extract_and_validate_config(
             config_service=config_service,
             required_keys=[
@@ -47,88 +50,89 @@ class RiskAssessmentService:
             service_name='RiskAssessmentService'
         )
         
-        # ✅ V6.1核心：保存ThresholdService引用（可选）
-        self.threshold_service = threshold_service
-        
-        # 初始化状态
+        # ✅ 验证通过后初始化（逻辑更清晰）
         if is_valid:
-            self.logger.info("✅ RiskAssessmentService初始化成功（配置完整）")
+            self.logger.info("✅ 风险评估服务初始化成功（配置完整）")
         else:
-            self.logger.warning(f"⚠️ RiskAssessmentService初始化完成（缺失{len(missing_keys)}项配置）")
-
-    # ==================== 核心方法：微盘流动性评估 ====================    
+            self.logger.warning(f"⚠️ 风险评估服务初始化完成（缺失{len(missing_keys)}项配置）")
+        
+        # 详细日志（仅调试模式）
+        if self.logger.isEnabledFor(logging.DEBUG):
+            self.logger.debug(
+                f"   • 高风险方向: {len(self.config.get('high_risk_directions', {}))}个 | "
+                f"微盘指数: {len(self.config.get('micro_cap_indices', []))}个 | "
+                f"战略方向: {len(self.config.get('strategic_directions', {}))}个"
+            )
+    
+    # ==================== 核心方法：微盘流动性评估 ====================
+    
     def assess_micro_liquidity(
         self,
         df_primary: pd.DataFrame,
         df_secondary: Optional[pd.DataFrame] = None
     ) -> Dict[str, Any]:
         """
-        V6.1核心：微盘层三阶段熔断机制（阈值动态化）
+        V6.0核心：微盘层三阶段熔断机制
+        
+        参数:
+            df_primary: 微盘主指数数据（932000）
+            df_secondary: 微盘次指数数据（399311，可选）
+        
+        返回:
+            {
+                'status': 'normal'/'early_warning'/'warning'/'invalid',
+                'stage': '正常期'/'观察期'/'熔断期'/'数据失效',
+                'days_in_stage': int,
+                'risk_level': 'low'/'medium'/'high',
+                'primary_distorted': bool,
+                'secondary_distorted': bool,
+                'volume_ratio_latest': float,
+                'distortion_flag': str,
+                'exposure_cap': float,
+                'weight_primary': float,
+                'weight_secondary': float,
+                'timestamp': datetime
+            }
         
         修复点:
-        ✅ 动态获取阈值（优先ThresholdService，回退静态配置）
-        ✅ 所有数值强制Python原生float
-        ✅ 完整异常处理与降级
+        ✅ 从config获取阈值（非硬编码）
+        ✅ 所有数值强制转换为Python原生float
+        ✅ 完整数据验证与降级处理
+        ✅ 详细日志记录
         """
         # 1. 数据验证
         if len(df_primary) < 20:
             return self._build_invalid_response('主指数数据不足（需≥20日）')
         
         try:
-            # ✅ V6.1核心：动态获取阈值（优先ThresholdService）
-            if self.threshold_service:
-                # 动态计算阈值（带市场上下文）
-                context = {
-                    'volatility': df_primary['volatility_20'].iloc[-1] if 'volatility_20' in df_primary.columns else 20.0,
-                    'market_state': '均衡持有区'  # 实际应从MarketStateService获取
-                }
-                
-                warning_shrink = self.threshold_service.get_threshold(
-                    'liquidity_warning_shrink',
-                    context=context,
-                    strategy='volatility_adaptive'
-                )
-                
-                extreme_shrink = self.threshold_service.get_threshold(
-                    'liquidity_extreme_shrink',
-                    context=context,
-                    strategy='volatility_adaptive'
-                )
-                
-                self.logger.debug(
-                    f"🔄 动态阈值 | warning_shrink={warning_shrink:.2f} | "
-                    f"extreme_shrink={extreme_shrink:.2f} | 策略=volatility_adaptive"
-                )
-            else:
-                # 降级：使用静态配置阈值
-                warning_shrink = safe_config_get(
-                    self.config,
-                    ['risk_thresholds', 'liquidity', 'warning_shrink'],
-                    default=0.6,
-                    logger=self.logger
-                )
-                
-                extreme_shrink = safe_config_get(
-                    self.config,
-                    ['risk_thresholds', 'liquidity', 'extreme_shrink'],
-                    default=0.4,
-                    logger=self.logger
-                )
-                
-                self.logger.debug(
-                    f"🔒 静态阈值 | warning_shrink={warning_shrink:.2f} | "
-                    f"extreme_shrink={extreme_shrink:.2f} | （ThresholdService未启用）"
-                )
+            # 2. 获取配置阈值（安全提取）
+            liquidity_config = self.config.get('risk_thresholds', {}).get('liquidity', {})
+            warning_shrink = float(liquidity_config.get('warning_shrink', 0.6))
+            extreme_shrink = float(liquidity_config.get('extreme_shrink', 0.4))
             
-            # 2. 流动性失真检测（成交量比率）
+            # 3. 流动性失真检测（成交量比率）
             volume_ma5 = df_primary['amount'].rolling(5).mean().replace(0, np.nan)
             volume_ratio_5d = (df_primary['amount'] / volume_ma5).fillna(1.0)
             
-            # 预警阈值：低于5日均量
+            # 预警阈值：低于5日均量60%
             volume_distortion = volume_ratio_5d < warning_shrink
             
-            # 3. 三阶段判定
-            distorted_days = int(volume_distortion.astype(int).sum())
+            # 4. 波动率扩张检测
+            vol_distortion = False
+            if 'volatility_20' in df_primary.columns and len(df_primary) >= 250:
+                vol_250_ma = df_primary['volatility_20'].rolling(250).mean().replace(0, np.nan)
+                vol_expansion_ratio = (df_primary['volatility_20'] / vol_250_ma).fillna(1.0)
+                
+                # 预警阈值：波动率扩张1.8倍
+                volatility_config = self.config.get('risk_thresholds', {}).get('volatility', {})
+                warning_expansion = float(volatility_config.get('warning_expansion', 1.8))
+                
+                vol_distortion = vol_expansion_ratio > warning_expansion
+            
+            liquidity_distorted = volume_distortion & vol_distortion
+            
+            # 5. 三阶段判定
+            distorted_days = int(liquidity_distorted.astype(int).sum())
             
             if distorted_days == 0:
                 status, stage, risk_level = 'normal', '正常期', 'low'
@@ -143,22 +147,31 @@ class RiskAssessmentService:
                 flag = f'🔴 严重失真（持续{distorted_days}日）'
                 exposure_cap = self._get_stage_param('melted', 'exposure_cap', 0.00)
             
-            # 4. 构建返回结果（强制Python原生类型）
+            # 6. 次要指数验证（可选）
+            secondary_distorted = False
+            if df_secondary is not None and len(df_secondary) >= 20:
+                sec_volume_ratio = df_secondary['amount'] / df_secondary['amount'].rolling(5).mean().replace(0, np.nan)
+                secondary_distorted = (sec_volume_ratio < warning_shrink).iloc[-1]
+            
+            # 7. 构建返回结果（强制Python原生类型）
             result = {
                 'status': status,
                 'stage': stage,
                 'days_in_stage': int(distorted_days),
                 'risk_level': risk_level,
-                'primary_distorted': bool(volume_distortion.iloc[-1]),
-                'volume_ratio_latest': float(volume_ratio_5d.iloc[-1]),  # ✅ 强制float
+                'primary_distorted': bool(liquidity_distorted.iloc[-1]),
+                'secondary_distorted': bool(secondary_distorted),
+                'volume_ratio_latest': float(volume_ratio_5d.iloc[-1]),
                 'distortion_flag': flag,
-                'exposure_cap': float(exposure_cap),  # ✅ 强制float
-                'timestamp': datetime.now().isoformat()
+                'exposure_cap': float(exposure_cap),
+                'weight_primary': float(self._get_stage_param(status, 'weight_primary', 0.6)),
+                'weight_secondary': float(self._get_stage_param(status, 'weight_secondary', 0.4)),
+                'timestamp': datetime.now()
             }
             
             self.logger.info(
                 f"✅ 微盘流动性评估完成 | 状态={stage} | 持续{distorted_days}日 | "
-                f"暴露上限={exposure_cap:.0%} | 阈值来源={'动态' if self.threshold_service else '静态'}"
+                f"暴露上限={exposure_cap:.0%}"
             )
             return result
             
@@ -170,6 +183,7 @@ class RiskAssessmentService:
     
     def _get_stage_param(self, stage: str, param: str, default: float) -> float:
         """安全获取微盘熔断阶段参数（使用safe_config_get）"""
+        # ✅ 优化：使用safe_config_get替代多层字典访问
         return float(
             safe_config_get(
                 self.config,
@@ -187,12 +201,15 @@ class RiskAssessmentService:
             'days_in_stage': 0,
             'risk_level': 'high',
             'primary_distorted': True,
+            'secondary_distorted': True,
             'volume_ratio_latest': np.nan,
             'distortion_flag': f'✗ 微盘信号失效 | {reason}',
             'exposure_cap': 0.0,
-            'timestamp': datetime.now().isoformat()
+            'weight_primary': 0.5,
+            'weight_secondary': 0.5,
+            'timestamp': datetime.now()
         }
-
+    
     # ==================== 核心方法：风险传导计算 ====================
     
     def calculate_risk_transmission(self, benchmark_data: Dict[str, pd.DataFrame]) -> Dict[str, Dict]:

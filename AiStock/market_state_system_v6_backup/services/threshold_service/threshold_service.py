@@ -14,9 +14,10 @@ V6.0 阈值动态化服务（独立微服务）
 """
 import pandas as pd
 import numpy as np
-from typing import Dict, Any, Optional, List, Tuple
-from datetime import datetime, timedelta
+from typing import Dict, Any, Optional
+from datetime import datetime
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,34 +26,29 @@ class ThresholdService:
     
     def __init__(self, config_service, data_service=None):
         """
-        初始化阈值服务（V6.1增强版）
+        初始化阈值服务
         
-        增强点:
-        ✅ 支持配置热更新（监听ConfigService变化）
-        ✅ 阈值历史记录（用于回溯分析）
-        ✅ 阈值效果评估（A/B测试支持）
+        参数:
+            config_service: ConfigService实例（获取阈值配置）
+            data_service: DataLoadingService实例（可选，用于动态计算）
         """
-        self.config_service = config_service
+        self.config = config_service.config  # 直接使用字典配置
         self.data_service = data_service
         self.logger = logger
+        
+        # 缓存：阈值名称 → (计算结果, 过期时间)
+        self._threshold_cache = {}
+        self._cache_ttl = self.config.get('cache', {}).get('threshold_ttl', 300)  # 默认5分钟
         
         # 阈值策略注册表
         self._strategy_registry = {
             'static': self._static_strategy,
             'volatility_adaptive': self._volatility_adaptive_strategy,
-            'market_regime': self._market_regime_strategy,
-            'macro_state': self._macro_state_strategy,
-            'hybrid': self._hybrid_strategy  # ✅ V6.1新增：混合策略
+            'macro_state_adjustment': self._macro_state_adjustment_strategy,
+            'market_regime': self._market_regime_strategy
         }
         
-        # 阈值历史记录（最近30天）
-        self._threshold_history = {}
-        self._history_ttl = timedelta(days=30)
-        
-        # 配置版本跟踪（用于热更新）
-        self._config_version = self._get_config_version()
-        
-        self.logger.info("✅ ThresholdServiceV6.1初始化成功 | 策略: %s", list(self._strategy_registry.keys()))
+        self.logger.info("✅ ThresholdService初始化成功 | 策略: %s", list(self._strategy_registry.keys()))
     
     # ==================== 核心API：统一阈值获取 ====================
     
@@ -63,20 +59,24 @@ class ThresholdService:
         strategy: str = 'auto'
     ) -> float:
         """
-        V6.1增强：获取动态阈值（支持热更新 + 历史记录）
+        获取动态阈值（统一入口）
         
-        增强点:
-        ✅ 配置热更新检测（自动重载策略参数）
-        ✅ 阈值历史记录（用于回溯分析）
-        ✅ 混合策略支持（volatility_adaptive + market_regime）
+        参数:
+            threshold_name: 阈值名称（如 'pcr_warning_high', 'liquidity_warning_shrink'）
+            context: 市场上下文（含volatility/current_price等）
+            strategy: 策略类型（'auto'/'static'/'volatility_adaptive'/...）
+        
+        返回:
+            动态计算的阈值（Python原生float）
+        
+        示例:
+            # 获取PCR看跌预警阈值（自动选择策略）
+            pcr_high = threshold_service.get_threshold('pcr_warning_high', context)
+            
+            # 强制使用静态阈值（回测场景）
+            pcr_high = threshold_service.get_threshold('pcr_warning_high', strategy='static')
         """
         context = context or {}
-        
-        # ✅ V6.1增强：配置热更新检测
-        current_version = self._get_config_version()
-        if current_version != self._config_version:
-            self.logger.info("🔄 检测到配置更新，重载阈值策略参数")
-            self._config_version = current_version
         
         # 1. 尝试从缓存获取（带TTL检查）
         cache_key = self._generate_cache_key(threshold_name, context, strategy)
@@ -92,14 +92,12 @@ class ThresholdService:
         try:
             threshold_value = self._execute_strategy(threshold_name, strategy, context)
             
-            # 4. 缓存结果 + 记录历史
-            threshold_value = float(threshold_value)
+            # 4. 缓存结果（强制Python float）
+            threshold_value = float(threshold_value)  # ⭐ 关键修复
             self._set_to_cache(cache_key, threshold_value)
-            self._record_threshold_history(threshold_name, threshold_value, context, strategy)
             
             self.logger.debug(
-                f"✅ 阈值计算 | {threshold_name} | 策略={strategy} | 值={threshold_value:.3f} | "
-                f"来源={'动态' if strategy != 'static' else '静态'}"
+                f"✅ 阈值计算 | {threshold_name} | 策略={strategy} | 值={threshold_value:.3f}"
             )
             return threshold_value
             
@@ -107,57 +105,8 @@ class ThresholdService:
             self.logger.warning(
                 f"⚠️ 阈值计算失败 {threshold_name}({strategy}): {str(e)[:50]}，回退静态值"
             )
+            # 降级：回退静态阈值
             return self._fallback_to_static(threshold_name)
-
-    def _get_config_version(self) -> str:
-        """获取配置版本（用于热更新检测）"""
-        adaptive_config = self.config_service.config.get('adaptive_config', {})
-        return str(adaptive_config.get('version', datetime.now().timestamp()))
-    
-    def _record_threshold_history(
-        self,
-        threshold_name: str,
-        value: float,
-        context: Dict,
-        strategy: str
-    ):
-        """记录阈值历史（用于回溯分析）"""
-        if threshold_name not in self._threshold_history:
-            self._threshold_history[threshold_name] = []
-        
-        record = {
-            'timestamp': datetime.now(),
-            'value': value,
-            'context': context.copy(),
-            'strategy': strategy
-        }
-        
-        self._threshold_history[threshold_name].append(record)
-        
-        # 清理过期历史
-        cutoff = datetime.now() - self._history_ttl
-        self._threshold_history[threshold_name] = [
-            r for r in self._threshold_history[threshold_name]
-            if r['timestamp'] > cutoff
-        ]
-    
-    def get_threshold_history(
-        self,
-        threshold_name: str,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
-    ) -> List[Dict]:
-        """获取阈值历史记录（用于可视化分析）"""
-        history = self._threshold_history.get(threshold_name, [])
-        
-        if start_date or end_date:
-            history = [
-                r for r in history
-                if (not start_date or r['timestamp'] >= start_date) and
-                   (not end_date or r['timestamp'] <= end_date)
-            ]
-        
-        return history
     
     # ==================== 策略实现 ====================
     
@@ -291,24 +240,3 @@ class ThresholdService:
             count = len(self._threshold_cache)
             self._threshold_cache.clear()
             self.logger.info(f"✅ 清空全部缓存 {count} 项")
-            
-    def _hybrid_strategy(self, threshold_name: str, context: Dict) -> float:
-        """
-        V6.1新增：混合策略（volatility_adaptive + market_regime加权）
-        适用于需要综合多维度因素的阈值
-        """
-        # 1. 波动率自适应部分（权重0.6）
-        vol_value = self._volatility_adaptive_strategy(threshold_name, context)
-        
-        # 2. 市场状态调整部分（权重0.4）
-        regime_value = self._market_regime_strategy(threshold_name, context)
-        
-        # 3. 加权混合
-        hybrid_value = vol_value * 0.6 + regime_value * 0.4
-        
-        self.logger.debug(
-            f"🔄 混合策略 | {threshold_name} | "
-            f"vol={vol_value:.3f}(0.6) + regime={regime_value:.3f}(0.4) = {hybrid_value:.3f}"
-        )
-        
-        return float(hybrid_value)
