@@ -23,6 +23,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import warnings
 import logging
+from utils.config_utils import extract_config_dict
 
 warnings.filterwarnings('ignore')
 logger = logging.getLogger(__name__)
@@ -84,7 +85,7 @@ class IndustryRotationService:
                 'construction': '399976'  # 建筑装饰
             }
         }
-        
+        config = extract_config_dict(config)
         if config:
             self.config.update(config)
         

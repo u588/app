@@ -48,7 +48,42 @@ class ConfigService:
         self.version = self.config.get('version', {}).get('system_version', '6.0.0')
         
         logger.info(f"✅ 配置服务初始化成功 | 版本={self.version} | 路径={self.config_path}")
-    
+
+    def __getattr__(self, name):
+        """安全代理：支持 config_service.xxx 直接访问配置项"""
+        # 安全防护：避免覆盖ConfigService自身方法
+        protected_attrs = {'config', 'config_path', 'logger', 'version', 
+                        'save_config', 'reload', 'get_stats', '_load_config'}
+        if name in protected_attrs:
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+        
+        # 从config字典返回
+        if name in self.config:
+            return self.config[name]
+        
+        # 未找到，抛出标准错误
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    def safe_get(self, keys: List[str], default: Any = None) -> Any:
+        """
+        安全获取嵌套配置值
+        
+        参数:
+            keys: 键路径 ['adaptive_config', 'option_tolerance', 'base_tolerance']
+            default: 默认值
+        
+        返回:
+            配置值或默认值
+        """
+        value = self.config
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
+            else:
+                self.logger.warning(f"⚠️ 配置路径缺失: {'.'.join(keys[:keys.index(key)+1])}")
+                return default
+        return value if value is not None else default
+
     def _load_config(self) -> Dict:
         """加载配置（自动路径解析）"""
         try:

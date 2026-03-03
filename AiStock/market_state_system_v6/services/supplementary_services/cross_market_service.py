@@ -23,6 +23,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import warnings
 import logging
+from utils.config_utils import extract_config_dict
 
 warnings.filterwarnings('ignore')
 logger = logging.getLogger(__name__)
@@ -59,7 +60,7 @@ class CrossMarketService:
                 'north_flow': {'code': '7_TON', 'name': '北上资金', 'market_code': 38}
             }
         }
-        
+        config = extract_config_dict(config)
         if config:
             self.config.update(config)
         

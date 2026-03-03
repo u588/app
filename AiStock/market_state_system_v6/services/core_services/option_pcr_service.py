@@ -26,10 +26,11 @@ class OptionPCRService:
         self.config = config
         
         # ✅ 修复：从config获取容忍度（非硬编码）
-        self.default_tolerance = self.config.adaptive_config.option_tolerance.get(
-            'base_tolerance', 0.05
+        # 服务初始化时
+        self.default_tolerance = self.config.safe_get(
+            ['adaptive_config', 'option_tolerance', 'base_tolerance'],
+            default=0.05
         )
-        
         logger.info("✅ 期权PCR服务初始化成功")
     
     def calculate_pcr(

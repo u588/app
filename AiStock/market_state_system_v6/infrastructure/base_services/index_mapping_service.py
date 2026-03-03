@@ -17,20 +17,23 @@ import os
 from typing import Dict, Optional, List, Tuple
 import logging
 
+from utils.path_utils import get_config_path  # ✅ 关键修复：自动路径解析
+from utils.file_loader import file_loader
+
 logger = logging.getLogger(__name__)
 
 
 class IndexMappingService:
     """V6.0 指数映射服务（修复版：完全独立）"""
     
-    def __init__(self, mapping_path: str = './config/index_name_mapping.yaml'):
+    def __init__(self, mapping_path: str = 'index_name_mapping.yaml'):
         """
         初始化指数映射服务
         
         参数:
             mapping_path: 映射文件路径
         """
-        self.mapping_path = mapping_path
+        self.mapping_path = get_config_path(mapping_path)  # ✅ 自动解析路径
         self.mappings: Dict = {}
         self.logger = logger
         
@@ -45,23 +48,32 @@ class IndexMappingService:
     # ==================== 核心方法 ====================
     
     def _load_mappings(self) -> bool:
-        """加载映射文件"""
+        """加载配置（自动路径解析）"""
         try:
-            if not os.path.exists(self.mapping_path):
-                self.logger.warning(f"⚠️ 映射文件不存在: {self.mapping_path}，使用空映射")
-                self.mappings = {}
-                return False
-            
-            with open(self.mapping_path, 'r', encoding='utf-8') as f:
-                self.mappings = yaml.safe_load(f)
-            
-            self.logger.info(f"✅ 映射加载成功 | 路径={self.mapping_path}")
-            return True
-        
+            # ✅ 使用统一文件加载器（自动处理路径）
+            return file_loader.load_yaml(self.mapping_path.name, relative_to='config')
         except Exception as e:
-            self.logger.error(f"❌ 映射加载失败: {str(e)}")
-            self.mappings = {}
-            return False
+            logger.error(f"❌ 配置加载失败: {str(e)}")
+            # 回退到默认配置
+            return self._get_default_config()
+
+        """加载映射文件"""
+        # try:
+        #     if not os.path.exists(self.mapping_path):
+        #         self.logger.warning(f"⚠️ 映射文件不存在: {self.mapping_path}，使用空映射")
+        #         self.mappings = {}
+        #         return False
+            
+        #     with open(self.mapping_path, 'r', encoding='utf-8') as f:
+        #         self.mappings = yaml.safe_load(f)
+            
+        #     self.logger.info(f"✅ 映射加载成功 | 路径={self.mapping_path}")
+        #     return True
+        
+        # except Exception as e:
+        #     self.logger.error(f"❌ 映射加载失败: {str(e)}")
+        #     self.mappings = {}
+        #     return False
     
     def get_name(self, code: str, category: Optional[str] = None) -> str:
         """
