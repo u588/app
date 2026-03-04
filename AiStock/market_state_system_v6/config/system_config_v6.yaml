@@ -245,8 +245,6 @@ option_tolerance:
 # 仅包含阈值动态化策略参数（非服务专属配置）
 adaptive_config:
   enabled: true
-  
-  # ThresholdService 策略配置
   strategies:
     pcr_thresholds:
       enabled: true
@@ -265,7 +263,6 @@ adaptive_config:
         bull_multiplier: 0.9
         bear_multiplier: 1.1
       window_size: 50
-    
     micro_liquidity_thresholds:
       enabled: true
       base_thresholds:
@@ -282,8 +279,6 @@ adaptive_config:
         strategic_offense:
           warning_shrink: 0.55
           extreme_shrink: 0.35
-    
-    # 商品阈值动态策略
     commodity_thresholds:
       enabled: true
       volatility_adaptive:
@@ -294,8 +289,6 @@ adaptive_config:
         enabled: true
         bull_market: 0.9
         bear_market: 1.1
-    
-    # 期权容忍度动态策略
     option_tolerance:
       enabled: true
       base_tolerance: 0.05
@@ -308,8 +301,6 @@ adaptive_config:
         enabled: true
         high_liquidity_tolerance: 0.04
         low_liquidity_tolerance: 0.06
-    
-    # 宏观评分动态策略
     macro_scoring:
       enabled: true
       regime_based_adjustment:
