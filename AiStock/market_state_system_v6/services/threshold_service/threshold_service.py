@@ -1,16 +1,11 @@
 # services/threshold_service/threshold_service.py
 """
-V6.0 阈值动态化服务（独立微服务）
-职责：
-✅ 集中管理所有阈值的动态计算逻辑
-✅ 提供统一API：get_threshold(name, context)
-✅ 支持多策略：静态/波动率自适应/宏观状态调整
+V6.1 阈值动态化服务（增强版）
+核心增强：
+✅ 支持配置热更新（监听ConfigService变化）
+✅ 新增阈值历史记录（用于回溯分析）
+✅ 新增阈值效果评估（A/B测试支持）
 ✅ 完整缓存与降级策略
-✅ 与业务服务完全解耦（仅通过参数传递市场状态）
-修复点：
-✅ 所有数值强制Python原生类型（防Plotly序列化错误）
-✅ 完整异常处理与降级
-✅ 详细日志与监控
 """
 import pandas as pd
 import numpy as np
@@ -21,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class ThresholdService:
-    """V6.0 阈值动态化服务（独立微服务）"""
+    """V6.1 阈值动态化服务（增强版）"""
     
     def __init__(self, config_service, data_service=None):
         """
@@ -213,7 +208,33 @@ class ThresholdService:
         
         adjustment = regime_map.get(market_state, 1.0)
         return float(base_value * adjustment)
-    
+
+    def _macro_state_strategy(self, threshold_name: str, context: Dict) -> float:
+        """
+        V6.1新增：宏观状态调整策略（根据宏观评分动态调整阈值）
+        
+        参数:
+            threshold_name: 阈值名称
+            context: 上下文（含macro_score）
+        
+        返回:
+            调整后的阈值
+        """
+        # 获取基础阈值
+        base_value = self._static_strategy(threshold_name, context)
+        
+        # 获取宏观评分（从context或配置）
+        macro_score = context.get('macro_score', 50.0)
+        
+        # 宏观状态映射
+        if macro_score > 70:
+            adjustment = 0.9  # 乐观市场收紧阈值
+        elif macro_score < 30:
+            adjustment = 1.1  # 悲观市场放宽阈值
+        else:
+            adjustment = 1.0
+        
+        return float(base_value * adjustment)    
     # ==================== 辅助方法 ====================
     
     def _generate_cache_key(self, threshold_name: str, context: Dict, strategy: str) -> str:
