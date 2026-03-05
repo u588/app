@@ -31,10 +31,10 @@ from utils.data_context_preparation import prepare_visualization_data_context
 logger = logging.getLogger(__name__)
 
 
-class MarketStateSystemV6_1:
+class MarketStateSystem:
     """V6.1主系统（阈值动态化 + 配置统一化）"""
     
-    def __init__(self, config_path: str = './config/system_config_v6.yaml'):
+    def __init__(self, config_path: str = 'config/system_config_v6.yaml'):
         """初始化系统（V6.1增强版）"""
         self.config = ConfigService(config_path)
         self.logger = logger
@@ -124,25 +124,80 @@ class MarketStateSystemV6_1:
         })
     
     def _preload_data(self):
-        """预加载数据（修复版：数据加载到self.benchmark_data）"""
+        """预加载基准数据（修复版：正确保存到 self.benchmark_data）"""
         self.logger.info("🔄 预加载基准数据...")
         
-        # 加载市值基准
-        for size, config in self.config.config['market_benchmarks'].items():
-            code = config['code']
-            df = self.data_service.load_index_data(code, min_days=500)
-            if len(df) > 0:
-                self.logger.info(f"✅ 加载{size}({code})数据: {len(df)}条")
+        # ✅ 核心修复1：初始化 benchmark_data 实例变量
+        self.benchmark_data = {}
         
-        # 评估微盘流动性
-        if hasattr(self, 'risk_service'):
-            df_primary = self.data_service.load_index_data('932000', min_days=500)
-            df_secondary = self.data_service.load_index_data('399311', min_days=500)
-            if len(df_primary) > 0:
+        # ✅ 核心修复2：从配置获取市值基准
+        market_benchmarks = self.config.config.get('market_benchmarks', {})
+        
+        # ✅ 核心修复3：加载并保存各层级数据
+        for size, config in market_benchmarks.items():
+            code = config['code']
+            min_days = self.config.config.get('system', {}).get('data_min_days', 500)
+            
+            try:
+                # 加载数据
+                df = self.data_service.load_index_data(code, min_days=min_days)
+                
+                # 验证数据量
+                if len(df) >= min_days:
+                    # ✅ 核心修复4：保存到实例变量（关键！）
+                    self.benchmark_data[size] = df
+                    self.logger.info(f"✅ 加载{size}({code})数据: {len(df)}条")
+                else:
+                    self.logger.warning(f"⚠️ {size}({code}) 数据不足（{len(df)} < {min_days}）")
+                    # 降级：仍保存但标记为不完整
+                    self.benchmark_data[size] = df if len(df) > 0 else pd.DataFrame()
+            
+            except Exception as e:
+                self.logger.error(f"❌ {size}({code}) 数据加载失败: {str(e)[:50]}")
+                import traceback
+                self.logger.debug(traceback.format_exc())
+                # 降级：保存空DataFrame
+                self.benchmark_data[size] = pd.DataFrame()
+        
+        # ✅ 核心修复5：验证数据完整性
+        required_sizes = ['大盘', '中盘', '小盘', '微盘']
+        valid_sizes = [s for s in required_sizes if s in self.benchmark_data and len(self.benchmark_data[s]) > 0]
+        
+        if len(valid_sizes) < 2:
+            self.logger.error(f"❌ 基准数据严重不足（需≥2个层级，当前{len(valid_sizes)}个）")
+            raise RuntimeError("基准数据加载失败，系统无法运行")
+        
+        self.logger.info(f"✅ 基准数据加载完成: {len(valid_sizes)}/{len(required_sizes)}个层级有效")
+        
+        # ✅ 核心修复6：评估微盘流动性（使用已加载的 benchmark_data）
+        if '微盘' in self.benchmark_data and len(self.benchmark_data['微盘']) > 0:
+            df_primary = self.benchmark_data['微盘']
+            df_secondary = self.benchmark_data.get('小盘', pd.DataFrame())
+            
+            try:
                 self.micro_liquidity_status = self.risk_service.assess_micro_liquidity(
-                    df_primary, df_secondary
+                    df_primary,
+                    df_secondary if len(df_secondary) > 0 else None
                 )
                 self.logger.info(f"✅ 微盘流动性状态: {self.micro_liquidity_status['stage']}")
+            except Exception as e:
+                self.logger.warning(f"⚠️ 微盘流动性评估失败: {str(e)[:50]}，使用默认状态")
+                self.micro_liquidity_status = {
+                    'status': 'normal',
+                    'stage': '正常期',
+                    'days_in_stage': 0,
+                    'risk_level': 'low',
+                    'exposure_cap': 0.20
+                }
+        else:
+            self.logger.warning("⚠️ 微盘数据缺失，使用默认流动性状态")
+            self.micro_liquidity_status = {
+                'status': 'normal',
+                'stage': '正常期',
+                'days_in_stage': 0,
+                'risk_level': 'low',
+                'exposure_cap': 0.20
+            }
     
     def run(self) -> Dict:
         """运行系统（V6.1增强版）"""
@@ -153,7 +208,7 @@ class MarketStateSystemV6_1:
         
         # 1. 判定市场状态（动态阈值）
         market_state, val_score, trend_score, _ = \
-            self.market_state_service.determine_market_state({})
+            self.market_state_service.determine_market_state(self.benchmark_data)
         
         self.logger.info(f"🎯 市场状态: {market_state}")
         self.logger.info(f"📊 估值安全边际: {val_score:.1f}/100")
@@ -161,7 +216,7 @@ class MarketStateSystemV6_1:
         
         # 2. 计算配置（动态阈值）
         allocation_df = self.allocation_service.calculate_allocation(
-            benchmark_data={},
+            benchmark_data=self.benchmark_data,
             micro_liquidity=self.micro_liquidity_status,
             market_state=market_state
         )
@@ -179,7 +234,9 @@ class MarketStateSystemV6_1:
             rotation_service=self.rotation_service,
             futures_service=self.futures_service,
             data_service=self.data_service,
-            config_service=self.config
+            config_service=self.config,
+            benchmark_data=self.benchmark_data,  # ✅ 传递 benchmark_data
+            micro_liquidity=self.micro_liquidity_status  # ✅ 传递微盘状态            
         )
         
         # 4. 生成18大图表

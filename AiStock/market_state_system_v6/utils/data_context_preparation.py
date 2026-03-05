@@ -39,7 +39,9 @@ def prepare_visualization_data_context(
     rotation_service,
     futures_service,
     data_service,
-    config_service
+    config_service,
+    benchmark_data=None,          # ✅ 新增参数
+    micro_liquidity=None          # ✅ 新增参数   
 ) -> Dict[str, Any]:
     """
     V6.0核心：准备完整data_context（18大图表所需全部数据）
@@ -384,6 +386,27 @@ def prepare_visualization_data_context(
     logger.info("\n" + "=" * 80)
     logger.info("✅ data_context准备流程结束")
     logger.info("=" * 80)
+
+    # ✅ 核心修复：补充 basis_data 和 term_data
+    try:
+        # 期货基差数据
+        basis_data = futures_service.calculate_index_futures_basis()
+        data_context['basis_data'] = basis_data
+    except Exception as e:
+        logger.warning(f"⚠️ 期货基差数据准备失败: {str(e)[:50]}")
+        data_context['basis_data'] = {}
+    
+    try:
+        # 期限结构数据
+        term_data = futures_service.calculate_commodity_term_structure()
+        data_context['term_data'] = term_data
+    except Exception as e:
+        logger.warning(f"⚠️ 期限结构数据准备失败: {str(e)[:50]}")
+        data_context['term_data'] = {}
+    
+    # ✅ 核心修复：补充 benchmark_data 和 micro_liquidity
+    data_context['benchmark_data'] = benchmark_data or {}
+    data_context['micro_liquidity'] = micro_liquidity or {}
     
     return data_context
 
