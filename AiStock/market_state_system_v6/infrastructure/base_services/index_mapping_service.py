@@ -38,7 +38,7 @@ class IndexMappingService:
         self.logger = logger
         
         # 加载映射
-        self._load_mappings()
+        self.mappings = self._load_mappings()
         
         self.logger.info(f"✅ 指数映射服务初始化成功 | 路径={mapping_path}")
         self.logger.info(f"   📊 指数数量: {len(self.mappings.get('csi_indices', {}))}")
@@ -46,6 +46,20 @@ class IndexMappingService:
         self.logger.info(f"   📉 期权数量: {len(self.mappings.get('option_underlyings', {}))}")
     
     # ==================== 核心方法 ====================
+    def get(self, category: str, code: str, default: str = None) -> str:
+        """
+        字典式获取映射（扩展方法）
+        
+        参数:
+            category: 类别名称（如 'csi_indices'）
+            code: 代码（如 '000300'）
+            default: 未找到时的默认值
+        
+        返回:
+            指数名称或 default
+        """
+        category_dict = self.mappings.get(category, {})
+        return category_dict.get(code, default if default is not None else code)
     
     def _load_mappings(self) -> bool:
         """加载配置（自动路径解析）"""
@@ -123,6 +137,18 @@ class IndexMappingService:
                 return category
         
         return None
+
+    def get_category_mappings(self, category: str) -> Dict:
+        """
+        获取指定类别的映射
+        
+        参数:
+            category: 类别名称（如 'csi_indices'）
+        
+        返回:
+            该类别的映射字典
+        """
+        return self.mappings.get(category, {})
     
     def get_market_code(self, code: str) -> int:
         """
