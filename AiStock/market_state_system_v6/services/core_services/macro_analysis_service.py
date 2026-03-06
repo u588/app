@@ -279,7 +279,8 @@ class MacroAnalysisService:
         """
         try:
             # 去掉前缀（如'2_'）
-            clean_code = code.split('_')[-1] if '_' in code else code
+            # clean_code = code.split('_')[-1] if '_' in code else code
+            clean_code = str(code).strip()
             
             # 加载最近30天数据
             df = self.data_service.load_macro_data(clean_code, days=30)

@@ -94,14 +94,22 @@ commodity_strategy_map:
     threshold_down: -8.0
 
 commodity_contracts:
-  copper: {near: CU2603, far: CU2606, market_code: 30}
-  aluminum: {near: AL2603, far: AL2606, market_code:30}
-  lithium: {near: LC2603, far: LC2606, market_code:66}
-  silicon: {near: SI2603, far: SI2606, market_code:66}
-  crude: {near: SC2603, far: SC2606, market_code:30}
-  rebar: {near: RB2603, far: RB2606, market_code:30}
-  gold: {near: AU2603, far: AU2606, market_code:30}
-  soybean: {near: M2603, far: M2605, market_code:29}
+  copper: [CU2603, CU2606, 30]      # ← 列表（非字符串）
+  aluminum: [AL2603, AL2606, 30]
+  lithium: [LC2603, LC2606, 66]
+  silicon: [SI2603, SI2606, 66]
+  crude: [SC2603, SC2606, 30]
+  rebar: [RB2603, RB2606, 30]
+  gold: [AU2603, AU2606, 30]
+  soybean: [M2603, M2605, 29]
+  # copper: {near: CU2603, far: CU2606, market_code: 30}
+  # aluminum: {near: AL2603, far: AL2606, market_code:30}
+  # lithium: {near: LC2603, far: LC2606, market_code:66}
+  # silicon: {near: SI2603, far: SI2606, market_code:66}
+  # crude: {near: SC2603, far: SC2606, market_code:30}
+  # rebar: {near: RB2603, far: RB2606, market_code:30}
+  # gold: {near: AU2603, far: AU2606, market_code:30}
+  # soybean: {near: M2603, far: M2605, market_code:29}
 
 # ========== MacroAnalysisService 专属配置 ==========
 composite_scoring:
@@ -223,10 +231,14 @@ industry_rotation:
 
 # ========== FuturesAnalysisService 专属配置 ==========
 index_futures_contracts:
-  if: (IFL8, 000300, 47)
-  ih: (IHL8, 000016, 47)
-  ic: (ICL8, 000905, 47)
-  im: (IML8, 000852, 47)
+  if: [IFL8, 000300, 47]           # ← 列表（非字符串）
+  ih: [IHL8, 000016, 47]
+  ic: [ICL8, 000905, 47]
+  im: [IML8, 000852, 47]  
+  # if: {futures_code:IFL8, spot_code:000300, market_code:47}
+  # ih: {futures_code:IHL8, spot_code:000016, market_code:47}
+  # ic: {futures_code:ICL8, spot_code:000905, market_code:47}
+  # im: {futures_code:IML8, spot_code:000852, market_code:47}
 
 # ========== OptionPCRService 专属配置 ==========
 option_tolerance:
