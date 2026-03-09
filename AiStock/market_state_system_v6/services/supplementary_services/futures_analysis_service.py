@@ -219,10 +219,10 @@ class FuturesAnalysisService:
             self.config,
             ['index_futures_contracts'],
             default={
-                'if': ('IFL8', '000300', 47),  # 沪深300
-                'ih': ('IHL8', '000016', 47),  # 上证50
-                'ic': ('ICL8', '000905', 47),  # 中证500
-                'im': ('IML8', '000852', 47)   # 中证1000
+                'if': ['IFL8', '000300', 47],  # 沪深300
+                'ih': ['IHL8', '000016', 47],  # 上证50
+                'ic': ['ICL8', '000905', 47],  # 中证500
+                'im': ['IML8', '000852', 47]   # 中证1000
             },
             logger=self.logger
         )
@@ -233,14 +233,33 @@ class FuturesAnalysisService:
         warning_threshold = self._get_dynamic_basis_threshold('warning')
         extreme_threshold = self._get_dynamic_basis_threshold('extreme')
         
-        for key, (futures_code, spot_code, market_code) in contracts.items():
+        for key, contract in contracts.items():
+        # for key, (futures_code, spot_code, market_code) in contracts.items():
             try:
-                # 1. 加载期货数据
-                futures_df = self.data_service.load_derivative_data(futures_code, market_code, days=20)
+                # ✅ 修复1：增强配置解析容错
+                if isinstance(contract, (list, tuple)) and len(contract) == 3:
+                    futures_code, spot_code, market_code = contract
+                else:
+                    self.logger.warning(f"⚠️ 合约配置格式错误 {key}: {contract}")
+                    continue
                 
-                # 2. 加载现货指数数据
+                # ✅ 修复2：加载数据并严格验证类型
+                futures_df = self.data_service.load_derivative_data(futures_code, market_code, days=20)
                 spot_df = self.data_service.load_index_data(spot_code, min_days=20)
                 
+                # 严格验证：必须是DataFrame且有数据
+                if not isinstance(futures_df, pd.DataFrame) or len(futures_df) == 0:
+                    self.logger.warning(f"⚠️ {key} 期货数据无效（非DataFrame或空）: {type(futures_df)}")
+                    continue
+                
+                if not isinstance(spot_df, pd.DataFrame) or len(spot_df) == 0:
+                    self.logger.warning(f"⚠️ {key} 现货数据无效（非DataFrame或空）: {type(spot_df)}")
+                    continue
+                
+                # ✅ 修复3：安全访问列（避免KeyError）
+                if 'close' not in futures_df.columns or 'close' not in spot_df.columns:
+                    self.logger.warning(f"⚠️ {key} 缺少close列 | 期货列: {list(futures_df.columns)} | 现货列: {list(spot_df.columns)}")
+                    continue
                 # 3. 计算基差
                 if len(futures_df) > 0 and len(spot_df) > 0:
                     futures_price = futures_df['close'].iloc[-1]

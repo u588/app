@@ -445,7 +445,7 @@ class DataLoadingService:
             return pd.DataFrame()
         except Exception as e:
             self.logger.error(f"❌ 数据库加载衍生品失败 {code}: {str(e)[:50]}")
-            return pd.DataFrame()
+            return  pd.DataFrame()
     
     def load_macro_data(self, code: str, days: int = 60) -> pd.DataFrame:
         """加载宏观指标数据（集成缓存）"""

@@ -231,10 +231,10 @@ industry_rotation:
 
 # ========== FuturesAnalysisService 专属配置 ==========
 index_futures_contracts:
-  if: [IFL8, 000300, 47]           # ← 列表（非字符串）
-  ih: [IHL8, 000016, 47]
-  ic: [ICL8, 000905, 47]
-  im: [IML8, 000852, 47]  
+  if: [IFL8, '000300', 47]
+  ih: [IHL8, '000016', 47]
+  ic: [ICL8, '000905', 47]
+  im: [IML8, '000852', 47]  
   # if: {futures_code:IFL8, spot_code:000300, market_code:47}
   # ih: {futures_code:IHL8, spot_code:000016, market_code:47}
   # ic: {futures_code:ICL8, spot_code:000905, market_code:47}
