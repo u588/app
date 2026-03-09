@@ -61,18 +61,8 @@ class IndustryRotationService:
             self.industries_config = self._sanitize_industries_config(
                 ir_config.get('industries', {})
             )
-            # ✅ 关键修复：确保 momentum_windows 和 benchmark_code 存在
             self.momentum_windows = ir_config.get('momentum_windows', [20, 60])
-            if not isinstance(self.momentum_windows, (list, tuple)) or len(self.momentum_windows) < 2:
-                self.logger.warning(
-                    f"⚠️ momentum_windows 格式错误: {self.momentum_windows} | 使用默认 [20, 60]"
-                )
-                self.momentum_windows = [20, 60]
-            
             self.benchmark_code = str(ir_config.get('benchmark_code', '000300')).strip()
-            if not self.benchmark_code:
-                self.logger.warning("⚠️ benchmark_code 为空 | 使用默认 '000300'")
-                self.benchmark_code = '000300'
             
             # 验证industries_config
             if not self.industries_config:

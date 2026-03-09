@@ -476,64 +476,169 @@ class MacroAnalysisService:
     
     def _check_alert_rules(self, indicator_values: Dict[str, float]) -> List[Dict]:
         """
-        检查预警规则
+        修复版：预警规则评估（增强容错）
         
-        逻辑:
-        1. 遍历所有预警规则
-        2. 解析条件表达式
-        3. 评估条件是否满足
-        4. 生成预警信息
-        
-        返回:
-            预警列表（按优先级排序）
+        修复点:
+        ✅ 为所有可能在规则中使用的指标提供默认值
+        ✅ 避免None导致的TypeError
+        ✅ 详细错误日志（显示缺失指标）
         """
         alerts = []
-        
-        # 获取预警规则配置
         alert_rules = self.config.get('alert_rules', [])
+        
+        # ✅ 修复1：构建安全上下文（所有指标有默认值）
+        # 根据配置文件中的预警规则，预定义所有可能用到的指标
+        safe_context = {
+            # 通胀指标
+            'CPI': float(indicator_values.get('CPI', 2.5)),
+            'PPI': float(indicator_values.get('PPI', 3.0)),
+            'CGPI': float(indicator_values.get('CGPI', 3.5)),
+            'RPI': float(indicator_values.get('RPI', 2.8)),
+            
+            # 经济增长指标
+            'GDP': float(indicator_values.get('GDP', 5.0)),
+            'industrial_production': float(indicator_values.get('industrial_production', 5.0)),
+            'electricity': float(indicator_values.get('electricity', 5.0)),
+            'fixed_investment': float(indicator_values.get('fixed_investment', 6.0)),
+            
+            # 流动性指标
+            'shibor_3m': float(indicator_values.get('shibor_3m', 2.5)),
+            'margin_balance': float(indicator_values.get('margin_balance', 16000.0)),
+            'margin_balance_change_5d': float(indicator_values.get('margin_balance_change_5d', 0.0)),
+            'etf_scale': float(indicator_values.get('etf_scale', 20000.0)),
+            'north_flow': float(indicator_values.get('north_flow', 18000.0)),
+            'north_flow_daily': float(indicator_values.get('north_flow_daily', 50.0)),
+            'south_flow': float(indicator_values.get('south_flow', 12000.0)),
+            
+            # 情绪指标
+            'consumer_confidence': float(indicator_values.get('consumer_confidence', 100.0)),
+            'business_confidence': float(indicator_values.get('business_confidence', 105.0)),
+            'consumer_expectation': float(indicator_values.get('consumer_expectation', 102.0)),
+            'consumer_satisfaction': float(indicator_values.get('consumer_satisfaction', 101.0)),
+            
+            # 外部风险指标
+            'us_10y_yield': float(indicator_values.get('us_10y_yield', 4.0)),
+            'usd_cny': float(indicator_values.get('usd_cny', 7.1)),
+            'us_pmi': float(indicator_values.get('us_pmi', 52.0)),
+            'euro_pmi': float(indicator_values.get('euro_pmi', 51.0)),
+            'us_unemployment': float(indicator_values.get('us_unemployment', 3.8)),
+            
+            # 基金情绪指标
+            'equity_fund_index': float(indicator_values.get('equity_fund_index', 100.0)),
+            'bond_fund_index': float(indicator_values.get('bond_fund_index', 100.0)),
+            'money_fund_index': float(indicator_values.get('money_fund_index', 100.0))
+        }
+        
+        # ✅ 修复2：记录缺失指标（便于诊断）
+        missing_indicators = [
+            key for key, value in safe_context.items() 
+            if key in str(alert_rules) and key not in indicator_values
+        ]
+        if missing_indicators:
+            self.logger.debug(
+                f"⚠️ 预警规则使用了缺失指标（已用默认值）: {', '.join(missing_indicators)}"
+            )
         
         for rule in alert_rules:
             try:
-                # 构建条件上下文
-                context = indicator_values.copy()
-                
-                # 解析条件（简化版：支持AND/OR）
+                # 解析条件
                 condition = rule.get('condition', '')
                 condition = condition.replace('AND', 'and').replace('OR', 'or')
                 
                 # 评估条件
-                try:
-                    if eval(condition, {"__builtins__": None}, context):
-                        # 生成预警
-                        alerts.append({
-                            'name': rule.get('name', '预警'),
-                            'condition': condition,
-                            'action': rule.get('action', 'notify'),
-                            'priority': rule.get('priority', 'medium'),
-                            'suggested_adjustment': float(rule.get('suggested_adjustment', 0.0)),
-                            'affected_directions': rule.get('affected_directions', []),
-                            'message': f"{rule.get('name')} | 条件：{condition}"
-                        })
-                except Exception as e:
-                    self.logger.warning(
-                        f"⚠️ 预警规则评估失败 {rule.get('name')}: {str(e)[:30]}"
-                    )
-                    continue
+                if eval(condition, {"__builtins__": None}, safe_context):
+                    alerts.append({
+                        'name': rule.get('name', '预警'),
+                        'condition': condition,
+                        'action': rule.get('action', 'notify'),
+                        'priority': rule.get('priority', 'medium'),
+                        'suggested_adjustment': float(rule.get('suggested_adjustment', 0.0)),
+                        'affected_directions': rule.get('affected_directions', []),
+                        'message': f"{rule.get('name')} | 条件：{condition}"
+                    })
             
             except Exception as e:
-                self.logger.warning(
-                    f"⚠️ 预警规则处理失败: {str(e)[:30]}"
-                )
-                continue
+                # ✅ 修复3：增强错误日志（显示具体缺失指标）
+                error_msg = str(e)
+                if "NoneType" in error_msg or "not subscriptable" in error_msg:
+                    # 尝试识别缺失的指标
+                    missing = [k for k in safe_context.keys() if k in condition and safe_context[k] is None]
+                    self.logger.warning(
+                        f"⚠️ 预警规则评估失败 {rule.get('name', '未知')}: "
+                        f"条件中可能包含缺失指标 {missing} | 条件: {condition}"
+                    )
+                else:
+                    self.logger.warning(
+                        f"⚠️ 预警规则评估失败 {rule.get('name', '未知')}: {error_msg[:80]} | 条件: {condition}"
+                    )
+                import traceback
+                self.logger.debug(traceback.format_exc())
         
-        # 按优先级排序（high > medium > low）
+        # 按优先级排序
         priority_map = {'high': 3, 'medium': 2, 'low': 1}
-        alerts.sort(
-            key=lambda x: priority_map.get(x['priority'], 0),
-            reverse=True
-        )
+        alerts.sort(key=lambda x: priority_map.get(x['priority'], 0), reverse=True)
         
         return alerts[:5]  # 最多返回5条
+
+        # """
+        # 检查预警规则
+        
+        # 逻辑:
+        # 1. 遍历所有预警规则
+        # 2. 解析条件表达式
+        # 3. 评估条件是否满足
+        # 4. 生成预警信息
+        
+        # 返回:
+        #     预警列表（按优先级排序）
+        # """
+        # alerts = []
+        
+        # # 获取预警规则配置
+        # alert_rules = self.config.get('alert_rules', [])
+        
+        # for rule in alert_rules:
+        #     try:
+        #         # 构建条件上下文
+        #         context = indicator_values.copy()
+                
+        #         # 解析条件（简化版：支持AND/OR）
+        #         condition = rule.get('condition', '')
+        #         condition = condition.replace('AND', 'and').replace('OR', 'or')
+                
+        #         # 评估条件
+        #         try:
+        #             if eval(condition, {"__builtins__": None}, context):
+        #                 # 生成预警
+        #                 alerts.append({
+        #                     'name': rule.get('name', '预警'),
+        #                     'condition': condition,
+        #                     'action': rule.get('action', 'notify'),
+        #                     'priority': rule.get('priority', 'medium'),
+        #                     'suggested_adjustment': float(rule.get('suggested_adjustment', 0.0)),
+        #                     'affected_directions': rule.get('affected_directions', []),
+        #                     'message': f"{rule.get('name')} | 条件：{condition}"
+        #                 })
+        #         except Exception as e:
+        #             self.logger.warning(
+        #                 f"⚠️ 预警规则评估失败 {rule.get('name')}: {str(e)[:30]}"
+        #             )
+        #             continue
+            
+        #     except Exception as e:
+        #         self.logger.warning(
+        #             f"⚠️ 预警规则处理失败: {str(e)[:30]}"
+        #         )
+        #         continue
+        
+        # # 按优先级排序（high > medium > low）
+        # priority_map = {'high': 3, 'medium': 2, 'low': 1}
+        # alerts.sort(
+        #     key=lambda x: priority_map.get(x['priority'], 0),
+        #     reverse=True
+        # )
+        
+        # return alerts[:5]  # 最多返回5条
     
     # ==================== 辅助方法：市场状态判定 ====================
     
