@@ -169,30 +169,86 @@ class VisualizationService:
         charts = {}
         
         # 核心15大图表
-        charts['估值诊断'] = self._generate_valuation_diagnostic_chart(data_context)
-        charts['市值走势'] = self._generate_market_trend_chart(data_context)
-        charts['微盘流动性'] = self._generate_micro_liquidity_chart(data_context)
-        charts['风格轮动'] = self._generate_style_rotation_chart(data_context)
-        charts['市场状态'] = self._generate_market_state_chart(data_context)
-        charts['战略配置'] = self._generate_allocation_chart(data_context)
-        charts['高风险雷达'] = self._generate_high_risk_chart(data_context)
-        charts['期权PCR'] = self._generate_option_pcr_chart(data_context)
-        charts['期货期限'] = self._generate_futures_term_structure_chart(data_context)
-        charts['期现基差'] = self._generate_futures_basis_chart(data_context)
-        charts['资金流向'] = self._generate_fund_flow_heatmap(data_context)
-        charts['情绪仪表'] = self._generate_sentiment_dashboard(data_context)
-        charts['跨市场联动'] = self._generate_cross_market_chart(data_context)
-        charts['行业轮动'] = self._generate_industry_rotation_matrix(data_context)
-        charts['风险传导'] = self._generate_risk_transmission_chart(data_context)
+        charts['估值诊断'] = self._generate_valuation_diagnostic_chart(
+            data_context.get('pe_data'),
+            data_context.get('bond_yield', 2.5)
+        )
         
-        # V5.7新增图表
-        charts['商品影响'] = self._generate_commodity_strategy_heatmap(data_context)
-        charts['宏观评分'] = self._generate_macro_composite_chart(data_context)
-        charts['商品景气'] = self._generate_commodity_term_dashboard(data_context)
+        charts['市值走势'] = self._generate_market_trend_chart(
+            data_context.get('benchmark_data', {})
+        )
+        
+        charts['微盘流动性'] = self._generate_micro_liquidity_chart(
+            data_context.get('micro_data', {})
+        )
+        
+        charts['风格轮动'] = self._generate_style_rotation_chart(
+            data_context.get('benchmark_data', {})
+        )
+        
+        charts['市场状态'] = self._generate_market_state_chart(
+            data_context.get('market_state', '均衡持有区'),
+            data_context.get('val_score', 50),
+            data_context.get('trend_score', 50)
+        )
+        
+        charts['战略配置'] = self._generate_allocation_chart(
+            data_context.get('allocation_df')
+        )
+        
+        charts['高风险雷达'] = self._generate_high_risk_chart(
+            data_context.get('risk_data', [])
+        )
+        
+        charts['期权 PCR'] = self._generate_option_pcr_chart(
+            data_context.get('pcr_data', {})
+        )
+        
+        charts['期货期限'] = self._generate_futures_term_structure_chart(
+            data_context.get('term_data', {})
+        )
+        
+        charts['期现基差'] = self._generate_futures_basis_chart(
+            data_context.get('basis_data', {})
+        )
+        
+        charts['资金流向'] = self._generate_fund_flow_heatmap(
+            data_context.get('flow_data', {})
+        )
+        
+        charts['情绪仪表'] = self._generate_sentiment_dashboard(
+            data_context.get('sentiment_data', {})
+        )
+        
+        charts['跨市场联动'] = self._generate_cross_market_chart(
+            data_context.get('market_data', {})
+        )
+        
+        charts['行业轮动'] = self._generate_industry_rotation_matrix(
+            data_context.get('industry_data', {})
+        )
+        
+        charts['风险传导'] = self._generate_risk_transmission_chart(
+            data_context.get('risk_metrics', {})
+        )
+        
+        # V5.7 新增图表
+        charts['商品影响'] = self._generate_commodity_strategy_heatmap(
+            data_context.get('commodity_signals', {})
+        )
+        
+        charts['宏观评分'] = self._generate_macro_composite_chart(
+            data_context.get('macro_history', {})
+        )
+
+        charts['商品景气'] = self._generate_commodity_term_dashboard(
+            data_context.get('term_data', {})
+    )    
         
         # 统计有效图表
         valid_charts = {k: v for k, v in charts.items() if v is not None}
-        self.logger.info(f"✅ 成功生成{len(valid_charts)}/{len(charts)}个图表")
+        
+        print(f"✅ 成功生成 {len(valid_charts)}/{len(charts)} 个图表")
         
         return charts
     
