@@ -46,7 +46,7 @@ from utils.type_conversion_utils import ensure_python_float, ensure_python_int
 class VisualizationService:
     """V6.1 可视化服务（阈值动态化 + 配置统一化）"""
     
-    def __init__(self, config: Optional[Dict] = None):
+    def __init__(self, config: Optional[Dict] = None, index_mapper=None):
         """
         初始化可视化服务
         
@@ -68,7 +68,7 @@ class VisualizationService:
         """
         # 默认配置
         self.config = {
-            'chinese_font': self._detect_chinese_font(),
+            'chinese_font': self._get_chinese_font(),
             'chart_height': 600,
             'chart_width': 1200,
             'color_palette': {
@@ -82,7 +82,9 @@ class VisualizationService:
             'export_path': "reports/",
             'enable_plotly': PLOTLY_AVAILABLE
         }
-        
+
+        self.chinese_font = self._get_chinese_font()
+        self.index_mapper = index_mapper        
         # 合并用户配置
         if config:
             self.config.update(config)
@@ -143,7 +145,69 @@ class VisualizationService:
         # 返回第一个可用字体（简化版，实际应检查字体是否存在）
         # 此处简化：直接返回字体列表，由Plotly处理
         return ", ".join(font_list) + ", sans-serif"
+    # ==================== 辅助方法 ====================
     
+    def _get_chinese_font(self) -> str:
+        """智能检测系统中可用的中文字体"""
+        font_candidates = [
+            "Microsoft YaHei", "SimHei", "WenQuanYi Micro Hei",
+            "STHeiti", "Arial Unicode MS", "sans-serif"
+        ]
+        return ",".join(font_candidates)
+    
+    def _apply_chinese_layout(self, fig: go.Figure) -> go.Figure:
+        """应用中文字体布局到 Plotly 图表"""
+        if not PLOTLY_AVAILABLE:
+            return fig
+        
+        fig.update_layout(
+            font=dict(family=self.chinese_font, size=12),
+            title_font=dict(family=self.chinese_font, size=16)
+        )
+        return fig
+    
+    def _generate_empty_chart(self, title: str, message: str) -> go.Figure:
+        """生成空数据占位图表"""
+        if not PLOTLY_AVAILABLE:
+            return None
+        
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"⚠️ {message}",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(size=16, color="#e74c3c", family=self.chinese_font)
+        )
+        fig.update_layout(
+            title=title,
+            title_x=0.5,
+            height=400,
+            plot_bgcolor='white',
+            font=dict(family=self.chinese_font, size=12)
+        )
+        return fig
+    
+    def _get_index_name(self, code: str) -> str:
+        """获取指数名称（优先使用映射器）"""
+        if self.index_mapper:
+            name = self.index_mapper.get_name(code)
+            if name and name != code:
+                return name
+        
+        if self.config and hasattr(self.config, 'index_names'):
+            name = self.config.index_names.get(code, code)
+            if name != code:
+                return name
+        
+        return code
+    
+    def _format_percentage(self, value: float) -> str:
+        """格式化百分比显示"""
+        return f"{value:.1f}%"
+    
+    def _format_number(self, value: float, decimals: int = 1) -> str:
+        """格式化数字显示"""
+        return f"{value:.{decimals}f}"
+        
     # ==================== 核心方法：生成所有图表 ====================
     
     def generate_all_charts(self, data_context: Dict) -> Dict[str, Optional[go.Figure]]:
