@@ -46,7 +46,7 @@ from utils.type_conversion_utils import ensure_python_float, ensure_python_int
 class VisualizationService:
     """V6.1 可视化服务（阈值动态化 + 配置统一化）"""
     
-    def __init__(self, config: Optional[Dict] = None, index_mapper=None):
+    def __init__(self, config: Optional[Dict] = None, config_service=None, index_mapper=None):
         """
         初始化可视化服务
         
@@ -85,6 +85,7 @@ class VisualizationService:
 
         self.chinese_font = self._get_chinese_font()
         self.index_mapper = index_mapper
+        self.config_service = config_service
         # 合并用户配置
         if config:
             self.config.update(config)
@@ -232,7 +233,7 @@ class VisualizationService:
         
         charts = {}
         
-        # 核心15大图表
+        # 核心18大图表
         charts['估值诊断'] = self._generate_valuation_diagnostic_chart(
             data_context.get('pe_data'),
             data_context.get('bond_yield', 2.5)
@@ -434,7 +435,6 @@ class VisualizationService:
         
         required_sizes = ['大盘', '中盘', '小盘', '微盘']
         available_sizes = [s for s in required_sizes if s in benchmark_data and len(benchmark_data[s]) > 250]
-        
         if len(available_sizes) < 2:
             return self._generate_empty_chart("四层市值指数走势", "数据不足（需≥2 个层级）")
         
@@ -463,7 +463,7 @@ class VisualizationService:
                     go.Scatter(
                         x=df_plot['datetime'],
                         y=df_plot['normalized'],
-                        name=f'{size} ({self._get_index_name(self.config.get("market_benchmarks").get(size, {}).get("code", ""))})',
+                        name=f'{size} ({self._get_index_name(self.config_service.get("market_benchmarks").get(size, {}).get("code", ""))})',
                         line=dict(color=colors.get(size, '#1f77b4'), width=2.5)
                     ),
                     row=1, col=1
@@ -1702,7 +1702,8 @@ class VisualizationService:
         try:
             # 直接使用传入的 config 或 self.config
             if self.config:
-                directions = list(self.config.base_weights.keys())
+                directions = list(commodity_signals.keys())
+                # directions = list(self.config.base_weights.keys())
             else:
                 # 默认方向列表
                 directions = ['高端制造', '信息技术', '新能源', '生物健康', 
@@ -2015,16 +2016,16 @@ class VisualizationService:
         )
         return fig
     
-    def _get_index_name(self, data_context: Dict, size: str) -> str:
-        """获取指数名称（简化版）"""
-        default_names = {
-            '大盘': '沪深300',
-            '中盘': '中证500',
-            '小盘': '中证1000',
-            '微盘': '中证2000'
-        }
-        # 实际应从IndexMappingService获取，此处简化
-        return default_names.get(size, size)
+    # def _get_index_name(self, data_context: Dict, size: str) -> str:
+    #     """获取指数名称（简化版）"""
+    #     default_names = {
+    #         '大盘': '沪深300',
+    #         '中盘': '中证500',
+    #         '小盘': '中证1000',
+    #         '微盘': '中证2000'
+    #     }
+    #     # 实际应从IndexMappingService获取，此处简化
+    #     return default_names.get(size, size)
     
     # ==================== 报告导出方法 ====================
     
