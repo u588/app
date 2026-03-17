@@ -84,7 +84,7 @@ class VisualizationService:
         }
 
         self.chinese_font = self._get_chinese_font()
-        self.index_mapper = index_mapper        
+        self.index_mapper = index_mapper
         # 合并用户配置
         if config:
             self.config.update(config)
@@ -463,7 +463,7 @@ class VisualizationService:
                     go.Scatter(
                         x=df_plot['datetime'],
                         y=df_plot['normalized'],
-                        name=f'{size} ({self._get_index_name(self.config.market_benchmarks.get(size, {}).get("code", ""))})',
+                        name=f'{size} ({self._get_index_name(self.config.get("market_benchmarks").get(size, {}).get("code", ""))})',
                         line=dict(color=colors.get(size, '#1f77b4'), width=2.5)
                     ),
                     row=1, col=1
