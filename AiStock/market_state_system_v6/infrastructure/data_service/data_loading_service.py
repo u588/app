@@ -504,7 +504,130 @@ class DataLoadingService:
         except Exception as e:
             self.logger.error(f"❌ 数据库加载宏观指标失败 {code}: {str(e)[:50]}")
             return pd.DataFrame()
+
+    def get_option_contracts(
+        self,
+        underlying: str,
+        market_code: int
+    ) -> List[Dict]:
+        """
+        ✅ 新增：获取指定标的的期权合约列表
+        
+        参数:
+            underlying: 标的代码（'IO'/'510300'等）
+            market_code: 市场代码（7=中金所, 8=上交所, 9=深交所）
+        
+        返回:
+            合约列表，每个元素为字典：
+            {
+                'code': str,          # 合约代码（如 'IO8R0668'）
+                'name': str,          # 合约名称(如 'IO2603-P-4000')
+                'option_type': str,   # 'call'/'put'
+                'strike_price': float,# 行权价(如 4000.0)
+                'expiry_month': str   # 到期月份（如 '2603'）
+            }
+        
+        实现逻辑（三选一）:
+        1. 优先：从数据库tdxAPIcode表加载（与V5.7兼容）
+        2. 降级：从TDX接口动态查询（需实现）
+        3. 最终降级：返回空列表
+        """
+        try:
+            # 方案1：从数据库加载（推荐，与V5.7兼容）
+            if self.engine:
+                query = f'''
+                SELECT code, code_name, market_code 
+                FROM "tdxAPIcode" 
+                WHERE category = 12 
+                '''
+                df = pd.read_sql(query, self.engine)
+                
+                contracts = []
+                for _, row in df.iterrows():
+                    # 解析合约信息（复用V5.7的解析逻辑）
+                    code_name = row['code_name'].strip()
+                    code = row['code'].strip()
+                    market_code = row['market_code'].strip()
+                    
+                    # 提取期权类型、行权价、到期月份（复用V5.7的解析方法）
+                    option_type = self._extract_option_type(code_name)
+                    strike_price = self._extract_strike_price(code_name)
+                    expiry_month = self._extract_expiry_month(code_name)
+                    
+                    contracts.append({
+                        'code': code,
+                        'name': code_name,
+                        'market_code': market_code,
+                        'option_type': option_type,
+                        'strike_price': strike_price,
+                        'expiry_month': expiry_month
+                    })
+                
+                self.logger.debug(f"✅ 从数据库加载{len(contracts)}个{underlying}期权合约")
+                return contracts
+            
+        except Exception as e:
+            self.logger.warning(f"⚠️ 加载{underlying}期权合约失败: {str(e)[:50]}")
+            return []
+    def _extract_option_type(self, code_name: str) -> str:
+        """提取期权类型（复用V5.7逻辑）"""
+        if 'C' in code_name:
+            return 'call'
+        elif 'P' in code_name:
+            return 'put'
+        return 'unknown'
     
+    def _extract_strike_price(self, code_name: str) -> float:
+        """提取行权价（复用V5.7逻辑）"""
+        if '-' in code_name:
+            parts = code_name.split('-')
+            if len(parts) >= 3:
+                try:
+                    return float(parts[2]) / 100
+                except:
+                    return 0.0
+        elif len(code_name) >= 10:
+            try:
+                strike_str = code_name[-4:]
+                return float(strike_str) / 1000
+            except:
+                return 0.0
+        return 0.0
+    
+    def _extract_expiry_month(self, code_name: str) -> str:
+        """提取到期年月 ⭐ 修复版"""
+        # 中金所期权：IO2602-C-4000 → 2602
+        if '-' in code_name:
+            parts = code_name.split('-')
+            if len(parts) >= 2:
+                return parts[0][-4:]  # 取后4位年月
+        
+        # ETF期权和深圳期权：找到C或P的位置
+        type_idx = -1
+        if 'C' in code_name:
+            type_idx = code_name.find('C')
+        elif 'P' in code_name:
+            type_idx = code_name.find('P')
+        
+        if type_idx != -1 and len(code_name) > type_idx + 1:
+            # 提取C/P后的数字部分
+            suffix = code_name[type_idx+1:]
+            # 提取连续的数字
+            month_digits = ''
+            for char in suffix:
+                if char.isdigit():
+                    month_digits += char
+                elif month_digits:  # 已经有数字了，遇到非数字就停止
+                    break
+            
+            if month_digits:
+                # 如果是2位数字，直接返回（月份）
+                if len(month_digits) >= 2:
+                    return month_digits[:2]
+                else:
+                    return month_digits
+        
+        return '00'
     # ==================== 缓存管理方法 ====================
     
     def clear_cache(self, prefix: Optional[str] = None):

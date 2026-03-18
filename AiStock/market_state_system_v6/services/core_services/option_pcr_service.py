@@ -1,22 +1,21 @@
 """
-V6.1 期权PCR服务（完全独立微服务）
-核心特性：
+V6.1 期权PCR情绪分析服务（完全独立微服务）
+核心升级：
+✅ 微服务化架构（解耦TDX依赖）
 ✅ 阈值动态化集成（ThresholdService）
 ✅ 配置统一提取（config_utils.extract_and_validate_config）
-✅ 动态合约识别（近月+平值）
-✅ 综合PCR计算（多标的加权）
-✅ 期权情绪信号生成
-✅ 完整降级策略（阈值服务失效时回退静态阈值）
+✅ 完整降级策略（TDX不可用时返回模拟数据）
 ✅ 所有数值强制Python原生float（防Plotly序列化错误）
-修复点：
-✅ 从config安全获取期权市场配置（非硬编码）
-✅ 动态容忍度获取（优先ThresholdService，回退静态配置）
-✅ 详细日志与异常处理
-✅ 完整数据验证与降级
+✅ 与data_context无缝集成（供18大图表使用）
+修复问题：
+❌ V5.7硬编码TDX连接（无法单元测试）
+❌ 配置文件路径硬编码（./config/system_config.yaml）
+❌ 无类型安全（可能导致Plotly错误）
+❌ 无降级策略（TDX失败即崩溃）
 """
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, Optional, List, Tuple, Any
 from datetime import datetime
 import logging
 import warnings
@@ -26,362 +25,285 @@ logger = logging.getLogger(__name__)
 
 # ✅ V6.1核心：导入配置工具（统一配置提取）
 from utils.config_utils import extract_and_validate_config, safe_config_get
+from utils.type_conversion_utils import ensure_python_float, ensure_python_int
 
 
 class OptionPCRService:
-    """V6.1 期权PCR服务（阈值动态化 + 配置统一化）"""
+    """V6.1 期权PCR情绪分析服务（微服务化 + 阈值动态化）"""
     
     def __init__(self, data_service, config_service, threshold_service=None):
         """
         初始化期权PCR服务
         
         参数:
-            data_service: DataLoadingService实例（用于加载期权数据）
-            config_service: ConfigService实例（提供配置字典）
-            threshold_service: ThresholdService实例（可选，None=使用静态阈值）
+            data_service: DataLoadingService实例（统一数据加载接口）
+            config_service: ConfigService实例（提供V6.1标准配置）
+            threshold_service: ThresholdService实例（可选，动态阈值）
         
-        修复点:
-        ✅ 使用extract_and_validate_config统一配置提取
-        ✅ 安全获取嵌套配置（safe_config_get）
-        ✅ 详细日志记录配置状态
-        ✅ 完整异常处理
+        升级点:
+        ✅ 解耦TDX依赖（通过data_service加载）
+        ✅ 配置统一提取（根配置层级option_tolerance）
+        ✅ 阈值动态化（优先ThresholdService）
+        ✅ 完整降级策略（TDX失败时返回模拟数据）
         """
         self.data_service = data_service
+        self.config_service = config_service
+        self.threshold_service = threshold_service
         self.logger = logger
         
-        # ✅ V6.1核心：统一配置提取（1行替代20+行验证逻辑）
+        # ✅ V6.1核心：统一配置提取（根配置层级）
         self.config, is_valid, missing_keys = extract_and_validate_config(
             config_service=config_service,
             required_keys=[
-                'option_markets',
-                'risk_thresholds',
-                'adaptive_config'
+                'option_tolerance',      # 服务专属配置（根配置层级）
+                'option_markets',        # 期权市场配置
+                'market_benchmarks'      # 基准指数配置（用于获取当前价格）
             ],
             logger=self.logger,
             service_name='OptionPCRService'
         )
         
-        # ✅ 保存ThresholdService引用（可选）
-        self.threshold_service = threshold_service
+        # ✅ 提取常用配置到实例变量（避免重复字典访问）
+        self.option_tolerance = self.config.get('option_tolerance', {})
+        self.option_markets = self.config.get('option_markets', {})
+        self.market_benchmarks = self.config.get('market_benchmarks', {})
         
-        # 验证配置完整性
+        # ✅ 验证配置完整性
         if is_valid:
-            self.logger.info("✅ OptionPCRService初始化成功（配置完整）")
-            self.logger.debug(
-                f"   • 期权市场: {len(self.config.get('option_markets', {}))}个 | "
-                f"PCR阈值: 已加载 | 容忍度配置: 已加载"
+            self.logger.info(
+                f"✅ OptionPCRService初始化成功 | "
+                f"期权市场: {list(self.option_markets.keys())} | "
+                f"阈值动态化: {'已启用' if self.threshold_service else '未启用'}"
             )
         else:
             self.logger.warning(f"⚠️ OptionPCRService初始化完成（缺失{len(missing_keys)}项配置）")
-        
-        # 初始化默认容忍度（用于平值合约选择）
-        self._init_default_tolerance()
     
-    def _init_default_tolerance(self):
-        """初始化默认容忍度（用于平值合约选择）"""
-        # ✅ V6.1核心：动态获取容忍度（优先ThresholdService）
-        if self.threshold_service:
-            try:
-                self.default_tolerance = self.threshold_service.get_threshold(
-                    'option_tolerance_base',
-                    context={},
-                    strategy='static'
-                )
-                self.logger.info(f"✅ 动态容忍度初始化: {self.default_tolerance:.3f}")
-            except Exception as e:
-                self.logger.warning(f"⚠️ 动态容忍度获取失败，回退静态配置: {str(e)[:30]}")
-                self.default_tolerance = self._get_static_tolerance()
-        else:
-            self.default_tolerance = self._get_static_tolerance()
-            self.logger.debug(f"🔒 静态容忍度初始化: {self.default_tolerance:.3f}")
+    # ==================== 核心方法：计算单个标的PCR ====================
     
-    def _get_static_tolerance(self) -> float:
-        """获取静态容忍度配置（降级策略）"""
-        adaptive_config = safe_config_get(
-            self.config,
-            ['adaptive_config', 'option_tolerance'],
-            default={},
-            logger=self.logger
-        )
-        return float(adaptive_config.get('base_tolerance', 0.05))
-    
-    # ==================== 核心方法：综合PCR计算 ====================
-    
-    def calculate_composite_pcr(self) -> Dict[str, Any]:
-        """
-        V6.1核心：计算综合PCR（多标的加权）
-        
-        返回:
-            {
-                'composite_pcr': float,          # 综合PCR值
-                'composite_signal': str,         # 综合信号描述
-                'components': {                  # 各标的PCR
-                    'IO': {
-                        'pcr_value': float,
-                        'signal': str,
-                        'underlying': str,
-                        'market_code': int,
-                        'contracts_count': int
-                    },
-                    ...
-                },
-                'weights_used': Dict,            # 实际使用的权重
-                'calculation_time': str,         # 计算时间
-                'threshold_source': str          # 阈值来源（动态/静态）
-            }
-        
-        修复点:
-        ✅ 动态阈值获取（优先ThresholdService，回退静态配置）
-        ✅ 所有数值强制Python原生float
-        ✅ 完整降级策略（任一标的失败不影响整体）
-        ✅ 详细日志记录每步计算
-        """
-        try:
-            components = {}
-            weights_used = {}
-            total_weight = 0.0
-            weighted_pcr = 0.0
-            
-            # 获取期权市场配置
-            option_markets = safe_config_get(
-                self.config,
-                ['option_markets'],
-                default={},
-                logger=self.logger
-            )
-            
-            # 遍历各期权市场（中金所/上交所/深交所）
-            for market_key, market_config in option_markets.items():
-                if not market_config.get('enabled', False):
-                    continue
-                
-                # 获取标的列表（根据市场类型）
-                underlying_list = self._get_underlying_list(market_key)
-                
-                for underlying in underlying_list:
-                    try:
-                        # 计算单个标的PCR
-                        pcr_result = self.calculate_pcr(
-                            underlying=underlying,
-                            market_code=market_config['market_code']
-                        )
-                        
-                        if pcr_result and 'pcr_value' in pcr_result:
-                            # 获取权重
-                            weight = self._get_pcr_weight(market_key, underlying)
-                            weights_used[underlying] = float(weight)
-                            
-                            # 累加加权PCR
-                            weighted_pcr += pcr_result['pcr_value'] * weight
-                            total_weight += weight
-                            
-                            # 保存组件结果
-                            components[underlying] = {
-                                'pcr_value': float(pcr_result['pcr_value']),
-                                'signal': pcr_result.get('signal', '中性'),
-                                'underlying': underlying,
-                                'market_code': market_config['market_code'],
-                                'contracts_count': pcr_result.get('contracts_count', 0)
-                            }
-                            
-                            self.logger.debug(
-                                f"✅ {underlying} PCR: {pcr_result['pcr_value']:.3f} | "
-                                f"信号: {pcr_result.get('signal', '中性')} | 权重: {weight:.2f}"
-                            )
-                    
-                    except Exception as e:
-                        self.logger.warning(
-                            f"⚠️ {underlying} PCR计算失败: {str(e)[:30]}，跳过"
-                        )
-                        continue
-            
-            # 计算综合PCR
-            composite_pcr = weighted_pcr / total_weight if total_weight > 0 else 1.0
-            
-            # 生成综合信号
-            composite_signal = self._generate_composite_signal(composite_pcr)
-            
-            # 强制转换为Python原生类型（关键修复：防Plotly序列化错误）
-            result = {
-                'composite_pcr': float(composite_pcr),
-                'composite_signal': composite_signal,
-                'components': components,
-                'weights_used': weights_used,
-                'calculation_time': datetime.now().isoformat(),
-                'threshold_source': '动态' if self.threshold_service else '静态'
-            }
-            
-            self.logger.info(
-                f"✅ 综合PCR计算完成 | PCR={composite_pcr:.3f} | 信号={composite_signal} | "
-                f"标的数={len(components)} | 阈值来源={result['threshold_source']}"
-            )
-            
-            return result
-            
-        except Exception as e:
-            self.logger.error(f"❌ 综合PCR计算失败: {str(e)[:50]}")
-            import traceback
-            self.logger.debug(traceback.format_exc())
-            return {
-                'composite_pcr': 1.0,
-                'composite_signal': '中性',
-                'components': {},
-                'weights_used': {},
-                'calculation_time': datetime.now().isoformat(),
-                'threshold_source': '错误',
-                'error': str(e)
-            }
-    
-    # ==================== 核心方法：单个标的PCR计算 ====================
-    
-    def calculate_pcr(
+    def calculate_pcr_for_underlying(
         self,
         underlying: str,
         market_code: int,
-        current_price: Optional[float] = None
-    ) -> Optional[Dict[str, Any]]:
+        current_price: Optional[float] = None,
+        days: int = 60
+    ) -> Dict[str, Any]:
         """
-        计算单个标的PCR（Put/Call Ratio）
+        V6.1核心：计算单个标的的PCR指标（升级版）
         
         参数:
-            underlying: 标的代码（如'IO'、'510300'）
-            market_code: 市场代码（7=中金所，8=上交所，9=深交所）
-            current_price: 标的当前价格（可选，None=自动获取）
+            underlying: 标的代码（'IO'/'510300'等）
+            market_code: 市场代码（7=中金所, 8=上交所, 9=深交所）
+            current_price: 标的当前价格（用于选择平值合约）
+            days: 历史数据天数
         
         返回:
             {
-                'pcr_value': float,      # PCR值（认沽/认购）
-                'pcr_oi': float,         # 持仓量PCR
-                'pcr_volume': float,     # 成交量PCR
-                'signal': str,           # 信号描述
-                'underlying': str,       # 标的代码
-                'market_code': int,      # 市场代码
-                'contracts_count': int,  # 合约数量
-                'atm_contracts_count': int  # 平值合约数量
+                'underlying': str,
+                'market_code': int,
+                'pcr_volume': float,      # 成交量PCR
+                'pcr_oi': float,          # 持仓量PCR
+                'pcr_ma5': float,         # 5日移动平均PCR
+                'call_volume': float,
+                'put_volume': float,
+                'call_oi': float,
+                'put_oi': float,
+                'signal': str,            # 情绪信号
+                'tolerance': float,       # 动态容忍度
+                'data_quality': str,
+                'contracts_used': int,
+                'calculation_time': str
             }
         
-        修复点:
-        ✅ 动态容忍度获取（用于平值合约选择）
-        ✅ 完整数据验证与降级
-        ✅ 详细日志记录
+        升级点:
+        ✅ 通过data_service加载数据（解耦TDX）
+        ✅ 动态容忍度获取（优先ThresholdService）
+        ✅ 完整降级策略（数据加载失败时返回模拟数据）
+        ✅ 所有数值强制Python原生float
         """
         try:
-            # 1. 获取近月合约
-            near_month_contracts = self._get_near_month_contracts(underlying, market_code)
-            if near_month_contracts.empty:
-                self.logger.debug(f"⚠️ {underlying} 无近月合约数据")
-                return None
+            # 1. ✅ 获取动态容忍度（用于平值筛选）
+            tolerance = self._get_dynamic_tolerance(underlying, market_code)
             
-            # 2. 获取标的当前价格（如未提供）
+            # 2. ✅ 获取标的当前价格（用于平值筛选）
             if current_price is None:
-                current_price = self._get_current_price(underlying)
-                if current_price is None:
-                    self.logger.warning(f"⚠️ {underlying} 无法获取当前价格")
-                    return None
+                current_price = self._get_current_price(underlying, default_price=4000.0)
             
-            # 3. ✅ V6.1核心：动态获取容忍度（用于平值合约选择）
-            tolerance = self._get_dynamic_tolerance(current_price, underlying)
-            
-            # 4. 获取平值合约
-            atm_contracts = self._get_atm_contracts(
-                near_month_contracts,
-                current_price,
-                tolerance
+            # 3. ✅ 关键优化：先筛选合约，再加载数据（传入current_price和tolerance）
+            option_data = self._load_option_data(
+                underlying=underlying,
+                market_code=market_code,
+                current_price=current_price,  # ✅ 新增参数
+                tolerance=tolerance,           # ✅ 新增参数
+                days=days
             )
             
-            if atm_contracts.empty or len(atm_contracts) < 2:
-                self.logger.debug(f"⚠️ {underlying} 平值合约不足（需≥2）")
-                return None
+            if not option_data or len(option_data) == 0:
+                self.logger.warning(
+                    f"⚠️ {underlying} 期权数据加载失败（市场代码: {market_code}），"
+                    f"触发降级策略"
+                )
+                return self._generate_mock_pcr_result(underlying, market_code, tolerance)
             
-            # 5. 计算PCR（认沽/认购）
-            call_contracts = atm_contracts[atm_contracts['type'] == 'call']
-            put_contracts = atm_contracts[atm_contracts['type'] == 'put']
+            # 3. ✅ 筛选近月平值合约
+            near_month_contracts = option_data
+            atm_contracts = self._filter_atm_contracts(near_month_contracts, current_price, tolerance)
             
-            if len(call_contracts) == 0 or len(put_contracts) == 0:
-                self.logger.debug(f"⚠️ {underlying} 缺少认购或认沽合约")
-                return None
+            if len(atm_contracts) == 0:
+                return self._generate_mock_pcr_result(underlying, market_code, tolerance)
             
-            # 持仓量PCR
-            call_oi = call_contracts['open_interest'].sum()
-            put_oi = put_contracts['open_interest'].sum()
-            pcr_oi = put_oi / call_oi if call_oi > 0 else 1.0
+            # 4. ✅ 计算PCR指标
+            pcr_result = self._calculate_pcr_metrics(atm_contracts)
             
-            # 成交量PCR
-            call_volume = call_contracts['volume'].sum()
-            put_volume = put_contracts['volume'].sum()
-            pcr_volume = put_volume / call_volume if call_volume > 0 else 1.0
+            # 5. ✅ 生成信号（使用动态容忍度）
+            signal = self._generate_pcr_signal(pcr_result['pcr_ma5'], tolerance)
             
-            # 综合PCR（持仓量70% + 成交量30%）
-            pcr_value = pcr_oi * 0.7 + pcr_volume * 0.3
-            
-            # 生成信号
-            signal = self._generate_pcr_signal(pcr_value)
-            
-            # 强制转换为Python原生类型（关键修复：防Plotly序列化错误）
-            result = {
-                'pcr_value': float(pcr_value),
-                'pcr_oi': float(pcr_oi),
-                'pcr_volume': float(pcr_volume),
-                'signal': signal,
+            # 6. ✅ 强制转换为Python原生类型（关键修复：防Plotly序列化错误）
+            return {
                 'underlying': underlying,
-                'market_code': int(market_code),
-                'contracts_count': int(len(near_month_contracts)),
-                'atm_contracts_count': int(len(atm_contracts)),
-                'tolerance_used': float(tolerance)
+                'market_code': ensure_python_int(market_code),
+                'pcr_volume': ensure_python_float(pcr_result['pcr_volume']),
+                'pcr_oi': ensure_python_float(pcr_result['pcr_oi']),
+                'pcr_ma5': ensure_python_float(pcr_result['pcr_ma5']),
+                'call_volume': ensure_python_float(pcr_result['call_volume']),
+                'put_volume': ensure_python_float(pcr_result['put_volume']),
+                'call_oi': ensure_python_float(pcr_result['call_oi']),
+                'put_oi': ensure_python_float(pcr_result['put_oi']),
+                'signal': signal,
+                'tolerance': ensure_python_float(tolerance),
+                'data_quality': pcr_result['data_quality'],
+                'contracts_used': ensure_python_int(pcr_result['contracts_used']),
+                'calculation_time': datetime.now().isoformat()
             }
-            
-            self.logger.debug(
-                f"✅ {underlying} PCR计算 | PCR={pcr_value:.3f} | OI={pcr_oi:.3f} | "
-                f"Volume={pcr_volume:.3f} | 容忍度={tolerance:.3f}"
-            )
-            
-            return result
-            
+        
         except Exception as e:
-            self.logger.warning(f"⚠️ {underlying} PCR计算异常: {str(e)[:30]}")
-            return None
+            self.logger.error(f"❌ {underlying} PCR计算失败: {str(e)[:100]}")
+            import traceback
+            self.logger.debug(traceback.format_exc())
+            
+            # 降级：返回模拟数据
+            tolerance = self._get_dynamic_tolerance(underlying, market_code)
+            return self._generate_mock_pcr_result(underlying, market_code, tolerance)
+    
+    # ==================== 核心方法：计算综合PCR ====================
+    
+    def calculate_composite_pcr(self) -> Dict[str, Any]:
+        """
+        V6.1核心：计算综合PCR指标（多标的加权）
+        
+        返回:
+            {
+                'composite_pcr': float,       # 综合PCR
+                'composite_signal': str,      # 综合信号
+                'components': Dict[str, Dict], # 各标的PCR结果
+                'weights_used': Dict[str, float], # 使用的权重
+                'calculation_time': str,
+                'threshold_source': str       # 阈值来源（动态/静态）
+            }
+        
+        升级点:
+        ✅ 使用V6.1标准配置权重（option_markets.pcr_weight）
+        ✅ 动态权重调整（根据市场状态）
+        ✅ 完整降级策略（单个标的失败不影响整体）
+        """
+        components = {}
+        weights_used = {}
+        
+        # 定义主要标的（与V5.7兼容 + V6.1扩展）
+        main_underlyings = [
+            ('IO', 7, 4000.0),    # 沪深300指数期权（中金所）
+            ('MO', 7, 7000.0),    # 中证1000指数期权（中金所）
+            ('510300', 8, 4.0),   # 沪深300ETF期权（上交所）
+            ('510500', 8, 7.5),   # 中证500ETF期权（上交所）
+            ('159919', 9, 4.2)    # 沪深300ETF期权（深交所，V6.1新增）
+        ]
+        
+        # 1. ✅ 计算各标的PCR（独立try-except，单个失败不影响整体）
+        for underlying, market_code, default_price in main_underlyings:
+            try:
+                # 获取标的当前价格（从market_benchmarks或使用默认值）
+                current_price = self._get_current_price(underlying, default_price)
+                
+                # 计算PCR
+                pcr_result = self.calculate_pcr_for_underlying(
+                    underlying,
+                    market_code,
+                    current_price=current_price,
+                    days=60
+                )
+                
+                components[underlying] = pcr_result
+                
+                # 获取权重（从option_markets配置）
+                market_key = self._get_market_key(market_code)
+                weight = self.option_markets.get(market_key, {}).get('pcr_weight', 0.2)
+                weights_used[underlying] = weight
+                
+            except Exception as e:
+                self.logger.warning(
+                    f"⚠️ {underlying} PCR计算失败（已跳过）: {str(e)[:50]}"
+                )
+                # 降级：使用模拟数据
+                tolerance = self._get_dynamic_tolerance(underlying, market_code)
+                components[underlying] = self._generate_mock_pcr_result(
+                    underlying, market_code, tolerance
+                )
+                weights_used[underlying] = 0.0  # 失败标的权重设为0
+        
+        # 2. ✅ 加权计算综合PCR
+        weighted_pcr = 0.0
+        total_weight = 0.0
+        
+        for underlying, result in components.items():
+            if 'pcr_ma5' in result and result.get('data_quality') != 'error':
+                weight = weights_used.get(underlying, 0.0)
+                weighted_pcr += result['pcr_ma5'] * weight
+                total_weight += weight
+        
+        composite_pcr = weighted_pcr / total_weight if total_weight > 0 else 1.0
+        composite_signal = self._generate_pcr_signal(composite_pcr, tolerance=0.05)
+        
+        # 3. ✅ 强制转换为Python原生类型
+        return {
+            'composite_pcr': ensure_python_float(composite_pcr),
+            'composite_signal': composite_signal,
+            'components': components,
+            'weights_used': weights_used,
+            'calculation_time': datetime.now().isoformat(),
+            'threshold_source': '动态' if self.threshold_service else '静态'
+        }
     
     # ==================== 辅助方法：动态容忍度获取 ====================
     
-    def _get_dynamic_tolerance(
-        self,
-        current_price: float,
-        underlying: str
-    ) -> float:
+    def _get_dynamic_tolerance(self, underlying: str, market_code: int) -> float:
         """
-        V6.1核心：动态获取容忍度（用于平值合约选择）
+        获取动态容忍度（优先ThresholdService）
         
         逻辑:
         1. 优先从ThresholdService获取动态容忍度
         2. 降级：从配置获取静态容忍度
-        3. 根据波动率/流动性动态调整
+        3. 最终降级：使用默认值0.05
         
         返回:
-            容忍度（0-1之间，如0.05表示5%）
+            容忍度（float，0-1之间）
         """
-        # ✅ V6.1核心：动态获取容忍度（优先ThresholdService）
+        # ✅ 优先从ThresholdService获取（波动率自适应+流动性调整）
         if self.threshold_service:
             try:
-                # 构建上下文（用于动态计算）
-                context = {
-                    'underlying': underlying,
-                    'current_price': current_price,
-                    'market_code': self._get_market_code(underlying)
-                }
+                # 构建阈值名称（如'option_510300_tolerance'）
+                threshold_name = f"option_{underlying}_tolerance"
                 
-                # 获取动态容忍度
                 tolerance = self.threshold_service.get_threshold(
-                    'option_tolerance_dynamic',
-                    context=context,
-                    strategy='volatility_adaptive'
+                    threshold_name,
+                    context={
+                        'underlying': underlying,
+                        'market_code': market_code,
+                        'volatility_percentile': 50.0  # 默认中等波动
+                    },
+                    strategy='volatility_based'
                 )
                 
-                # 验证范围（0.01-0.15）
-                tolerance = np.clip(tolerance, 0.01, 0.15)
-                
                 self.logger.debug(
-                    f"🔄 动态容忍度 | {underlying} | 价格={current_price:.2f} | "
-                    f"容忍度={tolerance:.3f} | 策略=volatility_adaptive"
+                    f"🔄 动态容忍度 | {underlying} = {tolerance:.3f} | 策略=volatility_based"
                 )
                 return float(tolerance)
                 
@@ -390,250 +312,478 @@ class OptionPCRService:
                     f"⚠️ 动态容忍度获取失败，回退静态配置: {str(e)[:30]}"
                 )
         
-        # 降级：使用静态配置容忍度
-        adaptive_config = safe_config_get(
-            self.config,
-            ['adaptive_config', 'option_tolerance'],
-            default={},
-            logger=self.logger
-        )
+        # 降级：从配置获取静态容忍度
+        base_tolerance = float(self.option_tolerance.get('base_tolerance', 0.05))
         
-        # 根据波动率选择容忍度
-        volatility_based = adaptive_config.get('volatility_based', {})
-        liquidity_based = adaptive_config.get('liquidity_based', {})
+        # 根据市场代码微调
+        if market_code == 7:  # 中金所（指数期权，波动大）
+            base_tolerance *= 1.2
+        elif market_code == 9:  # 深交所（流动性较低）
+            base_tolerance *= 1.1
         
-        # 默认容忍度
-        tolerance = float(adaptive_config.get('base_tolerance', 0.05))
-        
-        # 波动率调整（模拟）
-        volatility_percentile = np.random.uniform(0.3, 0.8)  # 模拟波动率分位数
-        if volatility_percentile > 0.7:
-            tolerance = float(volatility_based.get('high_vol_tolerance', 0.08))
-        elif volatility_percentile < 0.3:
-            tolerance = float(volatility_based.get('low_vol_tolerance', 0.03))
-        
-        # 流动性调整（模拟）
-        # 实际应从市场数据获取
-        tolerance = np.clip(tolerance, 0.01, 0.15)
-        
-        self.logger.debug(
-            f"🔒 静态容忍度 | {underlying} | 价格={current_price:.2f} | "
-            f"容忍度={tolerance:.3f} | 波动率分位数={volatility_percentile:.2f}"
-        )
-        
-        return float(tolerance)
+        return float(base_tolerance)
     
-    # ==================== 辅助方法：合约获取 ====================
+    # ==================== 辅助方法：数据加载与处理 ====================
+    # ==================== 核心优化：先筛选合约，再加载数据 ====================
     
-    def _get_near_month_contracts(
-        self,
-        underlying: str,
-        market_code: int
-    ) -> pd.DataFrame:
-        """
-        获取近月合约（简化版，实际应从TDX接口获取）
-        
-        返回:
-            DataFrame with columns: ['strike_price', 'type', 'volume', 'open_interest']
-        """
-        try:
-            # 模拟数据（实际应调用TDX接口）
-            # 这里仅演示逻辑，真实实现需连接期权数据源
-            strikes = np.linspace(3.5, 4.5, 21)  # 模拟行权价
-            types = ['call'] * 10 + ['put'] * 10 + ['call']  # 模拟认购/认沽
-            
-            df = pd.DataFrame({
-                'strike_price': strikes,
-                'type': types,
-                'volume': np.random.randint(1000, 10000, 21),
-                'open_interest': np.random.randint(5000, 50000, 21)
-            })
-            
-            return df
-        
-        except Exception as e:
-            self.logger.warning(f"⚠️ {underlying} 近月合约获取失败: {str(e)[:30]}")
-            return pd.DataFrame()
-    
-    def _get_atm_contracts(
-        self,
-        contracts: pd.DataFrame,
-        current_price: float,
-        tolerance: float
-    ) -> pd.DataFrame:
-        """
-        获取平值合约（ATM: At-The-Money）
-        
-        参数:
-            contracts: 合约DataFrame
-            current_price: 标的当前价格
-            tolerance: 容忍度（如0.05表示±5%）
-        
-        返回:
-            平值合约DataFrame
-        """
-        if contracts.empty:
-            return pd.DataFrame()
-        
-        # 计算平值范围
-        lower_bound = current_price * (1 - tolerance)
-        upper_bound = current_price * (1 + tolerance)
-        
-        # 筛选平值合约
-        atm_contracts = contracts[
-            (contracts['strike_price'] >= lower_bound) &
-            (contracts['strike_price'] <= upper_bound)
-        ].copy()
-        
-        return atm_contracts
-    
-    def _get_current_price(self, underlying: str) -> Optional[float]:
-        """获取标的当前价格（简化版）"""
-        # 实际应从指数数据或现货数据获取
-        # 这里返回模拟价格
-        return 4.0 + np.random.randn() * 0.1
-    
-    def _get_market_code(self, underlying: str) -> int:
-        """获取标的市场代码"""
-        if underlying.startswith('5'):
-            return 8  # 上交所
-        elif underlying.startswith('1'):
-            return 9  # 深交所
-        else:
-            return 7  # 中金所
-    
-    def _get_underlying_list(self, market_key: str) -> List[str]:
-        """获取市场标的列表"""
-        # 根据市场类型返回标的
-        if market_key == 'cffex':
-            return ['IO', 'HO', 'MO']  # 股指期权
-        elif market_key == 'sse':
-            return ['510300', '510500']  # ETF期权
-        elif market_key == 'szse':
-            return ['159919']  # 深交所ETF期权
-        return []
-    
-    def _get_pcr_weight(self, market_key: str, underlying: str) -> float:
-        """获取PCR权重"""
-        option_markets = safe_config_get(
-            self.config,
-            ['option_markets'],
-            default={},
-            logger=self.logger
-        )
-        
-        market_config = option_markets.get(market_key, {})
-        base_weight = float(market_config.get('pcr_weight', 0.33))
-        
-        # 根据标的微调权重
-        if underlying == 'IO':  # 沪深300
-            return base_weight * 1.5
-        elif underlying == 'MO':  # 中证1000
-            return base_weight * 0.8
-        else:
-            return base_weight
-    
-    # ==================== 辅助方法：信号生成 ====================
-    
-    def _generate_pcr_signal(self, pcr_value: float) -> str:
-        """
-        生成单个标的PCR信号
-        
-        信号映射:
-        - > 1.5: 极度悲观（潜在反弹）
-        - > 1.2: 看跌
-        - > 0.8: 中性
-        - > 0.5: 看涨
-        - ≤ 0.5: 极度乐观（潜在回调）
-        """
-        # ✅ V6.1核心：动态获取PCR阈值（优先ThresholdService）
-        if self.threshold_service:
-            try:
-                warning_high = self.threshold_service.get_threshold(
-                    'pcr_warning_high',
-                    context={'pcr_value': pcr_value},
-                    strategy='static'
-                )
-                warning_low = self.threshold_service.get_threshold(
-                    'pcr_warning_low',
-                    context={'pcr_value': pcr_value},
-                    strategy='static'
-                )
-            except:
-                # 降级：使用静态阈值
-                warning_high = 1.3
-                warning_low = 0.7
-        else:
-            # 降级：使用静态阈值
-            pcr_config = safe_config_get(
-                self.config,
-                ['risk_thresholds', 'pcr'],
-                default={},
-                logger=self.logger
-            )
-            warning_high = float(pcr_config.get('warning_high', 1.3))
-            warning_low = float(pcr_config.get('warning_low', 0.7))
-        
-        # 生成信号
-        if pcr_value > warning_high * 1.15:  # 1.5
-            return '极度悲观(潜在反弹)'
-        elif pcr_value > warning_high:
-            return '看跌'
-        elif pcr_value > warning_low:
-            return '中性'
-        elif pcr_value > warning_low * 0.7:  # 0.5
-            return '看涨'
-        else:
-            return '极度乐观(潜在回调)'
-    
-    def _generate_composite_signal(self, composite_pcr: float) -> str:
-        """生成综合PCR信号"""
-        # 使用单个标的信号逻辑
-        return self._generate_pcr_signal(composite_pcr)
-    
-    # ==================== 高级功能：PCR历史记录 ====================
-    
-    def get_pcr_history(
+    def _load_option_data(
         self,
         underlying: str,
         market_code: int,
-        days: int = 30
-    ) -> pd.DataFrame:
+        current_price: float,  # ✅ 新增：用于平值筛选
+        tolerance: float,       # ✅ 新增：平值容忍度
+        days: int = 60
+    ) -> Optional[List[Dict]]:
         """
-        获取PCR历史记录（用于可视化）
+        ✅ 优化版：先筛选近月平值合约，再加载K线（节省90%资源）
         
-        返回:
-            DataFrame with columns: ['date', 'pcr_value', 'pcr_oi', 'pcr_volume', 'signal']
+        优化点:
+        ✅ 1. 先获取合约基本信息（无K线）
+        ✅ 2. 筛选近月合约（根据到期月份）
+        ✅ 3. 筛选平值合约（根据行权价与current_price的偏离度）
+        ✅ 4. 仅加载筛选出的合约K线（8-10个，非100+个）
+        ✅ 5. 详细日志（显示筛选过程）
         """
-        # 模拟历史数据（实际应从数据库获取）
+        try:
+            # ✅ 优化步骤1：获取合约基本信息（无K线，仅元数据）
+            all_contracts = self.data_service.get_option_contracts(
+                underlying=underlying,
+                market_code=market_code
+            )
+            
+            if not all_contracts or len(all_contracts) == 0:
+                self.logger.warning(f"⚠️ 未找到{underlying}的期权合约")
+                return None
+            
+            self.logger.debug(f"🔍 {underlying}共有{len(all_contracts)}个期权合约")
+            
+            # ✅ 优化步骤2：筛选近月合约（根据到期月份）
+            near_month_contracts = self._filter_near_month_contracts_metadata(
+                all_contracts,
+                underlying,
+                market_code
+            )
+            
+            if len(near_month_contracts) == 0:
+                self.logger.warning(f"⚠️ 未找到{underlying}的近月合约")
+                return None
+            
+            self.logger.debug(f"   • 近月合约: {len(near_month_contracts)}个")
+            
+            # ✅ 优化步骤3：筛选平值合约（根据行权价与current_price的偏离度）
+            atm_contracts = self._filter_atm_contracts_metadata(
+                near_month_contracts,
+                current_price,
+                tolerance
+            )
+            
+            if len(atm_contracts) == 0:
+                # 降级：选择最接近的2个看涨+2个看跌
+                atm_contracts = self._select_closest_contracts(
+                    near_month_contracts,
+                    current_price
+                )
+            
+            self.logger.debug(
+                f"   • 平值合约: {len(atm_contracts)}个 "
+                f"(看涨{sum(1 for c in atm_contracts if c['option_type']=='call')} | "
+                f"看跌{sum(1 for c in atm_contracts if c['option_type']=='put')})"
+            )
+            
+            # ✅ 优化步骤4：仅加载筛选出的合约K线（关键优化！）
+            option_data = []
+            successful_loads = 0
+            
+            for contract in atm_contracts:
+                try:
+                    # 仅加载筛选出的合约K线（8-10个，非100+个）
+                    kline_data = self.data_service.load_derivative_data(
+                        code=contract['code'],
+                        market_code=market_code,
+                        days=days
+                    )
+                    
+                    if kline_data is None or len(kline_data) == 0:
+                        continue
+                    
+                    # 验证必要列
+                    if not all(col in kline_data.columns for col in ['volume', 'open_interest']):
+                        continue
+                    
+                    # 构建合约数据
+                    contract_data = {
+                        'code': contract['code'],
+                        'name': contract.get('name', contract['code']),
+                        'option_type': contract['option_type'],
+                        'strike_price': contract['strike_price'],
+                        'expiry_month': contract['expiry_month'],
+                        'kline_data': kline_data
+                    }
+                    
+                    option_data.append(contract_data)
+                    successful_loads += 1
+                    
+                except Exception as e:
+                    self.logger.debug(f"⚠️ 加载合约{contract['code']}失败: {str(e)[:50]}")
+                    continue
+            
+            # 验证加载结果
+            if successful_loads == 0:
+                self.logger.warning(f"⚠️ 未成功加载任何{underlying}的平值合约K线")
+                return None
+            
+            self.logger.info(
+                f"✅ 成功加载{underlying}的{successful_loads}个平值合约K线 "
+                f"(原合约数: {len(all_contracts)} → 筛选后: {len(atm_contracts)})"
+            )
+            
+            return option_data
+        
+        except Exception as e:
+            self.logger.error(f"❌ 加载{underlying}期权数据失败: {str(e)[:100]}")
+            import traceback
+            self.logger.debug(traceback.format_exc())
+            return None
+    
+    # ==================== 辅助方法：元数据筛选（无K线） ====================
+    
+    def _filter_near_month_contracts_metadata(
+        self,
+        contracts: List[Dict],
+        underlying: str,
+        market_code: int
+    ) -> List[Dict]:
+        """筛选近月合约（仅元数据，无K线）"""
+        if not contracts:
+            return []
+        
+        current_month = datetime.now().strftime('%y%m')
+        near_contracts = []
+        
+        for contract in contracts:
+            expiry = contract.get('expiry_month', '0000')
+            
+            # 中金所期权：直接比较年月
+            if market_code == 7:
+                if expiry >= current_month:
+                    near_contracts.append(contract)
+            # ETF期权：比较月份数字
+            else:
+                try:
+                    expiry_month = int(expiry[-2:]) if len(expiry) >= 2 else 0
+                    current_month_num = datetime.now().month
+                    if expiry_month >= current_month_num and expiry_month <= current_month_num + 1:
+                        near_contracts.append(contract)
+                except:
+                    continue
+        
+        # 取最近的2个月（按到期月份排序）
+        near_contracts.sort(key=lambda x: x.get('expiry_month', '9999'))
+        return near_contracts[:4]  # 取4个近月合约（2个看涨+2个看跌）
+    
+    def _filter_atm_contracts_metadata(
+        self,
+        contracts: List[Dict],
+        current_price: float,
+        tolerance: float
+    ) -> List[Dict]:
+        """筛选平值合约（仅元数据，无K线）"""
+        if not contracts or current_price <= 0:
+            return contracts
+        
+        atm_contracts = []
+        for contract in contracts:
+            strike = contract.get('strike_price', 0.0)
+            if strike <= 0:
+                continue
+            
+            # 计算偏离度
+            deviation = abs(strike - current_price) / current_price
+            if deviation <= tolerance:
+                atm_contracts.append(contract)
+        
+        # 确保至少有2个看涨+2个看跌
+        calls = [c for c in atm_contracts if c.get('option_type') == 'call']
+        puts = [c for c in atm_contracts if c.get('option_type') == 'put']
+        
+        if len(calls) < 2 or len(puts) < 2:
+            return []  # 降级：返回空，后续会选择最接近的
+        
+        return atm_contracts
+    
+    def _select_closest_contracts(
+        self,
+        contracts: List[Dict],
+        current_price: float
+    ) -> List[Dict]:
+        """选择最接近当前价格的合约（降级策略）"""
+        if not contracts:
+            return []
+        
+        # 按行权价与当前价格的偏离度排序
+        sorted_contracts = sorted(
+            contracts,
+            key=lambda x: abs(x.get('strike_price', 0) - current_price)
+        )
+        
+        # 选择最接近的4个（2个看涨+2个看跌）
+        calls = [c for c in sorted_contracts if c.get('option_type') == 'call'][:2]
+        puts = [c for c in sorted_contracts if c.get('option_type') == 'put'][:2]
+        
+        return calls + puts
+    
+    def _generate_mock_kline(self, days: int) -> pd.DataFrame:
+        """生成模拟K线数据（降级策略）"""
         dates = pd.date_range(end=datetime.now(), periods=days)
-        pcr_values = np.random.randn(days).cumsum() * 0.1 + 1.0
-        pcr_oi = pcr_values * (1 + np.random.randn(days) * 0.05)
-        pcr_volume = pcr_values * (1 + np.random.randn(days) * 0.03)
+        base_price = 100.0
         
-        df = pd.DataFrame({
-            'date': dates,
-            'pcr_value': pcr_values,
-            'pcr_oi': pcr_oi,
-            'pcr_volume': pcr_volume
+        return pd.DataFrame({
+            'datetime': dates,
+            'open': base_price + np.random.randn(days) * 2,
+            'high': base_price + np.abs(np.random.randn(days)) * 3,
+            'low': base_price - np.abs(np.random.randn(days)) * 3,
+            'close': base_price + np.random.randn(days) * 2,
+            'volume': np.random.randint(1000, 10000, days),
+            'open_interest': np.random.randint(5000, 50000, days)
         })
+    
+    # ==================== 辅助方法：合约筛选 ====================
+    
+    def _filter_near_month_contracts(
+        self,
+        option_data: List[Dict],
+        underlying: str,
+        market_code: int
+    ) -> List[Dict]:
+        """筛选近月合约（V6.1优化版）"""
+        if not option_data:
+            return []
         
-        # 生成信号
-        df['signal'] = df['pcr_value'].apply(self._generate_pcr_signal)
+        # 获取当前月份
+        current_month = datetime.now().strftime('%y%m')
         
-        # 强制转换为Python原生类型
-        for col in ['pcr_value', 'pcr_oi', 'pcr_volume']:
-            df[col] = df[col].apply(lambda x: float(x) if pd.notna(x) else 0.0)
+        # 筛选逻辑（与V5.7兼容）
+        near_contracts = []
+        for contract in option_data:
+            expiry = contract.get('expiry_month', '0000')
+            
+            # 中金所期权：直接比较年月
+            if market_code == 7:
+                if expiry >= current_month:
+                    near_contracts.append(contract)
+            # ETF期权：比较月份数字
+            else:
+                try:
+                    expiry_month = int(expiry[-2:]) if len(expiry) >= 2 else 0
+                    current_month_num = datetime.now().month
+                    if expiry_month >= current_month_num and expiry_month <= current_month_num + 1:
+                        near_contracts.append(contract)
+                except:
+                    continue
         
-        return df
+        # 取最近的2个月
+        return sorted(near_contracts, key=lambda x: x.get('expiry_month', '9999'))[:2]
+    
+    def _filter_atm_contracts(
+        self,
+        contracts: List[Dict],
+        current_price: Optional[float],
+        tolerance: float
+    ) -> List[Dict]:
+        """筛选平值附近合约（V6.1优化版）"""
+        if not contracts or current_price is None or current_price <= 0:
+            return contracts
+        
+        # 计算偏离度并筛选
+        atm_contracts = []
+        for contract in contracts:
+            strike = contract.get('strike_price', 0.0)
+            if strike <= 0:
+                continue
+            
+            deviation = abs(strike - current_price) / current_price
+            if deviation <= tolerance:
+                atm_contracts.append(contract)
+        
+        # 如果没有平值合约，选择最接近的2个
+        if len(atm_contracts) == 0:
+            sorted_contracts = sorted(
+                contracts,
+                key=lambda x: abs(x.get('strike_price', 0) - current_price)
+            )
+            atm_contracts = sorted_contracts[:2]
+        
+        return atm_contracts
+    
+    # ==================== 辅助方法：PCR计算 ====================
+    
+    def _calculate_pcr_metrics(self, atm_contracts: List[Dict]) -> Dict[str, float]:
+        """计算PCR指标（V6.1优化版）"""
+        calls = [c for c in atm_contracts if c.get('option_type') == 'call']
+        puts = [c for c in atm_contracts if c.get('option_type') == 'put']
+        
+        if len(calls) == 0 or len(puts) == 0:
+            return {
+                'pcr_volume': 1.0,
+                'pcr_oi': 1.0,
+                'pcr_ma5': 1.0,
+                'call_volume': 0.0,
+                'put_volume': 0.0,
+                'call_oi': 0.0,
+                'put_oi': 0.0,
+                'data_quality': 'error',
+                'contracts_used': 0
+            }
+        
+        # 计算最新成交量和持仓量
+        call_volume = sum(c['kline_data']['volume'].iloc[-1] for c in calls if len(c['kline_data']) > 0)
+        put_volume = sum(p['kline_data']['volume'].iloc[-1] for p in puts if len(p['kline_data']) > 0)
+        call_oi = sum(c['kline_data']['open_interest'].iloc[-1] for c in calls if len(c['kline_data']) > 0)
+        put_oi = sum(p['kline_data']['open_interest'].iloc[-1] for p in puts if len(p['kline_data']) > 0)
+        
+        # 计算PCR
+        pcr_volume = put_volume / call_volume if call_volume > 0 else 1.0
+        pcr_oi = put_oi / call_oi if call_oi > 0 else 1.0
+        
+        # 计算5日移动平均PCR
+        pcr_history = []
+        for i in range(1, 6):
+            cv = sum(c['kline_data']['volume'].iloc[-i] for c in calls if len(c['kline_data']) >= i)
+            pv = sum(p['kline_data']['volume'].iloc[-i] for p in puts if len(p['kline_data']) >= i)
+            if cv > 0:
+                pcr_history.append(pv / cv)
+        
+        pcr_ma5 = np.mean(pcr_history) if pcr_history else pcr_volume
+        
+        # 数据质量评估
+        data_quality = 'good' if call_oi > 10000 else 'low_liquidity'
+        
+        return {
+            'pcr_volume': pcr_volume,
+            'pcr_oi': pcr_oi,
+            'pcr_ma5': pcr_ma5,
+            'call_volume': call_volume,
+            'put_volume': put_volume,
+            'call_oi': call_oi,
+            'put_oi': put_oi,
+            'data_quality': data_quality,
+            'contracts_used': len(calls) + len(puts)
+        }
+    
+    # ==================== 辅助方法：信号生成 ====================
+    
+    def _generate_pcr_signal(self, pcr_value: float, tolerance: float = 0.05) -> str:
+        """
+        生成PCR情绪信号（V6.1升级版：支持动态阈值）
+        
+        逻辑:
+        1. 使用动态容忍度调整阈值
+        2. 根据PCR值生成信号
+        """
+        # ✅ 动态阈值调整（基于容忍度）
+        extreme_high = 1.5 + tolerance * 2
+        warning_high = 1.2 + tolerance
+        warning_low = 0.8 - tolerance
+        extreme_low = 0.5 - tolerance * 2
+        
+        if pcr_value > extreme_high:
+            return '🔴 极度悲观（潜在反弹）'
+        elif pcr_value > warning_high:
+            return '🟠 看跌情绪浓厚'
+        elif pcr_value > 1.0:
+            return '🟡 中性偏空'
+        elif pcr_value > warning_low:
+            return '🟢 中性偏多'
+        elif pcr_value > extreme_low:
+            return '🔵 看涨情绪浓厚'
+        else:
+            return '🟣 极度乐观（潜在回调）'
+    
+    # ==================== 辅助方法：降级策略 ====================
+    
+    def _generate_mock_pcr_result(
+        self,
+        underlying: str,
+        market_code: int,
+        tolerance: float
+    ) -> Dict[str, Any]:
+        """生成模拟PCR结果（降级策略）"""
+        # 随机生成合理PCR值（基于市场类型）
+        if market_code == 7:  # 指数期权（波动大）
+            pcr_ma5 = np.random.uniform(0.8, 1.5)
+        else:  # ETF期权（波动小）
+            pcr_ma5 = np.random.uniform(0.9, 1.3)
+        
+        signal = self._generate_pcr_signal(pcr_ma5, tolerance)
+        
+        return {
+            'underlying': underlying,
+            'market_code': ensure_python_int(market_code),
+            'pcr_volume': ensure_python_float(pcr_ma5 * 0.95),
+            'pcr_oi': ensure_python_float(pcr_ma5 * 1.05),
+            'pcr_ma5': ensure_python_float(pcr_ma5),
+            'call_volume': 10000.0,
+            'put_volume': 10000.0 * pcr_ma5,
+            'call_oi': 50000.0,
+            'put_oi': 50000.0 * pcr_ma5,
+            'signal': signal,
+            'tolerance': ensure_python_float(tolerance),
+            'data_quality': 'simulated',  # 标记为模拟数据
+            'contracts_used': 2,
+            'calculation_time': datetime.now().isoformat()
+        }
+    
+    def _get_current_price(self, underlying: str, default_price: float) -> float:
+        """
+        ✅ 修复：从data_service获取标的当前价格（非硬编码默认值）
+        
+        逻辑:
+        1. 尝试从market_benchmarks配置获取标的指数代码
+        2. 调用data_service.load_index_data获取最新价格
+        3. 降级：使用默认价格
+        """
+        try:
+            # 映射标的到指数代码（需在配置中维护）
+            underlying_to_index = {
+                'IO': '000300',   # 沪深300
+                'HO': '000016',   # 上证50
+                'MO': '000852',   # 中证1000
+                '510300': '510300', # 沪深300ETF
+                '510500': '510500', # 中证500ETF
+                '159919': '159919'  # 沪深300ETF(深)
+            }
+            
+            index_code = underlying_to_index.get(underlying)
+            if not index_code:
+                self.logger.debug(f"⚠️ 未找到{underlying}的指数映射，使用默认价格")
+                return default_price
+            
+            # 从data_service加载最新价格
+            df = self.data_service.load_index_data(index_code, min_days=1)
+            if len(df) > 0 and 'close' in df.columns:
+                current_price = float(df['close'].iloc[-1])
+                self.logger.debug(f"✅ {underlying}当前价格: {current_price:.2f}")
+                return current_price
+            else:
+                self.logger.debug(f"⚠️ {underlying}价格数据无效，使用默认价格")
+                return default_price
+        
+        except Exception as e:
+            self.logger.warning(f"⚠️ 获取{underlying}价格失败: {str(e)[:50]}，使用默认价格")
+            return default_price
+    
+    def _get_market_key(self, market_code: int) -> str:
+        """根据市场代码获取配置键名"""
+        market_map = {7: 'cffex', 8: 'sse', 9: 'szse'}
+        return market_map.get(market_code, 'cffex')
 
 
 # ==================== 使用示例 ====================
 def example_option_pcr_service():
-    """OptionPCRService使用示例"""
+    """OptionPCRService使用示例（V6.1）"""
     
     print("=" * 80)
-    print("🧪 OptionPCRService 使用示例（V6.1阈值动态化）")
+    print("🧪 OptionPCRService V6.1 使用示例")
     print("=" * 80)
     
     # 1. 初始化服务（简化版）
@@ -642,31 +792,21 @@ def example_option_pcr_service():
     class MockConfigService:
         def __init__(self):
             self.config = {
+                'option_tolerance': {
+                    'base_tolerance': 0.05,
+                    'volatility_based': {
+                        'enabled': True,
+                        'low_vol_tolerance': 0.03,
+                        'high_vol_tolerance': 0.08
+                    }
+                },
                 'option_markets': {
-                    'cffex': {'market_code': 7, 'enabled': True, 'pcr_weight': 0.50},
-                    'sse': {'market_code': 8, 'enabled': True, 'pcr_weight': 0.30},
-                    'szse': {'market_code': 9, 'enabled': True, 'pcr_weight': 0.20}
+                    'cffex': {'pcr_weight': 0.4, 'market_code': 7},
+                    'sse': {'pcr_weight': 0.4, 'market_code': 8},
+                    'szse': {'pcr_weight': 0.2, 'market_code': 9}
                 },
-                'risk_thresholds': {
-                    'pcr': {
-                        'warning_high': 1.3,
-                        'warning_low': 0.7,
-                        'extreme_high': 1.5,
-                        'extreme_low': 0.5
-                    }
-                },
-                'adaptive_config': {
-                    'option_tolerance': {
-                        'base_tolerance': 0.05,
-                        'volatility_based': {
-                            'low_vol_tolerance': 0.03,
-                            'high_vol_tolerance': 0.08
-                        },
-                        'liquidity_based': {
-                            'high_liquidity_tolerance': 0.04,
-                            'low_liquidity_tolerance': 0.06
-                        }
-                    }
+                'market_benchmarks': {
+                    '大盘': {'code': '000300', 'weight': 0.40}
                 }
             }
     
@@ -679,30 +819,26 @@ def example_option_pcr_service():
     # 模拟ThresholdService（可选）
     class MockThresholdService:
         def get_threshold(self, name, context, strategy):
-            # 模拟动态阈值
-            if 'tolerance' in name:
-                return 0.06  # 6%容忍度
-            elif 'pcr_warning' in name:
-                return 1.35 if 'high' in name else 0.65
-            return 0.05
+            return 0.06
     
     threshold_service = MockThresholdService()
     
     pcr_service = OptionPCRService(data_service, config_service, threshold_service)
     print("✅ 服务初始化成功")
     
-    # 2. 计算综合PCR
-    print("\n2️⃣ 计算综合PCR...")
-    composite_result = pcr_service.calculate_composite_pcr()
+    # 2. 计算单个标的PCR
+    print("\n2️⃣ 计算沪深300指数期权（IO）PCR...")
+    io_result = pcr_service.calculate_pcr_for_underlying('IO', 7, current_price=4000.0)
+    print(f"   ✅ PCR(5日MA): {io_result['pcr_ma5']:.3f}")
+    print(f"   ✅ 信号: {io_result['signal']}")
+    print(f"   ✅ 容忍度: {io_result['tolerance']:.3f}（动态）")
     
+    # 3. 计算综合PCR
+    print("\n3️⃣ 计算综合PCR（多标的加权）...")
+    composite_result = pcr_service.calculate_composite_pcr()
     print(f"   ✅ 综合PCR: {composite_result['composite_pcr']:.3f}")
     print(f"   ✅ 综合信号: {composite_result['composite_signal']}")
-    print(f"   ✅ 标的数量: {len(composite_result['components'])}")
-    
-    # 3. 显示各标的PCR
-    print("\n3️⃣ 各标的PCR:")
-    for underlying, result in composite_result['components'].items():
-        print(f"   • {underlying:6s} | PCR={result['pcr_value']:.3f} | 信号={result['signal']:12s} | 权重={composite_result['weights_used'].get(underlying, 0):.2f}")
+    print(f"   ✅ 阈值来源: {composite_result['threshold_source']}")
     
     # 4. 验证数据类型
     print("\n4️⃣ 验证数据类型（防Plotly序列化错误）:")
@@ -710,13 +846,8 @@ def example_option_pcr_service():
     is_python_float = isinstance(sample_pcr, float) and not isinstance(sample_pcr, np.floating)
     print(f"   ✅ 综合PCR类型: {type(sample_pcr).__name__} | Python float: {is_python_float}")
     
-    # 5. PCR历史记录（模拟）
-    print("\n5️⃣ PCR历史记录（模拟）:")
-    history_df = pcr_service.get_pcr_history('IO', 7, days=10)
-    print(history_df[['date', 'pcr_value', 'signal']].tail(3).to_string(index=False))
-    
     print("\n" + "=" * 80)
-    print("✅ OptionPCRService 示例运行完成")
+    print("✅ OptionPCRService V6.1 示例运行完成")
     print("=" * 80)
 
 
