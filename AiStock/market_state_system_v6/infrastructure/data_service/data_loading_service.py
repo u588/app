@@ -547,7 +547,7 @@ class DataLoadingService:
                     # 解析合约信息（复用V5.7的解析逻辑）
                     code_name = row['code_name'].strip()
                     code = row['code'].strip()
-                    market_code = row['market_code'].strip()
+                    market_code = row['market_code']
                     
                     # 提取期权类型、行权价、到期月份（复用V5.7的解析方法）
                     option_type = self._extract_option_type(code_name)
