@@ -209,18 +209,20 @@ class OptionPCRService:
         weights_used = {}
         
         # 定义主要标的（与V5.7兼容 + V6.1扩展）
-        main_underlyings = [
-            ('IO', 7, 4000.0),    # 沪深300指数期权（中金所）
-            ('MO', 7, 7000.0),    # 中证1000指数期权（中金所）
-            ('510300', 8, 4.0),   # 沪深300ETF期权（上交所）
-            ('510500', 8, 7.5),   # 中证500ETF期权（上交所）
-            ('159919', 9, 4.2)    # 沪深300ETF期权（深交所，V6.1新增）
-        ]
+        main_underlyings = self.config_service.get('option_underlying_mapping', {})
+        # main_underlyings = [
+        #     ('IO', 7, 4000.0),    # 沪深300指数期权（中金所）
+        #     ('MO', 7, 7000.0),    # 中证1000指数期权（中金所）
+        #     ('510300', 8, 4.0),   # 沪深300ETF期权（上交所）
+        #     ('510500', 8, 7.5),   # 中证500ETF期权（上交所）
+        #     ('159919', 9, 4.2)    # 沪深300ETF期权（深交所，V6.1新增）
+        # ]
         
         # 1. ✅ 计算各标的PCR（独立try-except，单个失败不影响整体）
-        for underlying, market_code, default_price in main_underlyings:
+        for underlying, underlying_conte in main_underlyings.items():
             try:
                 # 获取标的当前价格（从market_benchmarks或使用默认值）
+                underlying_code, market_code, weight, default_price = underlying_conte
                 current_price = self._get_current_price(underlying, default_price)
                 
                 # 计算PCR
@@ -233,9 +235,9 @@ class OptionPCRService:
                 
                 components[underlying] = pcr_result
                 
-                # 获取权重（从option_markets配置）
-                market_key = self._get_market_key(market_code)
-                weight = self.option_markets.get(market_key, {}).get('pcr_weight', 0.2)
+                # # 获取权重（从option_markets配置）
+                # market_key = self._get_market_key(market_code)
+                # weight = self.option_markets.get(market_key, {}).get('pcr_weight', 0.2)
                 weights_used[underlying] = weight
                 
             except Exception as e:
@@ -273,55 +275,165 @@ class OptionPCRService:
         }
     
     # ==================== 辅助方法：动态容忍度获取 ====================
-    
-    def _get_dynamic_tolerance(self, underlying: str, market_code: int) -> float:
+    def _get_dynamic_tolerance(self, underlying: str, market_code: int, vol_percentile: float = 50.0) -> float:
         """
-        获取动态容忍度（优先ThresholdService）
+        ✅ 优化版：精准对接 ThresholdService V6.1 配置结构
         
-        逻辑:
-        1. 优先从ThresholdService获取动态容忍度
-        2. 降级：从配置获取静态容忍度
-        3. 最终降级：使用默认值0.05
+        逻辑流程:
+        1️⃣ 优先：从 ThresholdService 获取基础容忍度（固定阈值名 'option_tolerance_base'）
+        2️⃣ 动态调整：根据波动率分位数应用 volatility_based 配置（OptionPCRService 自主实现）
+        3️⃣ 市场微调：根据 market_code 进行流动性/波动率补偿
+        4️⃣ 降级：ThresholdService 不可用时从配置获取
+        
+        关键修复:
+        ✅ 阈值名称修正：使用固定名 'option_tolerance_base'（非 per-underlying）
+        ✅ 配置路径修正：从 self.option_tolerance.volatility_based 获取参数
+        ✅ 策略解耦：波动率调整由 OptionPCRService 自主实现（不依赖 ThresholdService 不存在的策略）
+        ✅ 类型安全：所有数值强制 Python 原生 float
+        
+        参数:
+            underlying: 标的代码（如 '510300'）
+            market_code: 市场代码（7=中金所, 8=上交所, 9=深交所）
+            vol_percentile: 波动率分位数（0-100，用于动态调整，默认50.0）
         
         返回:
-            容忍度（float，0-1之间）
+            容忍度（float，0.03-0.10 之间）
         """
-        # ✅ 优先从ThresholdService获取（波动率自适应+流动性调整）
+        # ✅ 修复1：使用固定阈值名称（V6.1 配置中无 per-underlying 阈值）
+        threshold_name = 'option_tolerance_base'
+        
+        # 1. 优先从 ThresholdService 获取基础容忍度（static 策略）
+        base_tolerance = None
         if self.threshold_service:
             try:
-                # 构建阈值名称（如'option_510300_tolerance'）
-                threshold_name = f"option_{underlying}_tolerance"
-                
-                tolerance = self.threshold_service.get_threshold(
+                # ✅ 关键修复：使用固定阈值名 + static 策略（避免策略不匹配）
+                base_tolerance = self.threshold_service.get_threshold(
                     threshold_name,
                     context={
                         'underlying': underlying,
                         'market_code': market_code,
-                        'volatility_percentile': 50.0  # 默认中等波动
+                        'vol_percentile': vol_percentile  # 传递波动率用于日志
                     },
-                    strategy='volatility_based'
+                    strategy='static'  # ✅ 明确指定 static 策略（避免 auto 选择不存在的策略）
                 )
-                
                 self.logger.debug(
-                    f"🔄 动态容忍度 | {underlying} = {tolerance:.3f} | 策略=volatility_based"
+                    f"✅ 基础容忍度（ThresholdService）| {underlying} = {base_tolerance:.3f} | "
+                    f"阈值名: {threshold_name}"
                 )
-                return float(tolerance)
-                
             except Exception as e:
                 self.logger.warning(
-                    f"⚠️ 动态容忍度获取失败，回退静态配置: {str(e)[:30]}"
+                    f"⚠️ ThresholdService 获取基础容忍度失败（回退配置）: {str(e)[:50]}"
                 )
         
-        # 降级：从配置获取静态容忍度
-        base_tolerance = float(self.option_tolerance.get('base_tolerance', 0.05))
+        # 2. 降级：从配置获取基础容忍度
+        if base_tolerance is None:
+            base_tolerance = float(self.option_tolerance.get('base_tolerance', 0.05))
+            self.logger.debug(
+                f"✅ 基础容忍度（配置降级）| {underlying} = {base_tolerance:.3f} | "
+                f"来源: option_tolerance.base_tolerance"
+            )
         
-        # 根据市场代码微调
+        # 3. ✅ 修复2：波动率动态调整（OptionPCRService 自主实现，不依赖 ThresholdService）
+        #    原因：ThresholdService 无 volatility_based 策略，且配置路径不匹配（volatility_based vs volatility_adjustment）
+        volatility_config = self.option_tolerance.get('volatility_based', {})
+        threshold_percentile = float(volatility_config.get('threshold_percentile', 0.7))
+        low_vol_tolerance = float(volatility_config.get('low_vol_tolerance', 0.03))
+        high_vol_tolerance = float(volatility_config.get('high_vol_tolerance', 0.08))
+        
+        # 波动率分位数映射（0-100 → 0-1）
+        vol_ratio = vol_percentile / 100.0
+        
+        # 动态调整逻辑（与配置语义一致）
+        if vol_ratio > threshold_percentile:  # 高波动市场（>70%分位数）
+            adjusted_tolerance = high_vol_tolerance
+            adjustment_type = 'high_vol'
+            self.logger.debug(
+                f"📈 高波动调整 | vol={vol_percentile:.1f}% > {threshold_percentile*100:.0f}% | "
+                f"容忍度: {base_tolerance:.3f} → {adjusted_tolerance:.3f}"
+            )
+        elif vol_ratio < (1.0 - threshold_percentile):  # 低波动市场（<30%分位数）
+            adjusted_tolerance = low_vol_tolerance
+            adjustment_type = 'low_vol'
+            self.logger.debug(
+                f"📉 低波动调整 | vol={vol_percentile:.1f}% < {(1-threshold_percentile)*100:.0f}% | "
+                f"容忍度: {base_tolerance:.3f} → {adjusted_tolerance:.3f}"
+            )
+        else:  # 中等波动
+            adjusted_tolerance = base_tolerance
+            adjustment_type = 'normal'
+            self.logger.debug(
+                f"📊 正常波动 | vol={vol_percentile:.1f}% | 容忍度: {adjusted_tolerance:.3f}"
+            )
+        
+        # 4. ✅ 修复3：市场特性微调（保持原有逻辑）
+        market_adjustment = 1.0
         if market_code == 7:  # 中金所（指数期权，波动大）
-            base_tolerance *= 1.2
+            market_adjustment = 1.2
+            self.logger.debug(f"📊 {underlying} 市场微调: ×1.2（中金所高波动）")
         elif market_code == 9:  # 深交所（流动性较低）
-            base_tolerance *= 1.1
+            market_adjustment = 1.1
+            self.logger.debug(f"📊 {underlying} 市场微调: ×1.1（深交所低流动性）")
         
-        return float(base_tolerance)
+        # 5. 最终容忍度 = 波动率调整值 × 市场微调系数
+        final_tolerance = adjusted_tolerance * market_adjustment
+        
+        # 6. ✅ 强制 Python 原生 float（防 Plotly 序列化错误）
+        final_tolerance = float(np.clip(final_tolerance, 0.01, 0.15))  # 限制合理范围
+        
+        self.logger.info(
+            f"🎯 动态容忍度 | {underlying} = {final_tolerance:.3f} | "
+            f"基础={base_tolerance:.3f} | 波动调整={adjustment_type} | 市场×{market_adjustment:.1f}"
+        )
+        
+        return final_tolerance    
+    # def _get_dynamic_tolerance(self, underlying: str, market_code: int) -> float:
+    #     """
+    #     获取动态容忍度（优先ThresholdService）
+        
+    #     逻辑:
+    #     1. 优先从ThresholdService获取动态容忍度
+    #     2. 降级：从配置获取静态容忍度
+    #     3. 最终降级：使用默认值0.05
+        
+    #     返回:
+    #         容忍度（float，0-1之间）
+    #     """
+    #     # ✅ 优先从ThresholdService获取（波动率自适应+流动性调整）
+    #     if self.threshold_service:
+    #         try:
+    #             # 构建阈值名称（如'option_510300_tolerance'）
+    #             threshold_name = f"option_{underlying}_tolerance"
+                
+    #             tolerance = self.threshold_service.get_threshold(
+    #                 threshold_name,
+    #                 context={
+    #                     'underlying': underlying,
+    #                     'market_code': market_code,
+    #                     'volatility_percentile': 50.0  # 默认中等波动
+    #                 },
+    #                 strategy='volatility_based'
+    #             )
+                
+    #             self.logger.debug(
+    #                 f"🔄 动态容忍度 | {underlying} = {tolerance:.3f} | 策略=volatility_based"
+    #             )
+    #             return float(tolerance)
+                
+    #         except Exception as e:
+    #             self.logger.warning(
+    #                 f"⚠️ 动态容忍度获取失败，回退静态配置: {str(e)[:30]}"
+    #             )
+        
+    #     # 降级：从配置获取静态容忍度
+    #     base_tolerance = float(self.option_tolerance.get('base_tolerance', 0.05))
+        
+    #     # 根据市场代码微调
+    #     if market_code == 7:  # 中金所（指数期权，波动大）
+    #         base_tolerance *= 1.2
+    #     elif market_code == 9:  # 深交所（流动性较低）
+    #         base_tolerance *= 1.1
+        
+    #     return float(base_tolerance)
     
     # ==================== 辅助方法：数据加载与处理 ====================
     # ==================== 核心优化：先筛选合约，再加载数据 ====================
@@ -352,7 +464,7 @@ class OptionPCRService:
             )
             
             if not all_contracts or len(all_contracts) == 0:
-                self.logger.warning(f"⚠️ 未找到{underlying}的期权合约")
+                self.logger.warning(f"⚠️ 未找到{underlying}的期权合约（市场代码: {market_code}）")
                 return None
             
             self.logger.debug(f"🔍 {underlying}共有{len(all_contracts)}个期权合约")
@@ -424,19 +536,26 @@ class OptionPCRService:
                     successful_loads += 1
                     
                 except Exception as e:
-                    self.logger.debug(f"⚠️ 加载合约{contract['code']}失败: {str(e)[:50]}")
+                    # ✅ 修复：详细错误日志（显示实际错误）
+                    self.logger.warning(
+                        f"⚠️ 加载合约{contract.get('code', 'unknown')}失败: {str(e)[:80]}"
+                    )
+                    import traceback
+                    self.logger.debug(traceback.format_exc())
                     continue
             
             # 验证加载结果
             if successful_loads == 0:
-                self.logger.warning(f"⚠️ 未成功加载任何{underlying}的平值合约K线")
+                self.logger.warning(
+                    f"⚠️ 未成功加载任何{underlying}的平值合约K线 | "
+                    f"尝试合约: {len(atm_contracts)}个 | 原因: TDX接口可能不可用或合约代码无效"
+                )
                 return None
             
             self.logger.info(
                 f"✅ 成功加载{underlying}的{successful_loads}个平值合约K线 "
-                f"(原合约数: {len(all_contracts)} → 筛选后: {len(atm_contracts)})"
+                f"(筛选自{len(all_contracts)}个原始合约)"
             )
-            
             return option_data
         
         except Exception as e:
@@ -737,26 +856,20 @@ class OptionPCRService:
         """
         ✅ 优化版：精准区分数据源
         - 指数期权（IO/HO/MO）→ 从数据库直接查询（避免TDX延迟/失败）
-        - ETF期权（510300/510500等）→ 通过data_service.load_index_data（优先TDX）
-        
-        修复点:
-        ✅ 指数期权：绕过TDX，直接SQL查询数据库（最新收盘价）
-        ✅ ETF期权：复用现有load_index_data（TDX优先+降级策略）
-        ✅ 详细日志（显示数据源）
-        ✅ 完整降级策略（数据库查询失败→默认价格）
+        - ETF期权（510300/510500等）→ 通过（优先TDX）
         """
         try:
             # ✅ 标的映射（指数期权→指数代码，ETF期权→ETF代码）
             underlying_to_index = {
                 # 指数期权：映射到指数代码（用于数据库查询）
                 'IO': '000300',   # 沪深300指数
-                'HO': '000016',   # 上证50指数
+                # 'HO': '000016',   # 上证50指数
                 'MO': '000852',   # 中证1000指数
                 
                 # ETF期权：映射到ETF代码（用于TDX加载）
                 '510300': '510300',  # 沪深300ETF
                 '510500': '510500',  # 中证500ETF
-                '159919': '159919',  # 沪深300ETF(深)
+                # '159919': '159919',  # 沪深300ETF(深)
                 '588000': '588000',  # 科创50ETF
                 '159915': '159915'   # 创业板ETF
             }
@@ -783,14 +896,12 @@ class OptionPCRService:
             
             else:
                 # ========== ETF期权：通过data_service加载（TDX优先） ==========
-                df = self.data_service.load_derivative_data(index_code,market_code=33, days=5)
+                df = self.data_service.load_derivative_data(index_code, market_code=33, days=5)
                 
                 if len(df) > 0 and 'close' in df.columns and len(df['close']) > 0:
                     current_price = float(df['close'].iloc[-1])
-                    # 检查数据源（通过data_service的日志或返回值判断，此处简化）
-                    source = "TDX" if self.config_service.config.get('tdx', {}).get('use_tdx', True) else "数据库"
                     self.logger.debug(
-                        f"✅ {underlying}当前价格（{source}）: {current_price:.3f} | 标的: {index_code}"
+                        f"✅ {underlying}当前价格 : {current_price:.3f} | 标的: {index_code}"
                     )
                     return current_price
                 else:
