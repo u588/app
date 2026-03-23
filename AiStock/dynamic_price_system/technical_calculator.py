@@ -1,0 +1,194 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+技术指标计算模块
+"""
+
+import pandas as pd
+import numpy as np
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+class TechnicalCalculator:
+    """技术指标计算器"""
+    
+    def __init__(self, df):
+        """
+        初始化
+        :param df: 日线数据 DataFrame（包含 open/high/low/close/vol）
+        """
+        self.df = df.copy()
+        self._calculate_all_indicators()
+    
+    def _calculate_all_indicators(self):
+        """计算所有技术指标"""
+        self._calculate_ma()
+        self._calculate_atr()
+        self._calculate_rsi()
+        self._calculate_macd()
+        self._calculate_boll()
+    
+    def _calculate_ma(self):
+        """计算均线"""
+        self.df['ma5'] = self.df['close'].rolling(5).mean()
+        self.df['ma20'] = self.df['close'].rolling(20).mean()
+        self.df['ma60'] = self.df['close'].rolling(60).mean()
+    
+    def _calculate_atr(self, period=14):
+        """计算 ATR（平均真实波幅）"""
+        high = self.df['high']
+        low = self.df['low']
+        close = self.df['close'].shift(1)
+        
+        tr1 = high - low
+        tr2 = abs(high - close)
+        tr3 = abs(low - close)
+        
+        tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+        self.df['atr14'] = tr.rolling(period).mean()
+    
+    def _calculate_rsi(self, period=14):
+        """计算 RSI"""
+        delta = self.df['close'].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(period).mean()
+        
+        rs = gain / loss
+        self.df['rsi14'] = 100 - (100 / (1 + rs))
+    
+    def _calculate_macd(self):
+        """计算 MACD"""
+        exp1 = self.df['close'].ewm(span=12, adjust=False).mean()
+        exp2 = self.df['close'].ewm(span=26, adjust=False).mean()
+        
+        self.df['macd_dif'] = exp1 - exp2
+        self.df['macd_dea'] = self.df['macd_dif'].ewm(span=9, adjust=False).mean()
+        self.df['macd_hist'] = self.df['macd_dif'] - self.df['macd_dea']
+    
+    def _calculate_boll(self, period=20, width=2):
+        """计算布林带"""
+        self.df['boll_mid'] = self.df['close'].rolling(period).mean()
+        std = self.df['close'].rolling(period).std()
+        self.df['boll_upper'] = self.df['boll_mid'] + width * std
+        self.df['boll_lower'] = self.df['boll_mid'] - width * std
+    
+    def get_latest_indicators(self):
+        """获取最新技术指标"""
+        if self.df.empty:
+            return None
+        
+        latest = self.df.iloc[-1]
+        return {
+            'close': latest['close'],
+            'ma5': latest.get('ma5', None),
+            'ma20': latest.get('ma20', None),
+            'ma60': latest.get('ma60', None),
+            'atr14': latest.get('atr14', None),
+            'rsi14': latest.get('rsi14', None),
+            'macd_dif': latest.get('macd_dif', None),
+            'macd_dea': latest.get('macd_dea', None),
+            'macd_hist': latest.get('macd_hist', None),
+            'boll_upper': latest.get('boll_upper', None),
+            'boll_lower': latest.get('boll_lower', None),
+        }
+    
+    def get_technical_entry_price(self):
+        """计算技术面入场价"""
+        indicators = self.get_latest_indicators()
+        if indicators is None:
+            return None
+        
+        close = indicators['close']
+        ma20 = indicators['ma20']
+        ma60 = indicators['ma60']
+        atr = indicators['atr14']
+        rsi = indicators['rsi14']
+        
+        # 基础入场价（均线支撑）
+        if close > ma20:  # 上升趋势
+            base_entry = ma20 * 0.98
+        else:
+            base_entry = ma60 * 0.95 if ma60 else close * 0.95
+        
+        # ATR 波动调整
+        atr_adjustment = atr * 1.5 if atr else close * 0.03
+        
+        # RSI 调整
+        if rsi and rsi < 30:
+            rsi_factor = 0.97
+        elif rsi and rsi > 70:
+            rsi_factor = 1.03
+        else:
+            rsi_factor = 1.00
+        
+        technical_entry = (base_entry - atr_adjustment) * rsi_factor
+        
+        return round(technical_entry, 2)
+    
+    def get_technical_stop_loss(self):
+        """计算技术面止损价"""
+        indicators = self.get_latest_indicators()
+        if indicators is None:
+            return None
+        
+        close = indicators['close']
+        ma60 = indicators['ma60']
+        atr = indicators['atr14']
+        
+        # 均线止损
+        ma_stop = ma60 * 0.97 if ma60 else close * 0.95
+        
+        # ATR 止损
+        atr_stop = close - (atr * 3) if atr else close * 0.90
+        
+        # 取较高者（更严格）
+        technical_stop = max(ma_stop, atr_stop)
+        
+        return round(technical_stop, 2)
+    
+    def get_technical_target(self):
+        """计算技术面目标价"""
+        indicators = self.get_latest_indicators()
+        if indicators is None:
+            return None
+        
+        close = indicators['close']
+        atr = indicators['atr14']
+        
+        # 前高（简化为近期最高）
+        recent_high = self.df['high'].rolling(20).max().iloc[-1]
+        high_target = recent_high * 1.05
+        
+        # 通道目标
+        channel_target = close + (atr * 8) if atr else close * 1.20
+        
+        # 取较低者（更保守）
+        technical_target = min(high_target, channel_target)
+        
+        return round(technical_target, 2)
+
+
+# 测试
+if __name__ == '__main__':
+    # 模拟数据测试
+    dates = pd.date_range('2025-01-01', periods=100, freq='D')
+    df = pd.DataFrame({
+        'open': np.random.uniform(100, 110, 100),
+        'high': np.random.uniform(110, 115, 100),
+        'low': np.random.uniform(95, 105, 100),
+        'close': np.random.uniform(100, 112, 100),
+        'vol': np.random.uniform(1000000, 5000000, 100),
+    }, index=dates)
+    
+    calc = TechnicalCalculator(df)
+    
+    print("\n" + "="*60)
+    print("技术指标测试结果")
+    print("="*60)
+    print(f"最新收盘价：{calc.get_latest_indicators()['close']}")
+    print(f"技术入场价：{calc.get_technical_entry_price()}")
+    print(f"技术止损价：{calc.get_technical_stop_loss()}")
+    print(f"技术目标价：{calc.get_technical_target()}")
