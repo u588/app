@@ -14,7 +14,6 @@ load_dotenv()
 # ==================== 基础路径配置 ====================
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / "config"
-BASE_SERVICES_DIR = BASE_DIR / "base_services"
 LOG_DIR = BASE_DIR / "logs"
 DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "output"
@@ -58,7 +57,7 @@ LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 LOG_FILE_MAX_BYTES = 50 * 1024 * 1024  # 50MB
 LOG_FILE_BACKUP_COUNT = 10
 
-# ==================== 类型转换配置（防 Plotly 序列化错误） ====================
+# ==================== 类型转换配置（防序列化错误） ====================
 PYTHON_NATIVE_TYPES = {
     'float': float, 'int': int, 'bool': bool, 'str': str,
 }

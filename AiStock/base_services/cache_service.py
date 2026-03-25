@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-V6.0 缓存服务（完全独立，无循环依赖）
-职责：
-1. 统一缓存管理（LRU 策略）
-2. 缓存命中率统计
-3. 缓存失效策略
-4. 缓存监控与清理
-依赖：
-- 无外部依赖（仅使用标准库）
-- 不依赖任何业务服务
+CacheService：LRU 缓存 + TTL + 统计监控
 """
 
 import time
@@ -21,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class CacheService:
-    """V6.0 缓存服务（修复版：完全独立）"""
+    """LRU 缓存服务（完全独立，无循环依赖）"""
     
     def __init__(self, max_size: int = 1000, ttl: int = 3600):
         """
@@ -34,7 +26,7 @@ class CacheService:
         self.max_size = max_size
         self.ttl = ttl
         self.cache: OrderedDict = OrderedDict()  # LRU 缓存
-        self.cache_metadata: Dict[str, Dict] = {}  # 缓存元数据
+        self.cache_meta Dict[str, Dict] = {}  # 缓存元数据
         self.stats = {
             'hits': 0,
             'misses': 0,
@@ -43,8 +35,6 @@ class CacheService:
         }
         self.logger = logger
         self.logger.info(f"✅ 缓存服务初始化成功 | 容量={max_size} | TTL={ttl}s")
-    
-    # ==================== 核心方法 ====================
     
     def get(self, key: str) -> Optional[Any]:
         """获取缓存数据"""
@@ -57,7 +47,7 @@ class CacheService:
         
         # 检查 TTL
         metadata = self.cache_metadata.get(key, {})
-        if 'timestamp' in metadata:
+        if 'timestamp' in meta
             age = time.time() - metadata['timestamp']
             if age > self.ttl:
                 self._remove(key)
@@ -109,13 +99,11 @@ class CacheService:
         self.logger.info(f"✅ 缓存已清空 | 清除{count}条")
         return count
     
-    # ==================== 辅助方法 ====================
-    
     def _remove(self, key: str) -> bool:
         """内部移除方法"""
         if key in self.cache:
             del self.cache[key]
-            if key in self.cache_metadata:
+            if key in self.cache_meta
                 del self.cache_metadata[key]
             return True
         return False
@@ -184,27 +172,6 @@ class CacheService:
             self.logger.info(f"✅ 缓存压缩：移除{len(expired_keys)}条过期缓存")
         return len(expired_keys)
     
-    # ==================== 调试工具 ====================
-    
-    def inspect_key(self, key: str) -> Optional[Dict]:
-        """检查指定缓存键的详细信息"""
-        if key not in self.cache:
-            return None
-        
-        metadata = self.cache_metadata[key]
-        current_time = time.time()
-        age = current_time - metadata['timestamp']
-        expires_in = metadata['ttl'] - age
-        
-        return {
-            'exists': True,
-            'value_type': str(type(self.cache[key]).__name__),
-            'value_size': metadata['size'],
-            'age': float(age),
-            'ttl': metadata['ttl'],
-            'expires_in': float(expires_in)
-        }
-    
     def __len__(self) -> int:
         """返回当前缓存大小"""
         return len(self.cache)
@@ -212,43 +179,3 @@ class CacheService:
     def __contains__(self, key: str) -> bool:
         """检查缓存键是否存在"""
         return key in self.cache and self.get(key) is not None
-
-
-# ==================== 使用示例 ====================
-def example_cache_service():
-    """缓存服务使用示例"""
-    
-    print("=" * 80)
-    print("🧪 CacheService 使用示例")
-    print("=" * 80)
-    
-    cache = CacheService(max_size=100, ttl=60)
-    
-    # 设置缓存
-    print("\n1️⃣ 设置缓存...")
-    cache.set('user:1001', {'name': '张三', 'age': 30})
-    cache.set('stock:000300', [4000, 4050, 4100, 4080, 4120])
-    
-    # 获取缓存
-    print("\n2️⃣ 获取缓存...")
-    user = cache.get('user:1001')
-    print(f"   ✅ user:1001 = {user}")
-    
-    # 缓存统计
-    print("\n3️⃣ 缓存统计...")
-    stats = cache.get_stats()
-    print(f"   命中率：{stats['hit_rate']:.1%}")
-    print(f"   命中/未命中：{stats['hits']}/{stats['misses']}")
-    
-    # 清空缓存
-    print("\n4️⃣ 清空缓存...")
-    count = cache.clear()
-    print(f"   ✅ 已清空 {count} 条缓存")
-    
-    print("\n" + "=" * 80)
-    print("✅ CacheService 示例运行完成")
-    print("=" * 80)
-
-
-if __name__ == "__main__":
-    example_cache_service()

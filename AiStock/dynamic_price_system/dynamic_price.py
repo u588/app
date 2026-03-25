@@ -6,9 +6,9 @@
 
 import logging
 from config import STOCKS_CONFIG, WEIGHTS
-from technical_calculator import TechnicalCalculator
-from fundamental_calculator import FundamentalCalculator
-from macro_calculator import MacroCalculator
+from AiStock.dynamic_price_system.core.technical_calculator import TechnicalCalculator
+from AiStock.dynamic_price_system.core.fundamental_calculator import FundamentalCalculator
+from AiStock.dynamic_price_system.core.macro_calculator import MacroCalculator
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
