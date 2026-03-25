@@ -8,8 +8,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# 加载环境变量
-load_dotenv()
+
 
 # ==================== 基础路径配置 ====================
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,6 +16,10 @@ CONFIG_DIR = BASE_DIR / "config"
 LOG_DIR = BASE_DIR / "logs"
 DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "reports"
+ENV_DIR = BASE_DIR / 'config' / '.env'
+
+# 加载环境变量
+load_dotenv(ENV_DIR)
 
 # 确保目录存在
 for dir_path in [LOG_DIR, DATA_DIR, OUTPUT_DIR]:
@@ -31,33 +34,33 @@ def get_db_url(env_key: str, default: str) -> str:
     return default
 
 # PostgreSQL 主数据库（指数/日线数据）
-DATABASE_INDEX_URL = get_db_url(
+DB_INDEX = get_db_url(
     'DB_INDEX',
-    'postgresql+psycopg://'
+    '环境变量未加载'
 )
 
 # PostgreSQL 主数据库（股票/日线数据）
-DATABASE_STOCK_URL = get_db_url(
+DB_STOCK = get_db_url(
     'DB_STOCK',
-    'postgresql+psycopg://'
+    '环境变量未加载'
 )
 
 # PostgreSQL 主数据库（个股资料）
-DATABASE_STOCK_URL = get_db_url(
+DB_STOCK_BASE = get_db_url(
     'DB_STOCK_BASE',
-    'postgresql+psycopg://'
+    '环境变量未加载'
 )
 
 # PostgreSQL 主数据库（个股资料）
-DATABASE_STOCK_URL = get_db_url(
-    'STOCK_BASE_URL',
-    'postgresql+psycopg://'
+DB_STOCK_FS = get_db_url(
+    'DB_STOCK_FS',
+    '环境变量未加载'
 )
 
 # PostgreSQL PE 数据库（指数估值历史数据）
-DATABASE_PE_URL = get_db_url(
+DB_INDEX_PE = get_db_url(
     'DB_INDEX_PE',
-    'postgresql+psycopg://'
+    '环境变量未加载'
 )
 
 # 连接池配置

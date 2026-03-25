@@ -26,7 +26,7 @@ class CacheService:
         self.max_size = max_size
         self.ttl = ttl
         self.cache: OrderedDict = OrderedDict()  # LRU 缓存
-        self.cache_meta Dict[str, Dict] = {}  # 缓存元数据
+        self.cache_metadata: Dict[str, Dict] = {}  # 缓存元数据
         self.stats = {
             'hits': 0,
             'misses': 0,
@@ -47,7 +47,7 @@ class CacheService:
         
         # 检查 TTL
         metadata = self.cache_metadata.get(key, {})
-        if 'timestamp' in meta
+        if 'timestamp' in metadata:
             age = time.time() - metadata['timestamp']
             if age > self.ttl:
                 self._remove(key)
@@ -103,7 +103,7 @@ class CacheService:
         """内部移除方法"""
         if key in self.cache:
             del self.cache[key]
-            if key in self.cache_meta
+            if key in self.cache_metadata:
                 del self.cache_metadata[key]
             return True
         return False

@@ -107,15 +107,15 @@ class ConfigService:
     
     def _inject_global_db_config(self):
         """注入全局数据库配置"""
-        from config.global_settings import DATABASE_MAIN_URL, DATABASE_PE_URL, DB_POOL_CONFIG
+        from config.global_settings import DB_INDEX, DB_STOCK, DB_STOCK_BASE, DB_STOCK_FS, DB_INDEX_PE, DB_POOL_CONFIG
         
         if 'database' not in self.config:
             self.config['database'] = {}
         
         # 如果配置中指定使用全局配置
         if self.config['database'].get('use_global_config', True):
-            self.config['database']['main_db'] = DATABASE_MAIN_URL
-            self.config['database']['pe_db'] = DATABASE_PE_URL
+            self.config['database']['stock_db'] = DB_STOCK
+            self.config['database']['pe_db'] = DB_INDEX_PE
             self.config['database'].update(DB_POOL_CONFIG)
             logger.debug(f"✅ 注入全局数据库配置")
     
