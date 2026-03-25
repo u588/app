@@ -1,10 +1,11 @@
 # ==================== 系统基础配置 ====================
 system:
   name: "三维动态价格调整系统"
-  version: "6.0.0"
+  version: "6.2.0"
   mode: "paper_trading"  # paper_trading / real_trading / backtest
   log_level: "INFO"
-  base_date: "2026-03-20"  # 回测基准日期
+  base_date: "2026-03-20"
+  timezone: "Asia/Shanghai"
 
 # ==================== 三维权重配置 ====================
 weights:
@@ -15,18 +16,19 @@ weights:
 # ==================== 缓存配置 ====================
 cache:
   enable: true
-  max_size: 1000     # 最大缓存条目数
-  ttl: 3600          # 默认过期时间（秒）
-  index_ttl: 7200    # 指数数据缓存时间
-  derivative_ttl: 1800  # 衍生品数据缓存时间
-  macro_ttl: 3600    # 宏观数据缓存时间
+  max_size: 2000
+  ttl: 3600
+  index_ttl: 7200
+  derivative_ttl: 1800
+  macro_ttl: 3600
+  pe_ttl: 86400
 
-# ==================== 数据库配置（仅连接信息，敏感信息用环境变量） ====================
+# ==================== 数据库配置（引用全局配置） ====================
 database:
-  main_db: "sqlite:///data/stocks_daily.db"
-  pe_db: "sqlite:///data/pe_history.db"
-  pool_size: 5
-  max_overflow: 10
+  # 使用全局配置中的 DATABASE_MAIN_URL / DATABASE_PE_URL
+  use_global_config: true
+  pool_size: 10
+  max_overflow: 20
 
 # ==================== TDX 接口配置 ====================
 tdx:
@@ -36,15 +38,36 @@ tdx:
   hq_host: "180.153.18.170"
   hq_port: 7709
   timeout: 30
+  retry_times: 3
+
+# ==================== 外盘期货配置 ====================
+external_futures:
+  brent_crude:
+    code: "OIL"
+    source: "akshare"
+    unit: "USD/barrel"
+  comex_gold:
+    code: "GC"
+    source: "akshare"
+    unit: "USD/oz"
+  lme_copper:
+    code: "CAD"
+    source: "akshare"
+    unit: "USD/ton"
+  nymex_gas:
+    code: "NG"
+    source: "akshare"
+    unit: "USD/MMBtu"
 
 # ==================== 风控阈值 ====================
 risk_control:
-  max_position_single: 0.15      # 单标的上限 15%
-  max_position_sector: 0.30      # 单板块上限 30%
-  stop_loss_fixed: -0.15         # 固定止损阈值
-  take_profit_fixed: 0.30        # 固定止盈阈值
-  portfolio_drawdown_limit: -0.20 # 组合回撤警戒线
-  weight_deviation_threshold: 0.15 # 权重偏离再平衡阈值
+  max_position_single: 0.15
+  max_position_sector: 0.30
+  stop_loss_fixed: -0.15
+  take_profit_fixed: 0.30
+  portfolio_drawdown_limit: -0.20
+  weight_deviation_threshold: 0.15
+  max_daily_loss: -0.05
 
 # ==================== 更新频率配置 ====================
 schedule:
@@ -52,12 +75,14 @@ schedule:
   macro_data_update: "09:00"
   dynamic_price_calc: "17:00"
   alert_check: "09:30"
-  cache_compact: "02:00"  # 每日凌晨压缩缓存
+  cache_compact: "02:00"
 
 # ==================== 预警配置 ====================
 alerts:
   enable_email: false
   enable_wechat: false
+  enable_dingtalk: false
   price_drop_threshold: -0.10
   price_rise_threshold: 0.30
   stop_loss_threshold: -0.15
+  webhook_url_key: "ALERT_WEBHOOK_URL"

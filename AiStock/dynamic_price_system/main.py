@@ -1,155 +1,222 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-主程序入口：三维动态价格调整系统
+动态价格调整系统 - 主程序入口
 """
 
 import logging
-from datetime import datetime
-from config import STOCKS_CONFIG
-from data_fetcher import DataFetcher
-from dynamic_price import DynamicPriceCalculator
-from portfolio_tracker import PortfolioTracker
-from alert_system import AlertSystem
-from excel_export import ExcelExporter
+import sys
+from pathlib import Path
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/system.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
+# 添加项目根目录到 Python 路径
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
+from config.global_settings import LOG_FORMAT, LOG_DATE_FORMAT
+from base_services.logger_service import LoggerService
+from base_services.config_service import ConfigService
+from base_services.cache_service import CacheService
+from base_services.database_service import DatabaseService
+from dynamic_price_system.config.settings import (
+    SYSTEM_CONFIG_PATH,
+    STOCKS_CONFIG_PATH,
+    LOG_DIR,
+    OUTPUT_DIR,
+)
+from dynamic_price_system.core.dynamic_price_engine import DynamicPriceEngine
+from dynamic_price_system.data.data_loader import DataLoader
+from dynamic_price_system.portfolio.tracker import PortfolioTracker
+from dynamic_price_system.portfolio.risk_manager import RiskManager
+from dynamic_price_system.utils.export_utils import ExportUtils
+
+# 初始化日志
+LoggerService.init(
+    log_file=str(LOG_DIR / "system.log"),
+    log_format=LOG_FORMAT,
+    date_format=LOG_DATE_FORMAT,
+    level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
 
 class DynamicPriceSystem:
-    """三维动态价格调整系统"""
+    """动态价格调整系统主类"""
     
-    def __init__(self, initial_capital=1000000):
-        """初始化系统"""
+    def __init__(self, mode: str = "paper_trading"):
+        """
+        初始化系统
+        
+        参数:
+            mode: 运行模式 (paper_trading/real_trading/backtest)
+        """
         logger.info("="*60)
-        logger.info("🚀 三维动态价格调整系统启动")
+        logger.info(f"🚀 {mode.upper()} 模式启动：三维动态价格调整系统")
         logger.info("="*60)
         
-        self.fetcher = DataFetcher()
-        self.tracker = PortfolioTracker(initial_capital)
-        self.alert_sys = AlertSystem()
-        self.exporter = ExcelExporter()
+        self.mode = mode
+        
+        # 1. 加载配置
+        logger.info("【步骤 1】加载配置...")
+        self.config = ConfigService(
+            system_name="dynamic_price",
+            config_subdir="dynamic_price"
+        )
+        
+        # 2. 初始化基础服务
+        logger.info("【步骤 2】初始化基础服务...")
+        self.cache = CacheService(
+            max_size=self.config.get('cache.max_size', 2000),
+            ttl=self.config.get('cache.ttl', 3600)
+        )
+        
+        db_config = self.config.get('database', {})
+        self.db_main = DatabaseService(
+            db_config.get('main_db'),
+            pool_config=db_config
+        )
+        self.db_pe = DatabaseService(
+            db_config.get('pe_db'),
+            pool_config=db_config
+        )
+        
+        # 3. 初始化数据服务
+        logger.info("【步骤 3】初始化数据服务...")
+        self.data_loader = DataLoader(
+            config_service=self.config,
+            cache_service=self.cache,
+            db_main=self.db_main,
+            db_pe=self.db_pe
+        )
+        
+        # 4. 初始化核心引擎
+        logger.info("【步骤 4】初始化核心引擎...")
+        self.price_engine = DynamicPriceEngine(
+            config_service=self.config,
+            cache_service=self.cache
+        )
+        
+        # 5. 初始化组合管理
+        logger.info("【步骤 5】初始化组合管理...")
+        self.portfolio = PortfolioTracker(
+            initial_capital=1000000,
+            config=self.config
+        )
+        self.risk_manager = RiskManager(
+            config=self.config,
+            portfolio=self.portfolio
+        )
+        
+        # 6. 初始化工具
+        self.exporter = ExportUtils(output_dir=OUTPUT_DIR)
+        
+        logger.info("✅ 系统初始化完成")
     
     def run_daily(self):
-        """每日运行流程"""
+        """执行每日运行流程"""
         logger.info("\n" + "="*60)
         logger.info("📅 开始每日运行流程")
         logger.info("="*60)
         
-        # 1. 获取数据
-        logger.info("\n【步骤 1】获取数据...")
-        stocks_data = self.fetcher.get_all_stocks_data()
-        macro_data = self.fetcher.get_all_macro_data()
-        
-        # 模拟财务数据（实际应从 API 获取）
-        financial_data = {}
-        for stock in STOCKS_CONFIG:
-            financial_data[stock['code']] = {
-                'revenue_growth': 15,
-                'profit_growth': 20,
-                'roe': 18,
-                'gross_margin': 30,
-                'debt_ratio': 40
-            }
-        
-        # 2. 计算动态价格
-        logger.info("\n【步骤 2】计算动态价格...")
-        calc = DynamicPriceCalculator(stocks_data, financial_data, macro_data)
-        results = calc.calculate_all()
-        
-        # 3. 检查预警
-        logger.info("\n【步骤 3】检查预警...")
-        for result in results:
-            alerts = self.alert_sys.check_price_alerts(
-                result['code'],
-                result['current_price'],
-                result['entry_price'],
-                result['stop_loss'],
-                result['target_price']
+        try:
+            # 阶段 1: 数据获取
+            logger.info("\n【阶段 1】数据获取...")
+            stocks_data = self.data_loader.load_all_stocks()
+            macro_data = self.data_loader.load_all_macro()
+            financial_data = self.data_loader.load_all_financial()
+            
+            if not stocks_
+                logger.error("❌ 数据获取失败，终止运行")
+                return
+            
+            # 阶段 2: 动态价格计算
+            logger.info("\n【阶段 2】动态价格计算...")
+            results = self.price_engine.calculate_all(
+                stocks_data=stocks_data,
+                financial_data=financial_data,
+                macro_data=macro_data
             )
-            self.alert_sys.send_alerts(alerts)
-        
-        # 4. 组合跟踪
-        logger.info("\n【步骤 4】组合跟踪...")
-        current_prices = {r['code']: r['current_price'] for r in results}
-        stop_prices = {r['code']: r['stop_loss'] for r in results}
-        
-        # 模拟持仓（实际应从数据库加载）
-        if not self.tracker.positions:
-            for result in results[:5]:  # 前 5 只建仓
-                self.tracker.buy(
-                    result['code'],
-                    result['entry_price'],
-                    int(100000 / result['entry_price'])
-                )
-        
-        # 检查止损
-        stop_alerts = self.tracker.check_stop_loss(current_prices, stop_prices)
-        self.alert_sys.send_alerts(stop_alerts)
-        
-        # 检查再平衡
-        rebalance_actions = self.tracker.check_rebalance(current_prices, results)
-        if rebalance_actions:
-            logger.info(f"📊 再平衡建议：{len(rebalance_actions)}个操作")
-            for action in rebalance_actions:
-                logger.info(f"  {action['code']}: {action['action']} {action['quantity']}股 ({action['reason']})")
-        
-        # 5. 导出 Excel
-        logger.info("\n【步骤 5】导出 Excel...")
-        self.exporter.export_dynamic_prices(results)
-        
-        # 6. 组合摘要
-        summary = self.tracker.get_summary(current_prices)
-        self.exporter.export_portfolio_summary(summary)
-        
-        # 7. 打印摘要
+            
+            # 阶段 3: 组合管理 + 风控
+            logger.info("\n【阶段 3】组合管理 + 风控...")
+            current_prices = {r['code']: r['current_price'] for r in results}
+            
+            # 检查止损/止盈
+            alerts = self.risk_manager.check_alerts(results, current_prices)
+            if alerts:
+                logger.warning(f"⚠️ 生成 {len(alerts)} 个预警")
+            
+            # 检查再平衡
+            rebalance_actions = self.portfolio.check_rebalance(
+                current_prices=current_prices,
+                dynamic_prices=results
+            )
+            if rebalance_actions:
+                logger.info(f"📊 生成 {len(rebalance_actions)} 个再平衡建议")
+            
+            # 阶段 4: 输出报告
+            logger.info("\n【阶段 4】输出报告...")
+            self.exporter.export_dynamic_prices(results)
+            self.exporter.export_portfolio_summary(self.portfolio.get_summary(current_prices))
+            
+            # 打印摘要
+            self._print_summary(results)
+            
+            logger.info("\n✅ 每日运行流程完成")
+            
+        except Exception as e:
+            logger.error(f"❌ 每日运行失败：{e}", exc_info=True)
+        finally:
+            self.shutdown()
+    
+    def _print_summary(self, results):
+        """打印运行摘要"""
         logger.info("\n" + "="*60)
-        logger.info("📊 系统运行摘要")
+        logger.info("📊 运行摘要")
         logger.info("="*60)
-        logger.info(f"计算标的数：{len(results)}")
-        logger.info(f"组合总市值：¥{summary['total_value']:,.2f}")
-        logger.info(f"组合收益率：{summary['total_return']}")
-        logger.info(f"预警数量：{len(self.alert_sys.alerts)}")
-        logger.info(self.alert_sys.get_alert_summary())
         
-        # 8. 推荐标的
-        logger.info("\n💡 今日推荐标的（盈亏比>2.5 且评分>70）：")
-        recommended = [r for r in results if r['profit_loss_ratio'] >= 2.5 and r['fundamental_score'] >= 70]
+        # 推荐标的
+        recommended = [r for r in results if r['recommendation'] in ['强烈推荐', '推荐']]
+        logger.info(f"💡 推荐标的：{len(recommended)}只")
         for r in sorted(recommended, key=lambda x: x['profit_loss_ratio'], reverse=True)[:5]:
-            logger.info(f"  {r['code']} {r['recommendation']} 盈亏比{r['profit_loss_ratio']} 评分{r['fundamental_score']}")
+            logger.info(f"   {r['code']} {r['recommendation']} | 盈亏比{r['profit_loss_ratio']}")
         
-        logger.info("\n" + "="*60)
-        logger.info("✅ 每日运行流程完成")
-        logger.info("="*60)
+        # 缓存统计
+        cache_stats = self.cache.get_stats()
+        logger.info(f"💾 缓存命中率：{cache_stats['hit_rate']:.1%}")
         
-        return results, summary
+        # 数据库健康
+        if self.db_main.health_check():
+            logger.info("🗄️ 数据库连接：正常")
+        else:
+            logger.warning("⚠️ 数据库连接：异常")
+    
+    def shutdown(self):
+        """优雅关闭"""
+        logger.info("🛑 系统关闭中...")
+        self.db_main.close()
+        self.db_pe.close()
+        self.cache.compact()
+        logger.info("✅ 系统已关闭")
 
 
-# 主程序
+def main():
+    """主函数"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='三维动态价格调整系统')
+    parser.add_argument('--mode', choices=['paper', 'real', 'backtest'], default='paper',
+                       help='运行模式')
+    
+    args = parser.parse_args()
+    
+    system = DynamicPriceSystem(mode=args.mode)
+    
+    try:
+        system.run_daily()
+    except KeyboardInterrupt:
+        logger.info("⌨️ 用户中断")
+    finally:
+        system.shutdown()
+
+
 if __name__ == '__main__':
-    import os
-    
-    # 创建必要目录
-    os.makedirs('data', exist_ok=True)
-    os.makedirs('logs', exist_ok=True)
-    os.makedirs('output', exist_ok=True)
-    
-    # 运行系统
-    system = DynamicPriceSystem(initial_capital=1000000)
-    results, summary = system.run_daily()
-    
-    print("\n" + "="*60)
-    print("🎉 系统运行完成！")
-    print("="*60)
-    print(f"📄 Excel 报告：output/dynamic_price_*.xlsx")
-    print(f"📊 组合摘要：output/dynamic_price_*_portfolio.xlsx")
-    print(f"📝 系统日志：logs/system.log")
-    print("="*60)
+    main()
