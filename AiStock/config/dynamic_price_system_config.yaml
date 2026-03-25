@@ -1,0 +1,63 @@
+# ==================== 系统基础配置 ====================
+system:
+  name: "三维动态价格调整系统"
+  version: "6.0.0"
+  mode: "paper_trading"  # paper_trading / real_trading / backtest
+  log_level: "INFO"
+  base_date: "2026-03-20"  # 回测基准日期
+
+# ==================== 三维权重配置 ====================
+weights:
+  technical: 0.40    # 技术面权重
+  fundamental: 0.35  # 基本面权重
+  macro: 0.25        # 宏观面权重
+
+# ==================== 缓存配置 ====================
+cache:
+  enable: true
+  max_size: 1000     # 最大缓存条目数
+  ttl: 3600          # 默认过期时间（秒）
+  index_ttl: 7200    # 指数数据缓存时间
+  derivative_ttl: 1800  # 衍生品数据缓存时间
+  macro_ttl: 3600    # 宏观数据缓存时间
+
+# ==================== 数据库配置（仅连接信息，敏感信息用环境变量） ====================
+database:
+  main_db: "sqlite:///data/stocks_daily.db"
+  pe_db: "sqlite:///data/pe_history.db"
+  pool_size: 5
+  max_overflow: 10
+
+# ==================== TDX 接口配置 ====================
+tdx:
+  use_tdx: true
+  exhq_host: "47.112.95.207"
+  exhq_port: 7720
+  hq_host: "180.153.18.170"
+  hq_port: 7709
+  timeout: 30
+
+# ==================== 风控阈值 ====================
+risk_control:
+  max_position_single: 0.15      # 单标的上限 15%
+  max_position_sector: 0.30      # 单板块上限 30%
+  stop_loss_fixed: -0.15         # 固定止损阈值
+  take_profit_fixed: 0.30        # 固定止盈阈值
+  portfolio_drawdown_limit: -0.20 # 组合回撤警戒线
+  weight_deviation_threshold: 0.15 # 权重偏离再平衡阈值
+
+# ==================== 更新频率配置 ====================
+schedule:
+  daily_data_update: "16:30"
+  macro_data_update: "09:00"
+  dynamic_price_calc: "17:00"
+  alert_check: "09:30"
+  cache_compact: "02:00"  # 每日凌晨压缩缓存
+
+# ==================== 预警配置 ====================
+alerts:
+  enable_email: false
+  enable_wechat: false
+  price_drop_threshold: -0.10
+  price_rise_threshold: 0.30
+  stop_loss_threshold: -0.15
