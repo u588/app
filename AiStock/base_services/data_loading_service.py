@@ -44,7 +44,7 @@ class DataLoadingService:
             max_size = cache_config.get('max_size', 1000)
             ttl = cache_config.get('ttl', 3600)
             
-            from infrastructure.base_services.cache_service import CacheService
+            from base_services.cache_service import CacheService
             self.cache = CacheService(max_size=max_size, ttl=ttl)
             self.logger.info(f"✅ 自动创建 CacheService | 容量={max_size} | TTL={ttl}s")
         

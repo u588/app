@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / "config"
 LOG_DIR = BASE_DIR / "logs"
 DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output"
+OUTPUT_DIR = BASE_DIR / "reports"
 
 # 确保目录存在
 for dir_path in [LOG_DIR, DATA_DIR, OUTPUT_DIR]:
@@ -31,15 +31,33 @@ def get_db_url(env_key: str, default: str) -> str:
     return default
 
 # PostgreSQL 主数据库（指数/日线数据）
-DATABASE_MAIN_URL = get_db_url(
-    'DB_MAIN_URL',
-    'postgresql+psycopg://sa:11111111@10.3.18.56/tdxIndex'
+DATABASE_INDEX_URL = get_db_url(
+    'DB_INDEX',
+    'postgresql+psycopg://'
 )
 
-# PostgreSQL PE 数据库（估值历史数据）
+# PostgreSQL 主数据库（股票/日线数据）
+DATABASE_STOCK_URL = get_db_url(
+    'DB_STOCK',
+    'postgresql+psycopg://'
+)
+
+# PostgreSQL 主数据库（个股资料）
+DATABASE_STOCK_URL = get_db_url(
+    'DB_STOCK_BASE',
+    'postgresql+psycopg://'
+)
+
+# PostgreSQL 主数据库（个股资料）
+DATABASE_STOCK_URL = get_db_url(
+    'STOCK_BASE_URL',
+    'postgresql+psycopg://'
+)
+
+# PostgreSQL PE 数据库（指数估值历史数据）
 DATABASE_PE_URL = get_db_url(
-    'DB_PE_URL',
-    'postgresql+psycopg://sa:11111111@10.3.18.56/tdxPE'
+    'DB_INDEX_PE',
+    'postgresql+psycopg://'
 )
 
 # 连接池配置
