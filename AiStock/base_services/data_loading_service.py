@@ -61,8 +61,11 @@ class DataLoadingService:
         try:
             from sqlalchemy import create_engine
             db_config = self.config.config.get('database', {})
-            self.engine = create_engine(db_config.get('main_db', 'sqlite:///data/stocks_daily.db'))
-            self.pe_engine = create_engine(db_config.get('pe_db', 'sqlite:///data/pe_history.db'))
+            self.stock_engine = create_engine(db_config.get('stock_db', '数据库连接字符串缺失'))
+            self.index_engine = create_engine(db_config.get('index_db', '数据库连接字符串缺失'))
+            self.stock_base_engine = create_engine(db_config.get('stock_base_db', '数据库连接字符串缺失'))
+            self.stock_fs_engine = create_engine(db_config.get('stock_fs_db', '数据库连接字符串缺失'))
+            self.index_pe_engine = create_engine(db_config.get('index_pe_db', '数据库连接字符串缺失'))
             self.logger.info("✅ 数据库连接初始化成功")
         except Exception as e:
             self.logger.error(f"❌ 数据库连接失败：{str(e)[:50]}")

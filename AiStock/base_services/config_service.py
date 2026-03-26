@@ -115,7 +115,10 @@ class ConfigService:
         # 如果配置中指定使用全局配置
         if self.config['database'].get('use_global_config', True):
             self.config['database']['stock_db'] = DB_STOCK
-            self.config['database']['pe_db'] = DB_INDEX_PE
+            self.config['database']['index_db'] = DB_INDEX
+            self.config['database']['stock_base_db'] = DB_STOCK_BASE
+            self.config['database']['stock_fs_db'] = DB_STOCK_FS
+            self.config['database']['index_pe_db'] = DB_INDEX_PE
             self.config['database'].update(DB_POOL_CONFIG)
             logger.debug(f"✅ 注入全局数据库配置")
     
