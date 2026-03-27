@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-V6.2 DataLoadingService：数据加载主服务（复权逻辑移除版）
-✅ 三类市场精准路由：股票/指数/衍生品分离加载
-✅ 彻底移除复权逻辑（参数/处理/缓存键）
-✅ 依赖注入 + 配置驱动 + 缓存协调
+V6.1 DataLoadingService：数据加载主服务（重构版）
+✅ 职责清晰：只负责缓存策略 + 业务编排 + 类型转换
+✅ 依赖注入：DatabaseReader + TDXAdapter 通过构造函数传入
+✅ 配置驱动：所有参数来自 ConfigService
 """
 
 import pandas as pd
 import numpy as np
-from typing import Dict, Optional, Any, List
-from datetime import datetime
+from typing import Dict, Optional, Any, List, Union
+from datetime import datetime, timedelta
 import logging
 import warnings
 
@@ -19,17 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class DataLoadingService:
-    """V6.2 数据加载服务（缓存协调器）"""
-    
-    # 市场类型路由映射（与 TDXAdapter MARKET_CATEGORY 对齐）
-    MARKET_ROUTING = {
-        'stock': ['stock_sh', 'stock_sz', 'stock_xg'],
-        'index': ['index_sh', 'index_sz', 'index_zz', 'index_gz', 'index_xg'],
-        'derivative': [
-            'future_zz', 'future_dl', 'future_sh', 'future_gz', 'future_zj',
-            'option_zj', 'option_sh', 'option_sz', 'open_fund', 'macro'
-        ]
-    }
+    """V6.1 数据加载服务（缓存协调器）"""
     
     def __init__(
         self,
@@ -61,7 +51,7 @@ class DataLoadingService:
         # 缓存 TTL 配置
         self.cache_ttl = self.config.config.get('cache', {})
         
-        self.logger.info(f"✅ DataLoadingService V6.2 初始化成功 | 缓存={'启用' if enable_cache else '禁用'} | 复权逻辑已移除")
+        self.logger.info(f"✅ DataLoadingService V6.1 初始化成功 | 缓存={'启用' if enable_cache else '禁用'}")
     
     def _init_cache(self, cache_service):
         """初始化缓存服务"""
@@ -75,19 +65,18 @@ class DataLoadingService:
                 max_size=cache_config.get('max_size', 1000),
                 ttl=cache_config.get('ttl', 3600)
             )
-            self.logger.info(f"✅ 自动创建 CacheService (max_size={cache_config.get('max_size', 1000)})")
+            self.logger.info(f"✅ 自动创建 CacheService")
     
-    # ==================== 缓存键生成（精简版） ====================
+    # ==================== 缓存键生成 ====================
     
     def _generate_cache_key(self, prefix: str, code: str, **kwargs) -> str:
-        """生成唯一缓存键（移除 adjust 等冗余参数）"""
+        """生成唯一缓存键（多维度组合）"""
         from config.global_settings import CACHE_KEY_SEPARATOR, CACHE_KEY_DATE_FORMAT
         
         key_parts = [prefix, code.replace(' ', '').replace('/', '_')]
         
-        # 仅保留必要参数（移除 adjust）
         for k, v in sorted(kwargs.items()):
-            if v is not None and k not in {'adjust'}:  # 显式排除 adjust
+            if v is not None:
                 key_parts.append(f"{k}={str(v).replace(' ', '').replace('/', '_')}")
         
         key_parts.append(f"date={datetime.now().strftime(CACHE_KEY_DATE_FORMAT)}")
@@ -123,6 +112,7 @@ class DataLoadingService:
         if not self.enable_cache or data is None:
             return False
         try:
+            # 类型转换防序列化错误
             if isinstance(data, pd.DataFrame):
                 data = self._convert_df_types(data)
             elif isinstance(data, dict):
@@ -144,9 +134,11 @@ class DataLoadingService:
         df_out = df.copy()
         for col in df_out.select_dtypes(include=[np.number]).columns:
             try:
-                df_out[col] = pd.to_numeric(df_out[col], errors='coerce').astype(float)
+                df_out[col] = df_out[col].apply(
+                    lambda x: float(x) if pd.notna(x) and not isinstance(x, (int, float)) else x
+                )
             except:
-                pass
+                pass  # 静默失败，保持原值
         return df_out
     
     def _convert_dict_types(self, data: Dict) -> Dict:
@@ -167,43 +159,42 @@ class DataLoadingService:
                 result[k] = v
         return result
     
-    # ==================== 核心业务方法（三类市场分离） ====================
-    
+    # ==================== 核心业务方法 ====================
     def load_stock_daily(
         self, 
         code: str, 
-        min_days: int = 500,
+        min_days: int = 500, 
+        adjust: str = 'none',
         engine_name: str = 'stock_db'
     ) -> pd.DataFrame:
         """
-        加载单只股票日线数据（无复权）
+        加载单只股票日线数据
         
         参数:
             code: 股票代码 (如 '000001', '600519')
             min_days: 最小数据天数
+            adjust: 复权类型 ('none'/'forward'/'backward')
             engine_name: 数据库引擎名称
         
         返回:
-            pd.DataFrame: 标准化日线数据（不复权）
+            pd.DataFrame: 标准化日线数据
         """
-        # 精简缓存键：移除 adjust 参数
-        cache_key = self._generate_cache_key('stock_daily', code, min_days=min_days)
+        cache_key = self._generate_cache_key('stock_daily', code, min_days=min_days, adjust=adjust)
         
         # 1. 缓存优先
         cached = self._get_cached(cache_key, pd.DataFrame)
         if cached is not None:
             return cached
         
-        # 2. TDX 优先获取（三类市场精准路由）
+        # 2. TDX 优先获取（支持复权）
         if self.tdx and self.tdx.is_available():
-            market_type = 'stock_sh' if code.startswith(('6', '7')) else 'stock_sz'  # 沪市:6/7开头, 深市:0/3开头
-            df = self.tdx.get_bars(code, market_type, days=min_days + 50)  # 多取50天防截断
-            
+            df = self.tdx.get_bars(code, 'stock_sh' if code.startswith('6') else 'stock_sz', 
+                                days=min_days + 50, adjust=adjust)  # 多取50天用于复权计算
             if df is not None and len(df) >= min_days:
-                df = df.tail(min_days).reset_index(drop=True)
+                df = df.tail(min_days)  # 保留最近 min_days 条
                 df_out = self._convert_df_types(df)
                 self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('stock_ttl', 7200))
-                self.logger.info(f"✅ 股票日线(TDX): {code} | {len(df)}条 | 市场={market_type}")
+                self.logger.info(f"✅ 股票日线(TDX): {code} | {len(df)}条 | 复权={adjust}")
                 return df_out
         
         # 3. 数据库降级加载
@@ -220,51 +211,29 @@ class DataLoadingService:
             self.logger.warning(f"⚠️ 股票 {code} 数据不足: {len(df)}/{min_days}")
             return pd.DataFrame()
         
-        # 4. 数据标准化（无复权处理）
+        # 4. 数据标准化
         df = df.sort_values('datetime').drop_duplicates('datetime', keep='last').reset_index(drop=True)
         
-        # 5. 缓存 + 返回
+        # 5. 简单复权处理（如无专业复权因子）
+        if adjust != 'none' and 'adj_factor' in df.columns:
+            df = self._apply_simple_adjustment(df, adjust)
+        
+        # 6. 缓存 + 返回
         df_out = self._convert_df_types(df)
         self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('stock_ttl', 7200))
         self.logger.info(f"✅ 股票日线(DB): {code} | {len(df)}条")
-        return df_out
-    
-    def load_index_data(
-        self, 
-        index_code: str, 
-        min_days: int = 500, 
-        engine_name: str = 'index_db'
-    ) -> pd.DataFrame:
+        return df_out    
+
+    def load_index_data(self, index_code: str, min_days: int = 500, engine_name: str = 'index_db') -> pd.DataFrame:
         """加载指数数据（缓存 + 降级）"""
         cache_key = self._generate_cache_key('index', index_code, min_days=min_days)
         
+        # 1. 尝试缓存
         cached = self._get_cached(cache_key, pd.DataFrame)
         if cached is not None:
             return cached
         
-        # 1. TDX 优先（指数类市场路由）
-        if self.tdx and self.tdx.is_available():
-            # 智能识别指数市场类型
-            if index_code.startswith(('000', '880')):  # 上证指数
-                market_type = 'index_sh'
-            elif index_code.startswith(('399', '39')):  # 深证指数
-                market_type = 'index_sz'
-            elif index_code.startswith('399'):  # 国证指数
-                market_type = 'index_gz'
-            elif index_code.startswith('H'):  # 恒生指数
-                market_type = 'index_xg'
-            else:
-                market_type = 'index_zz'  # 默认中证
-            
-            df = self.tdx.get_bars(index_code, market_type, days=min_days + 20)
-            if df is not None and len(df) >= min_days:
-                df = df.tail(min_days).reset_index(drop=True)
-                df_out = self._convert_df_types(df)
-                self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('index_ttl', 7200))
-                self.logger.info(f"✅ 指数数据(TDX): {index_code} | {len(df)}条 | 市场={market_type}")
-                return df_out
-        
-        # 2. 数据库降级
+        # 2. 数据库加载（参数化查询）
         base_date = self.config.config.get('base_date', datetime.now().strftime("%Y-%m-%d"))
         df = self.db.read_table(
             table_name=index_code,
@@ -275,7 +244,7 @@ class DataLoadingService:
         )
         
         if df.empty or len(df) < min_days:
-            self.logger.warning(f"⚠️ 指数 {index_code} 数据不足: {len(df)}/{min_days}")
+            self.logger.warning(f"⚠️ {index_code} 数据不足: {len(df)}/{min_days}")
             return pd.DataFrame()
         
         # 3. 数据预处理
@@ -294,11 +263,12 @@ class DataLoadingService:
         df_out = self._convert_df_types(df)
         ttl = self.cache_ttl.get('index_ttl', 7200)
         self._cache_set(cache_key, df_out, ttl=ttl)
-        self.logger.info(f"✅ 指数数据(DB): {index_code} | {len(df)}条")
+        
+        self.logger.info(f"✅ 指数数据: {index_code} | {len(df)}条")
         return df_out
     
     def load_pe_data(self, index_code: str, engine_name: str = 'index_pe_db') -> pd.DataFrame:
-        """加载 PE 历史数据（无复权）"""
+        """加载 PE 历史数据"""
         cache_key = self._generate_cache_key('pe', index_code)
         
         cached = self._get_cached(cache_key, pd.DataFrame)
@@ -306,6 +276,7 @@ class DataLoadingService:
             return cached
         
         try:
+            # 假设表名与代码相同
             df = self.db.read_table(
                 table_name=index_code,
                 engine_name=engine_name,
@@ -318,44 +289,28 @@ class DataLoadingService:
             result = df.rename(columns={'日期': 'date', '滚动市盈率': 'pe_ttm'})[['date', 'pe_ttm']].copy()
             result_out = self._convert_df_types(result)
             
-            self._cache_set(cache_key, result_out, ttl=self.cache_ttl.get('pe_ttl', 86400))
+            self._cache_set(cache_key, result_out)
             return result_out
             
         except Exception as e:
             self.logger.warning(f"⚠️ PE 数据加载失败 {index_code}: {e}")
             return pd.DataFrame()
     
-    def load_derivative_data(
-        self, 
-        code: str, 
-        market_type: str, 
-        days: int = 60
-    ) -> pd.DataFrame:
-        """
-        加载衍生品数据（期货/期权/基金/宏观）
-        
-        参数:
-            code: 合约代码（如 'IF2406'）
-            market_type: 市场类型（需在 MARKET_ROUTING['derivative'] 中）
-            days: 获取天数
-        """
-        if market_type not in self.MARKET_ROUTING['derivative']:
-            self.logger.error(f"❌ 无效的衍生品市场类型: {market_type}，有效类型: {self.MARKET_ROUTING['derivative']}")
-            return pd.DataFrame()
-        
+    def load_derivative_data(self, code: str, market_type: str, days: int = 60) -> pd.DataFrame:
+        """加载衍生品数据（TDX 优先 + 数据库降级）"""
         cache_key = self._generate_cache_key('derivative', code, market=market_type, days=days)
         
         cached = self._get_cached(cache_key, pd.DataFrame)
         if cached is not None:
             return cached
         
-        # 1. TDX 优先（衍生品类专用接口）
+        # 1. TDX 优先
         if self.tdx and self.tdx.is_available():
             df = self.tdx.get_bars(code, market_type, days)
             if df is not None and not df.empty:
                 df_out = self._convert_df_types(df)
                 self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('derivative_ttl', 1800))
-                self.logger.info(f"✅ 衍生品(TDX): {code} | {len(df)}条 | 市场={market_type}")
+                self.logger.info(f"✅ 衍生品(TDX): {code} | {len(df)}条")
                 return df_out
         
         # 2. 数据库降级
@@ -373,16 +328,44 @@ class DataLoadingService:
             if 'position' in df.columns:
                 df = df.rename(columns={'position': 'open_interest'})
             df_out = self._convert_df_types(df)
-            self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('derivative_ttl', 1800))
+            self._cache_set(cache_key, df_out)
             self.logger.info(f"✅ 衍生品(DB): {code} | {len(df)}条")
             return df_out
         
-        self.logger.warning(f"⚠️ 衍生品数据获取失败: {code} | 市场={market_type}")
+        self.logger.warning(f"⚠️ 衍生品数据获取失败: {code}")
         return pd.DataFrame()
     
     def load_macro_data(self, code: str, days: int = 60) -> pd.DataFrame:
-        """加载宏观指标数据（专用 macro 市场类型）"""
-        return self.load_derivative_data(code, market_type='macro', days=days)
+        """加载宏观指标数据"""
+        cache_key = self._generate_cache_key('macro', code, days=days)
+        
+        cached = self._get_cached(cache_key, pd.DataFrame)
+        if cached is not None:
+            return cached
+        
+        # TDX 优先
+        if self.tdx and self.tdx.is_available():
+            df = self.tdx.get_bars(code, 'macro', days)
+            if df is not None and not df.empty:
+                df_out = self._convert_df_types(df)
+                self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('macro_ttl', 3600))
+                return df_out
+        
+        # 数据库降级
+        df = self.db.read_table(
+            table_name=code,
+            engine_name='stock_db',
+            conditions={'datetime': datetime.now().strftime("%Y-%m-%d")},
+            order_by='datetime DESC',
+            limit=days,
+            parse_dates=['datetime']
+        )
+        
+        if not df.empty:
+            df = df.sort_values('datetime').reset_index(drop=True)
+            return self._convert_df_types(df)
+        
+        return pd.DataFrame()
     
     # ==================== 缓存管理 ====================
     
