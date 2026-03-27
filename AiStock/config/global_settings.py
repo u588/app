@@ -33,35 +33,54 @@ def get_db_url(env_key: str, default: str) -> str:
         return env_value
     return default
 
-# PostgreSQL 主数据库（指数/日线数据）
-DB_INDEX = get_db_url(
-    'DB_INDEX',
-    '环境变量未加载'
-)
+DATABASE_ENGINES = {
+    # 指数行情数据
+    'index_db': get_db_url('DB_INDEX','环境变量未加载'),
+    
+    # 股票行情数据  
+    'stock_db': get_db_url('DB_STOCK','环境变量未加载'),
+    
+    # 股票基础信息/基本面
+    'stock_base_db': get_db_url('DB_STOCK_BASE','环境变量未加载'),
+    
+    # 股票财务数据
+    'stock_fs_db': get_db_url('DB_STOCK_FS','环境变量未加载'),
+    
+    # 指数估值数据(PE/PB)
+    'index_pe_db': get_db_url('DB_INDEX_PE','环境变量未加载'),
+}
 
-# PostgreSQL 主数据库（股票/日线数据）
-DB_STOCK = get_db_url(
-    'DB_STOCK',
-    '环境变量未加载'
-)
 
-# PostgreSQL 主数据库（个股资料）
-DB_STOCK_BASE = get_db_url(
-    'DB_STOCK_BASE',
-    '环境变量未加载'
-)
 
-# PostgreSQL 主数据库（个股资料）
-DB_STOCK_FS = get_db_url(
-    'DB_STOCK_FS',
-    '环境变量未加载'
-)
+# # PostgreSQL 主数据库（指数/日线数据）
+# DB_INDEX = get_db_url(
+#     'DB_INDEX',
+#     '环境变量未加载'
+# )
 
-# PostgreSQL PE 数据库（指数估值历史数据）
-DB_INDEX_PE = get_db_url(
-    'DB_INDEX_PE',
-    '环境变量未加载'
-)
+# # PostgreSQL 主数据库（股票/日线数据）
+# DB_STOCK = get_db_url(
+#     'DB_STOCK',
+#     '环境变量未加载'
+# )
+
+# # PostgreSQL 主数据库（个股资料）
+# DB_STOCK_BASE = get_db_url(
+#     'DB_STOCK_BASE',
+#     '环境变量未加载'
+# )
+
+# # PostgreSQL 主数据库（个股资料）
+# DB_STOCK_FS = get_db_url(
+#     'DB_STOCK_FS',
+#     '环境变量未加载'
+# )
+
+# # PostgreSQL PE 数据库（指数估值历史数据）
+# DB_INDEX_PE = get_db_url(
+#     'DB_INDEX_PE',
+#     '环境变量未加载'
+# )
 
 # 连接池配置
 DB_POOL_CONFIG = {
@@ -69,7 +88,7 @@ DB_POOL_CONFIG = {
     'max_overflow': int(os.getenv('DB_MAX_OVERFLOW', 20)),
     'pool_pre_ping': os.getenv('DB_POOL_PRE_PING', 'true').lower() == 'true',
     'pool_recycle': int(os.getenv('DB_POOL_RECYCLE', 3600)),
-    'connect_timeout': 30,
+    'pool_timeout': 30,
 }
 
 # ==================== 日志配置 ====================

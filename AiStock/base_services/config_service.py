@@ -107,19 +107,22 @@ class ConfigService:
     
     def _inject_global_db_config(self):
         """注入全局数据库配置"""
-        from config.global_settings import DB_INDEX, DB_STOCK, DB_STOCK_BASE, DB_STOCK_FS, DB_INDEX_PE, DB_POOL_CONFIG
+        from config.global_settings import DATABASE_ENGINES, DB_POOL_CONFIG
         
         if 'database' not in self.config:
             self.config['database'] = {}
         
         # 如果配置中指定使用全局配置
         if self.config['database'].get('use_global_config', True):
-            self.config['database']['stock_db'] = DB_STOCK
-            self.config['database']['index_db'] = DB_INDEX
-            self.config['database']['stock_base_db'] = DB_STOCK_BASE
-            self.config['database']['stock_fs_db'] = DB_STOCK_FS
-            self.config['database']['index_pe_db'] = DB_INDEX_PE
-            self.config['database'].update(DB_POOL_CONFIG)
+            self.config['database'] ={
+                    'DATABASE_ENGINES': DATABASE_ENGINES,
+                    'DB_POOL_CONFIG': DB_POOL_CONFIG
+                }
+            # self.config['database']['index_db'] = DB_INDEX
+            # self.config['database']['stock_base_db'] = DB_STOCK_BASE
+            # self.config['database']['stock_fs_db'] = DB_STOCK_FS
+            # self.config['database']['index_pe_db'] = DB_INDEX_PE
+            # self.config['database'].update(DB_POOL_CONFIG)
             logger.debug(f"✅ 注入全局数据库配置")
     
     def get(self, key_path: str, default: Any = None) -> Any:
