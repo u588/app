@@ -162,10 +162,10 @@ class DataLoader:
         try:
             base_date = self.config.get('system.base_date', datetime.now().strftime("%Y-%m-%d"))
             query = f'''
-                SELECT *  FROM "{code}"  WHERE datetim <= '{base_date}'
-                ORDER BY datetim 
+                SELECT *  FROM "{code}"  WHERE datetime <= '{base_date}'
+                ORDER BY datetime 
             '''
-            records = pd.read_sql(query, self.db_main)
+            records = pd.read_sql(query, self.db_main._engine)
             
             if not records:
                 return None
@@ -234,7 +234,7 @@ class DataLoader:
         """从数据库加载财务数据"""
         if self.db_pe is None:
             return None
-        # revenue_growth营业收入增长率, profit_growth净利润增长率, roe净资产收益率, gross_margin毛利率, debt_ratio资产负债率, pe_ttm滚动市盈率
+        # revenue_growth营业收入增长率, profit_growth净利润增长率, roe净资产收益率, gross_margin毛利率, debt_ratio资产负债率, 扣非每股利润
         try:
             query = f'''
                 
