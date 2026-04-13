@@ -5,21 +5,23 @@
 """
 
 import logging
-from config import SECTOR_MACRO_LINK
-
+# from config import SECTOR_MACRO_LINK
+from base_services.config_service import ConfigService
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+config = ConfigService(system_name='dynamic_price')
+SECTOR_MACRO_LINK = config.get('sector_macro_link', {})
 class MacroCalculator:
     """宏观面计算器"""
     
-    def __init__(self, macro_data):
+    def __init__(self, macro_data, sector):
         """
         初始化
         :param macro_data: 宏观数据字典
         """
         self.data = macro_data
+        self.sector = sector
     
     def get_sector_factor(self, sector):
         """获取板块宏观调整系数"""

@@ -71,6 +71,8 @@ class ConfigService:
                 stocks_config = yaml.safe_load(f)
                 config['stocks'] = stocks_config.get('stocks', [])
                 config['macro_indicators'] = stocks_config.get('macro_indicators', {})
+                config['sector_macro_link'] = stocks_config.get('sector_macro_link', {})
+                # config['cache_test'] = stocks_config.get('cache_test', {})
             logger.info(f"✅ 加载标的配置：{stocks_config_path}")
         
         # 3. 合并环境变量覆盖
@@ -149,6 +151,10 @@ class ConfigService:
     def get_macro_indicator(self, name: str) -> Optional[Dict]:
         """获取指定宏观指标的配置"""
         return self.config.get('macro_indicators', {}).get(name)
+
+    def get_macro_link(self, name: str) -> Optional[Dict]:
+        """获取指定宏观指标的配置"""
+        return self.config.get('sector_macro_link', {}).get(name)
     
     def reload(self):
         """重新加载配置（热更新）"""
