@@ -86,3 +86,33 @@ alerts:
   price_rise_threshold: 0.30
   stop_loss_threshold: -0.15
   webhook_url_key: "ALERT_WEBHOOK_URL"
+
+# ==================== 日志配置 ====================
+logging:
+  log_dir: "logs"
+  log_level: "INFO"
+  log_format: "detailed"  # detailed/simple/minimal/json
+  enable_console: true
+  enable_file: true
+  enable_json: false
+  max_bytes: 10485760  # 10MB
+  backup_count: 10
+  rotation_when: "midnight"
+  use_color: true
+  
+  # 模块级别日志配置
+  module_levels:
+    base_services: "INFO"
+    dynamic_price_system: "DEBUG"
+    portfolio: "INFO"
+    data_services: "WARNING"
+  
+  # 特殊日志文件配置
+  extra_handlers:
+    - filename: "error.log"
+      level: "ERROR"
+      format_type: "detailed"
+    - filename: "performance.log"
+      level: "INFO"
+      format_type: "simple"
+      max_bytes: 5242880  # 5MB

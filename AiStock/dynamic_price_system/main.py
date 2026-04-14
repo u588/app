@@ -12,7 +12,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from config.global_settings import LOG_FORMAT, LOG_DATE_FORMAT
-from base_services.logger_service import LoggerService
+# 初始化日志服务（在导入其他模块之前）
+from base_services.logger_service import LoggerService, init_logger
 from base_services.config_service import ConfigService
 from base_services.cache_service import CacheService
 from base_services.database_service import DatabaseService
@@ -28,14 +29,30 @@ from dynamic_price_system.portfolio.tracker import PortfolioTracker
 from dynamic_price_system.portfolio.risk_manager import RiskManager
 from dynamic_price_system.utils.export_utils import ExportUtils
 
+config = ConfigService(system_name='dynamic_price')
 # 初始化日志
-LoggerService.init(
-    log_file=str(LOG_DIR / "system.log"),
-    log_format=LOG_FORMAT,
-    date_format=LOG_DATE_FORMAT,
-    level=logging.INFO
+logger_service = init_logger(
+    log_dir=Path(config.get('file_paths.log_dir', 'logs')),
+    log_level=config.get('system.log_level', 'INFO'),
+    enable_console=True,
+    enable_file=True,
+    use_color=True,
 )
-logger = logging.getLogger(__name__)
+
+# 获取主程序日志器
+logger = logger_service.get_logger('main')
+
+logger.info("=" * 60)
+logger.info("🚀 动态价格调整系统启动")
+logger.info("=" * 60)
+
+# LoggerService.init(
+#     log_file=str(LOG_DIR / "system.log"),
+#     log_format=LOG_FORMAT,
+#     date_format=LOG_DATE_FORMAT,
+#     level=logging.INFO
+# )
+# logger = logging.getLogger(__name__)
 
 
 class DynamicPriceSystem:

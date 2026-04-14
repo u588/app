@@ -223,7 +223,61 @@ stocks:
 #     normal_range: [1800, 2500]
 #     update_frequency: "realtime"
   
-  # ... 其他宏观指标配置（略）
+#   lme_copper:
+#     code: "CAD"
+#     source: "external"
+#     unit: "USD/ton"
+#     normal_range: [8000, 11000]
+#     update_frequency: "realtime"
+  
+#   nymex_gas:
+#     code: "NG"
+#     source: "external"
+#     unit: "USD/MMBtu"
+#     normal_range: [2.0, 4.0]
+#     update_frequency: "realtime"
+  
+#   usd_cny:
+#     code: "5_RMBUS"
+#     source: "tdx"
+#     unit: "CNY/USD"
+#     normal_range: [6.8, 7.4]
+#     update_frequency: "daily"
+  
+#   china_10y_bond:
+#     code: "5_CNTY"
+#     source: "tdx"
+#     unit: "%"
+#     normal_range: [2.0, 3.5]
+#     update_frequency: "daily"
+  
+#   pmi:
+#     code: "3_PMI"
+#     source: "tdx"
+#     unit: "index"
+#     normal_range: [48, 52]
+#     update_frequency: "monthly"
+  
+#   m2_growth:
+#     code: "5_M2"
+#     source: "tdx"
+#     unit: "%"
+#     normal_range: [8, 12]
+#     update_frequency: "monthly"
+  
+#   cpi:
+#     code: "2_CPI"
+#     source: "tdx"
+#     unit: "%"
+#     normal_range: [1, 3]
+#     update_frequency: "monthly"
+  
+#   ppi:
+#     code: "2_PPI"
+#     source: "tdx"
+#     unit: "%"
+#     normal_range: [-2, 5]
+#     update_frequency: "monthly"
 # ==================== 宏观指标映射配置 ====================
 macro_indicators:
   # ----- 外盘期货（实时/日频）-----

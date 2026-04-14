@@ -324,6 +324,39 @@ class DataLoadingService:
         except Exception as e:
             self.logger.warning(f"⚠️ PE 数据加载失败 {index_code}: {e}")
             return pd.DataFrame()
+
+    def load_stock_fs(self, code: str, engine_name: str = 'stock_fs_db') -> pd.DataFrame:
+        """加载 股票财务历史数据（无复权）"""
+        cache_key = self._generate_cache_key('stock_fs', code)
+        
+        cached = self._get_cached(cache_key, pd.DataFrame)
+        if cached is not None:
+            return cached
+        
+        try:
+            df = self.db.read_table(
+                table_name=code,
+                engine_name=engine_name,
+                # parse_dates=['report_date']
+            )
+            
+            if df.empty :
+                self.logger.warning(f"⚠️ 股票 {code} 数据不足")
+                return pd.DataFrame()
+                
+            # 4. 数据标准化（无复权处理）
+            # df = df.sort_values('report_date').drop_duplicates('report_date', keep='last').reset_index(drop=True)
+            df['report_date'] = pd.to_datetime(df['report_date'], format='%Y%m%d', errors='coerce')
+            
+            # 5. 缓存 + 返回
+            df_out = self._convert_df_types(df)
+            self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('stock_ttl', 7200))
+            self.logger.info(f"✅ 股票财务(DB): {code} | {len(df)}条")
+            return df_out
+            
+        except Exception as e:
+            self.logger.warning(f"⚠️ 股票财务数据加载失败 {code}: {e}")
+            return pd.DataFrame()
     
     def load_derivative_data(
         self, 
