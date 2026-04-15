@@ -4,7 +4,6 @@
 动态价格调整系统 - 主程序入口
 """
 
-import logging
 import sys
 from pathlib import Path
 
@@ -16,18 +15,21 @@ from config.global_settings import LOG_FORMAT, LOG_DATE_FORMAT
 from base_services.logger_service import LoggerService, init_logger
 from base_services.config_service import ConfigService
 from base_services.cache_service import CacheService
-from base_services.database_service import DatabaseService
-from dynamic_price_system.config.settings import (
-    SYSTEM_CONFIG_PATH,
-    STOCKS_CONFIG_PATH,
-    LOG_DIR,
-    OUTPUT_DIR,
-)
+
+from data_services.tdx_adapter import TDXAdapter
+from data_services.ak_adapter import AkAdapter
+from data_services.database_reader import DatabaseReader  
+from data_services.data_loading_service import DataLoadingService
+
+from dynamic_price_system.core.technical_calculator import TechnicalCalculator
+from dynamic_price_system.core.fundamental_calculator import FundamentalCalculator
+from dynamic_price_system.core.macro_calculator import MacroCalculator
 from dynamic_price_system.core.dynamic_price_engine import DynamicPriceEngine
-from dynamic_price_system.data.data_loader import DataLoader
 from dynamic_price_system.portfolio.tracker import PortfolioTracker
 from dynamic_price_system.portfolio.risk_manager import RiskManager
 from dynamic_price_system.utils.export_utils import ExportUtils
+
+
 
 config = ConfigService(system_name='dynamic_price')
 # 初始化日志
@@ -46,6 +48,29 @@ logger.info("=" * 60)
 logger.info("🚀 动态价格调整系统启动")
 logger.info("=" * 60)
 
+# 2. 数据接口
+db_reader = DatabaseReader(config.config.get('database').get('DATABASE_ENGINES'), config.config.get('database').get('DB_POOL_CONFIG'))
+
+tdx_config = config.config.get('tdx', {})
+tdx = TDXAdapter(tdx_config) if tdx_config.get('use_tdx') else None
+
+external_api = AkAdapter(
+    timeout=config.get('external_api.timeout', 30),
+    retry_times=config.get('external_api.retry_times', 3)
+)
+cache_service = CacheService(
+    max_size=config.get('cache.max_size', 2000),
+    ttl=config.get('cache.ttl', 3600)
+)
+# 3. 初始化数据加载服务
+data_loader = DataLoadingService(
+    config_service=config,
+    database_reader=db_reader,
+    tdx_adapter=tdx,
+    cache_service=cache_service,
+    external_api=external_api,  # ✅ 注入外部数据接口
+    enable_cache=True
+)
 # LoggerService.init(
 #     log_file=str(LOG_DIR / "system.log"),
 #     log_format=LOG_FORMAT,

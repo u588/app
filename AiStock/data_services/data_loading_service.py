@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-V6.2 DataLoadingService：数据加载主服务（复权逻辑移除版）
+V6.2 DataLoadingService：数据加载主服务（复权逻辑移除版 + 外部数据支持）
 ✅ 三类市场精准路由：股票/指数/衍生品分离加载
-✅ 彻底移除复权逻辑（参数/处理/缓存键）
+✅ 支持 source: "external" 的外盘期货数据获取
 ✅ 依赖注入 + 配置驱动 + 缓存协调
 """
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class DataLoadingService:
-    """V6.2 数据加载服务（缓存协调器）"""
+    """V6.2 数据加载服务（缓存协调器 + 外部数据支持）"""
     
     # 市场类型路由映射（与 TDXAdapter MARKET_CATEGORY 对齐）
     MARKET_ROUTING = {
@@ -36,6 +36,7 @@ class DataLoadingService:
         config_service,
         database_reader,
         tdx_adapter: Optional[Any] = None,
+        ak_adapter=None,
         cache_service=None,
         enable_cache: bool = True
     ):
@@ -46,12 +47,14 @@ class DataLoadingService:
             config_service: 配置服务实例
             database_reader: DatabaseReader 实例（依赖注入）
             tdx_adapter: TDXAdapter 实例（可选，依赖注入）
+            external_api: AKAdapter 实例（可选，用于外部数据）
             cache_service: 缓存服务实例（可选）
             enable_cache: 是否启用缓存
         """
         self.config = config_service
         self.db = database_reader
         self.tdx = tdx_adapter
+        self.external_api = ak_adapter        
         self.enable_cache = enable_cache
         self.logger = logger
         
@@ -414,8 +417,111 @@ class DataLoadingService:
         return pd.DataFrame()
     
     def load_macro_data(self, code: str, days: int = 60) -> pd.DataFrame:
-        """加载宏观指标数据（专用 macro 市场类型）"""
-        return self.load_derivative_data(code, market_type='macro', days=days)
+        """
+        加载宏观指标数据（智能路由：external/TDX/DB）
+        
+        参数:
+            code: 指标代码（如 'brent_crude', 'pmi'）
+            days: 历史天数
+        """
+        # 1. 获取指标配置
+        macro_config = getattr(self.config, 'config', {}).get('macro_indicators', {}).get(code, {})
+        source = macro_config.get('source', 'tdx')
+        external_code = macro_config.get('code')
+        
+        # 2. 路由到外部数据源
+        if source == 'external' and external_code and self.external_api:
+            result = self.external_api.get_futures_realtime(external_code)
+            if result:
+                # 转换为 DataFrame 格式（兼容现有接口）
+                df = pd.DataFrame([{
+                    'datetime': pd.to_datetime(f"{result['update_date']} {result['update_time']}"),
+                    'close': result['price'],
+                    'open': result['open'],
+                    'high': result['high'],
+                    'low': result['low'],
+                    'prev_close': result['prev_close'],
+                    'change': result['change'],
+                    'change_pct': result['change_pct'],
+                    'volume': result.get('volume', 0),
+                    'name': result['name'],
+                    'unit': result['unit'],
+                    'source': 'external'
+                }])
+                self.logger.info(f"✅ 宏观数据 (外部): {code} -> {external_code} | 价格={result['price']}")
+                return df
+            else:
+                self.logger.warning(f"⚠️ 外部数据获取失败 {code}，尝试降级到 TDX")
+        
+        # 3. 默认路由到 TDX/DB
+        tdx_code = macro_config.get('code', code)
+        return self._load_macro_from_tdx(tdx_code, days)
+    
+    def _load_macro_from_tdx(self, tdx_code: str, days: int) -> pd.DataFrame:
+        """内部方法：从 TDX 加载宏观数据"""
+        cache_key = self._generate_cache_key('macro', tdx_code, days=days)
+        
+        cached = self._get_cached(cache_key, pd.DataFrame)
+        if cached is not None:
+            return cached
+        
+        if self.tdx and self.tdx.is_available():
+            df = self.tdx.get_bars(tdx_code, 'macro', days)
+            if df is not None and not df.empty:
+                df_out = self._convert_df_types(df)
+                self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('macro_ttl', 3600))
+                return df_out
+        
+        # DB 降级
+        df = self.db.read_table(
+            table_name=tdx_code,
+            engine_name='stock_db',
+            conditions={'datetime': datetime.now().strftime("%Y-%m-%d")},
+            order_by='datetime DESC',
+            limit=days,
+            parse_dates=['datetime']
+        )
+        
+        if not df.empty:
+            df = df.sort_values('datetime').reset_index(drop=True)
+            df_out = self._convert_df_types(df)
+            self._cache_set(cache_key, df_out, ttl=self.cache_ttl.get('macro_ttl', 3600))
+            return df_out
+        
+        return pd.DataFrame()
+    
+    def load_all_macro_indicators(self, indicator_codes: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        批量加载所有配置的宏观指标（智能路由 + 缓存协调）
+        
+        返回:
+            Dict[code -> value]，value 为最新价格或 DataFrame
+        """
+        all_macros = getattr(self.config, 'config', {}).get('macro_indicators', {})
+        codes_to_load = indicator_codes or list(all_macros.keys())
+        
+        results = {}
+        external_codes = []
+        
+        # 分类：外部数据源 vs 内部数据源
+        for code in codes_to_load:
+            config = all_macros.get(code, {})
+            if config.get('source') == 'external':
+                external_codes.append(code)
+            else:
+                df = self.load_macro_data(code)
+                if not df.empty:
+                    results[code] = float(df['close'].iloc[-1]) if 'close' in df.columns else None
+        
+        # 批量加载外部数据
+        if external_codes and self.external_api:
+            external_results = self.external_api.get_futures_batch(external_codes)
+            for code, data in external_results.items():
+                if data:
+                    results[code] = data['price']
+        
+        self.logger.info(f"✅ 宏观指标批量加载完成: {len(results)}/{len(codes_to_load)}")
+        return results
     
     # ==================== 缓存管理 ====================
     
@@ -449,6 +555,8 @@ class DataLoadingService:
             self.db.close()
         if self.tdx:
             self.tdx.close()
+        if self.external_api:
+            self.external_api.clear_cache()
         self.logger.info("✅ DataLoadingService 已关闭")
     
     def __enter__(self):
