@@ -207,84 +207,12 @@ stocks:
       target_multiplier: 1.30
       min_fundamental_score: 55
 
-# # ==================== 宏观指标映射配置 ====================
-# macro_indicators:
-#   brent_crude:
-#     code: "OIL"
-#     source: "external"
-#     unit: "USD/barrel"
-#     normal_range: [70, 90]
-#     update_frequency: "realtime"
-  
-#   comex_gold:
-#     code: "GC"
-#     source: "external"
-#     unit: "USD/oz"
-#     normal_range: [1800, 2500]
-#     update_frequency: "realtime"
-  
-#   lme_copper:
-#     code: "CAD"
-#     source: "external"
-#     unit: "USD/ton"
-#     normal_range: [8000, 11000]
-#     update_frequency: "realtime"
-  
-#   nymex_gas:
-#     code: "NG"
-#     source: "external"
-#     unit: "USD/MMBtu"
-#     normal_range: [2.0, 4.0]
-#     update_frequency: "realtime"
-  
-#   usd_cny:
-#     code: "5_RMBUS"
-#     source: "tdx"
-#     unit: "CNY/USD"
-#     normal_range: [6.8, 7.4]
-#     update_frequency: "daily"
-  
-#   china_10y_bond:
-#     code: "5_CNTY"
-#     source: "tdx"
-#     unit: "%"
-#     normal_range: [2.0, 3.5]
-#     update_frequency: "daily"
-  
-#   pmi:
-#     code: "3_PMI"
-#     source: "tdx"
-#     unit: "index"
-#     normal_range: [48, 52]
-#     update_frequency: "monthly"
-  
-#   m2_growth:
-#     code: "5_M2"
-#     source: "tdx"
-#     unit: "%"
-#     normal_range: [8, 12]
-#     update_frequency: "monthly"
-  
-#   cpi:
-#     code: "2_CPI"
-#     source: "tdx"
-#     unit: "%"
-#     normal_range: [1, 3]
-#     update_frequency: "monthly"
-  
-#   ppi:
-#     code: "2_PPI"
-#     source: "tdx"
-#     unit: "%"
-#     normal_range: [-2, 5]
-#     update_frequency: "monthly"
 # ==================== 宏观指标映射配置 ====================
 macro_indicators:
   # ----- 外盘期货（实时/日频）-----
   brent_crude:
     code: "OIL"
     source: "external"
-    market_code: 74  # 美国股票/外盘
     unit: "USD/barrel"
     normal_range: [70, 90]
     update_frequency: "realtime"
@@ -293,7 +221,6 @@ macro_indicators:
   comex_gold:
     code: "GC"
     source: "external"
-    market_code: 74
     unit: "USD/oz"
     normal_range: [1800, 2500]
     update_frequency: "realtime"
@@ -302,7 +229,6 @@ macro_indicators:
   lme_copper:
     code: "CAD"
     source: "external"
-    market_code: 74
     unit: "USD/ton"
     normal_range: [8000, 11000]
     update_frequency: "realtime"
@@ -311,7 +237,6 @@ macro_indicators:
   nymex_gas:
     code: "NG"
     source: "external"
-    market_code: 74
     unit: "USD/MMBtu"
     normal_range: [2.0, 4.0]
     update_frequency: "realtime"
@@ -320,7 +245,6 @@ macro_indicators:
   lme_nickel:
     code: "NID"
     source: "external"
-    market_code: 74
     unit: "USD/ton"
     normal_range: [15000, 25000]
     update_frequency: "realtime"
@@ -329,20 +253,11 @@ macro_indicators:
   comex_silver:
     code: "SI"
     source: "external"
-    market_code: 74
     unit: "USD/oz"
     normal_range: [20, 35]
     update_frequency: "realtime"
     data_type: "futures"
   
-  us_10y_yield:
-    code: "US10Y"
-    source: "external"
-    market_code: 74
-    unit: "%"
-    normal_range: [2.0, 5.0]
-    update_frequency: "daily"
-    data_type: "bond"
   
   # ----- TDX 宏观指标（日频/月频）-----
   usd_cny:
@@ -353,7 +268,16 @@ macro_indicators:
     normal_range: [6.8, 7.4]
     update_frequency: "daily"
     data_type: "exchange_rate"
-  
+
+  us_10y_bond:
+    code: "8_ATY"
+    source: "tdx"
+    market_code: 38
+    unit: "%"
+    normal_range: [2.0, 5.0]
+    update_frequency: "daily"
+    data_type: "bond"
+
   china_10y_bond:
     code: "5_CNTY"
     source: "tdx"
@@ -403,7 +327,6 @@ macro_indicators:
   eua_carbon:
     code: "EUA"
     source: "external"
-    market_code: 74
     unit: "EUR/ton"
     normal_range: [50, 100]
     update_frequency: "daily"
@@ -412,7 +335,6 @@ macro_indicators:
   corn_price:
     code: "C"
     source: "external"
-    market_code: 74
     unit: "USD/bushel"
     normal_range: [4.0, 7.0]
     update_frequency: "daily"

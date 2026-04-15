@@ -30,6 +30,7 @@ class TechnicalCalculator:
         self._calculate_rsi()
         self._calculate_macd()
         self._calculate_boll()
+        self._calulate_volatility()
     
     def _calculate_ma(self):
         """计算均线"""
@@ -75,6 +76,11 @@ class TechnicalCalculator:
         self.df['boll_upper'] = self.df['boll_mid'] + width * std
         self.df['boll_lower'] = self.df['boll_mid'] - width * std
     
+    def _calulate_volatility(self, period=20):
+        """计算波动率（20 日标准差）"""
+        returns = self.df['close'].pct_change()
+        self.df['volatility_20'] = returns.rolling(period).std() * np.sqrt(250)
+    
     def get_latest_indicators(self):
         """获取最新技术指标"""
         if self.df.empty:
@@ -93,6 +99,7 @@ class TechnicalCalculator:
             'macd_hist': latest.get('macd_hist', None),
             'boll_upper': latest.get('boll_upper', None),
             'boll_lower': latest.get('boll_lower', None),
+            'volatility_20': latest.get('volatility_20', None),
         }
     
     def get_technical_entry_price(self):
