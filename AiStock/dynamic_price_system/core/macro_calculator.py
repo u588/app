@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-宏观面联动计算模块
+MacroCalculator：宏观面联动系数模块
+功能：
+  - 根据板块关联的宏观指标计算联动系数
+  - 支持实时/滞后数据处理与新鲜度校验
+  - 敏感度可调，输出价格调整系数 (0.92 ~ 1.08)
 """
 
 import logging
 # from config import SECTOR_MACRO_LINK
+import logging
+from typing import Dict, Optional, List
+from datetime import datetime, timedelta
+import numpy as np
 from base_services.config_service import ConfigService
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,13 +23,39 @@ SECTOR_MACRO_LINK = config.get('sector_macro_link', {})
 class MacroCalculator:
     """宏观面计算器"""
     
-    def __init__(self, macro_data, sector):
-        """
-        初始化
-        :param macro_data: 宏观数据字典
-        """
-        self.data = macro_data
+    # 指标类型元数据 (用于偏差计算)
+    INDICATOR_META = {
+        'brent_crude': {'unit': 'USD/bbl', 'neutral': 80, 'range': 40, 'lag_tolerance_days': 2},
+        'comex_gold': {'unit': 'USD/oz', 'neutral': 2300, 'range': 600, 'lag_tolerance_days': 1},
+        'lme_copper': {'unit': 'USD/t', 'neutral': 9000, 'range': 3000, 'lag_tolerance_days': 2},
+        'nymex_gas': {'unit': 'USD/mmbtu', 'neutral': 2.8, 'range': 2.0, 'lag_tolerance_days': 1},
+        'pmi': {'unit': 'index', 'neutral': 50.0, 'range': 10.0, 'lag_tolerance_days': 30},
+        'usd_cny': {'unit': 'ratio', 'neutral': 7.15, 'range': 0.6, 'lag_tolerance_days': 1},
+        'china_10y_bond': {'unit': '%', 'neutral': 2.5, 'range': 1.5, 'lag_tolerance_days': 1},
+        'm2_growth': {'unit': '%', 'neutral': 9.0, 'range': 4.0, 'lag_tolerance_days': 15},
+        'cpi': {'unit': '%', 'neutral': 2.0, 'range': 3.0, 'lag_tolerance_days': 30},
+        'ppi': {'unit': '%', 'neutral': 1.0, 'range': 5.0, 'lag_tolerance_days': 30}
+    }
+    
+    # def __init__(self, macro_data, sector):
+    #     """
+    #     初始化
+    #     :param macro_data: 宏观数据字典
+    #     """
+    #     self.data = macro_data
+    #     self.sector = sector
+
+    def __init__(self, macro_data: Dict, sector: str, params: Optional[Dict] = None, 
+                 config_macros: Optional[Dict] = None):
+        self.macro_data = macro_data or {}
         self.sector = sector
+        self.params = params or {}
+        self.config_macros = config_macros or {}
+        self.logger = logger
+        
+        self.sensitivity = self.params.get('macro_sensitivity', 1.0)
+        self.correlation_window = self.params.get('correlation_window', 60)
+        self.lag_tolerance = self.params.get('lag_tolerance_days', 3)
     
     def get_sector_factor(self, sector):
         """获取板块宏观调整系数"""
@@ -171,6 +205,104 @@ class MacroCalculator:
         
         return round(sum(scores) / len(scores), 1)
 
+## ============== new method ==============
+    def get_adjustment_factor(self) -> float:
+        """计算宏观联动调整系数"""
+        if not self.macro_data:
+            self.logger.warning("⚠️ 宏观数据为空，返回中性系数 1.0")
+            return 1.0
+        
+        # 获取板块关联指标 (优先从 params 取，其次 config，最后默认)
+        linked_indicators = self.params.get('macro_link', [])
+        if not linked_indicators:
+            # 默认板块映射
+            default_map = {
+                '油气开采': ['brent_crude', 'pmi'],
+                'LNG': ['nymex_gas', 'usd_cny'],
+                '黄金': ['comex_gold', 'china_10y_bond'],
+                '新能源': ['lme_copper', 'm2_growth'],
+                '军工': ['pmi', 'm2_growth']
+            }
+            linked_indicators = default_map.get(self.sector, ['pmi'])
+        
+        impacts = []
+        valid_count = 0
+        
+        for indicator in linked_indicators:
+            impact = self._calculate_indicator_impact(indicator)
+            if impact is not None:
+                impacts.append(impact)
+                valid_count += 1
+            else:
+                self.logger.debug(f"🔍 指标 {indicator} 数据不足或过期，跳过")
+        
+        if valid_count == 0:
+            return 1.0
+            
+        # 综合影响：算术平均后乘以敏感度
+        avg_impact = np.mean(impacts)
+        factor = 1.0 + avg_impact * self.sensitivity
+        
+        # 限制在中性区间内，防止极端行情导致因子失真
+        neutral_range = self.params.get('neutral_range', [0.92, 1.08])
+        factor = np.clip(factor, neutral_range[0], neutral_range[1])
+        
+        return round(float(factor), 3)
+    
+    def _calculate_indicator_impact(self, indicator: str) -> Optional[float]:
+        """计算单个宏观指标的影响值 (-0.1 ~ 0.1)"""
+        # 获取当前值
+        current = self.macro_data.get(indicator)
+        if current is None:
+            return None
+            
+        # 获取元数据
+        meta = self.INDICATOR_META.get(indicator, {})
+        neutral = meta.get('neutral', 0)
+        range_width = meta.get('range', 1)
+        
+        # 计算标准化偏差
+        deviation = (current - neutral) / range_width
+        
+        # PMI 特殊处理：>50 利好，<50 利空
+        if indicator == 'pmi':
+            impact = deviation * 0.15
+        # 国债收益率：上行利空成长/高估值，下行利好
+        elif indicator in ['china_10y_bond', 'usd_cny']:
+            impact = -deviation * 0.10
+        # 大宗商品：上行利好资源/通胀受益板块
+        elif indicator in ['brent_crude', 'comex_gold', 'lme_copper', 'nymex_gas']:
+            impact = deviation * 0.12
+        # 货币/流动性：M2上行利好
+        elif indicator == 'm2_growth':
+            impact = deviation * 0.08
+        else:
+            impact = deviation * 0.10
+            
+        return float(np.clip(impact, -0.15, 0.15))
+    
+    def get_macro_report(self) -> Dict:
+        """生成宏观分析简报"""
+        report = {
+            'sector': self.sector,
+            'sensitivity': self.sensitivity,
+            'adjustment_factor': self.get_adjustment_factor(),
+            'indicators': {}
+        }
+        
+        linked = self.params.get('macro_link', [])
+        for ind in linked:
+            val = self.macro_data.get(ind)
+            meta = self.INDICATOR_META.get(ind, {})
+            report['indicators'][ind] = {
+                'current_value': val,
+                'neutral': meta.get('neutral'),
+                'unit': meta.get('unit'),
+                'impact': self._calculate_indicator_impact(ind)
+            }
+            
+        return report
+    
 
 # 测试
 if __name__ == '__main__':

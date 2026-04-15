@@ -72,29 +72,30 @@ class AKAdapter:
             return cached
         
         # 2. 代码映射
-        ak_symbol = self.FUTURES_SYMBOL_MAP.get(code)
-        if not ak_symbol:
+        ak_symbol_name = self.FUTURES_SYMBOL_MAP.get(code)
+        # ak_symbol = self.FUTURES_SYMBOL_MAP.get(code)
+        if not ak_symbol_name:
             logger.error(f"❌ 未知外部期货代码: {code}")
             return None
         
         # 3. 调用 AkShare（带重试）
         for attempt in range(self.retry_times):
             try:
-                logger.info(f"🔄 请求外部数据: {code} -> {ak_symbol} (尝试 {attempt+1}/{self.retry_times})")
+                logger.info(f"🔄 请求外部数据: {code} -> {ak_symbol_name} (尝试 {attempt+1}/{self.retry_times})")
                 
                 # 导入 akshare（延迟导入，避免未安装时崩溃）
                 import akshare as ak
                 
-                df = ak.futures_foreign_commodity_realtime(symbol=ak_symbol)
+                df = ak.futures_foreign_commodity_realtime(symbol=code)
                 
                 if df is None or df.empty:
-                    logger.warning(f"⚠️ AkShare 返回空数据: {ak_symbol}")
+                    logger.warning(f"⚠️ AkShare 返回空数据: {ak_symbol_name}")
                     time.sleep(1)
                     continue
                 
                 # 4. 数据标准化
                 row = df.iloc[0]
-                result = self._standardize_futures_data(code, ak_symbol, row)
+                result = self._standardize_futures_data(code, ak_symbol_name, row)
                 
                 # 5. 存入缓存
                 self._set_cached(cache_key, result)

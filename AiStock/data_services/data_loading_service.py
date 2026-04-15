@@ -54,7 +54,7 @@ class DataLoadingService:
         self.config = config_service
         self.db = database_reader
         self.tdx = tdx_adapter
-        self.external_api = ak_adapter        
+        self.external_api = ak_adapter
         self.enable_cache = enable_cache
         self.logger = logger
         

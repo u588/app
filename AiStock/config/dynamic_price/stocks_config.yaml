@@ -7,10 +7,10 @@ stocks:
     weight: 0.10
     macro_link: ["brent_crude", "pmi"]
     params:
-      stop_loss_atr_mult: 3.0
-      entry_ma_period: 20
-      target_multiplier: 1.20
-      min_fundamental_score: 60
+      stop_loss_atr_mult: 3.0  # 止损 ATR 倍数
+      entry_ma_period: 20      # 入场均线周期（20 日均线）
+      target_multiplier: 1.20  # 目标价倍数（20% 盈利目标）
+      min_fundamental_score: 60 # 最低基本面评分（0-100）
   
   - code: "601857"
     name: "中国石油"
