@@ -27,6 +27,7 @@ class TechnicalCalculator:
         """
         self.df = df.copy().sort_index()
         self.params = params or {}
+        self.logger = logger
         
         # 参数默认值
         self.ma_period = self.params.get('entry_ma_period', 20)
@@ -47,6 +48,8 @@ class TechnicalCalculator:
         self._calculate_macd()
         self._calculate_boll()
         self._calulate_volatility()
+        
+        self.indicators = self.df.iloc[-1].to_dict()
     
     def _calculate_ma(self):
         """计算均线"""
@@ -104,9 +107,11 @@ class TechnicalCalculator:
         latest = self.df.iloc[-1]
         return {
             'close': latest['close'],
-            'ma5': latest.get('ma5', None),
-            'ma20': latest.get('ma20', None),
-            'ma60': latest.get('ma60', None),
+            'ma_short': latest.get('ma_short', None),
+            'ma_long': latest.get('ma_long', None),
+            # 'ma5': latest.get('ma5', None),
+            # 'ma20': latest.get('ma20', None),
+            # 'ma60': latest.get('ma60', None),
             'atr14': latest.get('atr14', None),
             'rsi14': latest.get('rsi14', None),
             'macd_dif': latest.get('macd_dif', None),
@@ -114,7 +119,7 @@ class TechnicalCalculator:
             'macd_hist': latest.get('macd_hist', None),
             'boll_upper': latest.get('boll_upper', None),
             'boll_lower': latest.get('boll_lower', None),
-            'volatility_20': latest.get('volatility_20', None),
+            'volatility': latest.get('volatility_20', None),
         }
     
     def get_technical_entry_price(self):
@@ -195,7 +200,6 @@ class TechnicalCalculator:
         return round(technical_target, 2)
 
 ## ====new====
-
     def get_entry_price(self) -> Optional[float]:
         """生成动态入场价"""
         try:

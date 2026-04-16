@@ -47,7 +47,7 @@ class MacroCalculator:
 
     def __init__(self, macro_data: Dict, sector: str, params: Optional[Dict] = None, 
                  config_macros: Optional[Dict] = None):
-        self.macro_data = macro_data or {}
+        self.data = macro_data or {}
         self.sector = sector
         self.params = params or {}
         self.config_macros = config_macros or {}
@@ -208,7 +208,7 @@ class MacroCalculator:
 ## ============== new method ==============
     def get_adjustment_factor(self) -> float:
         """计算宏观联动调整系数"""
-        if not self.macro_data:
+        if not self.data:
             self.logger.warning("⚠️ 宏观数据为空，返回中性系数 1.0")
             return 1.0
         
@@ -252,7 +252,7 @@ class MacroCalculator:
     def _calculate_indicator_impact(self, indicator: str) -> Optional[float]:
         """计算单个宏观指标的影响值 (-0.1 ~ 0.1)"""
         # 获取当前值
-        current = self.macro_data.get(indicator)
+        current = self.data.get(indicator)
         if current is None:
             return None
             
@@ -292,7 +292,7 @@ class MacroCalculator:
         
         linked = self.params.get('macro_link', [])
         for ind in linked:
-            val = self.macro_data.get(ind)
+            val = self.data.get(ind)
             meta = self.INDICATOR_META.get(ind, {})
             report['indicators'][ind] = {
                 'current_value': val,
