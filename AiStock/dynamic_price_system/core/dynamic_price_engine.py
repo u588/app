@@ -125,6 +125,7 @@ class DynamicPriceEngine:
     def calculate_single(
         self,
         code: str,
+        name: str,
         sector: str,
         stock_data: pd.DataFrame,
         financial_data: Dict,
@@ -136,6 +137,7 @@ class DynamicPriceEngine:
         
         参数:
             code: 股票代码
+            name: 股票名称
             sector: 所属板块
             stock_data: OHLCV DataFrame
             financial_data: 财务指标字典
@@ -216,6 +218,7 @@ class DynamicPriceEngine:
             # 9. 组装结果（确保原生类型）
             result = {
                 'code': code,
+                'name': name,
                 'sector': sector,
                 'calc_time': datetime.now().isoformat(),
                 'prices': {
@@ -272,6 +275,7 @@ class DynamicPriceEngine:
             try:
                 res = self.calculate_single(
                     code=stock['code'],
+                    name=stock.get('name', '未知'),
                     sector=stock.get('sector', '未知'),
                     stock_data=stock['stock_data'],
                     financial_data=stock.get('financial_data', {}),

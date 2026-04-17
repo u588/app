@@ -360,6 +360,16 @@ class DataLoadingService:
         except Exception as e:
             self.logger.warning(f"⚠️ 股票财务数据加载失败 {code}: {e}")
             return pd.DataFrame()
+
+    def load_stock_financials(self, code: str) -> pd.DataFrame:
+        fs_df = self.load_stock_fs(code)[['col183', 'col184', 'col197', 'col202', 'col210']].rename(columns={
+                                        'col183': 'revenue_growth',
+                                        'col184': 'profit_growth',
+                                        'col197': 'roe',
+                                        'col202': 'gross_margin',
+                                        'col210': 'debt_ratio'
+                                        })
+        return fs_df.tail(1)
     
     def load_derivative_data(
         self, 
@@ -506,19 +516,24 @@ class DataLoadingService:
         # 分类：外部数据源 vs 内部数据源
         for code in codes_to_load:
             config = all_macros.get(code, {})
-            if config.get('source') == 'external':
-                external_codes.append(code)
-            else:
-                df = self.load_macro_data(code)
-                if not df.empty:
-                    results[code] = float(df['close'].iloc[-1]) if 'close' in df.columns else None
+            df = self.load_macro_data(code)
+            if not df.empty:
+                results[code] = float(df['close'].iloc[-1]) if 'close' in df.columns else None            
+        # for code in codes_to_load:
+        #     config = all_macros.get(code, {})
+        #     if config.get('source') == 'external':
+        #         external_codes.append(code)
+        #     else:
+        #         df = self.load_macro_data(code)
+        #         if not df.empty:
+        #             results[code] = float(df['close'].iloc[-1]) if 'close' in df.columns else None
         
-        # 批量加载外部数据
-        if external_codes and self.external_api:
-            external_results = self.external_api.get_futures_batch(external_codes)
-            for code, data in external_results.items():
-                if data:
-                    results[code] = data['price']
+        # # 批量加载外部数据
+        # if external_codes and self.external_api:
+        #     external_results = self.external_api.get_futures_batch(external_codes)
+        #     for code, data in external_results.items():
+        #         if data:
+        #             results[code] = data['price']
         
         self.logger.info(f"✅ 宏观指标批量加载完成: {len(results)}/{len(codes_to_load)}")
         return results
