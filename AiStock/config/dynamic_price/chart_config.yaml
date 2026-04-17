@@ -1,0 +1,84 @@
+# ==================== 可视化配置 ====================
+
+# 渲染器配置
+renderer:
+  type: plotly                    # plotly/matplotlib
+  theme: plotly_white             # plotly_white/plotly_dark/seaborn
+  width: 1200                     # 画布宽度
+  height: 600                     # 画布高度
+  scale: 2                        # 导出图片分辨率
+  include_plotlyjs: cdn          # html 导出: inline/cdn
+
+# 输出配置
+output:
+  dir: output/visualization       # 输出目录
+  format: html                    # 默认格式: html/png/pdf
+  auto_open: false                # 生成后自动打开浏览器
+
+# 价格区间图配置
+price_chart:
+  title_template: "🎯 动态价格区间 ({code})"
+  current_color: blue
+  current_symbol: star
+  current_marker_size: 16
+  entry_color: green
+  entry_line_width: 4
+  entry_line_dash: dash
+  entry_range: 0.98               # 入场区间 ±2%
+  stop_color: red
+  stop_symbol: x
+  stop_text: 止损
+  target_color: darkblue
+  target_symbol: diamond
+  profit_zone_color: rgba(0, 128, 0, 0.1)
+  profit_zone_x0: 0.6
+  profit_zone_x1: 1.4
+  y_padding: 0.3                  # Y 轴留白比例
+  show_annotation: true
+  annotation_bgcolor: lightgray
+  annotation_font_size: 10
+  x_order: ['当前价', '入场区间', '止损价', '目标价']
+
+# 因子分解图配置
+factor_chart:
+  title_template: "📊 因子分解 ({code})"
+  colors:
+    technical: gray
+    fundamental: orange
+    macro: purple
+    composite: darkblue
+  show_values: true
+  value_format: ".3f"
+  bar_width: 0.6
+
+# 组合对比图配置
+portfolio_chart:
+  title: "🎯 批量标的对比"
+  x_axis: composite_factor        # X 轴字段
+  y_axis: pl_ratio                # Y 轴字段
+  color_by: recommendation        # 颜色映射字段
+  size_by: target_price           # 大小映射字段
+  color_map:
+    强烈推荐: green
+    推荐: blue
+    观望: orange
+    谨慎: red
+  size_range: [10, 30]            # 气泡大小范围
+  show_reference_lines: true
+  reference_lines:
+    - type: hline
+      y: 2.0
+      color: blue
+      text: "盈亏比阈值"
+    - type: vline
+      x: 1.0
+      color: gray
+      text: "中性因子"
+  hover_data: ['code', 'name', 'sector']
+
+# 仪表盘配置
+dashboard:
+  template: default
+  charts_per_row: 2
+  show_summary_table: true
+  export_formats: [html, pdf]
