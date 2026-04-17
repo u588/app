@@ -5,7 +5,18 @@ sudo aria2c -x8 -s8 -k 1M -c  https://www.python.org/ftp/python/3.11.9/Python-3.
 
 2、 依赖项
 sudo apt update
-sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev liblzma-dev tk-dev libgdbm-compat-dev
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev liblzma-dev tk-dev libgdbm-compat-dev libncurses-dev
+
+ubuntu 24.04 需要安装以下依赖项：
+sudo apt update
+sudo apt install -y \
+  build-essential pkg-config \
+  zlib1g-dev libbz2-dev liblzma-dev \
+  libreadline-dev libncurses-dev \
+  libssl-dev libffi-dev \
+  libsqlite3-dev libgdbm-dev libdb-dev \
+  libexpat1-dev uuid-dev \
+  tk-dev
 
 3、解压源码包
 tar xvf Python-3.x.x.tgz
