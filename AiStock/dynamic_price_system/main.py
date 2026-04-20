@@ -212,9 +212,9 @@ class DynamicPriceRunner:
                 self.logger.info("📊 生成可视化图表...")
                 try:
                     # 单标的计算后生成图表
-                    if result:
-                        viz_outputs = self.services['viz'].visualize_single_result(result, chart_types=['price_interval', 'factor_decomposition'])
-                        self.logger.info(f"📊 生成可视化: {list(viz_outputs.values())}")
+                    # if result:
+                    #     viz_outputs = self.services['viz'].visualize_single_result(result, chart_types=['price_interval', 'factor_decomposition'])
+                    #     self.logger.info(f"📊 生成可视化: {list(viz_outputs.values())}")
 
                     # 批量计算后生成组合对比图
                     if batch_results:

@@ -42,7 +42,7 @@ components:
     y_axis: pl_ratio
     color_by: recommendation
     size_by: target_price
-    size_range: [10, 30]
+    # size_range: [10, 30]
   risk_chart:
     x_axis: volatility
     y_axis: pl_ratio
@@ -96,7 +96,7 @@ portfolio_chart:
     推荐: blue
     观望: orange
     谨慎: red
-  size_range: [10, 30]            # 气泡大小范围
+  # size_range: [10, 30]            # 气泡大小范围
   show_reference_lines: true
   reference_lines:
     - type: hline
