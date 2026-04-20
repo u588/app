@@ -1,0 +1,321 @@
+2026-04-20 09:11:13,351 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:37:42,747 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:38:11,888 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:38:23,859 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:45:21,540 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:45:28,604 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:46:46,169 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:50:05,016 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:50:05,055 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 09:50:05,082 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 09:50:05,082 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 09:50:05,083 [INFO] base_services.cache_service: ✅ 缓存服务初始化成功 | 容量=2000 | TTL=3600s
+2026-04-20 09:56:54,589 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 09:56:54,634 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 09:56:54,665 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 09:56:54,665 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 09:56:54,666 [INFO] base_services.cache_service: ✅ 缓存服务初始化成功 | 容量=2000 | TTL=3600s
+2026-04-20 10:03:12,836 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 10:03:12,878 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 10:03:12,907 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 10:03:12,907 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 10:03:12,908 [INFO] base_services.cache_service: ✅ 缓存服务初始化成功 | 容量=2000 | TTL=3600s
+2026-04-20 10:03:13,671 [INFO] data_services.database_reader: ✅ 数据库引擎 [index_db] 初始化成功
+2026-04-20 10:03:13,672 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_db] 初始化成功
+2026-04-20 10:03:13,672 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_base_db] 初始化成功
+2026-04-20 10:03:13,673 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_fs_db] 初始化成功
+2026-04-20 10:03:13,673 [INFO] data_services.database_reader: ✅ 数据库引擎 [index_pe_db] 初始化成功
+2026-04-20 10:03:14,017 [INFO] data_services.tdx_adapter: ✅ TDX 接口连接成功（普通+扩展行情）
+2026-04-20 10:03:14,018 [INFO] data_services.ak_adapter: ✅ ExternalAPI 初始化成功 | timeout=30s, retry=3
+2026-04-20 10:03:14,019 [INFO] data_services.data_loading_service: ✅ 使用外部 CacheService 实例
+2026-04-20 10:03:14,019 [INFO] data_services.data_loading_service: ✅ DataLoadingService V6.2 初始化成功 | 缓存=启用 | 复权逻辑已移除
+2026-04-20 10:03:14,029 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 10:03:14,059 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 10:03:14,060 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 10:03:14,061 [INFO] dynamic_price_system.core.dynamic_price_engine: ✅ DynamicPriceEngine 初始化成功 | 权重={'technical': 0.4, 'fundamental': 0.35, 'macro': 0.25} | 最小交易日=60
+2026-04-20 10:03:14,106 [INFO] dynamic_price_system.portfolio.tracker: ✅ PortfolioTracker 初始化成功 | 初始资金=1,000,000
+2026-04-20 10:03:14,106 [INFO] dynamic_price_system.portfolio.risk_manager: ✅ RiskManager 初始化成功
+2026-04-20 10:03:14,110 [WARNING] MainRunner: ⚠️ 可视化服务初始化失败: No module named 'visualization.services.core'，后续将跳过图表生成
+2026-04-20 10:03:14,110 [INFO] MainRunner: ✅ 服务初始化完成
+2026-04-20 10:03:14,110 [INFO] MainRunner: 🚀 启动动态价格系统 | 模式: paper | 时间: 2026-04-20T10:03:14.110340
+2026-04-20 10:03:14,110 [INFO] MainRunner: 📋 标的池: 18 只 -> ['600938', '601857', '600256', '600803', '601808', '002353', '601088', '600426', '600406', '000400', '300750', '300274', '601899', '600489', '600760', '002179', '603019', '600536']
+2026-04-20 10:03:14,110 [INFO] MainRunner: 🌍 加载宏观指标数据...
+2026-04-20 10:03:14,110 [INFO] data_services.ak_adapter: 🔄 请求外部数据: OIL -> 布伦特原油 (尝试 1/3)
+2026-04-20 10:03:14,972 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: OIL | 价格=94.699
+2026-04-20 10:03:14,976 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): brent_crude -> OIL | 价格=94.699
+2026-04-20 10:03:14,977 [INFO] data_services.ak_adapter: 🔄 请求外部数据: GC -> COMEX 黄金 (尝试 1/3)
+2026-04-20 10:03:15,390 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: GC | 价格=4828.448
+2026-04-20 10:03:15,392 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): comex_gold -> GC | 价格=4828.448
+2026-04-20 10:03:15,393 [INFO] data_services.ak_adapter: 🔄 请求外部数据: CAD -> LME 铜 (尝试 1/3)
+2026-04-20 10:03:15,832 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: CAD | 价格=13338.255
+2026-04-20 10:03:15,835 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): lme_copper -> CAD | 价格=13338.255
+2026-04-20 10:03:16,750 [INFO] data_services.data_loading_service: ✅ 宏观指标批量加载完成: 6/6
+2026-04-20 10:03:16,750 [INFO] MainRunner: 📥 加载标的行情与财务数据...
+2026-04-20 10:03:17,027 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600938 | 200条 | 市场=stock_sh
+2026-04-20 10:03:18,251 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600938 | 21条
+2026-04-20 10:03:18,537 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601857 | 200条 | 市场=stock_sh
+2026-04-20 10:03:19,480 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601857 | 78条
+2026-04-20 10:03:19,775 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600256 | 200条 | 市场=stock_sh
+2026-04-20 10:03:20,895 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600256 | 99条
+2026-04-20 10:03:21,183 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600803 | 200条 | 市场=stock_sh
+2026-04-20 10:03:22,339 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600803 | 100条
+2026-04-20 10:03:22,622 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601808 | 200条 | 市场=stock_sh
+2026-04-20 10:03:23,437 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601808 | 78条
+2026-04-20 10:03:23,721 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 002353 | 200条 | 市场=stock_sz
+2026-04-20 10:03:24,513 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 002353 | 69条
+2026-04-20 10:03:24,795 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601088 | 200条 | 市场=stock_sh
+2026-04-20 10:03:25,555 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601088 | 76条
+2026-04-20 10:03:25,843 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600426 | 200条 | 市场=stock_sh
+2026-04-20 10:03:26,961 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600426 | 96条
+2026-04-20 10:03:27,244 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600406 | 200条 | 市场=stock_sh
+2026-04-20 10:03:28,231 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600406 | 91条
+2026-04-20 10:03:28,516 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 000400 | 200条 | 市场=stock_sz
+2026-04-20 10:03:29,472 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 000400 | 99条
+2026-04-20 10:03:29,768 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 300750 | 200条 | 市场=stock_sz
+2026-04-20 10:03:30,420 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 300750 | 35条
+2026-04-20 10:03:30,708 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 300274 | 200条 | 市场=stock_sz
+2026-04-20 10:03:31,716 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 300274 | 61条
+2026-04-20 10:03:32,001 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601899 | 200条 | 市场=stock_sh
+2026-04-20 10:03:32,865 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601899 | 74条
+2026-04-20 10:03:33,148 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600489 | 200条 | 市场=stock_sh
+2026-04-20 10:03:34,021 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600489 | 94条
+2026-04-20 10:03:34,301 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600760 | 200条 | 市场=stock_sh
+2026-04-20 10:03:35,192 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600760 | 99条
+2026-04-20 10:03:35,475 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 002179 | 200条 | 市场=stock_sz
+2026-04-20 10:03:36,416 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 002179 | 77条
+2026-04-20 10:03:36,704 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 603019 | 200条 | 市场=stock_sh
+2026-04-20 10:03:37,692 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 603019 | 49条
+2026-04-20 10:03:37,978 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600536 | 200条 | 市场=stock_sh
+2026-04-20 10:03:38,961 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600536 | 96条
+2026-04-20 10:03:38,963 [INFO] MainRunner: 🧮 执行动态价格计算...
+2026-04-20 10:03:38,963 [INFO] dynamic_price_system.core.dynamic_price_engine: 🚀 开始批量计算: 18 只标的
+2026-04-20 10:03:38,973 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 60，启用降权因子
+2026-04-20 10:03:38,973 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600938 基本面评分 50.0 < 阈值 60，启用降权
+2026-04-20 10:03:38,983 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 55，启用降权因子
+2026-04-20 10:03:38,983 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 601857 基本面评分 50.0 < 阈值 55，启用降权
+2026-04-20 10:03:39,026 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 70，启用降权因子
+2026-04-20 10:03:39,026 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 601088 基本面评分 50.0 < 阈值 70，启用降权
+2026-04-20 10:03:39,035 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 55，启用降权因子
+2026-04-20 10:03:39,035 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600426 基本面评分 50.0 < 阈值 55，启用降权
+2026-04-20 10:03:39,053 [INFO] dynamic_price_system.core.dynamic_price_engine: 📊 批量进度: 10/18 | 成功: 10
+2026-04-20 10:03:39,096 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 60，启用降权因子
+2026-04-20 10:03:39,096 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600760 基本面评分 50.0 < 阈值 60，启用降权
+2026-04-20 10:03:39,122 [INFO] dynamic_price_system.core.dynamic_price_engine: 📊 批量进度: 18/18 | 成功: 18
+2026-04-20 10:03:39,122 [INFO] dynamic_price_system.core.dynamic_price_engine: ✅ 批量计算完成 | 成功: 18/18
+2026-04-20 10:03:39,122 [INFO] MainRunner: ✅ 计算完成: 成功 18/18 只
+2026-04-20 10:03:39,122 [INFO] MainRunner: 🛡️ 执行组合更新与风控检查...
+2026-04-20 10:03:39,122 [ERROR] MainRunner: ❌ 系统运行异常: RiskManager.check_alerts() missing 1 required positional argument: 'current_prices'
+Traceback (most recent call last):
+  File "/home/ts/app/AiStock/dynamic_price_system/main.py", line 205, in run
+    risk_alerts = self.services['risk'].check_alerts(batch_results)
+TypeError: RiskManager.check_alerts() missing 1 required positional argument: 'current_prices'
+2026-04-20 10:03:39,124 [INFO] MainRunner: 🧹 清理服务资源...
+2026-04-20 10:03:39,125 [INFO] data_services.database_reader: ✅ 所有数据库引擎已关闭
+2026-04-20 10:03:39,126 [INFO] data_services.tdx_adapter: ✅ TDX 连接已全部关闭
+2026-04-20 10:03:39,126 [INFO] data_services.database_reader: ✅ 所有数据库引擎已关闭
+2026-04-20 10:03:39,127 [INFO] data_services.tdx_adapter: ✅ TDX 连接已全部关闭
+2026-04-20 10:03:39,127 [INFO] data_services.ak_adapter: ✅ ExternalAPI 缓存已清空
+2026-04-20 10:03:39,127 [INFO] data_services.data_loading_service: ✅ DataLoadingService 已关闭
+2026-04-20 10:03:39,127 [INFO] MainRunner: ✅ 资源清理完成
+2026-04-20 10:20:03,299 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 10:20:03,341 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 10:20:03,370 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 10:20:03,371 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 10:20:03,371 [INFO] base_services.cache_service: ✅ 缓存服务初始化成功 | 容量=2000 | TTL=3600s
+2026-04-20 10:20:04,180 [INFO] data_services.database_reader: ✅ 数据库引擎 [index_db] 初始化成功
+2026-04-20 10:20:04,181 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_db] 初始化成功
+2026-04-20 10:20:04,182 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_base_db] 初始化成功
+2026-04-20 10:20:04,182 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_fs_db] 初始化成功
+2026-04-20 10:20:04,183 [INFO] data_services.database_reader: ✅ 数据库引擎 [index_pe_db] 初始化成功
+2026-04-20 10:20:04,565 [INFO] data_services.tdx_adapter: ✅ TDX 接口连接成功（普通+扩展行情）
+2026-04-20 10:20:04,566 [INFO] data_services.ak_adapter: ✅ ExternalAPI 初始化成功 | timeout=30s, retry=3
+2026-04-20 10:20:04,567 [INFO] data_services.data_loading_service: ✅ 使用外部 CacheService 实例
+2026-04-20 10:20:04,567 [INFO] data_services.data_loading_service: ✅ DataLoadingService V6.2 初始化成功 | 缓存=启用 | 复权逻辑已移除
+2026-04-20 10:20:04,579 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 10:20:04,608 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 10:20:04,609 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 10:20:04,609 [INFO] dynamic_price_system.core.dynamic_price_engine: ✅ DynamicPriceEngine 初始化成功 | 权重={'technical': 0.4, 'fundamental': 0.35, 'macro': 0.25} | 最小交易日=60
+2026-04-20 10:20:04,611 [INFO] dynamic_price_system.portfolio.tracker: ✅ PortfolioTracker 初始化成功 | 初始资金=1,000,000
+2026-04-20 10:20:04,611 [INFO] dynamic_price_system.portfolio.risk_manager: ✅ RiskManager 初始化成功
+2026-04-20 10:20:04,614 [WARNING] MainRunner: ⚠️ 可视化服务初始化失败: No module named 'visualization.services.core'，后续将跳过图表生成
+2026-04-20 10:20:04,614 [INFO] MainRunner: ✅ 服务初始化完成
+2026-04-20 10:20:04,614 [INFO] MainRunner: 🚀 启动动态价格系统 | 模式: paper | 时间: 2026-04-20T10:20:04.614511
+2026-04-20 10:20:04,614 [INFO] MainRunner: 📋 标的池: 18 只 -> ['600938', '601857', '600256', '600803', '601808', '002353', '601088', '600426', '600406', '000400', '300750', '300274', '601899', '600489', '600760', '002179', '603019', '600536']
+2026-04-20 10:20:04,614 [INFO] MainRunner: 🌍 加载宏观指标数据...
+2026-04-20 10:20:04,614 [INFO] data_services.ak_adapter: 🔄 请求外部数据: OIL -> 布伦特原油 (尝试 1/3)
+2026-04-20 10:20:05,444 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: OIL | 价格=94.788
+2026-04-20 10:20:05,448 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): brent_crude -> OIL | 价格=94.788
+2026-04-20 10:20:05,449 [INFO] data_services.ak_adapter: 🔄 请求外部数据: GC -> COMEX 黄金 (尝试 1/3)
+2026-04-20 10:20:05,912 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: GC | 价格=4821.45
+2026-04-20 10:20:05,914 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): comex_gold -> GC | 价格=4821.45
+2026-04-20 10:20:05,915 [INFO] data_services.ak_adapter: 🔄 请求外部数据: CAD -> LME 铜 (尝试 1/3)
+2026-04-20 10:20:06,353 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: CAD | 价格=13335.3
+2026-04-20 10:20:06,356 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): lme_copper -> CAD | 价格=13335.3
+2026-04-20 10:20:07,708 [INFO] data_services.data_loading_service: ✅ 宏观指标批量加载完成: 6/6
+2026-04-20 10:20:07,708 [INFO] MainRunner: 📥 加载标的行情与财务数据...
+2026-04-20 10:20:08,007 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600938 | 200条 | 市场=stock_sh
+2026-04-20 10:20:08,450 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600938 | 21条
+2026-04-20 10:20:08,750 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601857 | 200条 | 市场=stock_sh
+2026-04-20 10:20:09,305 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601857 | 78条
+2026-04-20 10:20:09,614 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600256 | 200条 | 市场=stock_sh
+2026-04-20 10:20:10,230 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600256 | 99条
+2026-04-20 10:20:10,533 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600803 | 200条 | 市场=stock_sh
+2026-04-20 10:20:11,122 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600803 | 100条
+2026-04-20 10:20:11,425 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601808 | 200条 | 市场=stock_sh
+2026-04-20 10:20:11,983 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601808 | 78条
+2026-04-20 10:20:12,281 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 002353 | 200条 | 市场=stock_sz
+2026-04-20 10:20:12,793 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 002353 | 69条
+2026-04-20 10:20:13,093 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601088 | 200条 | 市场=stock_sh
+2026-04-20 10:20:13,635 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601088 | 76条
+2026-04-20 10:20:13,933 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600426 | 200条 | 市场=stock_sh
+2026-04-20 10:20:14,545 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600426 | 96条
+2026-04-20 10:20:14,848 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600406 | 200条 | 市场=stock_sh
+2026-04-20 10:20:15,472 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600406 | 91条
+2026-04-20 10:20:15,768 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 000400 | 200条 | 市场=stock_sz
+2026-04-20 10:20:16,384 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 000400 | 99条
+2026-04-20 10:20:16,687 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 300750 | 200条 | 市场=stock_sz
+2026-04-20 10:20:17,134 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 300750 | 35条
+2026-04-20 10:20:17,432 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 300274 | 200条 | 市场=stock_sz
+2026-04-20 10:20:17,932 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 300274 | 61条
+2026-04-20 10:20:18,230 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601899 | 200条 | 市场=stock_sh
+2026-04-20 10:20:18,777 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601899 | 74条
+2026-04-20 10:20:19,074 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600489 | 200条 | 市场=stock_sh
+2026-04-20 10:20:19,648 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600489 | 94条
+2026-04-20 10:20:19,944 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600760 | 200条 | 市场=stock_sh
+2026-04-20 10:20:20,531 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600760 | 99条
+2026-04-20 10:20:20,835 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 002179 | 200条 | 市场=stock_sz
+2026-04-20 10:20:21,376 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 002179 | 77条
+2026-04-20 10:20:21,685 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 603019 | 200条 | 市场=stock_sh
+2026-04-20 10:20:22,192 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 603019 | 49条
+2026-04-20 10:20:22,493 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600536 | 200条 | 市场=stock_sh
+2026-04-20 10:20:23,086 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600536 | 96条
+2026-04-20 10:20:23,088 [INFO] MainRunner: 🧮 执行动态价格计算...
+2026-04-20 10:20:23,088 [INFO] dynamic_price_system.core.dynamic_price_engine: 🚀 开始批量计算: 18 只标的
+2026-04-20 10:20:23,098 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 60，启用降权因子
+2026-04-20 10:20:23,098 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600938 基本面评分 50.0 < 阈值 60，启用降权
+2026-04-20 10:20:23,108 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 55，启用降权因子
+2026-04-20 10:20:23,108 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 601857 基本面评分 50.0 < 阈值 55，启用降权
+2026-04-20 10:20:23,153 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 70，启用降权因子
+2026-04-20 10:20:23,153 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 601088 基本面评分 50.0 < 阈值 70，启用降权
+2026-04-20 10:20:23,162 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 55，启用降权因子
+2026-04-20 10:20:23,162 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600426 基本面评分 50.0 < 阈值 55，启用降权
+2026-04-20 10:20:23,180 [INFO] dynamic_price_system.core.dynamic_price_engine: 📊 批量进度: 10/18 | 成功: 10
+2026-04-20 10:20:23,223 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 60，启用降权因子
+2026-04-20 10:20:23,223 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600760 基本面评分 50.0 < 阈值 60，启用降权
+2026-04-20 10:20:23,249 [INFO] dynamic_price_system.core.dynamic_price_engine: 📊 批量进度: 18/18 | 成功: 18
+2026-04-20 10:20:23,249 [INFO] dynamic_price_system.core.dynamic_price_engine: ✅ 批量计算完成 | 成功: 18/18
+2026-04-20 10:20:23,249 [INFO] MainRunner: ✅ 计算完成: 成功 18/18 只
+2026-04-20 10:20:23,249 [INFO] MainRunner: 🛡️ 执行组合更新与风控检查...
+2026-04-20 10:20:23,249 [INFO] dynamic_price_system.portfolio.risk_manager: ✅ 生成 0 个风险预警
+2026-04-20 10:20:23,251 [INFO] MainRunner: 💾 结果已保存: /home/ts/app/AiStock/output/results/dynamic_prices_20260420_102023.json
+2026-04-20 10:20:23,251 [INFO] MainRunner: ⏱️ 执行耗时: 18.64s | 缓存命中率: 0.0%
+2026-04-20 10:20:23,251 [INFO] MainRunner: 🏁 流程执行完毕
+2026-04-20 10:20:23,251 [INFO] MainRunner: 🧹 清理服务资源...
+2026-04-20 10:20:23,256 [INFO] data_services.database_reader: ✅ 所有数据库引擎已关闭
+2026-04-20 10:20:23,257 [INFO] data_services.tdx_adapter: ✅ TDX 连接已全部关闭
+2026-04-20 10:20:23,257 [INFO] data_services.database_reader: ✅ 所有数据库引擎已关闭
+2026-04-20 10:20:23,257 [INFO] data_services.tdx_adapter: ✅ TDX 连接已全部关闭
+2026-04-20 10:20:23,258 [INFO] data_services.ak_adapter: ✅ ExternalAPI 缓存已清空
+2026-04-20 10:20:23,258 [INFO] data_services.data_loading_service: ✅ DataLoadingService 已关闭
+2026-04-20 10:20:23,258 [INFO] MainRunner: ✅ 资源清理完成
+2026-04-20 10:24:47,137 [INFO] MainRunner: 🔧 初始化核心服务...
+2026-04-20 10:24:47,180 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 10:24:47,209 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 10:24:47,210 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 10:24:47,210 [INFO] base_services.cache_service: ✅ 缓存服务初始化成功 | 容量=2000 | TTL=3600s
+2026-04-20 10:24:47,974 [INFO] data_services.database_reader: ✅ 数据库引擎 [index_db] 初始化成功
+2026-04-20 10:24:47,975 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_db] 初始化成功
+2026-04-20 10:24:47,975 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_base_db] 初始化成功
+2026-04-20 10:24:47,976 [INFO] data_services.database_reader: ✅ 数据库引擎 [stock_fs_db] 初始化成功
+2026-04-20 10:24:47,976 [INFO] data_services.database_reader: ✅ 数据库引擎 [index_pe_db] 初始化成功
+2026-04-20 10:24:48,320 [INFO] data_services.tdx_adapter: ✅ TDX 接口连接成功（普通+扩展行情）
+2026-04-20 10:24:48,320 [INFO] data_services.ak_adapter: ✅ ExternalAPI 初始化成功 | timeout=30s, retry=3
+2026-04-20 10:24:48,321 [INFO] data_services.data_loading_service: ✅ 使用外部 CacheService 实例
+2026-04-20 10:24:48,321 [INFO] data_services.data_loading_service: ✅ DataLoadingService V6.2 初始化成功 | 缓存=启用 | 复权逻辑已移除
+2026-04-20 10:24:48,332 [INFO] base_services.config_service: ✅ 加载系统配置：/home/ts/app/AiStock/config/dynamic_price/system_config.yaml
+2026-04-20 10:24:48,360 [INFO] base_services.config_service: ✅ 加载标的配置：/home/ts/app/AiStock/config/dynamic_price/stocks_config.yaml
+2026-04-20 10:24:48,360 [INFO] base_services.config_service: ✅ ConfigService 初始化成功 | 系统=dynamic_price | 模式=paper_trading
+2026-04-20 10:24:48,361 [INFO] dynamic_price_system.core.dynamic_price_engine: ✅ DynamicPriceEngine 初始化成功 | 权重={'technical': 0.4, 'fundamental': 0.35, 'macro': 0.25} | 最小交易日=60
+2026-04-20 10:24:48,362 [INFO] dynamic_price_system.portfolio.tracker: ✅ PortfolioTracker 初始化成功 | 初始资金=1,000,000
+2026-04-20 10:24:48,362 [INFO] dynamic_price_system.portfolio.risk_manager: ✅ RiskManager 初始化成功
+2026-04-20 10:24:48,365 [WARNING] MainRunner: ⚠️ 可视化服务初始化失败: No module named 'visualization.services.core'，后续将跳过图表生成
+2026-04-20 10:24:48,365 [INFO] MainRunner: ✅ 服务初始化完成
+2026-04-20 10:24:48,366 [INFO] MainRunner: 🚀 启动动态价格系统 | 模式: backtest | 时间: 2026-04-20T10:24:48.366088
+2026-04-20 10:24:48,366 [INFO] MainRunner: 📋 标的池: 18 只 -> ['600938', '601857', '600256', '600803', '601808', '002353', '601088', '600426', '600406', '000400', '300750', '300274', '601899', '600489', '600760', '002179', '603019', '600536']
+2026-04-20 10:24:48,366 [INFO] MainRunner: 🌍 加载宏观指标数据...
+2026-04-20 10:24:48,366 [INFO] data_services.ak_adapter: 🔄 请求外部数据: OIL -> 布伦特原油 (尝试 1/3)
+2026-04-20 10:24:49,215 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: OIL | 价格=94.852
+2026-04-20 10:24:49,219 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): brent_crude -> OIL | 价格=94.852
+2026-04-20 10:24:49,219 [INFO] data_services.ak_adapter: 🔄 请求外部数据: GC -> COMEX 黄金 (尝试 1/3)
+2026-04-20 10:24:50,116 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: GC | 价格=4823.43
+2026-04-20 10:24:50,119 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): comex_gold -> GC | 价格=4823.43
+2026-04-20 10:24:50,119 [INFO] data_services.ak_adapter: 🔄 请求外部数据: CAD -> LME 铜 (尝试 1/3)
+2026-04-20 10:24:50,524 [INFO] data_services.ak_adapter: ✅ 外部期货获取成功: CAD | 价格=13345.99
+2026-04-20 10:24:50,526 [INFO] data_services.data_loading_service: ✅ 宏观数据 (外部): lme_copper -> CAD | 价格=13345.99
+2026-04-20 10:24:51,403 [INFO] data_services.data_loading_service: ✅ 宏观指标批量加载完成: 6/6
+2026-04-20 10:24:51,403 [INFO] MainRunner: 📥 加载标的行情与财务数据...
+2026-04-20 10:24:51,677 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600938 | 200条 | 市场=stock_sh
+2026-04-20 10:24:52,125 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600938 | 21条
+2026-04-20 10:24:52,412 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601857 | 200条 | 市场=stock_sh
+2026-04-20 10:24:52,957 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601857 | 78条
+2026-04-20 10:24:53,235 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600256 | 200条 | 市场=stock_sh
+2026-04-20 10:24:53,826 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600256 | 99条
+2026-04-20 10:24:54,115 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600803 | 200条 | 市场=stock_sh
+2026-04-20 10:24:54,707 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600803 | 100条
+2026-04-20 10:24:54,990 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601808 | 200条 | 市场=stock_sh
+2026-04-20 10:24:55,556 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601808 | 78条
+2026-04-20 10:24:55,843 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 002353 | 200条 | 市场=stock_sz
+2026-04-20 10:24:56,360 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 002353 | 69条
+2026-04-20 10:24:56,638 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601088 | 200条 | 市场=stock_sh
+2026-04-20 10:24:57,209 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601088 | 76条
+2026-04-20 10:24:57,489 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600426 | 200条 | 市场=stock_sh
+2026-04-20 10:24:58,084 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600426 | 96条
+2026-04-20 10:24:58,365 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600406 | 200条 | 市场=stock_sh
+2026-04-20 10:24:58,937 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600406 | 91条
+2026-04-20 10:24:59,216 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 000400 | 200条 | 市场=stock_sz
+2026-04-20 10:24:59,828 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 000400 | 99条
+2026-04-20 10:25:00,105 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 300750 | 200条 | 市场=stock_sz
+2026-04-20 10:25:00,558 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 300750 | 35条
+2026-04-20 10:25:00,846 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 300274 | 200条 | 市场=stock_sz
+2026-04-20 10:25:01,326 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 300274 | 61条
+2026-04-20 10:25:01,610 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 601899 | 200条 | 市场=stock_sh
+2026-04-20 10:25:02,141 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 601899 | 74条
+2026-04-20 10:25:02,419 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600489 | 200条 | 市场=stock_sh
+2026-04-20 10:25:02,984 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600489 | 94条
+2026-04-20 10:25:03,266 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600760 | 200条 | 市场=stock_sh
+2026-04-20 10:25:03,880 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600760 | 99条
+2026-04-20 10:25:04,161 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 002179 | 200条 | 市场=stock_sz
+2026-04-20 10:25:04,746 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 002179 | 77条
+2026-04-20 10:25:05,028 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 603019 | 200条 | 市场=stock_sh
+2026-04-20 10:25:05,529 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 603019 | 49条
+2026-04-20 10:25:05,817 [INFO] data_services.data_loading_service: ✅ 股票日线(TDX): 600536 | 200条 | 市场=stock_sh
+2026-04-20 10:25:06,394 [INFO] data_services.data_loading_service: ✅ 股票财务(DB): 600536 | 96条
+2026-04-20 10:25:06,396 [INFO] MainRunner: 🧮 执行动态价格计算...
+2026-04-20 10:25:06,396 [INFO] dynamic_price_system.core.dynamic_price_engine: 🚀 开始批量计算: 18 只标的
+2026-04-20 10:25:06,406 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 60，启用降权因子
+2026-04-20 10:25:06,406 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600938 基本面评分 50.0 < 阈值 60，启用降权
+2026-04-20 10:25:06,415 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 55，启用降权因子
+2026-04-20 10:25:06,416 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 601857 基本面评分 50.0 < 阈值 55，启用降权
+2026-04-20 10:25:06,458 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 70，启用降权因子
+2026-04-20 10:25:06,458 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 601088 基本面评分 50.0 < 阈值 70，启用降权
+2026-04-20 10:25:06,466 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 55，启用降权因子
+2026-04-20 10:25:06,466 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600426 基本面评分 50.0 < 阈值 55，启用降权
+2026-04-20 10:25:06,484 [INFO] dynamic_price_system.core.dynamic_price_engine: 📊 批量进度: 10/18 | 成功: 10
+2026-04-20 10:25:06,526 [INFO] dynamic_price_system.core.fundamental_calculator: 📉 基本面评分 50.0 < 阈值 60，启用降权因子
+2026-04-20 10:25:06,526 [INFO] dynamic_price_system.core.dynamic_price_engine: 📉 600760 基本面评分 50.0 < 阈值 60，启用降权
+2026-04-20 10:25:06,552 [INFO] dynamic_price_system.core.dynamic_price_engine: 📊 批量进度: 18/18 | 成功: 18
+2026-04-20 10:25:06,552 [INFO] dynamic_price_system.core.dynamic_price_engine: ✅ 批量计算完成 | 成功: 18/18
+2026-04-20 10:25:06,552 [INFO] MainRunner: ✅ 计算完成: 成功 18/18 只
+2026-04-20 10:25:06,552 [INFO] MainRunner: 🛡️ 执行组合更新与风控检查...
+2026-04-20 10:25:06,552 [INFO] dynamic_price_system.portfolio.risk_manager: ✅ 生成 0 个风险预警
+2026-04-20 10:25:06,554 [INFO] MainRunner: 💾 结果已保存: /home/ts/app/AiStock/output/results/dynamic_prices_20260420_102506.json
+2026-04-20 10:25:06,554 [INFO] MainRunner: ⏱️ 执行耗时: 18.19s | 缓存命中率: 0.0%
+2026-04-20 10:25:06,554 [INFO] MainRunner: 🏁 流程执行完毕
+2026-04-20 10:25:06,554 [INFO] MainRunner: 🧹 清理服务资源...
+2026-04-20 10:25:06,556 [INFO] data_services.database_reader: ✅ 所有数据库引擎已关闭
+2026-04-20 10:25:06,556 [INFO] data_services.tdx_adapter: ✅ TDX 连接已全部关闭
+2026-04-20 10:25:06,557 [INFO] data_services.database_reader: ✅ 所有数据库引擎已关闭
+2026-04-20 10:25:06,557 [INFO] data_services.tdx_adapter: ✅ TDX 连接已全部关闭
+2026-04-20 10:25:06,557 [INFO] data_services.ak_adapter: ✅ ExternalAPI 缓存已清空
+2026-04-20 10:25:06,557 [INFO] data_services.data_loading_service: ✅ DataLoadingService 已关闭
+2026-04-20 10:25:06,558 [INFO] MainRunner: ✅ 资源清理完成

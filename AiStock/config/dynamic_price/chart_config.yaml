@@ -9,11 +9,44 @@ renderer:
   scale: 2                        # 导出图片分辨率
   include_plotlyjs: cdn          # html 导出: inline/cdn
 
-# 输出配置
+# ==================== 输出配置 ====================
 output:
-  dir: output/visualization       # 输出目录
-  format: html                    # 默认格式: html/png/pdf
-  auto_open: false                # 生成后自动打开浏览器
+  dir: output/visualization
+  format: html                    # html / png / pdf / svg
+  auto_open: false
+  timestamp_suffix: true          # 文件名自动追加时间戳
+
+# ==================== 颜色方案 ====================
+colors:
+  primary: "#1f77b4"
+  success: "#2ca02c"
+  warning: "#ff7f0e"
+  danger: "#d62728"
+  info: "#17becf"
+  neutral: "#7f7f7f"
+  background: "#ffffff"
+  grid: "#f2f2f2"
+
+# ==================== 图表组件默认参数 ====================
+components:
+  price_chart:
+    y_padding: 0.25
+    entry_range: 0.98
+    show_annotation: true
+  factor_chart:
+    bar_width: 0.6
+    show_values: true
+    value_format: ".3f"
+  portfolio_chart:
+    x_axis: composite_factor
+    y_axis: pl_ratio
+    color_by: recommendation
+    size_by: target_price
+    size_range: [10, 30]
+  risk_chart:
+    x_axis: volatility
+    y_axis: pl_ratio
+    quadrant_lines: true
 
 # 价格区间图配置
 price_chart:

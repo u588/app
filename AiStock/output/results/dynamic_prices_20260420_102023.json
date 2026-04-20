@@ -1,0 +1,578 @@
+[
+  {
+    "code": "600938",
+    "name": "中国海油",
+    "sector": "油气开采",
+    "calc_time": "2026-04-20T10:20:23.099186",
+    "prices": {
+      "current": 36.68,
+      "entry": 32.85,
+      "stop_loss": 30.12,
+      "target": 39.42
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 0.975,
+      "macro": 1.043,
+      "composite": 1.003
+    },
+    "scores": {
+      "fundamental": 50.0,
+      "pl_ratio": 2.41
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.7
+    }
+  },
+  {
+    "code": "601857",
+    "name": "中国石油",
+    "sector": "油气开采",
+    "calc_time": "2026-04-20T10:20:23.108630",
+    "prices": {
+      "current": 11.38,
+      "entry": 10.18,
+      "stop_loss": 9.36,
+      "target": 12.22
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 0.975,
+      "macro": 1.038,
+      "composite": 1.001
+    },
+    "scores": {
+      "fundamental": 50.0,
+      "pl_ratio": 2.49
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.5
+    }
+  },
+  {
+    "code": "600256",
+    "name": "广汇能源",
+    "sector": "LNG",
+    "calc_time": "2026-04-20T10:20:23.117488",
+    "prices": {
+      "current": 6.11,
+      "entry": 4.66,
+      "stop_loss": 4.23,
+      "target": 5.83
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 0.975,
+      "macro": 1.067,
+      "composite": 1.013
+    },
+    "scores": {
+      "fundamental": 50.0,
+      "pl_ratio": 2.72
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.5,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.4
+    }
+  },
+  {
+    "code": "600803",
+    "name": "新奥股份",
+    "sector": "LNG",
+    "calc_time": "2026-04-20T10:20:23.126286",
+    "prices": {
+      "current": 20.97,
+      "entry": 18.94,
+      "stop_loss": 16.62,
+      "target": 22.72
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.038,
+      "macro": 1.062,
+      "composite": 1.048
+    },
+    "scores": {
+      "fundamental": 75.0,
+      "pl_ratio": 1.63
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.3
+    }
+  },
+  {
+    "code": "601808",
+    "name": "中海油服",
+    "sector": "油服",
+    "calc_time": "2026-04-20T10:20:23.135123",
+    "prices": {
+      "current": 15.08,
+      "entry": 14.38,
+      "stop_loss": 12.47,
+      "target": 17.26
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.007,
+      "composite": 1.061
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.51
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.2
+    }
+  },
+  {
+    "code": "002353",
+    "name": "杰瑞股份",
+    "sector": "油服",
+    "calc_time": "2026-04-20T10:20:23.144344",
+    "prices": {
+      "current": 119.99,
+      "entry": 74.81,
+      "stop_loss": 64.82,
+      "target": 93.5
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.008,
+      "composite": 1.062
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.87
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.5,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.3
+    }
+  },
+  {
+    "code": "601088",
+    "name": "中国神华",
+    "sector": "煤炭化工",
+    "calc_time": "2026-04-20T10:20:23.153533",
+    "prices": {
+      "current": 45.42,
+      "entry": 39.37,
+      "stop_loss": 36.63,
+      "target": 45.27
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 0.975,
+      "macro": 1.008,
+      "composite": 0.989
+    },
+    "scores": {
+      "fundamental": 50.0,
+      "pl_ratio": 2.15
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 2.5,
+      "entry_ma_period": 60,
+      "macro_sensitivity": 1.4
+    }
+  },
+  {
+    "code": "600426",
+    "name": "华鲁恒升",
+    "sector": "煤炭化工",
+    "calc_time": "2026-04-20T10:20:23.162640",
+    "prices": {
+      "current": 35.31,
+      "entry": 27.54,
+      "stop_loss": 25.64,
+      "target": 33.05
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 0.975,
+      "macro": 1.007,
+      "composite": 0.988
+    },
+    "scores": {
+      "fundamental": 50.0,
+      "pl_ratio": 2.9
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.1
+    }
+  },
+  {
+    "code": "600406",
+    "name": "国电南瑞",
+    "sector": "特高压",
+    "calc_time": "2026-04-20T10:20:23.171368",
+    "prices": {
+      "current": 26.94,
+      "entry": 24.12,
+      "stop_loss": 20.93,
+      "target": 28.95
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.005,
+      "composite": 1.06
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.51
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 2.5,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 0.9
+    }
+  },
+  {
+    "code": "000400",
+    "name": "许继电气",
+    "sector": "特高压",
+    "calc_time": "2026-04-20T10:20:23.179989",
+    "prices": {
+      "current": 26.0,
+      "entry": 21.43,
+      "stop_loss": 19.25,
+      "target": 26.78
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.038,
+      "macro": 1.005,
+      "composite": 1.024
+    },
+    "scores": {
+      "fundamental": 75.0,
+      "pl_ratio": 2.45
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "推荐",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 0.8
+    }
+  },
+  {
+    "code": "300750",
+    "name": "宁德时代",
+    "sector": "新能源",
+    "calc_time": "2026-04-20T10:20:23.188923",
+    "prices": {
+      "current": 427.13,
+      "entry": 349.61,
+      "stop_loss": 294.63,
+      "target": 419.53
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.08,
+      "composite": 1.092
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.27
+    },
+    "signals": {
+      "trend": "bullish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "谨慎",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.1
+    }
+  },
+  {
+    "code": "300274",
+    "name": "阳光电源",
+    "sector": "新能源",
+    "calc_time": "2026-04-20T10:20:23.197531",
+    "prices": {
+      "current": 135.2,
+      "entry": 108.37,
+      "stop_loss": 91.33,
+      "target": 135.46
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.08,
+      "composite": 1.092
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.59
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.0
+    }
+  },
+  {
+    "code": "601899",
+    "name": "紫金矿业",
+    "sector": "黄金",
+    "calc_time": "2026-04-20T10:20:23.206066",
+    "prices": {
+      "current": 35.1,
+      "entry": 28.25,
+      "stop_loss": 23.81,
+      "target": 35.32
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.08,
+      "composite": 1.092
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.59
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 2.5,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.9
+    }
+  },
+  {
+    "code": "600489",
+    "name": "中金黄金",
+    "sector": "黄金",
+    "calc_time": "2026-04-20T10:20:23.214647",
+    "prices": {
+      "current": 27.33,
+      "entry": 21.17,
+      "stop_loss": 17.84,
+      "target": 25.4
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.08,
+      "composite": 1.092
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 1.27
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "谨慎",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 1.8
+    }
+  },
+  {
+    "code": "600760",
+    "name": "中航沈飞",
+    "sector": "军工",
+    "calc_time": "2026-04-20T10:20:23.223551",
+    "prices": {
+      "current": 50.66,
+      "entry": 41.49,
+      "stop_loss": 37.98,
+      "target": 51.86
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 0.975,
+      "macro": 1.047,
+      "composite": 1.005
+    },
+    "scores": {
+      "fundamental": 50.0,
+      "pl_ratio": 2.95
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 0.6
+    }
+  },
+  {
+    "code": "002179",
+    "name": "中航光电",
+    "sector": "军工",
+    "calc_time": "2026-04-20T10:20:23.232125",
+    "prices": {
+      "current": 36.59,
+      "entry": 30.3,
+      "stop_loss": 26.67,
+      "target": 36.36
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.038,
+      "macro": 1.055,
+      "composite": 1.045
+    },
+    "scores": {
+      "fundamental": 75.0,
+      "pl_ratio": 1.67
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "观望",
+    "params_used": {
+      "stop_loss_atr_mult": 3.0,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 0.7
+    }
+  },
+  {
+    "code": "603019",
+    "name": "中科曙光",
+    "sector": "政策方向",
+    "calc_time": "2026-04-20T10:20:23.240657",
+    "prices": {
+      "current": 93.09,
+      "entry": 70.09,
+      "stop_loss": 60.86,
+      "target": 91.12
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.1,
+      "macro": 1.003,
+      "composite": 1.06
+    },
+    "scores": {
+      "fundamental": 100.0,
+      "pl_ratio": 2.28
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "推荐",
+    "params_used": {
+      "stop_loss_atr_mult": 3.5,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 0.5
+    }
+  },
+  {
+    "code": "600536",
+    "name": "中国软件",
+    "sector": "政策方向",
+    "calc_time": "2026-04-20T10:20:23.248844",
+    "prices": {
+      "current": 38.12,
+      "entry": 31.52,
+      "stop_loss": 28.15,
+      "target": 40.97
+    },
+    "factors": {
+      "technical": 1.0,
+      "fundamental": 1.05,
+      "macro": 1.002,
+      "composite": 1.03
+    },
+    "scores": {
+      "fundamental": 80.0,
+      "pl_ratio": 2.8
+    },
+    "signals": {
+      "trend": "bearish",
+      "rsi_zone": "neutral"
+    },
+    "recommendation": "推荐",
+    "params_used": {
+      "stop_loss_atr_mult": 3.5,
+      "entry_ma_period": 20,
+      "macro_sensitivity": 0.4
+    }
+  }
+]

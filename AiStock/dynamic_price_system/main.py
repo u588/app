@@ -17,9 +17,15 @@ from datetime import datetime
 # ==================== 路径注入 ====================
 # 假设 main.py 位于 AiStock/dynamic_price_system/
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+# PROJECT_ROOT = Path.cwd().parent
+# 确保项目根目录在 sys.path 最前面
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 os.chdir(PROJECT_ROOT)
 
+print(f"✅ 项目根目录: {PROJECT_ROOT}")
+print(f"📁 当前工作目录: {os.getcwd()}")
+print(f"🐍 sys.path[0]: {sys.path[0]}")
 # ==================== 参数解析 ====================
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="AiStock 动态价格计算系统")
@@ -79,8 +85,10 @@ class DynamicPriceRunner:
         from data_services.database_reader import DatabaseReader
         db_cfg = self.services['config'].get('database', {})
         self.services['db'] = DatabaseReader(
-            engines=db_cfg.get('engines', {}),
-            pool_config=db_cfg.get('pool_config', {})
+            # engines=db_cfg.get('engines', {}),
+            # pool_config=db_cfg.get('pool_config', {})
+            db_config=db_cfg.get('DATABASE_ENGINES', {}),
+            pool_config=db_cfg.get('DB_POOL_CONFIG', {})
         )
         
         # 4. 数据源适配器
@@ -194,7 +202,7 @@ class DynamicPriceRunner:
             elif hasattr(self.services['portfolio'], 'update_prices'):
                 self.services['portfolio'].update_prices(current_prices)
             
-            risk_alerts = self.services['risk'].check_alerts(batch_results)
+            risk_alerts = self.services['risk'].check_alerts(batch_results, current_prices)
             if risk_alerts:
                 for alert in risk_alerts:
                     self.logger.warning(f"⚠️ 风控预警: {alert.get('code')} | {alert.get('message')}")
@@ -203,11 +211,22 @@ class DynamicPriceRunner:
             if self.services['viz']:
                 self.logger.info("📊 生成可视化图表...")
                 try:
-                    viz_output = self.services['viz'].visualize_batch_results(
-                        batch_results, output_format=self.args.export
-                    )
-                    if viz_output:
-                        self.logger.info(f"📁 可视化导出: {viz_output}")
+                    # 单标的计算后生成图表
+                    if result:
+                        viz_outputs = self.services['viz'].visualize_single_result(result, chart_types=['price_interval', 'factor_decomposition'])
+                        self.logger.info(f"📊 生成可视化: {list(viz_outputs.values())}")
+
+                    # 批量计算后生成组合对比图
+                    if batch_results:
+                        dashboard_path = self.services['viz'].visualize_batch_results(batch_results, output_format='html')
+                        if dashboard_path:
+                            self.logger.info(f"📊 生成组合仪表盘: {dashboard_path}")
+
+                    # viz_output = self.services['viz'].visualize_batch_results(
+                    #     batch_results, output_format=self.args.export
+                    # )
+                    # if viz_output:
+                    #     self.logger.info(f"📁 可视化导出: {viz_output}")
                 except Exception as e:
                     self.logger.error(f"❌ 可视化生成失败: {e}")
             
