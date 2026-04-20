@@ -14,6 +14,29 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 from base_services.config_service import ConfigService
 
+import yaml
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def load_config(config_path: str) -> dict:
+    with open(config_path, 'r', encoding='utf-8') as f:
+        cfg = yaml.safe_load(f)
+    
+    # 替换环境变量占位符
+    def replace_env(obj):
+        if isinstance(obj, str) and obj.startswith('${') and obj.endswith('}'):
+            return os.getenv(obj[2:-1], obj)
+        elif isinstance(obj, dict):
+            return {k: replace_env(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [replace_env(i) for i in obj]
+        return obj
+    
+    return replace_env(cfg)
+
+risk_cfg = load_config('config/dynamic_price/risk_config.yaml')
 logger = logging.getLogger(__name__)
 
 

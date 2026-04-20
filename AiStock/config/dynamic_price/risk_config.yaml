@@ -1,0 +1,81 @@
+# ==================== 风控与合规配置 ====================
+general:
+  name: "AiStock_Risk_Controller"
+  version: "2.0.0"
+  enforcement_mode: "hard"    # hard(拦截) / soft(警告) / warning(仅日志)
+  review_frequency: "daily"
+  override_approval: true
+
+position_limits:
+  single_stock_max: 0.15
+  single_stock_min: 0.01
+  sector_max: 0.30
+  market_exposure: 0.95       # 最大股票仓位 95%
+  cash_buffer_min: 0.05       # 最低现金缓冲 5%
+  concentration_warn: 0.12    # 集中度预警线
+  sector_correlation_limit: 0.60  # 板块间最高相关系数
+
+trading_rules:
+  stop_loss:
+    fixed: -0.15              # 固定止损 15%
+    trailing: 0.08            # 移动止损 8%
+    time_based: 30            # 持有超30天强制评估
+  take_profit:
+    fixed: 0.30               # 固定止盈 30%
+    scaled: true              # 分批止盈
+    scale_steps: [0.5, 0.8, 1.0]
+  order_limits:
+    max_single_order_value: 200000
+    max_daily_turnover: 0.25
+    min_tick_size: 0.01
+    max_orders_per_stock: 10
+  frequency_control:
+    max_trades_per_day: 50
+    max_rebalance_per_week: 5
+
+portfolio_risk:
+  max_drawdown: -0.20
+  volatility_target: 0.18
+  beta_limit: 1.20
+  var_confidence: 0.99
+  var_horizon: 1              # 1天 VaR
+  stress_scenarios:
+    - name: "2020_Q1_Crash"
+      shock_pct: -0.30
+      correlation_shock: 0.90
+    - name: "Rate_Hike_Shock"
+      shock_pct: -0.15
+      beta_shock: 1.30
+    - name: "Liquidity_Crisis"
+      slippage_multiplier: 3.0
+      volume_cap: 0.10
+
+circuit_breakers:
+  daily_loss: -0.05
+  weekly_loss: -0.10
+  monthly_loss: -0.15
+  system_failure: true
+  auto_deleverage: true
+  cooldown_period: 3600       # 1小时
+  emergency_contacts:
+    - "risk_manager"
+    - "pm_lead"
+
+compliance:
+  wash_sale_rule: true
+  short_selling_allowed: false
+  margin_usage_max: 0.50
+  leverage_limit: 1.5
+  reporting:
+    daily_summary: true
+    weekly_report: true
+    regulatory_format: "CAMS"
+    archive_days: 365
+
+overrides:
+  manual_bypass: false
+  approval_required: true
+  approvers: ["risk_manager", "pm_lead"]
+  log_all_overrides: true
+  max_override_duration: 72   # 小时
+  require_justification: true

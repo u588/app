@@ -15,6 +15,28 @@ from config.global_settings import CONFIG_DIR
 
 logger = logging.getLogger(__name__)
 
+# 在 ConfigService 中添加文件监听
+import yaml
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+class ConfigReloader(FileSystemEventHandler):
+    def __init__(self, config_path: str, callback):
+        self.config_path = config_path
+        self.callback = callback
+        
+    def on_modified(self, event):
+        if event.src_path == str(self.config_path):
+            self.callback(load_config(self.config_path))
+
+# 使用示例
+observer = Observer()
+observer.schedule(ConfigReloader('config/dynamic_price/risk_config.yaml', 
+                                 risk_manager.update_config), 
+                  'config/dynamic_price', recursive=False)
+observer.start()
+
+
 
 class ConfigService:
     """统一配置加载服务（支持多系统）"""

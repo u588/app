@@ -1,0 +1,79 @@
+# ==================== 实时监测配置 ====================
+general:
+  name: "AiStock_Monitor_Dashboard"
+  version: "1.1.0"
+  mode: "realtime"  # realtime / daily / weekly
+
+dashboard:
+  refresh_interval: 30        # 秒
+  layout: "grid_2x2"
+  widgets:
+    - portfolio_nav
+    - position_distribution
+    - risk_indicators
+    - alert_log
+  theme: "plotly_white"
+  timezone: "Asia/Shanghai"
+  auto_save_snapshot: true
+  snapshot_interval: 300      # 每5分钟快照
+
+alerts:
+  price:
+    drop_threshold: -0.05     # 单标的日跌 >5%
+    rise_threshold: 0.10      # 单标的日涨 >10%
+    volume_spike: 3.0         # 成交量突增倍数
+    price_gap: 0.08           # 跳空缺口阈值
+  portfolio:
+    daily_loss_limit: -0.03   # 组合日亏损 >3%
+    max_drawdown: -0.15       # 最大回撤 >15%
+    concentration_alert: 0.20 # 单标的权重 >20%
+    cash_shortage: 0.02       # 现金 <2% 预警
+  circuit_breaker:
+    enabled: true
+    threshold: -0.08          # 组合跌超 8% 暂停调仓
+    cooldown_minutes: 60      # 熔断冷却时间
+    auto_resume: false
+  notifications:
+    dingtalk:
+      enabled: true
+      webhook: "${DINGTALK_WEBHOOK}"
+      secret: "${DINGTALK_SECRET}"
+      at_all: false
+      frequency: "realtime"
+    wechat:
+      enabled: false
+      webhook: "${WECHAT_WEBHOOK}"
+    email:
+      enabled: false
+      smtp_host: "smtp.example.com"
+      port: 465
+      user: "${EMAIL_USER}"
+      password: "${EMAIL_PASSWORD}"
+      recipients: ["risk@company.com"]
+      digest: true
+
+health_checks:
+  data_freshness: 300         # 数据延迟 >5分钟告警
+  api_latency: 2000           # 接口延迟 >2秒告警
+  connection_retry: 3         # 断连重试次数
+  check_interval: 60          # 健康检查间隔(秒)
+  required_services:
+    - config_service
+    - cache_service
+    - data_loader
+    - broker_adapter
+
+logging:
+  level: "INFO"
+  file: "logs/monitor/system.log"
+  max_bytes: 10485760         # 10MB
+  backup_count: 10
+  console_output: true
+  structured: true            # JSON格式日志
+
+performance:
+  benchmark: "000300"
+  attribution_frequency: "daily"
+  save_metrics: true
+  output_dir: "output/monitor"
+  rolling_window: 252         # 年化计算窗口

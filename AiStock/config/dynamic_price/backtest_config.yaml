@@ -1,0 +1,70 @@
+# ==================== 回测引擎配置 ====================
+general:
+  name: "AiStock_Backtest_Engine"
+  version: "1.2.0"
+  description: "动态价格策略历史回测配置"
+  mode: "historical"  # historical / walk_forward / monte_carlo
+
+data:
+  start_date: "2020-01-01"
+  end_date: "2024-12-31"
+  frequency: "D"  # D(日线) / W(周线) / M(月线)
+  data_source: "tdx"  # tdx / akshare / joinquant
+  benchmark: "000300"  # 沪深300
+  calendar: "SSE"  # SSE / SZSE / HKEX
+  adjust_type: "qfq"  # 前复权
+
+costs:
+  commission_rate: 0.0003      # 佣金率（万三）
+  min_commission: 5.0          # 最低收费（元）
+  slippage_rate: 0.001         # 滑点（0.1%）
+  stamp_duty: 0.001            # 卖出印花税（0.1%）
+  borrow_rate: 0.08            # 融券年化利率（如有）
+  market_impact: 0.0005        # 冲击成本（大额订单）
+
+strategy:
+  initial_capital: 1000000
+  position_sizing: "score_weighted"  # equal / score_weighted / volatility_targeted
+  rebalance_frequency: "W"           # D / W / M
+  max_turnover: 0.30                 # 单次调仓最大换手率
+  constraints:
+    max_position_pct: 0.15
+    max_sector_pct: 0.30
+    min_pl_ratio: 2.0
+    min_fundamental_score: 60
+    cash_buffer_min: 0.05
+
+metrics:
+  - total_return
+  - annual_return
+  - volatility
+  - sharpe_ratio
+  - sortino_ratio
+  - max_drawdown
+  - calmar_ratio
+  - win_rate
+  - profit_factor
+  - alpha
+  - beta
+  - information_ratio
+  - var_99_1d
+
+output:
+  save_dir: "output/backtest"
+  formats: ["json", "csv", "html"]
+  save_trades: true
+  save_nav: true
+  report_frequency: "monthly"
+  chart_theme: "plotly_white"
+  attribution_level: "factor"  # stock / sector / factor
+
+advanced:
+  parallel_workers: 4
+  cache_enabled: true
+  cache_dir: "data/cache/backtest"
+  random_seed: 42
+  log_level: "INFO"
+  validation:
+    look_ahead_bias: true
+    survivorship_bias: true
+    transaction_cost_check: true
