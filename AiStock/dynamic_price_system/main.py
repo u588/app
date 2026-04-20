@@ -71,7 +71,17 @@ class DynamicPriceRunner:
         
         # 1. 配置服务
         from base_services.config_service import ConfigService
-        self.services['config'] = ConfigService(system_name='dynamic_price')
+
+        def on_config_change(new_config: Dict):
+            """配置变更回调：动态更新引擎参数"""
+            self.logger.info("🔄 检测到配置变更，正在更新引擎...")
+            # 示例：动态调整三维权重
+            new_weights = new_config.get('weights', {})
+            if new_weights:
+                engine.update_weights(new_weights)
+                self.logger.info(f"✅ 引擎权重已更新: {new_weights}")
+# 初始化配置服务（启用热重载 + 注册回调）        
+        self.services['config'] = ConfigService(system_name='dynamic_price',enable_hot_reload=True, reload_callbacks=[on_config_change])
         
         # 2. 缓存服务
         from base_services.cache_service import CacheService
