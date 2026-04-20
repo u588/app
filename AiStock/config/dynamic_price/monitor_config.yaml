@@ -77,3 +77,28 @@ performance:
   save_metrics: true
   output_dir: "output/monitor"
   rolling_window: 252         # 年化计算窗口
+
+scheduler:
+  # 交易时段定义 (24小时制)
+  pre_market_start: "08:30"
+  market_open: "09:15"
+  market_close: "15:00"
+  post_market_end: "15:30"
+  
+  # 各模式执行间隔 (秒)
+  intervals:
+    pre_market: 60
+    intra_day: 15      # 盘中15秒一次高频扫描
+    post_market: 300   # 盘后5分钟一次
+    nightly: 3600      # 夜间1小时一次
+    default: 30
+    
+  # 熔断冷却时间 (分钟)
+  circuit_breaker_cooldown_minutes: 60
+
+# 告警频率控制 (秒)
+notifications:
+  frequency_control:
+    high: 60      # 高风险/熔断类：1分钟
+    normal: 300   # 常规预警：5分钟
+    low: 1800     # 信息类：30分钟
