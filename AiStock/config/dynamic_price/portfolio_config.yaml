@@ -1,0 +1,28 @@
+# ==================== 组合配置 ====================
+portfolio:
+  initial_capital: 1000000        # 初始资金
+  max_position_single: 0.15       # 单标的上限 15%
+  max_position_sector: 0.30       # 单板块上限 30%
+  min_pl_ratio: 2.0               # 最低盈亏比阈值
+  min_fundamental_score: 60       # 最低基本面评分
+  
+# ==================== 权重分配策略 ====================
+weighting:
+  method: "score_weighted"        # score_weighted / equal / risk_parity
+  score_weights:
+    pl_ratio: 0.5                 # 盈亏比权重
+    fundamental_score: 0.3        # 基本面权重
+    macro_factor: 0.2             # 宏观因子权重
+  
+# ==================== 再平衡规则 ====================
+rebalance:
+  frequency: "weekly"             # daily/weekly/monthly
+  threshold: 0.15                 # 权重偏离 15% 触发再平衡
+  max_turnover: 0.30              # 单次调仓最大换手率 30%
+  
+# ==================== 风控规则 ====================
+risk_control:
+  stop_loss: -0.15                # 止损阈值 -15%
+  take_profit: 0.30               # 止盈阈值 +30%
+  max_drawdown: -0.20             # 组合最大回撤 -20%
+  daily_loss_limit: -0.05         # 单日亏损限制 -5%

@@ -1,0 +1,25 @@
+# ==================== 交易配置 ====================
+broker:
+  type: "qmt"                    # qmt / ctp / ib / simulator
+  qmt:
+    path: "C:/QMT/userdata_mini" # MiniQMT 用户目录
+    session_id: 123456           # 交易账号
+  
+execution:
+  dry_run: true                  # ⚠️ 默认干跑模式，实盘改为 false
+  timeout_seconds: 300           # 订单超时撤单时间(秒)
+  max_retries: 3                 # 网络异常重试次数
+  split_orders: true             # 大单拆单执行
+  split_threshold: 50000         # 单笔拆单阈值(元)
+
+risk:
+  daily_loss_limit: -0.05        # 单日亏损限制 -5%
+  max_position_pct: 0.15         # 单标的权重上限 15%
+  max_sector_pct: 0.30           # 单板块权重上限 30%
+  max_order_value: 200000        # 单笔委托上限 20万
+  circuit_breaker_threshold: -0.08 # 极端行情熔断 -8%
+  
+logging:
+  level: "INFO"
+  save_orders: true              # 保存订单流水到 CSV/DB
+  alert_webhook: ""              # 钉钉/企业微信 webhook
