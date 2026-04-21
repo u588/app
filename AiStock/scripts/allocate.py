@@ -23,7 +23,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from base_services.config_service import ConfigService
 from base_services.cache_service import CacheService
 from dynamic_price_system.core.dynamic_price_engine import DynamicPriceEngine
-from data_services.data_loading_service import DataLoadingService
+
 
 # 配置日志
 def setup_logging(level: str = "INFO"):
@@ -90,11 +90,11 @@ def calculate_target_weights(results: list, config: dict) -> dict:
     for r in results:
         code = r['code']
         pl = r['scores']['pl_ratio']
-        fin = r['scores']['fundamental_score']
+        fin = r['scores']['fundamental']
         ok = pl >= min_pl and fin >= min_score
         logger.debug(f"  {'✅' if ok else '❌'} {code}: pl={pl:.2f}, fin={fin:.1f}")
     
-    candidates = [r for r in results if r['scores']['pl_ratio'] >= min_pl and r['scores']['fundamental_score'] >= min_score]
+    candidates = [r for r in results if r['scores']['pl_ratio'] >= min_pl and r['scores']['fundamental'] >= min_score]
     
     if not candidates:
         # 🔍 诊断原因
@@ -103,7 +103,7 @@ def calculate_target_weights(results: list, config: dict) -> dict:
             reasons.append("计算结果为空")
         else:
             low_pl = [r['code'] for r in results if r['scores']['pl_ratio'] < min_pl]
-            low_fin = [r['code'] for r in results if r['scores']['fundamental_score'] < min_score]
+            low_fin = [r['code'] for r in results if r['scores']['fundamental'] < min_score]
             if low_pl: reasons.append(f"盈亏比不足: {low_pl}")
             if low_fin: reasons.append(f"基本面不足: {low_fin}")
         logger.warning(f"⚠️ 无符合条件的标的 | 原因: {'; '.join(reasons)}")
@@ -111,11 +111,55 @@ def calculate_target_weights(results: list, config: dict) -> dict:
     
     logger.info(f"✅ 通过筛选: {len(candidates)} 只标的")
     
-    # ... [原有权重计算逻辑保持不变] ...
-    # 为简洁省略，实际使用时保留原计算代码
+    # 2. 计算综合得分（可配置权重）
+    score_weights = weighting_cfg.get('score_weights', {
+        'pl_ratio': 0.5, 'fundamental_score': 0.3, 'macro_factor': 0.2
+    })
     
-    # 简化版返回（实际应保留完整计算）
+    for r in candidates:
+        # 标准化各指标到 0-1 区间
+        pl_norm = min(r['scores']['pl_ratio'] / 5.0, 1.0)  # 假设最大盈亏比 5
+        fin_norm = r['scores']['fundamental'] / 100
+        macro_norm = min((r['factors']['macro'] - 0.9) / 0.2, 1.0)  # 0.9~1.1 → 0~1
+        
+        r['composite_score'] = (
+            pl_norm * score_weights['pl_ratio'] +
+            fin_norm * score_weights['fundamental_score'] +
+            macro_norm * score_weights['macro_factor']
+        )
+    
+    # 3. 按综合得分分配权重
+    total_score = sum(r['composite_score'] for r in candidates)
+    raw_weights = {
+        r['code']: r['composite_score'] / total_score 
+        for r in candidates
+    }
+    
+    # 4. 应用约束：单标的/单板块上限
+    max_single = portfolio_cfg.get('max_position_single', 0.15)
+    max_sector = portfolio_cfg.get('max_position_sector', 0.30)
+    
+    # 按板块聚合
+    sector_weights = {}
+    for r in candidates:
+        sector = r['sector']
+        sector_weights[sector] = sector_weights.get(sector, 0) + raw_weights[r['code']]
+    
+    # 板块约束调整
+    for sector, weight in sector_weights.items():
+        if weight > max_sector:
+            scale = max_sector / weight
+            for r in candidates:
+                if r['sector'] == sector:
+                    raw_weights[r['code']] *= scale
+    
+    # 单标的约束调整
+    for code in list(raw_weights.keys()):
+        if raw_weights[code] > max_single:
+            raw_weights[code] = max_single
+
     total_score = sum(r['scores']['pl_ratio'] for r in candidates)
+    
     return {r['code']: r['scores']['pl_ratio']/total_score for r in candidates}
 
 def main():
@@ -128,7 +172,26 @@ def main():
     # 初始化服务（禁用热重载避免线程警告）
     config = ConfigService(system_name='dynamic_price', enable_hot_reload=False)
     cache = CacheService(max_size=2000, ttl=3600)
+
+    # 3. 加载数据并计算
+        # 3. 数据库服务
+    from data_services.database_reader import DatabaseReader
+    db_cfg = config.get('database', {})
+    db = DatabaseReader(
+        db_config=db_cfg.get('DATABASE_ENGINES', {}),
+        pool_config=db_cfg.get('DB_POOL_CONFIG', {})
+    )
     
+    # 4. 数据源适配器
+    from data_services.tdx_adapter import TDXAdapter
+    from data_services.ak_adapter import AKAdapter
+    tdx_cfg = config.get('tdx', {})
+    tdx = TDXAdapter(tdx_cfg) if tdx_cfg.get('use_tdx') else None
+    ak = AKAdapter()    
+
+        # 5. 数据加载服务
+    from data_services.data_loading_service import DataLoadingService
+        
     services = [config, cache]  # 注册清理列表
     
     with graceful_shutdown(services):
@@ -139,9 +202,9 @@ def main():
         loader = DataLoadingService(
             config_service=config,
             cache_service=cache,
-            database_reader=None,  # 按需注入
-            tdx_adapter=None,
-            ak_adapter=None,
+            database_reader=db,  # 按需注入
+            tdx_adapter=tdx,
+            ak_adapter=ak,
             enable_cache=True
         )
         services.append(loader)
@@ -164,14 +227,17 @@ def main():
         for sc in target_stocks:
             code = sc['code']
             try:
-                stock_data = loader.load_stock_daily(code, min_days=200)
+                stock_data = loader.load_stock_daily(code, min_days=250)
+                financial_data = loader.load_stock_financials(code).to_dict(orient='records')[0]
                 if stock_data is None or stock_data.empty:
                     logger.warning(f"⚠️ 跳过 {code}: 行情数据不足")
                     continue
                 batch_inputs.append({
-                    'code': code, 'sector': sc['sector'],
+                    'code': code,
+                    'name': sc.get('name', ''), 
+                    'sector': sc['sector'],
                     'stock_data': stock_data,
-                    'financial_data': {},  # 按需加载
+                    'financial_data': financial_data,  # 按需加载
                     'macro_data': macro_data,
                     'stock_params': sc.get('params', {})
                 })
@@ -184,10 +250,10 @@ def main():
         
         results = engine.calculate_batch(batch_inputs)
         logger.info(f"✅ 计算完成: {len(results)}/{len(batch_inputs)} 成功")
-        
+        # print(results)
         # 计算权重
         target_weights = calculate_target_weights(results, portfolio_config)
-        
+        # print(target_weights)
         # 输出结果
         print("\n📋 目标组合权重:")
         if target_weights:

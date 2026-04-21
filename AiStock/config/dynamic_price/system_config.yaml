@@ -69,6 +69,37 @@ risk_control:
   weight_deviation_threshold: 0.15
   max_daily_loss: -0.05
 
+# ==================== 技术面置信度配置 ====================
+technical_confidence:
+  # 权重配置 (总和=1.0)
+  data_quality_weight: 0.40
+  consistency_weight: 0.35
+  strength_weight: 0.25
+  
+  # 阈值配置
+  min_data_days: 60
+  ideal_data_days: 250
+  volume_spike_threshold: 1.2      # 放量阈值
+  volume_drop_threshold: 0.8       # 缩量阈值
+  ma_separation_threshold: 0.02    # 均线分离 2%
+  atr_ratio_min: 0.01              # ATR/价格 1%
+  atr_ratio_max: 0.08              # ATR/价格 8%
+  breakout_threshold: 0.03         # 突破 3%
+  
+  # 输出范围
+  factor_min: 0.98
+  factor_max: 1.02
+  neutral_score: 0.5
+  
+  # 标的个性化覆盖示例（通过 stock_params）
+  param_overrides:
+    high_volatility_stocks:  # 高波动标的
+      volume_spike_threshold: 1.5
+      breakout_threshold: 0.05
+    low_liquidity_stocks:    # 低流动性标的
+      min_data_days: 120
+      volume_drop_threshold: 0.9
+
 # ==================== 更新频率配置 ====================
 schedule:
   daily_data_update: "16:30"
