@@ -270,6 +270,7 @@ class DynamicPriceEngine:
             if fin_score < min_score:
                 self.logger.info(f"📉 {code} 基本面评分 {fin_score} < 阈值 {min_score}，启用降权")
             # print(fin_calc.get_detailed_breakdown())
+            
             # 4. 宏观面计算（联动调整因子）
             macro_calc = MacroCalculator(
                 macro_data, 
