@@ -1,0 +1,47 @@
+# ==================== 筛选规则配置 ====================
+
+# 默认规则：平衡型
+default:
+  description: "盈亏比≥2.0 + 置信度≥0.99 + 推荐/强烈推荐"
+  conditions:
+    pl_ratio: {'>=': 2.0}
+    confidence_factor: {'>=': 0.99}
+    recommendation: {in: [强烈推荐，推荐]}
+  order_by: pl_ratio
+  reverse: true
+  limit: 10
+
+# 保守规则：高置信 + 高评分
+conservative:
+  description: "高置信度 + 高基本面 + 强烈推荐"
+  conditions:
+    pl_ratio: {'>=': 2.5}
+    fundamental_score: {'>=': 65}
+    confidence_factor: {'>=': 1.01}
+    recommendation: {'==': 强烈推荐}
+  order_by: confidence_factor
+  reverse: true
+  limit: 5
+
+# 激进规则：宽松筛选 + 多标的
+aggressive:
+  description: "盈亏比≥1.5 + 任意推荐等级"
+  conditions:
+    pl_ratio: {'>=': 1.5}
+    recommendation: {in: [强烈推荐，推荐，观望]}
+  order_by: pl_ratio
+  reverse: true
+  limit: 20
+
+# 板块定制规则示例
+sector_custom:
+  油气开采:
+    conditions:
+      pl_ratio: {'>=': 2.0}
+      confidence_factor: {'>=': 1.0}  # 周期板块适当放宽置信度
+    order_by: pl_ratio
+  新能源:
+    conditions:
+      pl_ratio: {'>=': 2.2}
+      fundamental_score: {'>=': 60}
+    order_by: fundamental_score

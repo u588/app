@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-DiagnosticsTree：置信度诊断树状图组件
+DiagnosticsTree：诊断树状图组件
 功能：
   - 将嵌套诊断信息展平为 Treemap
   - 颜色编码反映健康度（得分/状态）
@@ -9,11 +9,8 @@ DiagnosticsTree：置信度诊断树状图组件
 """
 
 import plotly.express as px
-import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
 from typing import Dict, List, Any
-from ..utils.color_scales import DIAGNOSTIC_STATUS_COLORS
 
 def _flatten_diagnostics(diagnostics: Dict, parent: str = '', records: List[Dict] = None) -> List[Dict]:
     """递归展平嵌套诊断字典"""
@@ -53,51 +50,23 @@ def create_diagnostics_tree(diagnostics: Dict) -> go.Figure:
         return go.Figure().add_annotation(text="无诊断数据", showarrow=False)
     
     # 2. 提取评分与状态
-    # 尝试从值中提取数值评分，否则标记为文本状态
     def parse_score(val):
         if isinstance(val, (int, float)):
             return val
-        # 尝试从字符串提取 "得分: 0.85" 或类似模式
         import re
         match = re.search(r'(\d+\.?\d*)', str(val))
-        return float(match.group(1)) if match else 0.5  # 默认中性
+        return float(match.group(1)) if match else 0.5
     
     df['score'] = df['value'].apply(parse_score)
-    df['status_color'] = df['value'].apply(lambda v: '#2ca02c' if v == '✅' else ('#ff7f0e' if '⚠️' in str(v) else '#7f7f7f'))
     
-    # 为 Treemap 构造层级路径
-    # 使用 px.treemap 的 path 参数自动处理层级
-    # 需要将数据转换为 path 列表: [[根, 维度, 指标, 值], ...]
-    tree_records = []
-    for _, row in df.iterrows():
-        parts = row['path'].split(' > ')
-        if len(parts) == 1:
-            path = ['根诊断', parts[0]]
-            val = row['score']
-        elif len(parts) == 2:
-            path = ['根诊断', parts[0], parts[1]]
-            val = row['score']
-        elif len(parts) == 3:
-            path = ['根诊断', parts[0], parts[1], parts[2]]
-            val = row['score']
-        else:
-            continue
-        tree_records.append({'path': tuple(path), 'value': val, 'display': str(row['value'])})
-    
-    tree_df = pd.DataFrame(tree_records)
-    if tree_df.empty:
-        return go.Figure()
-        
     # 3. 创建 Treemap
     fig = px.treemap(
-        tree_df,
-        path=[px.Constant('诊断'), tree_df['path'].apply(lambda x: x[1] if len(x)>1 else ''), 
-              tree_df['path'].apply(lambda x: x[2] if len(x)>2 else ''),
-              tree_df['path'].apply(lambda x: x[3] if len(x)>3 else '')],
-        values='value',
-        hover_data={'display': True, 'value': ':.3f'},
+        df,
+        path=[px.Constant('诊断'), df['parent'], df['name']],
+        values='score',
+        hover_data={'value': True, 'score': ':.2f'},
         title='技术面诊断树状图',
-        color='value',
+        color='score',
         color_continuous_scale=[[0, '#d62728'], [0.5, '#f7b731'], [1, '#2ca02c']],
         range_color=(0, 1)
     )

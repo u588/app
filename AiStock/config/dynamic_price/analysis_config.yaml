@@ -1,0 +1,42 @@
+# ==================== 分析流程配置 ====================
+analysis:
+  # 阶段 1 配置
+  phase1:
+    enable_scoring: true
+    scoring_weights:
+      pl_ratio: 0.40
+      confidence: 0.35
+      fundamental: 0.25
+    save_raw_results: true
+    save_recommended: true
+    create_latest_symlink: true
+  
+  # 阶段 2 配置
+  phase2:
+    auto_enhance: true          # 自动补充技术指标/财务明细
+    enable_comparison: true     # 生成板块/推荐列表对比
+    default_charts:
+      - price_interval
+      - factor_breakdown
+      - confidence_gauge
+      - diagnostics_tree
+      - indicator_scatter
+      - summary_card
+  
+  # 缓存配置
+  cache:
+    enabled: true
+    ttl_hours: 24
+    max_entries: 500
+
+# ==================== 数据源配置 ====================
+data_sources:
+  technical:
+    min_days: 200
+    indicators: [ma, atr, rsi, macd, boll, volatility]
+  fundamental:
+    min_periods: 4
+    allow_estimate: true
+  macro:
+    codes: [brent_crude, comex_gold, lme_copper, pmi, m2_growth, usd_cny]
+    freshness_tolerance_days: 7

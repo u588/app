@@ -1,0 +1,1471 @@
+{
+  "metadata": {
+    "version": "20260423",
+    "timestamp": "2026-04-23T17:27:29.624342",
+    "count": 18,
+    "mode": "paper",
+    "filter_rule": "default",
+    "total_computed": 18,
+    "recommended_count": 0
+  },
+  "results": [
+    {
+      "code": "600938",
+      "name": "中国海油",
+      "sector": "油气开采",
+      "calc_time": "2026-04-23T17:27:29.392944",
+      "prices": {
+        "current": 38.04,
+        "entry": 32.67,
+        "stop_loss": 31.0365,
+        "target": 39.21
+      },
+      "factors": {
+        "technical": 1.009,
+        "fundamental": 0.975,
+        "macro": 1.08,
+        "composite": 1.014,
+        "contribution": {
+          "technical_dev": 0.009,
+          "fundamental_dev": -0.025,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0137
+        }
+      },
+      "scores": {
+        "fundamental": 50.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.5,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 7652,
+        "risk_amount": 12500.0,
+        "expected_return": 50045.91,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.009,
+        "score": 0.737,
+        "level": "normal",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.695,
+          "strength": 0.5
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.695,
+            "ma_alignment": "均线粘合(方向不明)",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(空) 共振✅"
+          },
+          "strength": {
+            "score": 0.5,
+            "breakout": "盘整(距均线1.3%)",
+            "volatility": "波动适中(2.9%)✅",
+            "trend": "均线↓5.0%✅"
+          }
+        }
+      },
+      "recommendation": "观望",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.7
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "601857",
+      "name": "中国石油",
+      "sector": "油气开采",
+      "calc_time": "2026-04-23T17:27:29.407252",
+      "prices": {
+        "current": 11.82,
+        "entry": 10.31,
+        "stop_loss": 9.7945,
+        "target": 12.37
+      },
+      "factors": {
+        "technical": 1.011,
+        "fundamental": 0.975,
+        "macro": 1.08,
+        "composite": 1.015,
+        "contribution": {
+          "technical_dev": 0.011,
+          "fundamental_dev": -0.025,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0149
+        }
+      },
+      "scores": {
+        "fundamental": 50.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.5,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 24248,
+        "risk_amount": 12500.0,
+        "expected_return": 49951.5,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.011,
+        "score": 0.765,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.775,
+          "strength": 0.5
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.7749999999999999,
+            "ma_alignment": "多头排列 + 价格在中间",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(空) 共振✅"
+          },
+          "strength": {
+            "score": 0.5,
+            "breakout": "盘整(距均线1.2%)",
+            "volatility": "波动适中(2.6%)✅",
+            "trend": "均线↓1.5%✅"
+          }
+        }
+      },
+      "recommendation": "观望",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.5
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600256",
+      "name": "广汇能源",
+      "sector": "LNG",
+      "calc_time": "2026-04-23T17:27:29.420378",
+      "prices": {
+        "current": 6.59,
+        "entry": 4.51,
+        "stop_loss": 4.2844999999999995,
+        "target": 5.64
+      },
+      "factors": {
+        "technical": 1.012,
+        "fundamental": 0.975,
+        "macro": 1.08,
+        "composite": 1.014,
+        "contribution": {
+          "technical_dev": 0.012,
+          "fundamental_dev": -0.025,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0145
+        }
+      },
+      "scores": {
+        "fundamental": 50.0,
+        "pl_ratio": 5.01,
+        "win_rate_estimate": 0.5,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 55432,
+        "risk_amount": 12500.0,
+        "expected_return": 62638.58,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.012,
+        "score": 0.807,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 0.5
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "多头排列 + 价格在上方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(空) 共振✅"
+          },
+          "strength": {
+            "score": 0.5,
+            "breakout": "盘整(距均线0.5%)",
+            "volatility": "波动适中(4.5%)✅",
+            "trend": "均线↓5.5%✅"
+          }
+        }
+      },
+      "recommendation": "观望",
+      "params_used": {
+        "stop_loss_atr_mult": 3.5,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.4
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600803",
+      "name": "新奥股份",
+      "sector": "LNG",
+      "calc_time": "2026-04-23T17:27:29.435657",
+      "prices": {
+        "current": 20.97,
+        "entry": 19.1,
+        "stop_loss": 18.145,
+        "target": 22.92
+      },
+      "factors": {
+        "technical": 1.012,
+        "fundamental": 1.038,
+        "macro": 1.08,
+        "composite": 1.037,
+        "contribution": {
+          "technical_dev": 0.012,
+          "fundamental_dev": 0.038,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0369
+        }
+      },
+      "scores": {
+        "fundamental": 75.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.58,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "oversold"
+      },
+      "position_suggestion": {
+        "suggested_shares": 13089,
+        "risk_amount": 12500.0,
+        "expected_return": 50000.0,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.012,
+        "score": 0.799,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.695,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.695,
+            "ma_alignment": "均线粘合(方向不明)",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(空) 共振✅"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微下破2.2%",
+            "volatility": "波动适中(2.3%)✅",
+            "trend": "均线↓3.9%✅"
+          }
+        }
+      },
+      "recommendation": "强烈推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.3
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "601808",
+      "name": "中海油服",
+      "sector": "油服",
+      "calc_time": "2026-04-23T17:27:29.449781",
+      "prices": {
+        "current": 15.24,
+        "entry": 14.2,
+        "stop_loss": 13.489999999999998,
+        "target": 17.04
+      },
+      "factors": {
+        "technical": 1.015,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.06,
+        "contribution": {
+          "technical_dev": 0.015,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0603
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 17605,
+        "risk_amount": 12500.0,
+        "expected_return": 50000.0,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.015,
+        "score": 0.869,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "空头排列 + 价格在下方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(空) 共振✅"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微下破3.0%",
+            "volatility": "波动适中(2.8%)✅",
+            "trend": "均线↓5.3%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.2
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "002353",
+      "name": "杰瑞股份",
+      "sector": "油服",
+      "calc_time": "2026-04-23T17:27:29.463129",
+      "prices": {
+        "current": 130.39,
+        "entry": 76.09,
+        "stop_loss": 72.2855,
+        "target": 95.11
+      },
+      "factors": {
+        "technical": 1.016,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.059,
+        "contribution": {
+          "technical_dev": 0.016,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.059
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 5.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 3285,
+        "risk_amount": 12500.0,
+        "expected_return": 62491.79,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.016,
+        "score": 0.894,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 0.85
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "多头排列 + 价格在上方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.8500000000000001,
+            "breakout": "上破18.4%✅",
+            "volatility": "波动边缘(5.5%)",
+            "trend": "均线↑8.3%✅"
+          }
+        }
+      },
+      "recommendation": "强烈推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.5,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.3
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "601088",
+      "name": "中国神华",
+      "sector": "煤炭化工",
+      "calc_time": "2026-04-23T17:27:29.476133",
+      "prices": {
+        "current": 46.98,
+        "entry": 39.81,
+        "stop_loss": 37.46,
+        "target": 45.79
+      },
+      "factors": {
+        "technical": 1.017,
+        "fundamental": 0.975,
+        "macro": 1.0,
+        "composite": 0.997,
+        "contribution": {
+          "technical_dev": 0.017,
+          "fundamental_dev": -0.025,
+          "macro_dev": 0.0,
+          "weighted_dev": -0.0029
+        }
+      },
+      "scores": {
+        "fundamental": 50.0,
+        "pl_ratio": 2.54,
+        "win_rate_estimate": 0.5,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 6279,
+        "risk_amount": 14757.6,
+        "expected_return": 37553.38,
+        "max_loss": -14757.6
+      },
+      "technical_quality": {
+        "factor": 1.017,
+        "score": 0.932,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 1.0
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "多头排列 + 价格在上方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(空) 共振✅"
+          },
+          "strength": {
+            "score": 1.0,
+            "breakout": "上破4.3%✅",
+            "volatility": "波动适中(2.1%)✅",
+            "trend": "均线↓2.8%✅"
+          }
+        }
+      },
+      "recommendation": "观望",
+      "params_used": {
+        "stop_loss_atr_mult": 2.5,
+        "entry_ma_period": 60,
+        "macro_sensitivity": 1.4
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600426",
+      "name": "华鲁恒升",
+      "sector": "煤炭化工",
+      "calc_time": "2026-04-23T17:27:29.489316",
+      "prices": {
+        "current": 36.33,
+        "entry": 27.9,
+        "stop_loss": 26.505,
+        "target": 33.48
+      },
+      "factors": {
+        "technical": 1.007,
+        "fundamental": 0.975,
+        "macro": 1.0,
+        "composite": 0.994,
+        "contribution": {
+          "technical_dev": 0.007,
+          "fundamental_dev": -0.025,
+          "macro_dev": 0.0,
+          "weighted_dev": -0.0061
+        }
+      },
+      "scores": {
+        "fundamental": 50.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.5,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 8960,
+        "risk_amount": 12500.0,
+        "expected_return": 50000.0,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.007,
+        "score": 0.684,
+        "level": "normal",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.545,
+          "strength": 0.5
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.5449999999999999,
+            "ma_alignment": "均线粘合(方向不明)",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(空) 背离⚠️"
+          },
+          "strength": {
+            "score": 0.5,
+            "breakout": "盘整(距均线0.6%)",
+            "volatility": "波动适中(4.4%)✅",
+            "trend": "均线↓1.6%✅"
+          }
+        }
+      },
+      "recommendation": "观望",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.1
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600406",
+      "name": "国电南瑞",
+      "sector": "特高压",
+      "calc_time": "2026-04-23T17:27:29.503754",
+      "prices": {
+        "current": 26.95,
+        "entry": 24.11,
+        "stop_loss": 22.9045,
+        "target": 28.93
+      },
+      "factors": {
+        "technical": 1.012,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.057,
+        "contribution": {
+          "technical_dev": 0.012,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.057
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 10369,
+        "risk_amount": 12500.0,
+        "expected_return": 49979.26,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.012,
+        "score": 0.799,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.695,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.695,
+            "ma_alignment": "均线粘合(方向不明)",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微上破1.6%",
+            "volatility": "波动适中(2.6%)✅",
+            "trend": "均线↓2.6%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 2.5,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 0.9
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "000400",
+      "name": "许继电气",
+      "sector": "特高压",
+      "calc_time": "2026-04-23T17:27:29.516768",
+      "prices": {
+        "current": 26.15,
+        "entry": 21.46,
+        "stop_loss": 20.387,
+        "target": 26.82
+      },
+      "factors": {
+        "technical": 1.013,
+        "fundamental": 1.038,
+        "macro": 1.08,
+        "composite": 1.039,
+        "contribution": {
+          "technical_dev": 0.013,
+          "fundamental_dev": 0.038,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.039
+        }
+      },
+      "scores": {
+        "fundamental": 75.0,
+        "pl_ratio": 5.0,
+        "win_rate_estimate": 0.58,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 11649,
+        "risk_amount": 12500.0,
+        "expected_return": 62441.75,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.013,
+        "score": 0.817,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.745,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.745,
+            "ma_alignment": "空头排列 + 价格在下方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(多) 背离⚠️"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微下破3.0%",
+            "volatility": "波动适中(3.3%)✅",
+            "trend": "均线↓5.6%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 0.8
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "300750",
+      "name": "宁德时代",
+      "sector": "新能源",
+      "calc_time": "2026-04-23T17:27:29.530709",
+      "prices": {
+        "current": 438.9,
+        "entry": 345.8,
+        "stop_loss": 328.51,
+        "target": 414.96
+      },
+      "factors": {
+        "technical": 1.017,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.06,
+        "contribution": {
+          "technical_dev": 0.017,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0603
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 722,
+        "risk_amount": 12500.0,
+        "expected_return": 50000.0,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.017,
+        "score": 0.932,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 1.0
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "多头排列 + 价格在上方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 1.0,
+            "breakout": "上破5.1%✅",
+            "volatility": "波动适中(3.9%)✅",
+            "trend": "均线↑4.2%✅"
+          }
+        }
+      },
+      "recommendation": "强烈推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.1
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "300274",
+      "name": "阳光电源",
+      "sector": "新能源",
+      "calc_time": "2026-04-23T17:27:29.544036",
+      "prices": {
+        "current": 134.5,
+        "entry": 102.0,
+        "stop_loss": 96.89999999999999,
+        "target": 127.5
+      },
+      "factors": {
+        "technical": 1.015,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.058,
+        "contribution": {
+          "technical_dev": 0.015,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0582
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 5.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 2450,
+        "risk_amount": 12500.0,
+        "expected_return": 62500.0,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.015,
+        "score": 0.869,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "空头排列 + 价格在下方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微下破1.9%",
+            "volatility": "波动适中(3.9%)✅",
+            "trend": "均线↓11.2%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.0
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "601899",
+      "name": "紫金矿业",
+      "sector": "黄金",
+      "calc_time": "2026-04-23T17:27:29.557348",
+      "prices": {
+        "current": 34.4,
+        "entry": 28.59,
+        "stop_loss": 27.1605,
+        "target": 35.74
+      },
+      "factors": {
+        "technical": 1.011,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.059,
+        "contribution": {
+          "technical_dev": 0.011,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.059
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 5.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 8744,
+        "risk_amount": 12500.0,
+        "expected_return": 62521.86,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.011,
+        "score": 0.765,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.775,
+          "strength": 0.5
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.7749999999999999,
+            "ma_alignment": "空头排列 + 价格在中间",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.5,
+            "breakout": "盘整(距均线1.4%)",
+            "volatility": "波动适中(2.8%)✅",
+            "trend": "均线↑1.6%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 2.5,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.9
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600489",
+      "name": "中金黄金",
+      "sector": "黄金",
+      "calc_time": "2026-04-23T17:27:29.570708",
+      "prices": {
+        "current": 25.83,
+        "entry": 22.03,
+        "stop_loss": 20.9285,
+        "target": 26.43
+      },
+      "factors": {
+        "technical": 1.015,
+        "fundamental": 1.1,
+        "macro": 1.08,
+        "composite": 1.059,
+        "contribution": {
+          "technical_dev": 0.015,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.08,
+          "weighted_dev": 0.0595
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 3.99,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 11348,
+        "risk_amount": 12500.0,
+        "expected_return": 49931.91,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.015,
+        "score": 0.879,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.745,
+          "strength": 1.0
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.745,
+            "ma_alignment": "空头排列 + 价格在下方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(空)+MACD(多) 背离⚠️"
+          },
+          "strength": {
+            "score": 1.0,
+            "breakout": "下破3.6%✅",
+            "volatility": "波动适中(3.6%)✅",
+            "trend": "均线↓1.4%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 1.8
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600760",
+      "name": "中航沈飞",
+      "sector": "军工",
+      "calc_time": "2026-04-23T17:27:29.584249",
+      "prices": {
+        "current": 49.33,
+        "entry": 41.89,
+        "stop_loss": 37.84,
+        "target": 53.4
+      },
+      "factors": {
+        "technical": 1.011,
+        "fundamental": 0.975,
+        "macro": 1.054,
+        "composite": 1.008,
+        "contribution": {
+          "technical_dev": 0.011,
+          "fundamental_dev": -0.025,
+          "macro_dev": 0.054,
+          "weighted_dev": 0.0079
+        }
+      },
+      "scores": {
+        "fundamental": 50.0,
+        "pl_ratio": 2.84,
+        "win_rate_estimate": 0.5,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 3703,
+        "risk_amount": 15000.0,
+        "expected_return": 42629.63,
+        "max_loss": -15000.0
+      },
+      "technical_quality": {
+        "factor": 1.011,
+        "score": 0.782,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.895,
+          "strength": 0.4
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.895,
+            "ma_alignment": "空头排列 + 价格在下方",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.4,
+            "breakout": "盘整(距均线0.0%)",
+            "volatility": "波动适中(2.5%)✅",
+            "trend": "均线↑0.6%"
+          }
+        }
+      },
+      "recommendation": "观望",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 0.6
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "002179",
+      "name": "中航光电",
+      "sector": "军工",
+      "calc_time": "2026-04-23T17:27:29.597475",
+      "prices": {
+        "current": 35.85,
+        "entry": 30.6,
+        "stop_loss": 29.07,
+        "target": 36.72
+      },
+      "factors": {
+        "technical": 1.012,
+        "fundamental": 1.038,
+        "macro": 1.063,
+        "composite": 1.032,
+        "contribution": {
+          "technical_dev": 0.012,
+          "fundamental_dev": 0.038,
+          "macro_dev": 0.063,
+          "weighted_dev": 0.0324
+        }
+      },
+      "scores": {
+        "fundamental": 75.0,
+        "pl_ratio": 4.0,
+        "win_rate_estimate": 0.58,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bullish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 8169,
+        "risk_amount": 12500.0,
+        "expected_return": 50000.0,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.012,
+        "score": 0.799,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.695,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.695,
+            "ma_alignment": "均线粘合(方向不明)",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微上破1.7%",
+            "volatility": "波动适中(3.0%)✅",
+            "trend": "均线↑2.4%✅"
+          }
+        }
+      },
+      "recommendation": "强烈推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.0,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 0.7
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "603019",
+      "name": "中科曙光",
+      "sector": "政策方向",
+      "calc_time": "2026-04-23T17:27:29.610423",
+      "prices": {
+        "current": 91.68,
+        "entry": 73.25,
+        "stop_loss": 62.2625,
+        "target": 95.22
+      },
+      "factors": {
+        "technical": 1.017,
+        "fundamental": 1.1,
+        "macro": 1.075,
+        "composite": 1.059,
+        "contribution": {
+          "technical_dev": 0.017,
+          "fundamental_dev": 0.1,
+          "macro_dev": 0.075,
+          "weighted_dev": 0.0591
+        }
+      },
+      "scores": {
+        "fundamental": 100.0,
+        "pl_ratio": 2.0,
+        "win_rate_estimate": 0.67,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "overbought"
+      },
+      "position_suggestion": {
+        "suggested_shares": 1365,
+        "risk_amount": 15000.0,
+        "expected_return": 29993.17,
+        "max_loss": -15000.0
+      },
+      "technical_quality": {
+        "factor": 1.017,
+        "score": 0.918,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.855,
+          "strength": 1.0
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.855,
+            "ma_alignment": "空头排列 + 价格在上方(反弹)",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 1.0,
+            "breakout": "上破8.0%✅",
+            "volatility": "波动适中(3.4%)✅",
+            "trend": "均线↑2.6%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.5,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 0.5
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    },
+    {
+      "code": "600536",
+      "name": "中国软件",
+      "sector": "政策方向",
+      "calc_time": "2026-04-23T17:27:29.623421",
+      "prices": {
+        "current": 37.55,
+        "entry": 33.64,
+        "stop_loss": 31.958,
+        "target": 40.58
+      },
+      "factors": {
+        "technical": 1.013,
+        "fundamental": 1.05,
+        "macro": 1.06,
+        "composite": 1.037,
+        "contribution": {
+          "technical_dev": 0.013,
+          "fundamental_dev": 0.05,
+          "macro_dev": 0.06,
+          "weighted_dev": 0.0371
+        }
+      },
+      "scores": {
+        "fundamental": 80.0,
+        "pl_ratio": 4.13,
+        "win_rate_estimate": 0.6,
+        "kelly_fraction": 0.25
+      },
+      "signals": {
+        "trend": "bearish",
+        "rsi_zone": "neutral"
+      },
+      "position_suggestion": {
+        "suggested_shares": 7431,
+        "risk_amount": 12500.0,
+        "expected_return": 51575.51,
+        "max_loss": -12500.0
+      },
+      "technical_quality": {
+        "factor": 1.013,
+        "score": 0.827,
+        "level": "high",
+        "breakdown": {
+          "data_quality": 0.921,
+          "consistency": 0.775,
+          "strength": 0.75
+        },
+        "diagnostics": {
+          "data_quality": {
+            "score": 0.9210526315789473,
+            "days": 200,
+            "missing_ratio": 0.0,
+            "freshness_days": 0
+          },
+          "consistency": {
+            "score": 0.7749999999999999,
+            "ma_alignment": "空头排列 + 价格在中间",
+            "volume_price": "量能数据不足",
+            "indicator_resonance": "RSI(多)+MACD(多) 共振✅"
+          },
+          "strength": {
+            "score": 0.75,
+            "breakout": "微上破1.6%",
+            "volatility": "波动适中(2.1%)✅",
+            "trend": "均线↓2.2%✅"
+          }
+        }
+      },
+      "recommendation": "推荐",
+      "params_used": {
+        "stop_loss_atr_mult": 3.5,
+        "entry_ma_period": 20,
+        "macro_sensitivity": 0.4
+      },
+      "diagnostics": {
+        "data_sufficiency": "数据充分",
+        "optimization_applied": "False",
+        "fallback_reason": null
+      }
+    }
+  ]
+}
