@@ -511,11 +511,11 @@ class DataLoadingService:
         codes_to_load = indicator_codes or list(all_macros.keys())
         
         results = {}
-        external_codes = []
+        # external_codes = []
         
         # 分类：外部数据源 vs 内部数据源
         for code in codes_to_load:
-            config = all_macros.get(code, {})
+            # config = all_macros.get(code, {})
             df = self.load_macro_data(code)
             if not df.empty:
                 results[code] = float(df['close'].iloc[-1]) if 'close' in df.columns else None            

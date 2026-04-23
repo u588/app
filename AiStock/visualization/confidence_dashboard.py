@@ -164,11 +164,11 @@ class ConfidenceDashboard:
         filter_config: Optional[Dict] = None
     ) -> go.Figure:
         """
-        创建批量标的置信度对比面板
+        创建批量标的置信度对比面板（修复版）
         
         参数:
             results: 批量计算结果列表（含 technical_quality 字段）
-            filter_ 筛选配置（可选）
+            filter_config: 筛选配置（可选）
         
         返回:
             Plotly Figure 对象
@@ -201,6 +201,10 @@ class ConfidenceDashboard:
             if 'min_pl_ratio' in filter_config:
                 df = df[df['pl_ratio'] >= filter_config['min_pl_ratio']]
         
+        if df.empty:
+            logger.warning("⚠️ 筛选后无数据，返回空面板")
+            return go.Figure()
+        
         # 创建 2×2 子图
         fig = make_subplots(
             rows=2, cols=2,
@@ -222,19 +226,19 @@ class ConfidenceDashboard:
         fig.add_trace(go.Histogram(
             x=df['confidence_factor'],
             name='置信度因子',
-            marker_color=CONFIDENCE_COLORSCALE,
+            marker_color='#1f77b4',
             nbinsx=20,
             hovertemplate='<b>置信度</b><br>%{x:.3f}<br>标的数：%{y}<extra></extra>'
         ), row=1, col=1)
         
-        # 2. 置信度×盈亏比散点图（右上）
+        # 2. 置信度×盈亏比散点图（右上）✅ 修复：使用 marker.color
         fig.add_trace(go.Scatter(
             x=df['confidence_factor'],
             y=df['pl_ratio'],
             mode='markers',
             marker=dict(
                 size=8,
-                color=df['confidence_score'],
+                color=df['confidence_score'],  # ✅ 正确：在 marker 内设置 color
                 colorscale='RdYlGn',
                 showscale=True,
                 colorbar=dict(title='综合得分'),
@@ -248,18 +252,29 @@ class ConfidenceDashboard:
         fig.add_vline(x=1.0, line_dash='dash', line_color='gray', annotation_text='中性')
         fig.add_hline(y=2.0, line_dash='dash', line_color='blue', annotation_text='盈亏比阈值')
         
-        # 3. 分项得分对比条形图（左下）
-        # 计算各分项均值
+        # 3. 分项得分对比条形图（左下）✅ 修复：使用 marker.color + 分类映射
+        # 计算各板块×维度的均值
         agg = df.groupby('sector')[['data_quality', 'consistency', 'strength']].mean().reset_index()
         agg_melted = agg.melt(id_vars='sector', var_name='dimension', value_name='score')
         
-        fig.add_trace(go.Bar(
-            x=agg_melted['sector'],
-            y=agg_melted['score'],
-            color=agg_melted['dimension'],
-            name='分项得分',
-            hovertemplate='<b>%{x}</b><br>%{color}：%{y:.2f}<extra></extra>'
-        ), row=2, col=1)
+        # 为每个维度分配固定颜色（避免随机色）
+        dimension_colors = {
+            'data_quality': '#1f77b4',    # 蓝色
+            'consistency': '#ff7f0e',     # 橙色
+            'strength': '#2ca02c'         # 绿色
+        }
+        agg_melted['color'] = agg_melted['dimension'].map(dimension_colors)
+        
+        # 按板块分组添加条形图（确保颜色正确映射）
+        for dimension in agg_melted['dimension'].unique():
+            subset = agg_melted[agg_melted['dimension'] == dimension]
+            fig.add_trace(go.Bar(
+                x=subset['sector'],
+                y=subset['score'],
+                name=dimension,  # ✅ 使用 name 实现图例
+                marker=dict(color=dimension_colors[dimension]),  # ✅ 正确：在 marker 内设置颜色
+                hovertemplate='<b>%{x}</b><br>%{name}：%{y:.2f}<extra></extra>'
+            ), row=2, col=1)
         
         # 4. 板块置信度热力图（右下）
         # 构建板块×置信度等级的矩阵
@@ -271,23 +286,30 @@ class ConfidenceDashboard:
             fill_value=0
         )
         
+        # 确保列顺序
+        level_order = ['low', 'normal', 'high']
+        heatmap_data = heatmap_data.reindex(columns=[c for c in level_order if c in heatmap_data.columns], fill_value=0)
+        
         fig.add_trace(go.Heatmap(
             z=heatmap_data.values,
             x=heatmap_data.columns,
             y=heatmap_data.index,
             colorscale='Blues',
             showscale=True,
-            hovertemplate='<b>%{y}</b><br>%{x}：%{z} 只<extra></extra>'
+            hovertemplate='<b>%{y}</b><br>%{x}：%{z} 只<extra></extra>',
+            zmin=0,
+            zmax=heatmap_data.values.max() if heatmap_data.values.size > 0 else 1
         ), row=2, col=2)
         
-        # 统一布局
+        # 统一布局 ✅ 修复：使用正确参数名
         fig.update_layout(
             title="📊 批量标的置信度对比分析",
             height=800,
             width=1400,
-            template=self.theme,
+            template=self.theme or 'plotly_white',
             hovermode='closest',
-            **DASHBOARD_LAYOUT
+            bargap=0.1,  # 条形图间隙
+            legend=dict(orientation='h', yanchor='bottom', y=-0.15, xanchor='center', x=0.5)
         )
         
         # 添加筛选说明
