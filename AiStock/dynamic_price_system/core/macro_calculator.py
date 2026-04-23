@@ -15,14 +15,26 @@ from typing import Dict, Optional, List
 from datetime import datetime, timedelta
 import numpy as np
 from base_services.config_service import ConfigService
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-config = ConfigService(system_name='dynamic_price')
-SECTOR_MACRO_LINK = config.get('sector_macro_link', {})
+# 移除模块级初始化
+# config = ConfigService(system_name='dynamic_price')
+# SECTOR_MACRO_LINK = config.get('sector_macro_link', {})
 class MacroCalculator:
     """宏观面计算器"""
-    
+    # ========== 新增：默认板块 - 指标映射（类属性） ==========
+    DEFAULT_SECTOR_LINK = {
+        '油气开采': ['brent_crude', 'pmi'],
+        'LNG': ['nymex_gas', 'usd_cny'],
+        '油服': ['brent_crude', 'pmi'],
+        '煤炭化工': ['ppi', 'cpi', "eua_carbon"],
+        '特高压': ['lme_copper', 'china_10y_bond'],
+        '新能源': ["lme_copper", "lme_nickel", "m2_growth"],
+        '黄金': ['comex_gold', 'china_10y_bond'],
+        '军工': ['pmi', 'm2_growth'],
+        '政策方向': ['m2_growth', 'china_10y_bond'],
+    }    
     # 指标类型元数据 (用于偏差计算)
     INDICATOR_META = {
         'brent_crude': {'unit': 'USD/bbl', 'neutral': 80, 'range': 40, 'lag_tolerance_days': 2},
@@ -37,249 +49,168 @@ class MacroCalculator:
         'ppi': {'unit': '%', 'neutral': 1.0, 'range': 5.0, 'lag_tolerance_days': 30}
     }
     
-    # def __init__(self, macro_data, sector):
-    #     """
-    #     初始化
-    #     :param macro_data: 宏观数据字典
-    #     """
-    #     self.data = macro_data
-    #     self.sector = sector
-
-    def __init__(self, macro_data: Dict, sector: str, params: Optional[Dict] = None, 
-                 config_macros: Optional[Dict] = None):
+    def __init__(
+        self, 
+        macro_data: Dict[str, Any], 
+        sector: str, 
+        params: Optional[Dict] = None,
+        config_macros: Optional[Dict] = None,  # ✅ 新增：全局宏观配置
+        indicator_meta: Optional[Dict] = None,  # ✅ 新增：元数据覆盖（测试用）
+        sector_link: Optional[Dict] = None,     # ✅ 新增：板块映射覆盖
+        logger_instance: Optional[logging.Logger] = None
+    ):
+        """
+        初始化宏观计算器（依赖注入版）
+        
+        参数:
+            macro_data 宏观指标数据 {indicator: value}
+            sector: 所属板块
+            params: 标的个性化参数
+            config_macros 全局宏观配置（含 sector_macro_link 等）
+            indicator_meta 指标元数据覆盖（用于测试/热更新）
+            sector 板块 - 指标映射覆盖
+            logger_instance: 自定义日志器
+        """
         self.data = macro_data or {}
         self.sector = sector
         self.params = params or {}
         self.config_macros = config_macros or {}
-        self.logger = logger
-        
-        self.sensitivity = self.params.get('macro_sensitivity', 1.0)
-        self.correlation_window = self.params.get('correlation_window', 60)
-        self.lag_tolerance = self.params.get('lag_tolerance_days', 3)
-    
-    def get_sector_factor(self, sector):
-        """获取板块宏观调整系数"""
-        if sector not in SECTOR_MACRO_LINK:
-            return 1.00
-        
-        indicators = SECTOR_MACRO_LINK[sector]
-        factors = []
-        
-        for indicator in indicators:
-            value = self.data.get(indicator)
-            if value is None:
-                continue
-            
-            factor = self._calculate_indicator_factor(indicator, value)
-            factors.append(factor)
-        
-        if not factors:
-            return 1.00
-        
-        macro_factor = sum(factors) / len(factors)
-        logger.info(f"{sector} 宏观系数：{macro_factor:.3f}")
-        return round(macro_factor, 3)
-    
-    def _calculate_indicator_factor(self, indicator, value):
-        """计算单个宏观指标的调整系数"""
-        
-        # 原油价格
-        if indicator == 'brent_crude':
-            if value > 90:
-                return 1.05
-            elif value > 80:
-                return 1.02
-            elif value > 70:
-                return 1.00
-            elif value > 60:
-                return 0.98
-            else:
-                return 0.95
-        
-        # 黄金价格
-        elif indicator == 'comex_gold':
-            if value > 4500:
-                return 1.05
-            elif value > 4000:
-                return 1.02
-            elif value > 3500:
-                return 1.00
-            else:
-                return 0.98
-        
-        # 铜价
-        elif indicator == 'lme_copper':
-            if value > 10000:
-                return 1.03
-            elif value > 9000:
-                return 1.01
-            elif value > 8000:
-                return 1.00
-            else:
-                return 0.98
-        
-        # 天然气
-        elif indicator == 'nymex_gas':
-            if value > 3.5:
-                return 1.03
-            elif value > 2.5:
-                return 1.01
-            else:
-                return 0.98
-        
-        # PMI
-        elif indicator == 'pmi':
-            if value > 52:
-                return 1.03
-            elif value > 50:
-                return 1.01
-            elif value > 48:
-                return 1.00
-            else:
-                return 0.97
-        
-        # M2 增速
-        elif indicator == 'm2_growth':
-            if value > 10:
-                return 1.03
-            elif value > 8:
-                return 1.01
-            else:
-                return 0.98
-        
-        # 国债收益率
-        elif indicator == 'china_10y_bond':
-            if value > 3.0:
-                return 0.98
-            elif value > 2.5:
-                return 1.00
-            else:
-                return 1.02
-        
-        # CPI/PPI
-        elif indicator in ['cpi', 'ppi']:
-            if value > 3:
-                return 1.02
-            elif value > 1:
-                return 1.00
-            else:
-                return 0.98
-        
-        # 汇率
-        elif indicator == 'usd_cny':
-            if value > 7.3:
-                return 1.02  # 人民币贬值，出口受益
-            elif value > 7.0:
-                return 1.00
-            else:
-                return 0.99
-        
-        return 1.00
-    
-    def get_macro_environment_score(self):
-        """获取宏观环境综合评分"""
-        scores = []
-        
-        # PMI 评分
-        pmi = self.data.get('pmi')
-        if pmi:
-            scores.append(min(100, max(0, (pmi - 45) * 20)))
-        
-        # M2 评分
-        m2 = self.data.get('m2_growth')
-        if m2:
-            scores.append(min(100, max(0, (m2 - 5) * 10)))
-        
-        # 油价评分
-        oil = self.data.get('brent_crude')
-        if oil:
-            if 70 <= oil <= 90:
-                scores.append(80)
-            elif 60 <= oil < 70 or 90 < oil <= 100:
-                scores.append(60)
-            else:
-                scores.append(40)
-        
-        if not scores:
-            return 50
-        
-        return round(sum(scores) / len(scores), 1)
+        self.logger = logger_instance or logger
 
-## ============== new method ==============
+        # 合并元数据（支持测试时覆盖）
+        self.indicator_meta = {**self.INDICATOR_META, **(indicator_meta or {})}
+        # 合并板块映射（优先级：参数 > 配置 > 默认）
+        self.sector_link = {
+            **self.DEFAULT_SECTOR_LINK, 
+            **(config_macros.get('sector_macro_link', {}) if config_macros else {}),
+            **(sector_link or {})
+        }        
+
+        # 参数解析（带默认值）
+        self.sensitivity = float(self.params.get('macro_sensitivity', 1.0))
+        self.correlation_window = int(self.params.get('correlation_window', 60))
+        self.lag_tolerance = int(self.params.get('lag_tolerance_days', 3))
+        self.impact_clip = tuple(self.params.get('impact_clip', (-0.15, 0.15)))
+        self.factor_range = tuple(self.params.get('neutral_range', (0.92, 1.08)))
+        
+        self.logger.debug(f"✅ MacroCalculator 初始化 | 板块={sector} | 敏感度={self.sensitivity}")
+
     def get_adjustment_factor(self) -> float:
-        """计算宏观联动调整系数"""
+        """计算宏观联动调整系数（唯一主入口）"""
         if not self.data:
             self.logger.warning("⚠️ 宏观数据为空，返回中性系数 1.0")
             return 1.0
         
-        # 获取板块关联指标 (优先从 params 取，其次 config，最后默认)
-        linked_indicators = self.params.get('macro_link', [])
-        if not linked_indicators:
-            # 默认板块映射
-            default_map = {
-                '油气开采': ['brent_crude', 'pmi'],
-                'LNG': ['nymex_gas', 'usd_cny'],
-                '黄金': ['comex_gold', 'china_10y_bond'],
-                '新能源': ['lme_copper', 'm2_growth'],
-                '军工': ['pmi', 'm2_growth']
-            }
-            linked_indicators = default_map.get(self.sector, ['pmi'])
+        # 1. 获取关联指标（优先级：params > config > 默认）
+        linked_indicators = (
+            self.params.get('macro_link') or 
+            self.config_macros.get('sector_macro_link', {}).get(self.sector) or
+            self.sector_link.get(self.sector, ['pmi'])
+        )
+        
+        if not isinstance(linked_indicators, list):
+            self.logger.warning(f"⚠️ 板块 {self.sector} 的宏观链接配置格式错误，使用默认")
+            linked_indicators = ['pmi']
         
         impacts = []
-        valid_count = 0
         
+        # 2. 逐个计算指标影响（异常隔离）
         for indicator in linked_indicators:
-            impact = self._calculate_indicator_impact(indicator)
-            if impact is not None:
-                impacts.append(impact)
-                valid_count += 1
-            else:
-                self.logger.debug(f"🔍 指标 {indicator} 数据不足或过期，跳过")
+            try:
+                result = self._calculate_indicator_impact(indicator)
+                if result:
+                    impact, _ = result
+                    impacts.append(impact)
+                    self.logger.debug(f"🔍 {indicator}: impact={impact:.3f}")
+            except Exception as e:
+                self.logger.warning(f"⚠️ 计算 {indicator} 影响失败: {e}，跳过")
+                continue
         
-        if valid_count == 0:
+        # 3. 无有效指标时返回中性
+        if not impacts:
+            self.logger.info(f"ℹ️ {self.sector} 无有效宏观指标，返回中性系数 1.0")
             return 1.0
-            
-        # 综合影响：算术平均后乘以敏感度
+        
+        # 4. 综合影响：算术平均 + 敏感度调整
         avg_impact = np.mean(impacts)
         factor = 1.0 + avg_impact * self.sensitivity
         
-        # 限制在中性区间内，防止极端行情导致因子失真
-        neutral_range = self.params.get('neutral_range', [0.92, 1.08])
-        factor = np.clip(factor, neutral_range[0], neutral_range[1])
+        # 5. 截断到安全区间
+        factor = np.clip(factor, self.factor_range[0], self.factor_range[1])
         
+        self.logger.info(f"📊 {self.sector} 宏观系数: {factor:.3f} (基于 {len(impacts)} 个指标)")
         return round(float(factor), 3)
     
-    def _calculate_indicator_impact(self, indicator: str) -> Optional[float]:
-        """计算单个宏观指标的影响值 (-0.1 ~ 0.1)"""
-        # 获取当前值
+    def _calculate_indicator_impact(
+        self, 
+        indicator: str
+    ) -> Optional[Tuple[float, Dict]]:
+        """
+        计算单个宏观指标的影响值
+        
+        参数:
+            indicator: 指标名称
+        
+        返回:
+            Tuple(impact, meta) 或 None（数据无效时）
+            impact: 影响值 (-0.15~0.15)
+            meta: 指标元数据（用于诊断）
+        """
+        # 1. 获取当前值
         current = self.data.get(indicator)
         if current is None:
             return None
-            
-        # 获取元数据
-        meta = self.INDICATOR_META.get(indicator, {})
+        
+        # 2. 类型校验 + 转换
+        try:
+            current = float(current)
+        except (ValueError, TypeError):
+            self.logger.warning(f"⚠️ 指标 {indicator} 值非数值: {current}")
+            return None
+        
+        # 3. 获取元数据
+        meta = self.indicator_meta.get(indicator)
+        if not meta:
+            self.logger.warning(f"⚠️ 未知指标 {indicator}，使用默认元数据")
+            meta = {'neutral': 0, 'range': 1, 'direction': 1, 'impact_coefficient': 0.10}
+        
         neutral = meta.get('neutral', 0)
         range_width = meta.get('range', 1)
+        direction = meta.get('direction', 1)
+        coefficient = meta.get('impact_coefficient', 0.10)
         
-        # 计算标准化偏差
+        # 4. 避免除零
+        if range_width == 0:
+            self.logger.warning(f"⚠️ 指标 {indicator} 的 range=0，跳过")
+            return None
+        
+        # 5. 数据新鲜度校验（可选）
+        if 'update_time' in self.data:
+            update_time = self.data['update_time']
+            if isinstance(update_time, str):
+                try:
+                    update_time = datetime.fromisoformat(update_time.replace('Z', '+00:00'))
+                except:
+                    update_time = None
+            
+            if update_time:
+                lag_days = (datetime.now() - update_time).days
+                tolerance = meta.get('lag_tolerance_days', self.lag_tolerance)
+                if lag_days > tolerance:
+                    self.logger.warning(f"⚠️ 指标 {indicator} 数据滞后 {lag_days} 天 > 容忍 {tolerance} 天")
+                    # 可选：降级使用或返回 None
+                    # return None
+        
+        # 6. 计算标准化偏差
         deviation = (current - neutral) / range_width
         
-        # PMI 特殊处理：>50 利好，<50 利空
-        if indicator == 'pmi':
-            impact = deviation * 0.15
-        # 国债收益率：上行利空成长/高估值，下行利好
-        elif indicator in ['china_10y_bond', 'usd_cny']:
-            impact = -deviation * 0.10
-        # 大宗商品：上行利好资源/通胀受益板块
-        elif indicator in ['brent_crude', 'comex_gold', 'lme_copper', 'nymex_gas']:
-            impact = deviation * 0.12
-        # 货币/流动性：M2上行利好
-        elif indicator == 'm2_growth':
-            impact = deviation * 0.08
-        else:
-            impact = deviation * 0.10
-            
-        return float(np.clip(impact, -0.15, 0.15))
+        # 7. 计算影响值：偏差 × 方向 × 系数
+        impact = deviation * direction * coefficient
+        
+        # 8. 截断到安全范围
+        impact = np.clip(impact, self.impact_clip[0], self.impact_clip[1])
+        
+        return float(impact), meta
     
     def get_macro_report(self) -> Dict:
         """生成宏观分析简报"""
@@ -303,7 +234,104 @@ class MacroCalculator:
             
         return report
     
+    def get_detailed_report(self) -> Dict[str, Any]:
+        """
+        生成详细宏观分析报告（用于调试/可视化）
+        
+        返回:
+            Dict: 包含因子分解、指标贡献、诊断信息
+        """
+        linked_indicators = (
+            self.params.get('macro_link') or 
+            self.config_macros.get('sector_macro_link', {}).get(self.sector) or
+            self.sector_link.get(self.sector, ['pmi'])
+        )
+        
+        indicator_details = []
+        valid_impacts = []
+        
+        for indicator in linked_indicators:
+            result = self._calculate_indicator_impact(indicator)
+            meta = self.indicator_meta.get(indicator, {})
+            
+            detail = {
+                'indicator': indicator,
+                'description': meta.get('description', indicator),
+                'current_value': self.data.get(indicator),
+                'neutral': meta.get('neutral'),
+                'unit': meta.get('unit'),
+                'direction': '正向' if meta.get('direction', 1) > 0 else '反向',
+                'status': 'valid' if result else 'invalid'
+            }
+            
+            if result:
+                impact, _ = result
+                deviation = (self.data[indicator] - meta.get('neutral', 0)) / meta.get('range', 1)
+                detail['impact'] = round(impact, 4)
+                detail['deviation'] = round(deviation, 3)
+                valid_impacts.append(impact)
+            
+            indicator_details.append(detail)
+        
+        # 计算综合因子
+        final_factor = self.get_adjustment_factor()
+        avg_impact = np.mean(valid_impacts) if valid_impacts else 0
+        
+        return {
+            'sector': self.sector,
+            'adjustment_factor': round(final_factor, 3),
+            'sensitivity': self.sensitivity,
+            'avg_impact': round(avg_impact, 4),
+            'valid_indicators': len(valid_impacts),
+            'total_indicators': len(linked_indicators),
+            'indicator_details': indicator_details,
+            'factor_decomposition': {
+                'base': 1.0,
+                'avg_deviation_impact': round(avg_impact, 4),
+                'sensitivity_adjusted': round(avg_impact * self.sensitivity, 4),
+                'final_factor': round(final_factor, 3)
+            }
+        }
 
+    def check_data_freshness(self) -> Dict[str, str]:
+        """
+        检查宏观数据新鲜度
+        
+        返回:
+            Dict[indicator -> 'fresh'/'stale'/'missing']
+        """
+        freshness = {}
+        now = datetime.now()
+        
+        for indicator, meta in self.indicator_meta.items():
+            if indicator not in self.data:
+                freshness[indicator] = 'missing'
+                continue
+            
+            # 检查是否有更新时间
+            update_key = f'{indicator}_update_time'
+            update_time = self.data.get(update_key)
+            
+            if update_time is None:
+                freshness[indicator] = 'unknown'  # 无时间标记，假设新鲜
+                continue
+            
+            if isinstance(update_time, str):
+                try:
+                    update_time = datetime.fromisoformat(update_time.replace('Z', '+00:00'))
+                except:
+                    freshness[indicator] = 'parse_error'
+                    continue
+            
+            lag_days = (now - update_time).days
+            tolerance = meta.get('lag_tolerance_days', self.lag_tolerance)
+            
+            if lag_days <= tolerance:
+                freshness[indicator] = 'fresh'
+            else:
+                freshness[indicator] = f'stale({lag_days}d>{tolerance}d)'
+        
+        return freshness
 # 测试
 if __name__ == '__main__':
     # 模拟宏观数据

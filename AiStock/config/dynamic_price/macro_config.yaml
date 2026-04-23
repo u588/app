@@ -1,0 +1,314 @@
+# ==================== 宏观指标元数据配置 ====================
+# 用于 MacroCalculator 的指标影响计算
+# 核心字段说明:
+#   neutral: 中性值（基准点，因子=1.0）
+#   range: 波动半宽（(max-min)/2），用于标准化偏差计算
+#   direction: 1=正向(指标↑→利好), -1=反向(指标↑→利空)
+#   impact_coefficient: 影响系数（标准化偏差×方向×系数=影响值）
+#   lag_tolerance_days: 数据滞后容忍天数，超期标记为 stale
+#   unit: 单位（用于展示）
+#   description: 指标描述（用于诊断报告）
+
+macro_indicators:
+  # ----- 外盘期货（实时/日频）-----
+  
+  brent_crude:
+    # 原始配置（保留用于数据加载）
+    code: "OIL"
+    source: "external"
+    update_frequency: "realtime"
+    data_type: "futures"
+    cache_ttl: 300
+    
+    # 计算元数据（新增）
+    neutral: 80.0
+    range: 20.0
+    direction: 1
+    impact_coefficient: 0.12
+    lag_tolerance_days: 2
+    unit: "USD/barrel"
+    description: "布伦特原油期货，反映全球原油供需"
+  
+  comex_gold:
+    code: "GC"
+    source: "external"
+    update_frequency: "realtime"
+    data_type: "futures"
+    
+    neutral: 2150.0
+    range: 350.0
+    direction: 1
+    impact_coefficient: 0.10
+    lag_tolerance_days: 1
+    unit: "USD/oz"
+    description: "COMEX 黄金期货，避险资产代表"
+  
+  lme_copper:
+    code: "CAD"
+    source: "external"
+    update_frequency: "realtime"
+    data_type: "futures"
+    
+    neutral: 9500.0
+    range: 1500.0
+    direction: 1
+    impact_coefficient: 0.10
+    lag_tolerance_days: 2
+    unit: "USD/ton"
+    description: "LME 铜期货，工业需求晴雨表"
+  
+  nymex_gas:
+    code: "NG"
+    source: "external"
+    update_frequency: "realtime"
+    data_type: "futures"
+    
+    neutral: 3.0
+    range: 1.0
+    direction: 1
+    impact_coefficient: 0.08
+    lag_tolerance_days: 1
+    unit: "USD/MMBtu"
+    description: "NYMEX 天然气期货，能源成本指标"
+  
+  lme_nickel:
+    code: "NID"
+    source: "external"
+    update_frequency: "realtime"
+    data_type: "futures"
+    
+    neutral: 20000.0
+    range: 5000.0
+    direction: 1
+    impact_coefficient: 0.08
+    lag_tolerance_days: 2
+    unit: "USD/ton"
+    description: "LME 镍期货，新能源电池原材料"
+  
+  comex_silver:
+    code: "SI"
+    source: "external"
+    update_frequency: "realtime"
+    data_type: "futures"
+    
+    neutral: 27.5
+    range: 7.5
+    direction: 1
+    impact_coefficient: 0.08
+    lag_tolerance_days: 1
+    unit: "USD/oz"
+    description: "COMEX 白银期货，工业+避险双重属性"
+  
+  # ----- 汇率与利率（日频）-----
+  
+  usd_cny:
+    code: "5_RMBUS"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "daily"
+    data_type: "exchange_rate"
+    
+    neutral: 7.10
+    range: 0.30
+    direction: -1          # 人民币贬值(↑)利空进口/利好出口，综合取反向
+    impact_coefficient: 0.10
+    lag_tolerance_days: 1
+    unit: "CNY/USD"
+    description: "美元兑人民币汇率，影响进出口企业"
+  
+  us_10y_bond:
+    code: "8_ATY"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "daily"
+    data_type: "bond"
+    
+    neutral: 3.5
+    range: 1.5
+    direction: -1          # 美债收益率↑→全球流动性收紧→利空成长股
+    impact_coefficient: 0.10
+    lag_tolerance_days: 1
+    unit: "%"
+    description: "美国 10 年期国债收益率，全球无风险利率锚"
+  
+  china_10y_bond:
+    code: "5_CNTY"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "daily"
+    data_type: "bond"
+    
+    neutral: 2.75
+    range: 0.75
+    direction: -1          # 中债收益率↑→融资成本↑→利空高估值
+    impact_coefficient: 0.10
+    lag_tolerance_days: 1
+    unit: "%"
+    description: "中国 10 年期国债收益率，国内无风险利率"
+  
+  # ----- 宏观经济指标（月频）-----
+  
+  pmi:
+    code: "3_PMI"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "monthly"
+    data_type: "economic"
+    
+    neutral: 50.0
+    range: 2.0
+    direction: 1           # PMI>50 扩张→利好
+    impact_coefficient: 0.15
+    lag_tolerance_days: 30
+    unit: "index"
+    description: "制造业 PMI，50 为荣枯线"
+  
+  m2_growth:
+    code: "5_M2"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "monthly"
+    data_type: "economic"
+    
+    neutral: 10.0
+    range: 2.0
+    direction: 1           # M2 增速↑→流动性宽松→利好
+    impact_coefficient: 0.08
+    lag_tolerance_days: 15
+    unit: "%"
+    description: "M2 同比增速，反映货币供应量变化"
+  
+  cpi:
+    code: "2_CPI"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "monthly"
+    data_type: "economic"
+    
+    neutral: 2.0
+    range: 1.5
+    direction: -1          # CPI 过高→政策收紧→利空
+    impact_coefficient: 0.06
+    lag_tolerance_days: 30
+    unit: "%"
+    description: "消费者物价指数，通胀水平指标"
+  
+  ppi:
+    code: "2_PPI"
+    source: "tdx"
+    market_code: 38
+    update_frequency: "monthly"
+    data_type: "economic"
+    
+    neutral: 1.5
+    range: 3.5
+    direction: 1           # PPI 温和上行→企业盈利改善→利好
+    impact_coefficient: 0.06
+    lag_tolerance_days: 30
+    unit: "%"
+    description: "生产者物价指数，工业品价格水平"
+  
+  # ----- 其他宏观指标 -----
+  
+  eua_carbon:
+    code: "EUA"
+    source: "external"
+    update_frequency: "daily"
+    data_type: "carbon"
+    
+    neutral: 75.0
+    range: 25.0
+    direction: -1          # 碳价↑→高碳行业成本↑→利空传统能源
+    impact_coefficient: 0.05
+    lag_tolerance_days: 2
+    unit: "EUR/ton"
+    description: "欧盟碳配额价格，绿色转型成本指标"
+  
+  corn_price:
+    code: "C"
+    source: "external"
+    update_frequency: "daily"
+    data_type: "commodity"
+    
+    neutral: 5.5
+    range: 1.5
+    direction: 1           # 玉米价↑→农业/生物燃料受益
+    impact_coefficient: 0.05
+    lag_tolerance_days: 2
+    unit: "USD/bushel"
+    description: "CBOT 玉米期货，农产品价格代表"
+
+
+# ==================== 板块 - 宏观指标映射 ====================
+# 定义各板块关联的宏观指标列表
+
+sector_macro_link:
+  油气开采: ["brent_crude", "pmi"]
+  LNG: ["nymex_gas", "usd_cny"]
+  油服: ["brent_crude", "pmi"]
+  煤炭化工: ["ppi", "cpi", "eua_carbon"]
+  特高压: ["lme_copper", "china_10y_bond"]
+  新能源: ["lme_copper", "lme_nickel", "m2_growth"]
+  黄金: ["comex_gold", "us_10y_bond"]
+  军工: ["pmi", "m2_growth"]
+  政策方向: ["m2_growth", "china_10y_bond"]
+
+
+# ==================== 宏观计算参数配置 ====================
+macro_calculation:
+  # 默认敏感度（标的未配置时生效）
+  default_sensitivity: 1.0
+  
+  # 单指标影响值截断范围（防极端值）
+  impact_clip: [-0.15, 0.15]
+  
+  # 最终因子输出范围（保安全）
+  factor_range: [0.92, 1.08]
+  
+  # 板块个性化敏感度（覆盖 default_sensitivity）
+  sector_sensitivity:
+    油气开采: 1.2    # 强周期，放大宏观影响
+    LNG: 1.1         # 能源属性，中等敏感
+    油服: 1.1        # 跟随油价，中等敏感
+    煤炭化工: 1.0    # 成本+需求双向影响，中性
+    特高压: 0.8      # 政策驱动为主，弱化宏观
+    新能源: 0.9      # 成长属性，略弱化宏观
+    黄金: 1.3        # 避险+金融属性，高敏感
+    军工: 0.7        # 政策/订单驱动，弱化宏观
+    政策方向: 0.7    # 政策驱动为主，弱化宏观
+  
+  # 数据新鲜度策略
+  freshness_policy:
+    # 超期数据处理: "use" (使用)/"downgrade" (降权)/"exclude" (排除)
+    stale_action: "downgrade"
+    # 降权系数: 过期指标影响×此系数
+    downgrade_factor: 0.5
+    # 是否记录警告日志
+    log_warnings: true
+  
+  # 缺失指标处理策略
+  missing_policy:
+    # 无有效指标时返回: "neutral" (1.0)/"last_valid" (上次有效值)/"error"
+    fallback: "neutral"
+    # 最少有效指标数（低于此值返回 fallback）
+    min_valid_indicators: 1
+
+
+# ==================== 调试与诊断配置 ====================
+macro_diagnostics:
+  # 是否输出详细计算日志
+  enable_debug_log: false
+  
+  # 诊断报告包含字段
+  report_fields:
+    - indicator_name
+    - current_value
+    - deviation
+    - impact
+    - freshness_status
+  
+  # 可视化面板配置（供 ConfidenceDashboard 使用）
+  dashboard:
+    show_deviation_chart: true
+    show_impact_waterfall: true
+    color_scale: "RdYlGn"  # 红 - 黄 - 绿

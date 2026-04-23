@@ -83,7 +83,7 @@ class TechnicalConfidence:
     def calculate(
         self,
         indicators: Dict[str, Any],
-        stock_ pd.DataFrame,
+        stock_data: pd.DataFrame,
         params: Optional[Dict] = None
     ) -> ConfidenceResult:
         """
@@ -151,7 +151,7 @@ class TechnicalConfidence:
             self.config.breakout_threshold = params['confidence_breakout']
         # 可扩展其他参数...
     
-    def _calculate_data_quality(self,  pd.DataFrame) -> float:
+    def _calculate_data_quality(self, stock_data: pd.DataFrame) -> float:
         """
         计算数据质量得分 (0~1)
         
@@ -202,7 +202,7 @@ class TechnicalConfidence:
     def _calculate_consistency(
         self, 
         indicators: Dict[str, Any], 
-        stock_ pd.DataFrame
+        stock_data: pd.DataFrame
     ) -> float:
         """
         计算指标一致性得分 (0~1)
@@ -287,7 +287,7 @@ class TechnicalConfidence:
     def _calculate_strength(
         self,
         indicators: Dict[str, Any],
-        stock_ pd.DataFrame
+        stock_data: pd.DataFrame
     ) -> float:
         """
         计算信号强度得分 (0~1)
@@ -366,7 +366,7 @@ class TechnicalConfidence:
     def _generate_diagnostics(
         self,
         indicators: Dict,
-        stock_ pd.DataFrame,
+        stock_data: pd.DataFrame,
         dq_score: float,
         cs_score: float,
         st_score: float
@@ -419,7 +419,7 @@ class TechnicalConfidence:
         else:
             return "均线粘合(方向不明)"
     
-    def _describe_volume_price(self, indicators: Dict,  pd.DataFrame) -> str:
+    def _describe_volume_price(self, indicators: Dict,  stock_data: pd.DataFrame) -> str:
         """描述量价配合状态"""
         volume = indicators.get('volume')
         vol_avg = indicators.get('vol_20d_avg')
@@ -496,7 +496,7 @@ class TechnicalConfidence:
         else:
             return f"波动边缘({ratio:.1f}%)"
     
-    def _describe_trend(self, indicators: Dict,  pd.DataFrame) -> str:
+    def _describe_trend(self, indicators: Dict,  stock_data: pd.DataFrame) -> str:
         """描述趋势强度"""
         adx = indicators.get('adx')
         

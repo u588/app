@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ConfigService：统一配置加载服务（支持多系统配置隔离 + 热重载 + 灵活加载）
+ConfigService：统一配置加载服务（支持多系统配置隔离 + 热重载）
 """
 
 import yaml
@@ -9,9 +9,8 @@ import os
 import time
 import logging
 import threading
-import fnmatch
 from pathlib import Path
-from typing import Any, Dict, Optional, List, Callable, Union
+from typing import Any, Dict, Optional, List, Callable
 from dotenv import load_dotenv
 
 # watchdog 用于文件监听（生产环境推荐安装：pip install watchdog）
@@ -35,20 +34,25 @@ class _ConfigFileHandler(FileSystemEventHandler):
         self.config_service = config_service
         self.file_patterns = file_patterns
         self._last_modified = {}
-        self._debounce_seconds = 0.5
+        self._debounce_seconds = 0.5  # 防抖：避免编辑器保存时触发多次
         
     def on_modified(self, event):
         if event.is_directory:
             return
+            
+        # 只处理目标配置文件
         file_name = os.path.basename(event.src_path)
-        # 支持通配符匹配
-        if not any(fnmatch.fnmatch(file_name, pat) for pat in self.file_patterns):
+        if file_name not in self.file_patterns:
             return
+            
+        # 防抖 + 去重
         now = time.time()
         last = self._last_modified.get(event.src_path, 0)
         if now - last < self._debounce_seconds:
             return
         self._last_modified[event.src_path] = now
+        
+        # 异步执行重载（避免阻塞 watchdog 线程）
         threading.Thread(
             target=self._safe_reload,
             args=(event.src_path,),
@@ -60,38 +64,24 @@ class _ConfigFileHandler(FileSystemEventHandler):
         """线程安全地执行重载 + 通知回调"""
         try:
             logger.info(f"📝 检测到配置变更: {src_path}")
-            time.sleep(0.2)
+            time.sleep(0.2)  # 等待文件写入完成
+            
+            # 执行重载
             self.config_service.reload()
+            
+            # 通知所有注册的回调
             for callback in self.config_service._reload_callbacks:
                 try:
                     callback(self.config_service.config)
                 except Exception as e:
                     logger.error(f"❌ 配置变更回调执行失败: {e}")
+                    
         except Exception as e:
             logger.error(f"❌ 配置热重载异常: {e}")
 
 
 class ConfigService:
-    """统一配置加载服务（支持多系统 + 热重载 + 灵活加载）"""
-    
-    # 默认配置文件加载顺序（优先级从高到低）
-    DEFAULT_LOAD_ORDER = [
-        'system_config.yaml',      # 系统核心配置
-        'stocks_config.yaml',      # 标的配置
-        'macro_config.yaml',       # 宏观配置（新增）
-        'chart_config.yaml',       # 可视化配置
-        'portfolio_config.yaml',   # 组合配置
-        'risk_config.yaml',        # 风控配置
-        'backtest_config.yaml',    # 回测配置
-        'trading_config.yaml',    # 交易配置
-    ]
-    
-    # 文件过滤规则（排除不需要的文件）
-    FILE_EXCLUDE_PATTERNS = [
-        '*.tmp', '*.bak', '*.swp', '*.log',  # 临时/备份文件
-        '.#*', '*~',  # 编辑器临时文件
-        '*.example', '*.sample',  # 示例文件
-    ]
+    """统一配置加载服务（支持多系统 + 热重载）"""
     
     def __init__(
         self,
@@ -99,31 +89,17 @@ class ConfigService:
         config_subdir: Optional[str] = None,
         env_file: Optional[str] = None,
         enable_hot_reload: bool = True,
-        reload_callbacks: Optional[List[Callable[[Dict], None]]] = None,
-        # ===== 新增参数 =====
-        auto_scan: bool = True,                    # 是否自动扫描目录下所有 *.yaml 文件
-        config_files: Optional[List[Union[str, Path]]] = None,  # 指定加载的文件列表
-        load_order: Optional[List[str]] = None,    # 自定义加载顺序
-        merge_strategy: str = 'deep_update',       # 配置合并策略: 'deep_update' / 'shallow' / 'append'
-        recursive_scan: bool = False,              # 是否递归扫描子目录
+        reload_callbacks: Optional[List[Callable[[Dict], None]]] = None
     ):
         """
         初始化配置服务
         
         参数:
             system_name: 系统名称（如 'dynamic_price'）
-            config_subdir: 配置子目录，默认与 system_name 相同
+            config_subdir: 配置子目录（如 'dynamic_price'），默认与 system_name 相同
             env_file: .env 文件路径
             enable_hot_reload: 是否启用文件监听热重载
             reload_callbacks: 配置变更时的回调函数列表
-            auto_scan: 是否自动扫描目录下所有 *.yaml 文件（默认启用）
-            config_files: 指定加载的文件列表（优先级高于 auto_scan）
-            load_order: 自定义加载顺序（覆盖 DEFAULT_LOAD_ORDER）
-            merge_strategy: 配置合并策略
-                - 'deep_update': 深度合并字典（默认）
-                - 'shallow': 浅层合并，同级键直接覆盖
-                - 'append': 列表类型追加，其他类型覆盖
-            recursive_scan: 是否递归扫描子目录（默认否）
         """
         # 加载环境变量
         if env_file:
@@ -134,13 +110,6 @@ class ConfigService:
         self.system_name = system_name
         self.config_subdir = config_subdir or system_name
         self.config_dir = CONFIG_DIR / self.config_subdir
-        
-        # 加载策略配置
-        self.auto_scan = auto_scan
-        self.config_files = [Path(f) for f in config_files] if config_files else None
-        self.load_order = load_order or self.DEFAULT_LOAD_ORDER
-        self.merge_strategy = merge_strategy
-        self.recursive_scan = recursive_scan
         
         # 回调管理
         self._reload_callbacks: List[Callable[[Dict], None]] = reload_callbacks or []
@@ -155,28 +124,23 @@ class ConfigService:
         if enable_hot_reload and WATCHDOG_AVAILABLE:
             self._start_file_watcher()
         
-        logger.info(
-            f"✅ ConfigService 初始化成功 | 系统={system_name} | "
-            f"模式={self.config.get('system', {}).get('mode')} | "
-            f"热重载={'启用' if enable_hot_reload else '禁用'} | "
-            f"加载策略: auto_scan={auto_scan}, merge={merge_strategy}"
-        )
+        logger.info(f"✅ ConfigService 初始化成功 | 系统={system_name} | 模式={self.config.get('system', {}).get('mode')} | 热重载={'启用' if enable_hot_reload else '禁用'}")
     
     def _start_file_watcher(self):
         """启动配置文件监听"""
         if not WATCHDOG_AVAILABLE:
             return
+            
         try:
             self._observer = Observer()
-            # 监听模式：*.yaml + 指定文件
-            file_patterns = ['*.yaml', '*.yml'] + (
-                [f.name for f in self.config_files] if self.config_files else []
+            handler = _ConfigFileHandler(
+                self,
+                file_patterns=['system_config.yaml', 'stocks_config.yaml', 'chart_config.yaml']
             )
-            handler = _ConfigFileHandler(self, file_patterns=file_patterns)
             self._observer.schedule(
                 handler,
                 path=str(self.config_dir),
-                recursive=self.recursive_scan
+                recursive=False
             )
             self._observer.start()
             self._watchdog_thread = threading.Thread(
@@ -185,135 +149,35 @@ class ConfigService:
                 name="ConfigWatcher"
             )
             self._watchdog_thread.start()
-            logger.info(f"👀 配置热重载监听已启动: {self.config_dir} (recursive={self.recursive_scan})")
+            logger.info(f"👀 配置热重载监听已启动: {self.config_dir}")
         except Exception as e:
             logger.warning(f"⚠️ 启动配置监听失败: {e}")
     
     def _load_all_configs(self) -> Dict[str, Any]:
-        """
-        加载所有配置文件（支持自动扫描 + 指定文件）
-        
-        加载优先级:
-          1. config_files 指定的文件（按列表顺序）
-          2. auto_scan 扫描的文件（按 load_order 排序）
-          3. 默认文件（system_config.yaml, stocks_config.yaml）
-        """
+        """加载所有配置文件"""
         config = {}
-        loaded_files = []
         
-        # ===== 模式 1: 指定文件列表（最高优先级）=====
-        if self.config_files:
-            for file_path in self.config_files:
-                # 支持绝对路径和相对路径
-                path = Path(file_path) if not Path(file_path).is_absolute() else Path(file_path)
-                if path.exists() and path.suffix in ('.yaml', '.yml'):
-                    self._merge_config_file(config, path, loaded_files)
-                else:
-                    logger.warning(f"⚠️ 指定配置文件不存在或格式错误: {path}")
+        # 1. 加载系统配置
+        system_config_path = self.config_dir / "system_config.yaml"
+        if system_config_path.exists():
+            with open(system_config_path, 'r', encoding='utf-8') as f:
+                config.update(yaml.safe_load(f))
+            logger.debug(f"✅ 加载系统配置：{system_config_path}")
         
-        # ===== 模式 2: 自动扫描目录 =====
-        elif self.auto_scan:
-            # 收集所有符合条件的配置文件
-            yaml_files = []
-            pattern = '**/*.yaml' if self.recursive_scan else '*.yaml'
-            for file_path in self.config_dir.glob(pattern):
-                # 应用排除规则
-                if any(fnmatch.fnmatch(file_path.name, pat) for pat in self.FILE_EXCLUDE_PATTERNS):
-                    continue
-                yaml_files.append(file_path)
-            
-            # 按加载顺序排序（优先加载顺序靠前的文件）
-            def sort_key(path: Path) -> int:
-                name = path.name
-                if name in self.load_order:
-                    return self.load_order.index(name)
-                return len(self.load_order)  # 未知文件排最后
-            
-            yaml_files.sort(key=sort_key)
-            
-            # 依次加载
-            for file_path in yaml_files:
-                self._merge_config_file(config, file_path, loaded_files)
+        # 2. 加载标的配置
+        stocks_config_path = self.config_dir / "stocks_config.yaml"
+        if stocks_config_path.exists():
+            with open(stocks_config_path, 'r', encoding='utf-8') as f:
+                stocks_config = yaml.safe_load(f)
+                config['stocks'] = stocks_config.get('stocks', [])
+                config['macro_indicators'] = stocks_config.get('macro_indicators', {})
+                config['sector_macro_link'] = stocks_config.get('sector_macro_link', {})
+            logger.debug(f"✅ 加载标的配置：{stocks_config_path}")
         
-        # ===== 模式 3: 降级加载默认文件（向后兼容）=====
-        else:
-            for filename in ['system_config.yaml', 'stocks_config.yaml']:
-                file_path = self.config_dir / filename
-                if file_path.exists():
-                    self._merge_config_file(config, file_path, loaded_files)
-        
-        # 合并环境变量覆盖
+        # 3. 合并环境变量覆盖
         config = self._merge_env_overrides(config)
         
-        logger.info(f"✅ 配置加载完成 | 文件数: {len(loaded_files)} | 策略: {self.merge_strategy}")
-        logger.debug(f"📁 已加载文件: {[f.name for f in loaded_files]}")
-        
         return config
-    
-    def _merge_config_file(self, base_config: Dict, file_path: Path, loaded_files: List[Path]):
-        """
-        加载并合并单个配置文件
-        
-        参数:
-            base_config: 基础配置字典（会被修改）
-            file_path: 配置文件路径
-            loaded_files: 已加载文件列表（用于日志）
-        """
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                new_config = yaml.safe_load(f)
-            
-            if new_config is None:
-                logger.debug(f"⚪ 空配置文件: {file_path.name}")
-                return
-            
-            # 应用合并策略
-            if self.merge_strategy == 'deep_update':
-                self._deep_update(base_config, new_config)
-            elif self.merge_strategy == 'shallow':
-                base_config.update(new_config)
-            elif self.merge_strategy == 'append':
-                self._append_merge(base_config, new_config)
-            else:
-                logger.warning(f"⚠️ 未知合并策略: {self.merge_strategy}，使用 deep_update")
-                self._deep_update(base_config, new_config)
-            
-            loaded_files.append(file_path)
-            logger.debug(f"✅ 加载配置: {file_path.name} (策略: {self.merge_strategy})")
-            
-        except yaml.YAMLError as e:
-            logger.error(f"❌ YAML 解析失败 {file_path}: {e}")
-        except Exception as e:
-            logger.error(f"❌ 加载配置失败 {file_path}: {e}")
-    
-    def _deep_update(self, base: Dict, update: Dict) -> Dict:
-        """深度合并字典（递归更新）"""
-        for key, value in update.items():
-            if (
-                key in base 
-                and isinstance(base[key], dict) 
-                and isinstance(value, dict)
-            ):
-                self._deep_update(base[key], value)
-            else:
-                base[key] = value
-        return base
-    
-    def _append_merge(self, base: Dict, update: Dict) -> Dict:
-        """追加式合并：列表追加，字典递归，其他覆盖"""
-        for key, value in update.items():
-            if key in base:
-                if isinstance(base[key], list) and isinstance(value, list):
-                    # 列表追加（去重）
-                    base[key].extend([v for v in value if v not in base[key]])
-                elif isinstance(base[key], dict) and isinstance(value, dict):
-                    self._append_merge(base[key], value)
-                else:
-                    # 其他类型直接覆盖
-                    base[key] = value
-            else:
-                base[key] = value
-        return base
     
     def _merge_env_overrides(self, config: Dict) -> Dict:
         """合并环境变量覆盖的配置"""
@@ -328,6 +192,7 @@ class ConfigService:
             if env_value is not None:
                 if section not in config:
                     config[section] = {}
+                # 类型转换
                 if env_value.lower() in ('true', 'false'):
                     config[section][key] = env_value.lower() == 'true'
                 elif env_value.isdigit():
@@ -359,6 +224,7 @@ class ConfigService:
         """获取配置项（支持嵌套路径）"""
         keys = key_path.split('.')
         value = self.config
+        
         try:
             for key in keys:
                 if isinstance(value, list):
@@ -389,7 +255,7 @@ class ConfigService:
         self.config = self._load_all_configs()
         self._inject_global_db_config()
         
-        # 记录变更摘要
+        # 记录变更摘要（便于调试）
         changed_keys = []
         for key in ['system.mode', 'cache.enable', 'risk_control.max_position_single']:
             old_val = old_config.get(key.split('.')[0], {}).get(key.split('.')[1]) if '.' in key else old_config.get(key)
@@ -415,7 +281,7 @@ class ConfigService:
             logger.debug(f"✅ 注销配置变更回调: {callback.__name__}")
     
     def stop_watcher(self):
-        """停止文件监听"""
+        """停止文件监听（用于优雅停机）"""
         if self._observer:
             self._observer.stop()
             self._observer.join(timeout=2)

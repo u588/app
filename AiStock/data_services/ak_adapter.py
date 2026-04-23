@@ -29,6 +29,7 @@ class AKAdapter:
         'C': 'CBOT 玉米',
         'W': 'CBOT 小麦',
         'S': 'CBOT 大豆',
+        'EUA': 'EUA 碳排放权',
     }
     
     # 单位转换配置
