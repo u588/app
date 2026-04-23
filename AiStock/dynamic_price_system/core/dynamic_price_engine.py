@@ -272,11 +272,20 @@ class DynamicPriceEngine:
             # print(fin_calc.get_detailed_breakdown())
             
             # 4. 宏观面计算（联动调整因子）
+            macro_config = {}
+            if self.config and hasattr(self.config, 'config'):
+                # 从 ConfigService 获取完整宏观配置
+                macro_config = {
+                    'macro_indicators': self.config.config.get('macro_indicators', {}),
+                    'sector_macro_link': self.config.config.get('sector_macro_link', {}),
+                    'macro_calculation': self.config.config.get('macro_calculation', {})
+                }
             macro_calc = MacroCalculator(
                 macro_data, 
                 sector=sector, 
                 params=params,
-                config_macros=getattr(self.config, 'config', {}).get('macro_indicators', {}) if self.config else {}
+                config_macros=macro_config,
+                logger_instance=self.logger
             )
             macro_factor = macro_calc.get_adjustment_factor()
             
