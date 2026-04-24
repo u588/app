@@ -11,6 +11,7 @@ DynamicPriceSystem 主程序入口（两阶段架构）
 import sys
 import numpy as np
 from typing import Dict, List, Optional
+import pandas as pd
 import os
 import argparse
 import logging
@@ -267,13 +268,11 @@ class DynamicPriceRunner:
         # 5. 智能筛选 + 评分排序
         filter_rule = self.args.filter_rule
         recommended = self.services['filter'].filter_results(batch_results, rule_name=filter_rule)
-        # print(recommended)
         
         # 综合评分排序（可选）
         if self.services['config'].get('analysis.enable_scoring', True):
             weights = self.services['config'].get('analysis.scoring_weights')
             recommended = self.services['filter'].score_and_rank(recommended, weights)
-        # print(recommended)
         
         # 6. 保存结果
         if self.args.save_results:
@@ -408,59 +407,71 @@ class DynamicPriceRunner:
         
         return result
     
-    def _generate_phase1_visualizations(self, batch_results: List[Dict], recommended: List[Dict]):
-        """生成阶段 1 可视化（批量对比 + 筛选面板）"""
-        viz = self.services['viz']
+    def _generate_phase1_visualizations(self, batch_results, recommended):
+        """生成阶段 1 可视化（安全兼容 DataFrame 与 List）"""
+        viz = self.services.get('viz')
         if not viz:
             return
         
         output_dir = PROJECT_ROOT / self.args.output_dir / "visualization" / "phase1"
         output_dir.mkdir(parents=True, exist_ok=True)
+
+        def normalize_result(r):
+            """统一将扁平/混合结构转为标准嵌套结构"""
+            return {
+                'code': r.get('code'),
+                'name': r.get('name'),
+                'sector': r.get('sector'),
+                'scores': {
+                    'pl_ratio': r.get('pl_ratio') or r.get('scores', {}).get('pl_ratio'),
+                    'fundamental': r.get('fundamental_score') or r.get('scores', {}).get('fundamental')
+                },
+                'factors': {
+                    'composite': r.get('composite_factor') or r.get('factors', {}).get('composite')
+                },
+                'prices': {
+                    'entry': r.get('entry_price') or r.get('prices', {}).get('entry'),
+                    'target': r.get('target_price') or r.get('prices', {}).get('target'),
+                    'stop_loss': r.get('stop_loss') or r.get('prices', {}).get('stop_loss')
+                },
+                'recommendation': r.get('recommendation'),
+                'technical_quality': r.get('technical_quality')
+            }
+        
+        # ✅ 安全转换函数：统一转为 List[Dict]
+        # import pandas as pd
+        def to_safe_list(data):
+            if isinstance(data, pd.DataFrame):
+                return data.to_dict('records') if not data.empty else []
+            return data or []
+        
+        safe_batch = [normalize_result(r) for r in (batch_results.to_dict('records') if isinstance(batch_results, pd.DataFrame) else batch_results)]
+        safe_rec = [normalize_result(r) for r in (recommended.to_dict('records') if isinstance(recommended, pd.DataFrame) else recommended)]
+
+        # safe_batch = to_safe_list(batch_results)
+        # safe_rec = to_safe_list(recommended)
+        
+        if not safe_batch and not safe_rec:
+            return
+            
+        self.logger.info("🎨 开始生成阶段 1 可视化...")
         
         try:
-            # 1. 组合分布图
-            portfolio_path = viz.visualize_batch_results(
-                batch_results, chart_type='portfolio_comparison', output_format=self.args.export
-            )
+            # 1. 批量对比图
+            if safe_batch:
+                viz.visualize_batch_results(safe_batch, 'portfolio_comparison', self.args.export)
+                viz.visualize_batch_results(safe_batch, 'risk_matrix', self.args.export)
             
-            # 2. 风险矩阵图
-            risk_path = viz.visualize_batch_results(
-                batch_results, chart_type='risk_matrix', output_format=self.args.export
-            )
-            
-            # 3. 置信度筛选面板
-            if any('technical_quality' in r for r in batch_results):
-                conf_path = viz.visualize_batch_results(
-                    batch_results, chart_type='confidence_filter', output_format=self.args.export,
-                    filter_config={'min_confidence': 0.99, 'min_pl_ratio': 2.0}
-                )
-            
-            # 4. 筛选结果面板
-            # if recommended:
-            #     from visualization.phase1.screening_panel import create_screening_panel
-            #     fig = create_screening_panel(recommended, batch_results)
-            #     screening_path = output_dir / f"screening_results_{self.repo.version}.{self.args.export}"
-            #     viz.renderer.export(fig, str(screening_path), format=self.args.export)
-            
-            # 4. 筛选结果面板
-            # ✅ 兼容处理：检查 DataFrame 是否为空，或 List 是否有元素
-            is_rec_df = isinstance(recommended, pd.DataFrame)
-            is_valid_recommended = (is_rec_df and not recommended.empty) or (not is_rec_df and recommended)
-            
-            if is_valid_recommended:
-                # ✅ 如果是 DataFrame，转换为 List[Dict] 再传入组件
-                rec_data = recommended.to_dict('records') if is_rec_df else recommended
-                
+            # 2. 筛选面板
+            if safe_rec:
                 from visualization.phase1.screening_panel import create_screening_panel
-                fig = create_screening_panel(rec_data, batch_results)
-                
+                fig = create_screening_panel(safe_rec, safe_batch)
                 screening_path = output_dir / f"screening_results_{self.repo.version}.{self.args.export}"
-                viz.renderer.export(fig, str(screening_path), format=self.args.export)            
-            self.logger.info(f"✅ 阶段 1 可视化生成完成")
-            
+                viz.renderer.export(fig, str(screening_path), format=self.args.export)
+                self.logger.info(f"✅ 筛选面板已保存: {screening_path.name}")
+                
         except Exception as e:
-            self.logger.warning(f"⚠️ 阶段 1 可视化生成异常: {e}")
-    
+            self.logger.warning(f"⚠️ 阶段 1 可视化生成异常: {e}", exc_info=True)    
     def _generate_comparison_analysis(self, code: str, result: Dict):
         """生成对比分析（标的 vs 板块均值/推荐列表）"""
         # 1. 加载板块均值

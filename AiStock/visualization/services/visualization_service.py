@@ -287,33 +287,39 @@ class VisualizationService:
         返回:
             str: 输出文件路径
         """
+        # ✅ 防御性转换：兼容 DataFrame 输入
+        # if isinstance(results, pd.DataFrame):
+        #     if results.empty:
+        #         return None
+        #     results = results.to_dict('records')
+        print("批量结果原始输入:", type(results))
         if not results:
             logger.warning("⚠️ 批量结果为空，跳过可视化")
             return None
 
-        # ✅ 统一列名映射（中文 -> 英文配置键）
-        COLUMN_MAPPING = {
-            '综合因子': 'composite_factor',
-            '盈亏比': 'pl_ratio',
-            '建议': 'recommendation',
-            '目标价': 'target_price',
-            '入场价': 'entry_price',
-            '板块': 'sector',
-            '名称': 'name',
-            '代码': 'code'
-        }
+        # # ✅ 统一列名映射（中文 -> 英文配置键）
+        # COLUMN_MAPPING = {
+        #     '综合因子': 'composite_factor',
+        #     '盈亏比': 'pl_ratio',
+        #     '建议': 'recommendation',
+        #     '目标价': 'target_price',
+        #     '入场价': 'entry_price',
+        #     '板块': 'sector',
+        #     '名称': 'name',
+        #     '代码': 'code'
+        # }
         
-        # 构建 DataFrame（始终使用英文键）
-        df = pd.DataFrame([{
-            'code': r['code'],
-            'name': r.get('name', '未知'),
-            'sector': r['sector'],
-            'pl_ratio': float(r['scores']['pl_ratio']),
-            'composite_factor': float(r['factors']['composite']),
-            'recommendation': r['recommendation'],
-            'entry_price': float(r['prices']['entry']),
-            'target_price': float(r['prices']['target'])
-        } for r in results])
+        # # 构建 DataFrame（始终使用英文键）
+        # df = pd.DataFrame([{
+        #     'code': r['code'],
+        #     'name': r.get('name', '未知'),
+        #     'sector': r['sector'],
+        #     'pl_ratio': float(r['scores']['pl_ratio']),
+        #     'composite_factor': float(r['factors']['composite']),
+        #     'recommendation': r['recommendation'],
+        #     'entry_price': float(r['prices']['entry']),
+        #     'target_price': float(r['prices']['target'])
+        # } for r in results])
 
         # ✅ 新增：自动将 DataFrame 转换为 List[Dict]
         if isinstance(results, pd.DataFrame):
@@ -323,19 +329,21 @@ class VisualizationService:
             results = results.to_dict('records')
             logger.debug("🔄 已将 DataFrame 转换为 List[Dict]")        
         # 自动转换配置中的轴名为 DataFrame 实际列名
+        # print("转换后批量结果:", type(results))
+        # print(results)
 
-        cfg = self.config.get('portfolio_chart', {})
-        x_key = cfg.get('x_axis', 'composite_factor')
-        y_key = cfg.get('y_axis', 'pl_ratio')
+        # cfg = self.config.get('portfolio_chart', {})
+        # x_key = cfg.get('x_axis', 'composite_factor')
+        # y_key = cfg.get('y_axis', 'pl_ratio')
         
-        # 容错：如果配置写了中文，自动映射为英文
-        x_col = COLUMN_MAPPING.get(x_key, x_key)
-        y_col = COLUMN_MAPPING.get(y_key, y_key)
+        # # 容错：如果配置写了中文，自动映射为英文
+        # x_col = COLUMN_MAPPING.get(x_key, x_key)
+        # y_col = COLUMN_MAPPING.get(y_key, y_key)
         
         # 生成图表时传入明确的列名
-        fig = create_portfolio_comparison_chart(
-            df, 
-            config={**cfg, 'x_axis': x_col, 'y_axis': y_col}
+        fig = create_portfolio_comparison_chart(results,
+            # df.to_dict('records'), 
+            # config={**cfg, 'x_axis': x_col, 'y_axis': y_col}
         )
         
         # 应用筛选
