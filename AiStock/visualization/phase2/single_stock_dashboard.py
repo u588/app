@@ -45,15 +45,17 @@ def create_single_stock_dashboard(
         subplot_titles=[
             f"{name}({code}) 价格区间",
             "因子分解",
-            "置信度评估",
+            "置信度评估",  # <--- 这里包含 go.Indicator + go.Bar
             "诊断详情",
             "指标状态",
             "操作建议"
         ],
+        # ✅ 核心修复：specs 必须匹配组件的坐标系类型
+        # (2, 1) 位置的置信度组件包含 go.Bar，必须使用 xy 类型，不能使用 indicator (domain)
         specs=[
-            [{'type': 'scatter'}, {'type': 'bar'}],
-            [{'type': 'indicator'}, {'type': 'treemap'}],
-            [{'type': 'scatter'}, {'type': 'indicator'}]
+            [{'type': 'xy'}, {'type': 'xy'}],       # (1,1) 价格区间(Scatter) (1,2) 因子分解(Bar)
+            [{'type': 'indicator'}, {'type': 'domain'}],   # ✅ (2,1) 置信度改为 xy (2,2) 诊断树(Treemap)
+            [{'type': 'xy'}, {'type': 'indicator'}]    # (3,1) 指标散点(Scatter) (3,2) 建议卡片(Indicator)
         ],
         vertical_spacing=0.08,
         horizontal_spacing=0.08,

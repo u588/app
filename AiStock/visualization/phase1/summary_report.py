@@ -114,6 +114,7 @@ def _generate_html_report(
             <td>{r['code']}</td>
             <td>{r['name']}</td>
             <td>{r['sector']}</td>
+            <td>¥{r['prices']['current']}</td>
             <td>¥{r['prices']['entry']}</td>
             <td>¥{r['prices']['target']}</td>
             <td>{r['scores']['pl_ratio']:.1f}x</td>
@@ -187,7 +188,7 @@ def _generate_html_report(
             <table>
                 <thead>
                     <tr>
-                        <th>代码</th><th>名称</th><th>板块</th>
+                        <th>代码</th><th>名称</th><th>板块</th><th>现价</th>
                         <th>入场价</th><th>目标价</th><th>盈亏比</th><th>建议</th>
                     </tr>
                 </thead>
@@ -235,10 +236,10 @@ def _generate_markdown_report(
         sector_table += f"| {sector} | {count} |\n"
     
     # 推荐标的表格
-    rec_table = "| 代码 | 名称 | 板块 | 入场价 | 目标价 | 盈亏比 | 建议 |\n"
-    rec_table += "|------|------|------|--------|--------|--------|------|\n"
+    rec_table = "| 代码 | 名称 | 板块 | 现价 | 入场价 | 目标价 | 盈亏比 | 建议 |\n"
+    rec_table += "|---- |-----|------|-------|-------|--------|--------|------|\n"
     for r in recommended[:10]:
-        rec_table += f"| {r['code']} | {r['name']} | {r['sector']} | ¥{r['prices']['entry']} | ¥{r['prices']['target']} | {r['scores']['pl_ratio']:.1f}x | {r['recommendation']} |\n"
+        rec_table += f"| {r['code']} | {r['name']} | {r['sector']} | ¥{r['prices']['current']} | ¥{r['prices']['entry']} | ¥{r['prices']['target']} | {r['scores']['pl_ratio']:.1f}x | {r['recommendation']} |\n"
     
     # 生成 Markdown
     md_content = f"""# 📊 AiStock 动态价格分析摘要

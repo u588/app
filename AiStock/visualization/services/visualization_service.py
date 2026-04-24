@@ -251,10 +251,17 @@ class VisualizationService:
                     return None
                 return create_diagnostics_tree(result['technical_quality']['diagnostics'])
             elif chart_type == 'indicator_scatter':
-                return create_indicator_scatter(result.get('signals', {}), result.get('prices', {}))
+                print(result.get('technical_indicators'))
+                indicators = result.get('technical_indicators') or result.get('signals', {})
+                return create_indicator_scatter(indicators, result.get('prices', {}))
             # ✅ 新增：处理 summary_card 类型
             elif chart_type == 'summary_card':
                 return self._create_summary_card_chart(result)
+            # ✅ 新增：路由到复合式六宫格面板
+            elif chart_type == 'dashboard_layout':
+                from visualization.phase2.single_stock_dashboard import create_single_stock_dashboard
+                return create_single_stock_dashboard(result, self.config.get('dashboard', {}))
+            
             elif chart_type == 'historical_trend':
                 # 需要历史数据，此处简化返回 None
                 return None

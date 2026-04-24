@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "version": "20260424",
-    "timestamp": "2026-04-24T23:50:52.019818",
+    "version": "20260425",
+    "timestamp": "2026-04-25T01:39:47.381534",
     "criteria": {
       "description": "无过滤条件，仅排序",
       "conditions": {},
@@ -16,7 +16,7 @@
       "code": "002353",
       "name": "杰瑞股份",
       "sector": "油服",
-      "calc_time": "2026-04-24T23:50:51.768499",
+      "calc_time": "2026-04-25T01:39:47.139606",
       "prices": {
         "current": 131.0,
         "entry": 77.98,
@@ -98,7 +98,7 @@
       "code": "300274",
       "name": "阳光电源",
       "sector": "新能源",
-      "calc_time": "2026-04-24T23:50:51.871282",
+      "calc_time": "2026-04-25T01:39:47.248341",
       "prices": {
         "current": 133.79,
         "entry": 100.91,
@@ -180,7 +180,7 @@
       "code": "601899",
       "name": "紫金矿业",
       "sector": "黄金",
-      "calc_time": "2026-04-24T23:50:51.888538",
+      "calc_time": "2026-04-25T01:39:47.266082",
       "prices": {
         "current": 34.31,
         "entry": 29.07,
@@ -262,7 +262,7 @@
       "code": "300750",
       "name": "宁德时代",
       "sector": "新能源",
-      "calc_time": "2026-04-24T23:50:51.854124",
+      "calc_time": "2026-04-25T01:39:47.230620",
       "prices": {
         "current": 444.9,
         "entry": 348.01,
@@ -344,7 +344,7 @@
       "code": "000400",
       "name": "许继电气",
       "sector": "特高压",
-      "calc_time": "2026-04-24T23:50:51.836747",
+      "calc_time": "2026-04-25T01:39:47.212641",
       "prices": {
         "current": 25.8,
         "entry": 21.57,
@@ -426,7 +426,7 @@
       "code": "601808",
       "name": "中海油服",
       "sector": "油服",
-      "calc_time": "2026-04-24T23:50:51.751955",
+      "calc_time": "2026-04-25T01:39:47.122334",
       "prices": {
         "current": 14.97,
         "entry": 14.19,
@@ -508,7 +508,7 @@
       "code": "600489",
       "name": "中金黄金",
       "sector": "黄金",
-      "calc_time": "2026-04-24T23:50:51.905464",
+      "calc_time": "2026-04-25T01:39:47.284216",
       "prices": {
         "current": 25.53,
         "entry": 22.11,
@@ -590,7 +590,7 @@
       "code": "600406",
       "name": "国电南瑞",
       "sector": "特高压",
-      "calc_time": "2026-04-24T23:50:51.819627",
+      "calc_time": "2026-04-25T01:39:47.193993",
       "prices": {
         "current": 26.54,
         "entry": 24.17,
@@ -672,7 +672,7 @@
       "code": "600256",
       "name": "广汇能源",
       "sector": "LNG",
-      "calc_time": "2026-04-24T23:50:51.718707",
+      "calc_time": "2026-04-25T01:39:47.087761",
       "prices": {
         "current": 6.0,
         "entry": 4.23,
@@ -682,13 +682,13 @@
       "factors": {
         "technical": 1.013,
         "fundamental": 0.975,
-        "macro": 1.052,
+        "macro": 1.054,
         "composite": 1.009,
         "contribution": {
           "technical_dev": 0.013,
           "fundamental_dev": -0.025,
-          "macro_dev": 0.052,
-          "weighted_dev": 0.009
+          "macro_dev": 0.054,
+          "weighted_dev": 0.0095
         }
       },
       "scores": {
@@ -754,7 +754,7 @@
       "code": "600536",
       "name": "中国软件",
       "sector": "政策方向",
-      "calc_time": "2026-04-24T23:50:51.974495",
+      "calc_time": "2026-04-25T01:39:47.355779",
       "prices": {
         "current": 37.17,
         "entry": 33.66,
@@ -836,7 +836,7 @@
       "code": "002179",
       "name": "中航光电",
       "sector": "军工",
-      "calc_time": "2026-04-24T23:50:51.940036",
+      "calc_time": "2026-04-25T01:39:47.319818",
       "prices": {
         "current": 35.21,
         "entry": 30.59,
@@ -918,23 +918,23 @@
       "code": "600803",
       "name": "新奥股份",
       "sector": "LNG",
-      "calc_time": "2026-04-24T23:50:51.735252",
+      "calc_time": "2026-04-25T01:39:47.104877",
       "prices": {
         "current": 21.2,
-        "entry": 19.11,
-        "stop_loss": 18.1545,
-        "target": 22.94
+        "entry": 19.12,
+        "stop_loss": 18.164,
+        "target": 22.95
       },
       "factors": {
         "technical": 1.009,
         "fundamental": 1.038,
-        "macro": 1.048,
+        "macro": 1.05,
         "composite": 1.029,
         "contribution": {
           "technical_dev": 0.009,
           "fundamental_dev": 0.038,
-          "macro_dev": 0.048,
-          "weighted_dev": 0.0288
+          "macro_dev": 0.05,
+          "weighted_dev": 0.0293
         }
       },
       "scores": {
@@ -948,9 +948,9 @@
         "rsi_zone": "neutral"
       },
       "position_suggestion": {
-        "suggested_shares": 13082,
+        "suggested_shares": 13075,
         "risk_amount": 12500.0,
-        "expected_return": 50104.66,
+        "expected_return": 50078.45,
         "max_loss": -12500.0
       },
       "technical_quality": {
@@ -1000,7 +1000,7 @@
       "code": "603019",
       "name": "中科曙光",
       "sector": "政策方向",
-      "calc_time": "2026-04-24T23:50:51.957399",
+      "calc_time": "2026-04-25T01:39:47.337483",
       "prices": {
         "current": 92.76,
         "entry": 74.01,
@@ -1082,7 +1082,7 @@
       "code": "601857",
       "name": "中国石油",
       "sector": "油气开采",
-      "calc_time": "2026-04-24T23:50:51.702087",
+      "calc_time": "2026-04-25T01:39:47.070115",
       "prices": {
         "current": 11.93,
         "entry": 10.35,
@@ -1164,7 +1164,7 @@
       "code": "600426",
       "name": "华鲁恒升",
       "sector": "煤炭化工",
-      "calc_time": "2026-04-24T23:50:51.802593",
+      "calc_time": "2026-04-25T01:39:47.175711",
       "prices": {
         "current": 37.62,
         "entry": 27.81,
@@ -1246,7 +1246,7 @@
       "code": "600938",
       "name": "中国海油",
       "sector": "油气开采",
-      "calc_time": "2026-04-24T23:50:51.684898",
+      "calc_time": "2026-04-25T01:39:47.052546",
       "prices": {
         "current": 38.38,
         "entry": 32.57,
@@ -1328,7 +1328,7 @@
       "code": "601088",
       "name": "中国神华",
       "sector": "煤炭化工",
-      "calc_time": "2026-04-24T23:50:51.785463",
+      "calc_time": "2026-04-25T01:39:47.157565",
       "prices": {
         "current": 47.19,
         "entry": 40.0,
@@ -1410,7 +1410,7 @@
       "code": "600760",
       "name": "中航沈飞",
       "sector": "军工",
-      "calc_time": "2026-04-24T23:50:51.922807",
+      "calc_time": "2026-04-25T01:39:47.302363",
       "prices": {
         "current": 48.42,
         "entry": 42.18,

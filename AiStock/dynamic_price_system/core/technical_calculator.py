@@ -90,6 +90,8 @@ class TechnicalCalculator:
             ('MACD', self._calculate_macd),
             ('BOLL', self._calculate_boll),
             ('Volatility', self._calculate_volatility),  # ✅ 修复拼写
+            ('ADX', self._calculate_adx),               # ✅ 新增
+            ('Vol_Avg', self._calculate_vol_avg)        # ✅ 新增
         ]
         
         for name, func in indicators:
@@ -144,6 +146,52 @@ class TechnicalCalculator:
         std = self.df['close'].rolling(period, min_periods=1).std()
         self.df['boll_upper'] = self.df['boll_mid'] + width * std
         self.df['boll_lower'] = self.df['boll_mid'] - width * std
+
+    def _calculate_adx(self, period=14):
+        """
+        计算 ADX (平均趋向指数) 及 +DI/-DI
+        逻辑: 使用 Wilder 平滑法，等效于 EMA(alpha=1/period)
+        """
+        high = self.df['high']
+        low = self.df['low']
+        close_prev = self.df['close'].shift(1)
+
+        # 1. 计算 +DM 和 -DM
+        plus_dm = high.diff()
+        minus_dm = -low.diff()
+        plus_dm = plus_dm.where((plus_dm > minus_dm) & (plus_dm > 0), 0)
+        minus_dm = minus_dm.where((minus_dm > plus_dm) & (minus_dm > 0), 0)
+
+        # 2. 计算 TR (True Range)
+        tr = pd.concat([
+            high - low,
+            (high - close_prev).abs(),
+            (low - close_prev).abs()
+        ], axis=1).max(axis=1)
+
+        # 3. Wilder 平滑
+        alpha = 1.0 / period
+        smooth_tr = tr.ewm(alpha=alpha, adjust=False).mean()
+        smooth_plus_dm = plus_dm.ewm(alpha=alpha, adjust=False).mean()
+        smooth_minus_dm = minus_dm.ewm(alpha=alpha, adjust=False).mean()
+
+        # 4. 计算 DI (防除零)
+        self.df['plus_di'] = 100 * smooth_plus_dm / smooth_tr.replace(0, np.nan)
+        self.df['minus_di'] = 100 * smooth_minus_dm / smooth_tr.replace(0, np.nan)
+
+        # 5. 计算 DX 和 ADX
+        di_sum = self.df['plus_di'] + self.df['minus_di']
+        di_diff = (self.df['plus_di'] - self.df['minus_di']).abs()
+        dx = 100 * di_diff / di_sum.replace(0, np.nan)
+        self.df['adx'] = dx.ewm(alpha=alpha, adjust=False).mean()
+
+    def _calculate_vol_avg(self, period=20):
+        """计算 N 日平均成交量（兼容 volume/vol 列名）"""
+        vol_col = 'volume' if 'volume' in self.df.columns else 'vol'
+        if vol_col in self.df.columns:
+            self.df['vol_20d_avg'] = self.df[vol_col].rolling(period, min_periods=1).mean()
+        else:
+            self.logger.warning("⚠️ 未找到成交量列 (volume/vol)，跳过 vol_20d_avg 计算")
     
     def _calculate_volatility(self):
         """计算年化波动率（250 交易日）"""
@@ -160,6 +208,7 @@ class TechnicalCalculator:
         latest = self.df.iloc[-1]
         self._latest = {
             'close': float(latest['close']),
+            'volume': float(latest['volume']),
             'ma_short': float(latest['ma_short']) if 'ma_short' in latest else None,
             'ma_long': float(latest['ma_long']) if 'ma_long' in latest else None,
             'atr14': float(latest['atr14']) if 'atr14' in latest else None,
@@ -170,6 +219,10 @@ class TechnicalCalculator:
             'boll_upper': float(latest['boll_upper']) if 'boll_upper' in latest else None,
             'boll_lower': float(latest['boll_lower']) if 'boll_lower' in latest else None,
             'volatility': float(latest['volatility']) if 'volatility' in latest else None,
+            'adx': float(latest['adx']) if 'adx' in latest and pd.notna(latest['adx']) else None,
+            'plus_di': float(latest['plus_di']) if 'plus_di' in latest and pd.notna(latest['plus_di']) else None,
+            'minus_di': float(latest['minus_di']) if 'minus_di' in latest and pd.notna(latest['minus_di']) else None,
+            'vol_20d_avg': float(latest['vol_20d_avg']) if 'vol_20d_avg' in latest and pd.notna(latest['vol_20d_avg']) else None
         }
     
     def get_latest_indicators(self) -> Optional[Dict[str, Optional[float]]]:

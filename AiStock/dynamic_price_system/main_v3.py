@@ -51,8 +51,8 @@ def parse_args() -> argparse.Namespace:
                         help="单标分析：指定股票代码 (阶段 2 必需)")
     parser.add_argument("--version", type=str, default=None,
                         help="单标分析：指定结果版本 (默认 latest)")
-    parser.add_argument("--charts", nargs="+", default=None,
-                        help="单标分析：指定图表类型 (默认六宫格)")
+    # parser.add_argument("--charts", nargs="+", default=None,
+    #                     help="单标分析：指定图表类型 (默认六宫格)")
     
     # 通用参数
     parser.add_argument("--export", choices=["html", "excel", "png", "json"], default="html",
@@ -324,9 +324,6 @@ class DynamicPriceRunner:
         # 2. 补充深度数据
         enhanced_result = self._enhance_stock_data(result)
         
-        # # 3. ✅ 生成可视化（调用新方法）
-        # if self.services.get('viz') and not self.args.skip_viz:
-        #     self._generate_phase2_visualizations(enhanced_result, code)
         # 3. 生成单标可视化（六宫格）
         if self.services.get('viz') and not self.args.skip_viz:
             # ✅ 完整支持的图表类型清单
@@ -335,12 +332,19 @@ class DynamicPriceRunner:
                 'diagnostics_tree', 'indicator_scatter', 'summary_card'
             ]
             
-            # ✅ 智能解析 --charts 参数：支持 "all" 关键字
+            # ✅ 智能解析 --charts 参数
             if self.args.charts and 'all' in self.args.charts:
                 chart_types = ALL_SUPPORTED_CHARTS
                 self.logger.info(f"📦 解析 --charts all → 生成 {len(chart_types)} 个深度图表")
             else:
                 chart_types = self.args.charts or ALL_SUPPORTED_CHARTS
+
+            # ✅ 核心修复：动态切换 phase2 专属输出目录
+            phase2_viz_dir = PROJECT_ROOT / self.args.output_dir / "visualization" / "phase2"
+            phase2_viz_dir.mkdir(parents=True, exist_ok=True)
+            self.services['viz'].output_dir = phase2_viz_dir  # 覆盖默认路径
+            
+            self.logger.info(f"📁 阶段 2 输出目录已切换: {phase2_viz_dir.relative_to(PROJECT_ROOT)}")
 
             outputs = self.services['viz'].visualize_single_result(
                 enhanced_result,
@@ -351,13 +355,7 @@ class DynamicPriceRunner:
             if outputs:
                 self.logger.info(f"✅ 生成 {code} 深度分析: {list(outputs.keys())}")
             else:
-                self.logger.warning(f"⚠️ 未生成任何图表，请检查 result 数据结构")        
-        # 4. 对比分析（如指定）
-        if self.args.charts and 'comparison' in self.args.charts:
-            self._generate_comparison_analysis(code, enhanced_result)
-        
-        phase2_duration = (datetime.now() - phase2_start).total_seconds()
-        self.logger.info(f"✅ 阶段 2 完成 | 标的: {code} | 耗时: {phase2_duration:.2f}s")
+                self.logger.warning(f"⚠️ 未生成任何图表，请检查 result 数据结构")
     
     def _compute_single_stock_realtime(self, code: str) -> Optional[Dict]:
         """实时计算单标的（回退方案）"""

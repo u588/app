@@ -59,44 +59,45 @@ def create_confidence_gauge(
     ))
     
     # 2. 添加分项得分条形图（底部）
-    if breakdown:
-        # 提取分项
-        dims = ['data_quality', 'consistency', 'strength']
-        values = [breakdown.get(d, 0.5) for d in dims]
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # 蓝/橙/绿
+    # if breakdown:
+    #     # 提取分项
+    #     dims = ['data_quality', 'consistency', 'strength']
+    #     values = [breakdown.get(d, 0.5) for d in dims]
+    #     colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # 蓝/橙/绿
         
-        fig.add_trace(go.Bar(
-            x=dims,
-            y=values,
-            marker_color=colors,
-            name='分项得分',
-            text=[f'{v:.2f}' for v in values],
-            textposition='auto',
-            hovertemplate='<b>%{x}</b><br>得分：%{y:.2f}<extra></extra>'
-        ))
+        # fig.add_trace(go.Bar(
+        #     x=dims,
+        #     y=values,
+        #     marker_color=colors,
+        #     name='分项得分',
+        #     text=[f'{v:.2f}' for v in values],
+        #     textposition='auto',
+        #     hovertemplate='<b>%{x}</b><br>得分：%{y:.2f}<extra></extra>'
+        # ))
         
-        # 添加综合得分环形图（叠加）
-        fig.add_trace(go.Indicator(
-            mode='gauge+number',
-            value=score,
-            domain={'x': [0.2, 0.8], 'y': [0, 0.4]},
-            gauge={
-                'axis': {'range': [0, 1], 'visible': False},
-                'bar': {'color': color, 'opacity': 0.3},
-                'shape': 'bullet'
-            },
-            number={'font': {'size': 16}},
-            title={'text': '综合得分'}
-            # ✅ 修复：移除 hovertemplate
-        ))
+        # # 添加综合得分环形图（叠加）
+        # fig.add_trace(go.Indicator(
+        #     mode='gauge+number',
+        #     value=score,
+        #     domain={'x': [0.2, 0.8], 'y': [0, 0.4]},
+        #     gauge={
+        #         'axis': {'range': [0, 1], 'visible': False},
+        #         'bar': {'color': color},
+        #         # 'bar': {'color': color, 'opacity': 0.3},
+        #         'shape': 'bullet'
+        #     },
+        #     number={'font': {'size': 16}},
+        #     title={'text': '综合得分'}
+        #     # ✅ 修复：移除 hovertemplate
+        # ))
     
     # 布局优化
     fig.update_layout(
         height=400,
         margin=dict(l=30, r=30, t=50, b=30),
         showlegend=False,
-        yaxis={'visible': False},
-        yaxis2={'visible': False}
+        # yaxis={'visible': False},
+        # yaxis2={'visible': False}
     )
     
     return fig

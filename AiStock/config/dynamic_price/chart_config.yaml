@@ -111,7 +111,7 @@ portfolio_chart:
 
 # 仪表盘配置
 dashboard:
-  template: default
+  template: plotly_white
   charts_per_row: 2
   show_summary_table: true
   export_formats: [html, pdf]
