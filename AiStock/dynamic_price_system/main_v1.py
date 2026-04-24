@@ -211,7 +211,7 @@ class DynamicPriceRunner:
             for stock in target_stocks:
                 code = stock['code']
                 try:
-                    stock_data_map[code] = self.services['loader'].load_stock_daily(code, min_days=200)
+                    stock_data_map[code] = self.services['loader'].load_stock_daily(code, min_days=300)
                     if stock_data_map[code] is None or stock_data_map[code].empty:
                         self.logger.warning(f"⚠️ 行情数据不足跳过: {code}")
                         continue

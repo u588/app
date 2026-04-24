@@ -8,6 +8,7 @@ IndicatorScatter：技术指标关联散点图组件
   - 悬停显示理想区间
 """
 
+import plotly.graph_objects as go  # ✅ 必须添加这一行
 import plotly.express as px
 import pandas as pd
 from typing import Dict, Optional

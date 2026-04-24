@@ -5,7 +5,7 @@ ConfidenceGauge：置信度仪表盘组件
 功能：
   - 可视化置信度因子 (0.98~1.02)
   - 显示原始得分 + 等级
-  - 支持悬停查看分项得分
+  - 支持分项得分展示
 """
 
 import plotly.graph_objects as go
@@ -33,7 +33,7 @@ def create_confidence_gauge(
     # 颜色映射
     color = CONFIDENCE_LEVEL_COLORS.get(level, '#7f7f7f')
     
-    # 创建主仪表盘
+    # 1. 创建主仪表盘
     fig = go.Figure(go.Indicator(
         mode='gauge+number+delta',
         value=factor,
@@ -54,18 +54,28 @@ def create_confidence_gauge(
                 'thickness': 0.75,
                 'value': 1.0
             }
-        },
-        hovertemplate='<b>置信度因子</b><br>%{value:.3f}<br>原始得分：%{customdata[0]:.1%}<extra></extra>',
-        customdata=[score]
+        }
+        # ✅ 修复：移除 hovertemplate 和 customdata，Indicator 不支持这些属性
     ))
     
-    # 添加分项得分环形图（叠加）
+    # 2. 添加分项得分条形图（底部）
     if breakdown:
         # 提取分项
         dims = ['data_quality', 'consistency', 'strength']
         values = [breakdown.get(d, 0.5) for d in dims]
         colors = ['#1f77b4', '#ff7f0e', '#2ca02c']  # 蓝/橙/绿
         
+        fig.add_trace(go.Bar(
+            x=dims,
+            y=values,
+            marker_color=colors,
+            name='分项得分',
+            text=[f'{v:.2f}' for v in values],
+            textposition='auto',
+            hovertemplate='<b>%{x}</b><br>得分：%{y:.2f}<extra></extra>'
+        ))
+        
+        # 添加综合得分环形图（叠加）
         fig.add_trace(go.Indicator(
             mode='gauge+number',
             value=score,
@@ -76,19 +86,8 @@ def create_confidence_gauge(
                 'shape': 'bullet'
             },
             number={'font': {'size': 16}},
-            title={'text': '综合得分'},
-            hovertemplate='<b>原始得分</b><br>%{value:.1%}<extra></extra>'
-        ))
-        
-        # 添加分项条形图（底部）
-        fig.add_trace(go.Bar(
-            x=dims,
-            y=values,
-            marker_color=colors,
-            name='分项得分',
-            text=[f'{v:.2f}' for v in values],
-            textposition='auto',
-            hovertemplate='<b>%{x}</b><br>得分：%{y:.2f}<extra></extra>'
+            title={'text': '综合得分'}
+            # ✅ 修复：移除 hovertemplate
         ))
     
     # 布局优化
@@ -96,8 +95,8 @@ def create_confidence_gauge(
         height=400,
         margin=dict(l=30, r=30, t=50, b=30),
         showlegend=False,
-        yaxis={'visible': False},  # 隐藏底部条形图的默认 Y 轴
-        yaxis2={'visible': False}  # 隐藏环形图的默认 Y 轴
+        yaxis={'visible': False},
+        yaxis2={'visible': False}
     )
     
     return fig

@@ -45,3 +45,11 @@ sector_custom:
       pl_ratio: {'>=': 2.2}
       fundamental_score: {'>=': 60}
     order_by: fundamental_score
+
+# 5. 测试/调试规则
+debug_all:
+  description: "无过滤条件，仅排序"
+  conditions: {}
+  order_by: composite_score
+  reverse: true
+  limit: 50

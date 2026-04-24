@@ -217,7 +217,8 @@ class DynamicPriceRunner:
         
         # 2. 加载宏观数据
         macro_codes = self.services['config'].get('macro_codes', [
-            'brent_crude', 'comex_gold', 'lme_copper', 'pmi', 'm2_growth', 'usd_cny'
+            'brent_crude', 'comex_gold', 'pmi', 'm2_growth', 'cpi','ppi', 'china_10y_bond',
+            'lme_nickel', 'usd_cny','eua_carbon','lme_copper','nymex_gas','us_10y_bond'
         ])
         macro_data = self.services['loader'].load_all_macro_indicators(macro_codes)
         
@@ -229,7 +230,7 @@ class DynamicPriceRunner:
         for stock in target_stocks:
             code = stock['code']
             try:
-                stock_data = self.services['loader'].load_stock_daily(code, min_days=200)
+                stock_data = self.services['loader'].load_stock_daily(code, min_days=300)
                 if stock_data is None or stock_data.empty:
                     continue
                 
@@ -266,11 +267,13 @@ class DynamicPriceRunner:
         # 5. 智能筛选 + 评分排序
         filter_rule = self.args.filter_rule
         recommended = self.services['filter'].filter_results(batch_results, rule_name=filter_rule)
+        # print(recommended)
         
         # 综合评分排序（可选）
         if self.services['config'].get('analysis.enable_scoring', True):
             weights = self.services['config'].get('analysis.scoring_weights')
             recommended = self.services['filter'].score_and_rank(recommended, weights)
+        # print(recommended)
         
         # 6. 保存结果
         if self.args.save_results:
@@ -349,7 +352,7 @@ class DynamicPriceRunner:
             fin_df = self.services['loader'].load_stock_financials(code)
             financial_data = fin_df.to_dict(orient='records')[0] if not fin_df.empty else {}
             
-            macro_codes = self.services['config'].get('macro_codes', [])
+            macro_codes = list(self.services['config'].get('macro_indicators').keys())
             macro_data = self.services['loader'].load_all_macro_indicators(macro_codes)
             
             # 计算
@@ -371,7 +374,7 @@ class DynamicPriceRunner:
         code = result['code']
         
         # 1. 加载技术指标明细
-        stock_data = self.services['loader'].load_stock_daily(code, min_days=250)
+        stock_data = self.services['loader'].load_stock_daily(code, min_days=300)
         if stock_data is not None and not stock_data.empty:
             from dynamic_price_system.core.technical_calculator import TechnicalCalculator
             tech_calc = TechnicalCalculator(stock_data, params=result.get('params_used', {}))
@@ -433,12 +436,26 @@ class DynamicPriceRunner:
                 )
             
             # 4. 筛选结果面板
-            if recommended:
-                from visualization.phase1.screening_panel import create_screening_panel
-                fig = create_screening_panel(recommended, batch_results)
-                screening_path = output_dir / f"screening_results_{self.repo.version}.{self.args.export}"
-                viz.renderer.export(fig, str(screening_path), format=self.args.export)
+            # if recommended:
+            #     from visualization.phase1.screening_panel import create_screening_panel
+            #     fig = create_screening_panel(recommended, batch_results)
+            #     screening_path = output_dir / f"screening_results_{self.repo.version}.{self.args.export}"
+            #     viz.renderer.export(fig, str(screening_path), format=self.args.export)
             
+            # 4. 筛选结果面板
+            # ✅ 兼容处理：检查 DataFrame 是否为空，或 List 是否有元素
+            is_rec_df = isinstance(recommended, pd.DataFrame)
+            is_valid_recommended = (is_rec_df and not recommended.empty) or (not is_rec_df and recommended)
+            
+            if is_valid_recommended:
+                # ✅ 如果是 DataFrame，转换为 List[Dict] 再传入组件
+                rec_data = recommended.to_dict('records') if is_rec_df else recommended
+                
+                from visualization.phase1.screening_panel import create_screening_panel
+                fig = create_screening_panel(rec_data, batch_results)
+                
+                screening_path = output_dir / f"screening_results_{self.repo.version}.{self.args.export}"
+                viz.renderer.export(fig, str(screening_path), format=self.args.export)            
             self.logger.info(f"✅ 阶段 1 可视化生成完成")
             
         except Exception as e:

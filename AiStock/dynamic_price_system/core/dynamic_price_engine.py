@@ -259,7 +259,7 @@ class DynamicPriceEngine:
             base_stop = tech_signals['stop_loss']
             base_target = tech_signals['target_price']
             
-            tech_confidence = self._calculate_technical_confidence(tech_signals['indicators'], stock_data)
+            # tech_confidence = self._calculate_technical_confidence(tech_signals['indicators'], stock_data)
             
             # 3. 基本面计算（评分与调整因子）
             fin_calc = FundamentalCalculator(financial_data, params=params)
@@ -304,7 +304,8 @@ class DynamicPriceEngine:
 
             # 指数加权融合（三维都参与）
             composite_factor = (
-                (tech_confidence ** w_tech_norm) * 
+                # (tech_confidence ** w_tech_norm) * 
+                (tech_conf_result.factor ** w_tech_norm) * 
                 (fin_factor ** w_fin_norm) * 
                 (macro_factor ** w_macro_norm)
             )
@@ -451,7 +452,7 @@ class DynamicPriceEngine:
                 },
                 # 新增技术面质量信息
                 'technical_quality': {
-                    'factor': tech_conf_result.factor,
+                    'factor': tech_conf_result.factor, # ✅ 即 confidence_factor
                     'score': tech_conf_result.score,
                     'level': tech_conf_result.level,
                     'breakdown': {

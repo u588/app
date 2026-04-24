@@ -15,6 +15,9 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
 from datetime import datetime
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go  # ✅ 新增导入
 
 from ..components.price_chart import create_price_interval_chart
 from ..components.factor_breakdown import create_factor_breakdown
@@ -82,6 +85,75 @@ class VisualizationService:
         if datetime.now().timestamp() - mtime > self._cache_ttl:
             return False
         return True
+
+    def _create_summary_card_chart(self, result: Dict) -> go.Figure:
+        """生成单标的汇总卡片"""
+        prices = result.get('prices', {})
+        scores = result.get('scores', {})
+        recommendation = result.get('recommendation', '未知')
+        
+        # 确定颜色
+        rec_colors = {
+            '强烈推荐': '#2ca02c', '推荐': '#1f77b4', 
+            '观望': '#ff7f0e', '谨慎': '#d62728'
+        }
+        rec_color = rec_colors.get(recommendation, '#7f7f7f')
+        
+        fig = go.Figure()
+        
+        # 1. 入场价（主指标）
+        fig.add_trace(go.Indicator(
+            mode='number+delta',
+            value=prices.get('entry', 0),
+            number={'font': {'size': 24}, 'prefix': '¥'},
+            title={'text': '建议入场价'},
+            delta={
+                'reference': prices.get('current', 0), 
+                'valueformat': '.2f',
+                'relative': False
+            },
+            domain={'x': [0.25, 0.75], 'y': [0.6, 1]}
+        ))
+        
+        # 2. 目标价
+        fig.add_trace(go.Indicator(
+            mode='number',
+            value=prices.get('target', 0),
+            number={'font': {'size': 16}, 'prefix': '¥'},
+            title={'text': '目标价'},
+            domain={'x': [0.0, 0.5], 'y': [0.25, 0.55]}
+        ))
+        
+        # 3. 止损价
+        fig.add_trace(go.Indicator(
+            mode='number',
+            value=prices.get('stop_loss', 0),
+            number={'font': {'size': 16}, 'prefix': '¥'},
+            title={'text': '止损价'},
+            domain={'x': [0.5, 1.0], 'y': [0.25, 0.55]}
+        ))
+
+        # 4. 盈亏比与建议
+        fig.add_annotation(
+            x=0.5, y=0.05,
+            text=f"盈亏比: {scores.get('pl_ratio', 0):.2f}x | 建议: {recommendation}",
+            showarrow=False,
+            font=dict(size=14, color=rec_color),
+            bgcolor='rgba(255,255,255,0.9)',
+            bordercolor=rec_color,
+            borderwidth=1,
+            xref='paper', yref='paper'
+        )
+        
+        # 布局
+        fig.update_layout(
+            height=250,
+            margin=dict(l=10, r=10, t=30, b=10),
+            showlegend=False,
+            template='plotly_white'
+        )
+        
+        return fig
     
     def visualize_single_result(
         self,
@@ -180,6 +252,9 @@ class VisualizationService:
                 return create_diagnostics_tree(result['technical_quality']['diagnostics'])
             elif chart_type == 'indicator_scatter':
                 return create_indicator_scatter(result.get('signals', {}), result.get('prices', {}))
+            # ✅ 新增：处理 summary_card 类型
+            elif chart_type == 'summary_card':
+                return self._create_summary_card_chart(result)
             elif chart_type == 'historical_trend':
                 # 需要历史数据，此处简化返回 None
                 return None
@@ -192,7 +267,8 @@ class VisualizationService:
     
     def visualize_batch_results(
         self,
-        results: List[Dict[str, Any]],
+        # results: List[Dict[str, Any]],
+        results: Union[List[Dict], pd.DataFrame],
         chart_type: str = 'portfolio_comparison',
         output_format: str = 'html',
         filter_config: Optional[Dict] = None,
@@ -214,6 +290,53 @@ class VisualizationService:
         if not results:
             logger.warning("⚠️ 批量结果为空，跳过可视化")
             return None
+
+        # ✅ 统一列名映射（中文 -> 英文配置键）
+        COLUMN_MAPPING = {
+            '综合因子': 'composite_factor',
+            '盈亏比': 'pl_ratio',
+            '建议': 'recommendation',
+            '目标价': 'target_price',
+            '入场价': 'entry_price',
+            '板块': 'sector',
+            '名称': 'name',
+            '代码': 'code'
+        }
+        
+        # 构建 DataFrame（始终使用英文键）
+        df = pd.DataFrame([{
+            'code': r['code'],
+            'name': r.get('name', '未知'),
+            'sector': r['sector'],
+            'pl_ratio': float(r['scores']['pl_ratio']),
+            'composite_factor': float(r['factors']['composite']),
+            'recommendation': r['recommendation'],
+            'entry_price': float(r['prices']['entry']),
+            'target_price': float(r['prices']['target'])
+        } for r in results])
+
+        # ✅ 新增：自动将 DataFrame 转换为 List[Dict]
+        if isinstance(results, pd.DataFrame):
+            if results.empty:
+                logger.warning("⚠️ DataFrame 为空，跳过可视化")
+                return None
+            results = results.to_dict('records')
+            logger.debug("🔄 已将 DataFrame 转换为 List[Dict]")        
+        # 自动转换配置中的轴名为 DataFrame 实际列名
+
+        cfg = self.config.get('portfolio_chart', {})
+        x_key = cfg.get('x_axis', 'composite_factor')
+        y_key = cfg.get('y_axis', 'pl_ratio')
+        
+        # 容错：如果配置写了中文，自动映射为英文
+        x_col = COLUMN_MAPPING.get(x_key, x_key)
+        y_col = COLUMN_MAPPING.get(y_key, y_key)
+        
+        # 生成图表时传入明确的列名
+        fig = create_portfolio_comparison_chart(
+            df, 
+            config={**cfg, 'x_axis': x_col, 'y_axis': y_col}
+        )
         
         # 应用筛选
         filtered_results = self._apply_batch_filter(results, filter_config)

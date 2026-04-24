@@ -9,6 +9,7 @@ BatchDashboard：批量对比仪表板组件
 """
 
 import plotly.graph_objects as go
+from typing import Dict, List, Optional, Any, Union
 import plotly.express as px
 from plotly.subplots import make_subplots
 import pandas as pd
@@ -17,7 +18,8 @@ from typing import Dict, List, Optional, Any
 from ..utils.color_scales import CONFIDENCE_LEVEL_COLORS, RECOMMENDATION_COLORS
 
 def create_batch_dashboard(
-    results: List[Dict[str, Any]],
+    # results: List[Dict[str, Any]],
+    results: Union[List[Dict], pd.DataFrame],
     config: Optional[Dict] = None
 ) -> go.Figure:
     """
@@ -31,6 +33,11 @@ def create_batch_dashboard(
         Plotly Figure
     """
     config = config or {}
+
+    # ✅ 新增：自动类型转换
+    if isinstance(results, pd.DataFrame):
+        if results.empty: return go.Figure()
+        results = results.to_dict('records')
     
     if not results:
         return go.Figure().add_annotation(text="无数据", showarrow=False)

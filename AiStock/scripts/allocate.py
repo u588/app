@@ -210,7 +210,8 @@ def main():
         services.append(loader)
         
         # 加载宏观数据
-        macro_codes = ['brent_crude', 'comex_gold', 'pmi', 'm2_growth', 'cpi','ppi', 'china_10y_bond','lme_nickel', 'usd_cny','eua_carbon','lme_copper']
+        macro_codes = list(config.get('macro_indicators').keys())
+        # macro_codes = ['brent_crude', 'comex_gold', 'pmi', 'm2_growth', 'cpi','ppi', 'china_10y_bond','lme_nickel', 'usd_cny','eua_carbon','lme_copper']
         logger.info("🌍 加载宏观数据...")
         macro_data = loader.load_all_macro_indicators(macro_codes)
         
