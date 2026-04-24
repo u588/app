@@ -1,17 +1,9 @@
 # config/dynamic_price/confidence_config.yaml
-# 置信度面板配置
-
 dashboard:
   theme: plotly_white
   width: 1400
-  height: 900
+  height: 1000
   export_formats: [html, png]
-
-filters:
-  default:
-    min_confidence: 0.99      # 默认筛选高置信度标的
-    min_pl_ratio: 2.0         # 默认筛选盈亏比≥2.0
-    sectors: []               # 空=全部板块
 
 charts:
   single_stock:
@@ -19,13 +11,18 @@ charts:
     show_breakdown: true
     show_diagnostics: true
     show_indicator_scatter: true
-    show_historical: false    # 需历史数据支持
-  
+    show_historical: false
   batch_comparison:
     show_distribution: true
     show_scatter: true
     show_heatmap: true
-    color_by: recommendation  # confidence_factor / pl_ratio / sector
+    color_by: recommendation
+
+filters:
+  default:
+    min_confidence: 0.99
+    min_pl_ratio: 2.0
+    sectors: []
 
 export:
   auto_open: false

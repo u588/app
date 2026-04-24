@@ -9,6 +9,7 @@ SummaryReport：分析摘要报告组件
 """
 
 import logging
+import numpy as np
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
 from datetime import datetime

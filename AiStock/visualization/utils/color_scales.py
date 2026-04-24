@@ -27,6 +27,15 @@ DIMENSION_COLORS = {
     'strength': '#2ca02c'         # 绿色
 }
 
+# ==================== 投资建议颜色 ✅ 新增 ====================
+RECOMMENDATION_COLORS = {
+    '强烈推荐': '#2ca02c',   # 绿色
+    '推荐': '#1f77b4',       # 蓝色
+    '观望': '#ff7f0e',       # 橙色
+    '谨慎': '#d62728',       # 红色
+    '未知': '#7f7f7f'        # 灰色
+}
+
 # 诊断状态颜色
 DIAGNOSTIC_STATUS_COLORS = {
     '✅': '#2ca02c',   # 通过
@@ -46,3 +55,7 @@ def get_confidence_color(factor: float) -> str:
 def get_dimension_color(dimension: str) -> str:
     """根据维度名称获取颜色"""
     return DIMENSION_COLORS.get(dimension, '#7f7f7f')
+
+def get_recommendation_color(recommendation: str) -> str:
+    """根据投资建议返回颜色"""
+    return RECOMMENDATION_COLORS.get(recommendation, RECOMMENDATION_COLORS['未知'])
