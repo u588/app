@@ -124,7 +124,7 @@ def create_price_interval_chart(
     
     # 布局配置
     fig.update_layout(
-        title=config.get('title', f"🎯 动态价格区间 ({result.get('code', '')})"),
+        title=config.get('title', f"🎯 动态价格区间 ({result.get('code', '')} : {result.get('name', '')})"),
         xaxis=dict(
             title=config.get('xaxis_title', '价格类型'),
             showgrid=False,

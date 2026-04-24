@@ -217,10 +217,11 @@ class DynamicPriceRunner:
         self.logger.info(f"📋 标的池: {len(target_stocks)} 只")
         
         # 2. 加载宏观数据
-        macro_codes = self.services['config'].get('macro_codes', [
-            'brent_crude', 'comex_gold', 'pmi', 'm2_growth', 'cpi','ppi', 'china_10y_bond',
-            'lme_nickel', 'usd_cny','eua_carbon','lme_copper','nymex_gas','us_10y_bond'
-        ])
+        macro_codes = list(self.services['config'].get('macro_indicators').keys())
+        # macro_codes = self.services['config'].get('macro_codes', [
+        #     'brent_crude', 'comex_gold', 'pmi', 'm2_growth', 'cpi','ppi', 'china_10y_bond',
+        #     'lme_nickel', 'usd_cny','eua_carbon','lme_copper','nymex_gas','us_10y_bond'
+        # ])
         macro_data = self.services['loader'].load_all_macro_indicators(macro_codes)
         
         # 3. 批量加载行情 & 财务数据
@@ -437,19 +438,9 @@ class DynamicPriceRunner:
                 'recommendation': r.get('recommendation'),
                 'technical_quality': r.get('technical_quality')
             }
-        
-        # ✅ 安全转换函数：统一转为 List[Dict]
-        # import pandas as pd
-        def to_safe_list(data):
-            if isinstance(data, pd.DataFrame):
-                return data.to_dict('records') if not data.empty else []
-            return data or []
-        
+       
         safe_batch = [normalize_result(r) for r in (batch_results.to_dict('records') if isinstance(batch_results, pd.DataFrame) else batch_results)]
         safe_rec = [normalize_result(r) for r in (recommended.to_dict('records') if isinstance(recommended, pd.DataFrame) else recommended)]
-
-        # safe_batch = to_safe_list(batch_results)
-        # safe_rec = to_safe_list(recommended)
         
         if not safe_batch and not safe_rec:
             return

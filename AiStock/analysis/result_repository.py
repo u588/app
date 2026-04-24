@@ -271,3 +271,15 @@ class ResultRepository:
             latest_path.unlink()
         latest_path.symlink_to(self.version_dir, target_is_directory=True)
         logger.info(f"🔗 创建 latest 软链接 -> {self.version}")
+        
+    def close(self) -> None:
+        """
+        清理资源（用于接口对齐与未来扩展）
+        当前版本 SQLite 连接均为短连接（用完即关），此方法主要用于：
+          1. 满足类型检查器要求
+          2. 预留长连接池/文件句柄的统一释放入口
+        """
+        try:
+            self.logger.debug("🧹 ResultRepository 资源清理完成")
+        except Exception:
+            pass  # 清理阶段静默失败，不影响主流程
