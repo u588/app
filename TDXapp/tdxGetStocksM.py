@@ -10,7 +10,7 @@ api = TdxHq_API()
 api = TdxHq_API(heartbeat=True)
 #api = TdxHq_API(auto_retry=True)
 
-M  = 5
+M  = 1
 
 
 #category(K线种类): 5分钟K线(0), 1分钟K线(8), 日K线(9)

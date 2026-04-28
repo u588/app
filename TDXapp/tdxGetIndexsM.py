@@ -59,7 +59,7 @@ sh = tdxIndexs[tdxIndexs['MarketCode'] == 1 ]
 sz = tdxIndexs[tdxIndexs['MarketCode'] == 0 ]
 zz = tdxIndexs[tdxIndexs['MarketCode'] == 62 ]
 
-M = 5
+M = 1
 
 with api.connect('180.153.18.170', 7709):
     IndexLists=sh.IndexCode.to_list()     
