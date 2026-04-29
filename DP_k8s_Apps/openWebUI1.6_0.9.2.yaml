@@ -11,7 +11,7 @@ spec:
       app: open-webui
   template:
     metadata:
-      creationTimestamp: null
+      # creationTimestamp: null
       labels:
         app: open-webui
     spec:
@@ -22,11 +22,18 @@ spec:
 
       containers:
         - name: container-kaxnqv
-          image: '10.3.18.60/docker/open-webui:0.8.0'
+          image: '10.3.18.60/docker/open-webui:0.9.2'
           ports:
             - name: http-0
               containerPort: 8080
               protocol: TCP
+          command:
+              - /bin/sh
+              - -c
+              - |
+                pip install --upgrade pip && \
+                pip install --force-reinstall 'numpy==2.3.5' && \
+                exec python -m uvicorn open_webui.main:app --host 0.0.0.0 --port 8080 --forwarded-allow-ips '*'
           env:
             - name: OLLAMA_BASE_URL
               value: 'http://10.3.68.3:11434'
