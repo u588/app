@@ -1,0 +1,590 @@
+# ============================================================
+# 宏观经济指标定义配置
+# ============================================================
+# 每个指标包含以下属性：
+#   code: 通达信扩展市场API代码
+#   name: 中文名称
+#   category: 分析类别（经济增长/景气指数/价格指数/货币金融/贸易外汇/能源工业/资本市场/国际对比）
+#   unit: 数据单位
+#   freq: 数据频率 (M=月度, Q=季度, D=日度, Y=年度)
+#   scale: 数据缩放因子（如亿元->万亿，scale=1e-4）
+#   compare_codes: 关联对比指标列表
+#   transform: 数据转换方式 (none/index_minus_100/pct_change12)
+
+# ===== 一、经济增长 =====
+GDP:
+  code: "1_GDP"
+  name: "国内生产总值"
+  category: "经济增长"
+  unit: "亿元"
+  freq: "Q"
+  scale: 1.0e-4
+  compare_codes: []
+  transform: "none"
+
+VGDP:
+  code: "6_VGDP"
+  name: "GDP增速指数"
+  category: "经济增长"
+  unit: ""
+  freq: "Q"
+  scale: 1.0
+  compare_codes: ["GDP"]
+  transform: "index_minus_100"  # 指数减100得增速%
+
+VAI:
+  code: "6_VAI"
+  name: "工业增加值增速"
+  category: "经济增长"
+  unit: "%"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["VGDP"]
+  transform: "none"
+
+MSR:
+  code: "1_MSR"
+  name: "社会消费品零售总额"
+  category: "经济增长"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+UFA:
+  code: "6_UFA"
+  name: "城镇固定资产投资"
+  category: "经济增长"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: []
+  transform: "none"
+
+# ===== 二、景气指数 =====
+PMI:
+  code: "3_PMI"
+  name: "制造业PMI"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["PMI_ORDER", "PMI_EMP"]
+  transform: "none"
+
+PMI_ORDER:
+  code: "3_PMIO"
+  name: "制造业新订单指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["PMI"]
+  transform: "none"
+
+PMI_EMP:
+  code: "3_PMIE"
+  name: "制造业从业人员指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["PMI"]
+  transform: "none"
+
+PMI_INV:
+  code: "3_PMIF"
+  name: "制造业库存指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["PMI"]
+  transform: "none"
+
+PMI_SERVICE:
+  code: "3_PMINH"
+  name: "财新服务业PMI"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["PMI"]
+  transform: "none"
+
+ESCI:
+  code: "3_ESCI"
+  name: "经济景气一致指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["ESLI", "ESHI"]
+  transform: "none"
+
+ESLI:
+  code: "3_ESLI"
+  name: "经济景气先行指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["ESCI"]
+  transform: "none"
+
+ESHI:
+  code: "3_ESHI"
+  name: "经济景气滞后指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["ESCI"]
+  transform: "none"
+
+CCI:
+  code: "3_CCI"
+  name: "消费者信心指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["CEI", "CSI"]
+  transform: "none"
+
+CEI:
+  code: "3_CEI"
+  name: "消费者预期指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["CCI"]
+  transform: "none"
+
+CSI:
+  code: "3_CSI"
+  name: "消费者满意指数"
+  category: "景气指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["CCI"]
+  transform: "none"
+
+# ===== 三、价格指数 =====
+EPI:
+  code: "6_EPI"
+  name: "工业品价格指数"
+  category: "价格指数"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+# ===== 四、货币与金融 =====
+M0:
+  code: "5_M0"
+  name: "流通中现金(M0)"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["M1", "M2"]
+  transform: "none"
+
+M1:
+  code: "5_M1"
+  name: "狭义货币(M1)"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["M0", "M2"]
+  transform: "none"
+
+M2:
+  code: "5_M2"
+  name: "广义货币(M2)"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["M0", "M1"]
+  transform: "none"
+
+M2_M1:
+  code: "5_M2-M1"
+  name: "准货币(M2-M1)"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["M1", "M2"]
+  transform: "none"
+
+TRL:
+  code: "5_TRL"
+  name: "人民币存款总计"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: []
+  transform: "none"
+
+TRY:
+  code: "5_TRY"
+  name: "社会融资规模存量"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: []
+  transform: "none"
+
+SHIBOR_ON:
+  code: "5_SHIBOR"
+  name: "Shibor隔夜"
+  category: "货币金融"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["SHIBOR_1W", "SHIBOR_1M"]
+  transform: "none"
+
+SHIBOR_1W:
+  code: "5_SHR1W"
+  name: "Shibor1周"
+  category: "货币金融"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["SHIBOR_ON", "SHIBOR_1M"]
+  transform: "none"
+
+SHIBOR_1M:
+  code: "5_SHS1M"
+  name: "Shibor1月"
+  category: "货币金融"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["SHIBOR_1W", "SHIBOR_3M"]
+  transform: "none"
+
+SHIBOR_3M:
+  code: "5_SHS3M"
+  name: "Shibor3月"
+  category: "货币金融"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["SHIBOR_1M", "SHIBOR_6M"]
+  transform: "none"
+
+SHIBOR_6M:
+  code: "5_SHS6M"
+  name: "Shibor6月"
+  category: "货币金融"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["SHIBOR_3M"]
+  transform: "none"
+
+CNTY:
+  code: "5_CNTY"
+  name: "中国十年期国债收益率"
+  category: "货币金融"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["US_TY"]
+  transform: "none"
+
+STAMP:
+  code: "5_STAMP"
+  name: "证券交易印花税"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+TAX:
+  code: "5_TAX"
+  name: "月度税收收入"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+MR:
+  code: "5_MR"
+  name: "月度财政收入"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["ML"]
+  transform: "none"
+
+ML:
+  code: "5_ML"
+  name: "月度财政支出"
+  category: "货币金融"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["MR"]
+  transform: "none"
+
+TSR:
+  code: "5_TSR"
+  name: "居民储蓄率"
+  category: "货币金融"
+  unit: "%"
+  freq: "Y"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+# ===== 五、对外贸易与外汇 =====
+TIE:
+  code: "4_TIE"
+  name: "进出口总计"
+  category: "贸易外汇"
+  unit: "亿美元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["MII"]
+  transform: "none"
+
+MII:
+  code: "4_MII"
+  name: "当月进口总额"
+  category: "贸易外汇"
+  unit: "亿美元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["TIE"]
+  transform: "none"
+
+RMBUS:
+  code: "5_RMBUS"
+  name: "美元兑人民币"
+  category: "贸易外汇"
+  unit: ""
+  freq: "D"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+FER:
+  code: "5_FER"
+  name: "外汇储备"
+  category: "贸易外汇"
+  unit: "亿美元"
+  freq: "M"
+  scale: 1.0e-4
+  compare_codes: ["GOLD"]
+  transform: "none"
+
+GOLD:
+  code: "5_GOLD"
+  name: "黄金储备"
+  category: "贸易外汇"
+  unit: "万盎司"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["FER"]
+  transform: "none"
+
+BDI:
+  code: "5_BDI"
+  name: "波罗的海BDI指数"
+  category: "贸易外汇"
+  unit: ""
+  freq: "D"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+# ===== 六、能源与工业 =====
+TEC:
+  code: "6_TEC"
+  name: "全国发电量"
+  category: "能源工业"
+  unit: "亿度"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["TEG", "IEC"]
+  transform: "none"
+
+TEG:
+  code: "6_TEG"
+  name: "全社会用电量"
+  category: "能源工业"
+  unit: "亿度"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["TEC", "IEC"]
+  transform: "none"
+
+IEC:
+  code: "6_IEC"
+  name: "工业用电量"
+  category: "能源工业"
+  unit: "亿度"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["TEC", "TEG"]
+  transform: "none"
+
+# ===== 七、资本市场 =====
+RZ:
+  code: "7_RZ"
+  name: "沪深融资余额"
+  category: "资本市场"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["RQ"]
+  transform: "none"
+
+RQ:
+  code: "7_RQ"
+  name: "沪深融券余额"
+  category: "资本市场"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["RZ"]
+  transform: "none"
+
+TETF:
+  code: "7_TETF"
+  name: "ETF基金规模"
+  category: "资本市场"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+TON:
+  code: "7_TON"
+  name: "累计北上资金"
+  category: "资本市场"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["TOS"]
+  transform: "none"
+
+TOS:
+  code: "7_TOS"
+  name: "累计南下资金"
+  category: "资本市场"
+  unit: "亿元"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["TON"]
+  transform: "none"
+
+# ===== 八、国际对比（美国） =====
+US_GDP:
+  code: "8_AAGDP"
+  name: "美国GDP"
+  category: "国际对比"
+  unit: "亿美元"
+  freq: "Q"
+  scale: 1.0e-4
+  compare_codes: ["GDP"]
+  transform: "none"
+
+US_CPI:
+  code: "8_ACPI"
+  name: "美国CPI"
+  category: "国际对比"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["US_CPIX"]
+  transform: "pct_change12"  # 指数值，需计算同比
+
+US_CPIX:
+  code: "8_ACPIX"
+  name: "美国核心CPI"
+  category: "国际对比"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["US_CPI"]
+  transform: "pct_change12"
+
+US_PMI:
+  code: "8_APMI"
+  name: "美国制造业PMI"
+  category: "国际对比"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["PMI"]
+  transform: "none"
+
+US_PMIN:
+  code: "8_APMIN"
+  name: "美国非制造业PMI"
+  category: "国际对比"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["US_PMI"]
+  transform: "none"
+
+US_PPIX:
+  code: "8_APPIX"
+  name: "美国核心PPI"
+  category: "国际对比"
+  unit: ""
+  freq: "M"
+  scale: 1.0
+  compare_codes: []
+  transform: "none"
+
+US_TY:
+  code: "8_ATY"
+  name: "美国十年期国债"
+  category: "国际对比"
+  unit: "%"
+  freq: "D"
+  scale: 1.0
+  compare_codes: ["CNTY"]
+  transform: "none"
+
+US_UE:
+  code: "8_AUE"
+  name: "美国失业率"
+  category: "国际对比"
+  unit: "%"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["US_NONAG"]
+  transform: "none"
+
+US_NONAG:
+  code: "8_NONAG"
+  name: "美国非农就业"
+  category: "国际对比"
+  unit: "万人"
+  freq: "M"
+  scale: 1.0
+  compare_codes: ["US_UE"]
+  transform: "none"

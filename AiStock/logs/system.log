@@ -1,0 +1,16 @@
+2026-05-06 17:19:05 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [index_db] 初始化成功
+2026-05-06 17:19:05 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [stock_db] 初始化成功
+2026-05-06 17:19:05 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [stock_base_db] 初始化成功
+2026-05-06 17:19:05 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [stock_fs_db] 初始化成功
+2026-05-06 17:19:05 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [index_pe_db] 初始化成功
+2026-05-06 17:19:05 - data_services.data_loading_service - INFO - [data_loading_service.py:73] - ✅ 使用外部 CacheService 实例
+2026-05-06 17:19:05 - data_services.data_loading_service - INFO - [data_loading_service.py:67] - ✅ DataLoadingService V6.2 初始化成功 | 缓存=启用 | 复权逻辑已移除
+2026-05-06 17:19:05 - main - INFO - [run_macro_analysis.py:72] - 开始宏观数据分析...
+2026-05-06 17:20:54 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [index_db] 初始化成功
+2026-05-06 17:20:54 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [stock_db] 初始化成功
+2026-05-06 17:20:54 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [stock_base_db] 初始化成功
+2026-05-06 17:20:54 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [stock_fs_db] 初始化成功
+2026-05-06 17:20:54 - data_services.database_reader - INFO - [database_reader.py:56] - ✅ 数据库引擎 [index_pe_db] 初始化成功
+2026-05-06 17:20:54 - data_services.data_loading_service - INFO - [data_loading_service.py:73] - ✅ 使用外部 CacheService 实例
+2026-05-06 17:20:54 - data_services.data_loading_service - INFO - [data_loading_service.py:67] - ✅ DataLoadingService V6.2 初始化成功 | 缓存=启用 | 复权逻辑已移除
+2026-05-06 17:20:54 - main - INFO - [run_macro_analysis.py:72] - 开始宏观数据分析...

@@ -1,0 +1,546 @@
+# ============================================================
+# 宏观经济评分规则配置
+# ============================================================
+
+# 分析维度权重（总和 = 1.0）
+weights:
+  economic_growth: 0.25
+  prosperity: 0.20
+  monetary: 0.20
+  trade_fx: 0.12
+  energy_industry: 0.10
+  capital_market: 0.08
+  international: 0.05
+
+# 经济状态判断阈值与描述
+status_thresholds:
+  robust:
+    min_score: 65
+    label: "稳健向好"
+    outlook: "当前宏观经济整体运行稳健，各项指标向好。预计未来经济延续积极态势，政策或保持稳健中性，关注结构性机会。"
+
+  moderate_recovery:
+    min_score: 55
+    label: "温和复苏"
+    outlook: "当前宏观经济处于温和复苏阶段，部分领域仍需政策呵护。预计政策将保持宽松取向，经济有望持续改善，但复苏力度取决于内需修复进度。"
+
+  stabilization:
+    min_score: 45
+    label: "企稳调整"
+    outlook: "当前宏观经济处于企稳调整期，增长动能有所减弱。预计政策将加力提效，财政与货币协同发力，但外部不确定性仍需关注。"
+
+  under_pressure:
+    min_score: 35
+    label: "承压运行"
+    outlook: "当前宏观经济下行压力较大，多维度指标偏弱。预计政策将显著加码，逆周期调节力度加大，经济有望逐步筑底。"
+
+  downturn:
+    min_score: 0
+    label: "明显下行"
+    outlook: "当前宏观经济面临较大挑战，主要指标普遍走弱。预计将有强力政策出台托底，但短期内经济修复仍需时间。"
+
+# ===== 各维度评分规则 =====
+# 每条规则：condition 为判断条件阈值，score 为调整分数，signal 为信号描述
+
+scoring_rules:
+  economic_growth:
+    base_score: 50
+    rules:
+      gdp_growth:
+        indicator: "VGDP"
+        transform: "index_minus_100"
+        conditions:
+          - threshold: 5.5
+            operator: ">="
+            score: 15
+            signal: "GDP增速{value:.1f}%，经济运行在合理区间偏上"
+          - threshold: 5.0
+            operator: ">="
+            score: 10
+            signal: "GDP增速{value:.1f}%，经济运行平稳"
+          - threshold: 4.5
+            operator: ">="
+            score: 0
+            signal: "GDP增速{value:.1f}%，经济增速有所放缓"
+          - threshold: 0
+            operator: "<"
+            score: -10
+            signal: "GDP增速{value:.1f}%，经济下行压力较大"
+
+      vai:
+        indicator: "VAI"
+        conditions:
+          - threshold: 6
+            operator: ">="
+            score: 10
+            signal: "工业增加值增速{value}%，工业生产活跃"
+          - threshold: 4
+            operator: ">="
+            score: 5
+            signal: "工业增加值增速{value}%，工业生产平稳"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "工业增加值增速{value}%，工业生产疲软"
+
+      msr_yoy:
+        indicator: "MSR"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 5
+            operator: ">="
+            score: 10
+            signal: "社消零售同比增速{value:.1f}%，消费复苏强劲"
+          - threshold: 3
+            operator: ">="
+            score: 5
+            signal: "社消零售同比增速{value:.1f}%，消费温和增长"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "社消零售同比增速{value:.1f}%，消费增长乏力"
+
+      ufa_yoy:
+        indicator: "UFA"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 6
+            operator: ">="
+            score: 8
+            signal: "固定资产投资同比增速{value:.1f}%，投资扩张积极"
+          - threshold: 3
+            operator: ">="
+            score: 3
+            signal: "固定资产投资同比增速{value:.1f}%，投资增长平稳"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "固定资产投资同比增速{value:.1f}%，投资动力不足"
+
+  prosperity:
+    base_score: 50
+    rules:
+      pmi:
+        indicator: "PMI"
+        conditions:
+          - threshold: 51
+            operator: ">="
+            score: 15
+            signal: "制造业PMI为{value:.1f}，处于扩张区间，制造业景气度向好"
+          - threshold: 50
+            operator: ">="
+            score: 5
+            signal: "制造业PMI为{value:.1f}，处于荣枯线附近，制造业温和扩张"
+          - threshold: 49
+            operator: ">="
+            score: -5
+            signal: "制造业PMI为{value:.1f}，略低于荣枯线，制造业收缩压力初现"
+          - threshold: 0
+            operator: "<"
+            score: -15
+            signal: "制造业PMI为{value:.1f}，明显低于荣枯线，制造业收缩加剧"
+
+      pmi_trend:
+        indicator: "PMI"
+        transform: "trend_6m"
+        conditions:
+          - threshold: 1
+            operator: ">"
+            score: 8
+            signal: "PMI近6个月趋势上行{value:.1f}点，景气改善明显"
+          - threshold: 0
+            operator: ">"
+            score: 3
+            signal: "PMI近6个月小幅上行{value:.1f}点，景气边际改善"
+          - threshold: -1
+            operator: ">"
+            score: 0
+            signal: "PMI近6个月基本持平，景气度企稳"
+          - threshold: 0
+            operator: "<="
+            score: -8
+            signal: "PMI近6个月下行{abs_value:.1f}点，景气走弱"
+
+      pmi_order:
+        indicator: "PMI_ORDER"
+        conditions:
+          - threshold: 51
+            operator: ">="
+            score: 8
+            signal: "新订单指数{value:.1f}，需求端扩张动能充足"
+          - threshold: 50
+            operator: ">="
+            score: 3
+            signal: "新订单指数{value:.1f}，需求端边际改善"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "新订单指数{value:.1f}，需求端偏弱"
+
+      pmi_service:
+        indicator: "PMI_SERVICE"
+        conditions:
+          - threshold: 53
+            operator: ">="
+            score: 10
+            signal: "财新服务业PMI {value:.1f}，服务业扩张强劲"
+          - threshold: 50
+            operator: ">="
+            score: 5
+            signal: "财新服务业PMI {value:.1f}，服务业保持扩张"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "财新服务业PMI {value:.1f}，服务业收缩"
+
+      cci:
+        indicator: "CCI"
+        conditions:
+          - threshold: 120
+            operator: ">="
+            score: 8
+            signal: "消费者信心指数{value:.0f}，消费者信心较强"
+          - threshold: 100
+            operator: ">="
+            score: 3
+            signal: "消费者信心指数{value:.0f}，消费者信心乐观"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "消费者信心指数{value:.0f}，消费者信心偏弱"
+
+      esci:
+        indicator: "ESCI"
+        conditions:
+          - threshold: 100
+            operator: ">="
+            score: 5
+            signal: "经济景气一致指数{value:.1f}，经济运行高于趋势线"
+          - threshold: 0
+            operator: "<"
+            score: -3
+            signal: "经济景气一致指数{value:.1f}，经济运行低于趋势线"
+
+  monetary:
+    base_score: 50
+    rules:
+      m2_yoy:
+        indicator: "M2"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 10
+            operator: ">="
+            score: 12
+            signal: "M2同比增速{value:.1f}%，货币供应充裕，流动性宽松"
+          - threshold: 8
+            operator: ">="
+            score: 5
+            signal: "M2同比增速{value:.1f}%，货币供应合理适度"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "M2同比增速{value:.1f}%，货币供应偏紧"
+
+      m1_yoy:
+        indicator: "M1"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 6
+            operator: ">="
+            score: 8
+            signal: "M1同比增速{value:.1f}%，企业活期资金活跃"
+          - threshold: 3
+            operator: ">="
+            score: 2
+            signal: "M1同比增速{value:.1f}%，企业资金活跃度一般"
+          - threshold: 0
+            operator: ">="
+            score: -3
+            signal: "M1同比增速{value:.1f}%，企业资金活跃度偏低"
+          - threshold: 0
+            operator: "<"
+            score: -10
+            signal: "M1同比增速{value:.1f}%，M1负增长，经济活力不足"
+
+      scissors:
+        type: "derived"
+        formula: "m2_yoy - m1_yoy"
+        conditions:
+          - threshold: 8
+            operator: ">"
+            score: -8
+            signal: "M2-M1增速差{value:.1f}个百分点，剪刀差较大，资金沉淀明显，实体活力不足"
+          - threshold: 4
+            operator: ">"
+            score: -3
+            signal: "M2-M1增速差{value:.1f}个百分点，剪刀差中等，资金使用效率有待提升"
+          - threshold: 0
+            operator: "<="
+            score: 5
+            signal: "M2-M1增速差{value:.1f}个百分点，剪刀差收窄，资金活化程度改善"
+
+      try_yoy:
+        indicator: "TRY"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 10
+            operator: ">="
+            score: 8
+            signal: "社融存量同比增速{value:.1f}%，信用扩张积极"
+          - threshold: 8
+            operator: ">="
+            score: 3
+            signal: "社融存量同比增速{value:.1f}%，信用扩张适度"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "社融存量同比增速{value:.1f}%，信用扩张放缓"
+
+      shibor_on:
+        indicator: "SHIBOR_ON"
+        conditions:
+          - threshold: 1.5
+            operator: "<="
+            score: 5
+            signal: "Shibor隔夜利率{value:.3f}%，短期流动性非常宽松"
+          - threshold: 2.0
+            operator: "<="
+            score: 2
+            signal: "Shibor隔夜利率{value:.3f}%，短期流动性适度"
+          - threshold: 0
+            operator: ">"
+            score: -5
+            signal: "Shibor隔夜利率{value:.3f}%，短期流动性偏紧"
+
+      cnty:
+        indicator: "CNTY"
+        conditions:
+          - threshold: 2.5
+            operator: "<="
+            score: -3
+            signal: "十年期国债收益率{value:.2f}%，长端利率低位运行，反映经济预期偏弱"
+          - threshold: 3.0
+            operator: "<="
+            score: 2
+            signal: "十年期国债收益率{value:.2f}%，利率水平合理"
+          - threshold: 0
+            operator: ">"
+            score: -3
+            signal: "十年期国债收益率{value:.2f}%，利率偏高"
+
+  trade_fx:
+    base_score: 50
+    rules:
+      tie_yoy:
+        indicator: "TIE"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 5
+            operator: ">="
+            score: 10
+            signal: "进出口同比增速{value:.1f}%，外贸形势良好"
+          - threshold: 0
+            operator: ">="
+            score: 3
+            signal: "进出口同比增速{value:.1f}%，外贸平稳运行"
+          - threshold: 0
+            operator: "<"
+            score: -8
+            signal: "进出口同比增速{value:.1f}%，外贸承压"
+
+      rmbus:
+        indicator: "RMBUS"
+        conditions:
+          - threshold: 7.0
+            operator: "<="
+            score: 5
+            signal: "美元兑人民币汇率{value:.4f}，人民币汇率相对强势"
+          - threshold: 7.3
+            operator: "<="
+            score: 0
+            signal: "美元兑人民币汇率{value:.4f}，人民币汇率基本稳定"
+          - threshold: 0
+            operator: ">"
+            score: -8
+            signal: "美元兑人民币汇率{value:.4f}，人民币贬值压力较大"
+
+      fer:
+        indicator: "FER"
+        conditions:
+          - threshold: 3.1
+            operator: ">="
+            score: 5
+            signal: "外汇储备{value:.2f}万亿美元，储备充足"
+          - threshold: 3.0
+            operator: ">="
+            score: 2
+            signal: "外汇储备{value:.2f}万亿美元，储备稳定"
+          - threshold: 0
+            operator: "<"
+            score: -3
+            signal: "外汇储备{value:.2f}万亿美元，储备有所下降"
+
+      bdi_yoy:
+        indicator: "BDI"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 20
+            operator: ">="
+            score: 5
+            signal: "BDI指数同比变化{value:.0f}%，全球贸易活跃"
+          - threshold: -10
+            operator: ">="
+            score: 0
+            signal: "BDI指数同比变化{value:.0f}%，全球贸易平稳"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "BDI指数同比变化{value:.0f}%，全球贸易走弱"
+
+  energy_industry:
+    base_score: 50
+    rules:
+      tec_yoy:
+        indicator: "TEC"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 5
+            operator: ">="
+            score: 8
+            signal: "发电量同比增速{value:.1f}%，电力需求旺盛"
+          - threshold: 2
+            operator: ">="
+            score: 3
+            signal: "发电量同比增速{value:.1f}%，电力需求平稳"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "发电量同比增速{value:.1f}%，电力需求偏弱"
+
+      teg_yoy:
+        indicator: "TEG"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 5
+            operator: ">="
+            score: 8
+            signal: "全社会用电量同比增速{value:.1f}%，经济用电活跃"
+          - threshold: 2
+            operator: ">="
+            score: 3
+            signal: "全社会用电量同比增速{value:.1f}%，用电需求平稳"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "全社会用电量同比增速{value:.1f}%，用电需求不足"
+
+  capital_market:
+    base_score: 50
+    rules:
+      rz_yoy:
+        indicator: "RZ"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 10
+            operator: ">="
+            score: 8
+            signal: "融资余额同比变化{value:.1f}%，市场杠杆资金积极入场"
+          - threshold: 0
+            operator: ">="
+            score: 2
+            signal: "融资余额同比变化{value:.1f}%，杠杆资金稳定"
+          - threshold: 0
+            operator: "<"
+            score: -5
+            signal: "融资余额同比变化{value:.1f}%，杠杆资金退潮"
+
+      ton_flow:
+        indicator: "TON"
+        transform: "period_diff"
+        conditions:
+          - threshold: 0
+            operator: ">"
+            score: 5
+            signal: "北上资金净流入{value:.0f}亿元，外资看好A股"
+          - threshold: 0
+            operator: "<="
+            score: -5
+            signal: "北上资金净流出{abs_value:.0f}亿元，外资有所撤离"
+
+  international:
+    base_score: 50
+    rules:
+      us_growth:
+        indicator: "US_GDP"
+        transform: "qoq"
+        min_length: 5
+        conditions:
+          - threshold: 2
+            operator: ">="
+            score: 5
+            signal: "美国经济环比折年率增长{value:.1f}%，外部需求支撑"
+          - threshold: 0
+            operator: "<"
+            score: -3
+            signal: "美国经济环比折年率增长{value:.1f}%，外需可能走弱"
+
+      us_cpi_yoy:
+        indicator: "US_CPI"
+        transform: "yoy"
+        min_length: 13
+        conditions:
+          - threshold: 3.5
+            operator: ">="
+            score: -5
+            signal: "美国CPI同比{value:.1f}%，通胀压力较大，美联储可能维持高利率"
+          - threshold: 2.5
+            operator: ">="
+            score: 3
+            signal: "美国CPI同比{value:.1f}%，通胀逐步回落"
+          - threshold: 0
+            operator: "<"
+            score: 5
+            signal: "美国CPI同比{value:.1f}%，通胀可控，降息预期升温"
+
+      cn_us_spread:
+        type: "derived"
+        formula: "CNTY - US_TY"
+        conditions:
+          - threshold: -2
+            operator: "<"
+            score: -8
+            signal: "中美利差{value:.2f}个百分点，倒挂幅度较大，资本外流压力"
+          - threshold: 0
+            operator: "<"
+            score: -3
+            signal: "中美利差{value:.2f}个百分点，利差倒挂但幅度可控"
+          - threshold: 0
+            operator: ">="
+            score: 5
+            signal: "中美利差{value:.2f}个百分点，利差正常"
+
+      us_ue:
+        indicator: "US_UE"
+        conditions:
+          - threshold: 5
+            operator: ">="
+            score: 3
+            signal: "美国失业率{value:.1f}%，就业市场走弱，可能加速降息"
+          - threshold: 4
+            operator: ">="
+            score: 0
+            signal: "美国失业率{value:.1f}%，就业市场稳健"
+          - threshold: 0
+            operator: "<"
+            score: -3
+            signal: "美国失业率{value:.1f}%，就业强劲，降息动力不足"
