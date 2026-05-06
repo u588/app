@@ -9,7 +9,7 @@ from pytdx.crawler.history_financial_crawler import HistoryFinancialCrawler
 # uri = "postgresql://sa:11111111@10.3.18.56:5432/tdxFS"
 # conn = pg_dbapi.connect(uri)
 
-conn = create_engine('postgresql+psycopg2://sa:11111111@10.3.18.56/tdxFS')
+conn = create_engine('postgresql+psycopg://sa:11111111@10.3.18.56/tdxFS')
 api = TdxHq_API()
 api.connect('119.147.212.81', 7709)
 
@@ -44,7 +44,7 @@ gpcw20250930.zip -->
 
 
 
-ls = ['gpcw20250331.zip']
+ls = ['gpcw20251231.zip', 'gpcw20260331.zip']
 datacrawler = HistoryFinancialCrawler()
 pd.set_option('display.max_columns', None)
 
@@ -60,11 +60,11 @@ for i in ls:
         try:
             day = pd.read_sql(l, conn)['report_date'].tail(1).tolist()[0]
             if upday > day:
-                print(l + 'Updated !')
+                print(l + ' Updated !')
                 pd.DataFrame(dd.iloc[j]).T.reset_index(drop=True).set_index('report_date').to_sql(l, conn, if_exists='append')
                 
             else:
-                print(l+'not Updated !')
+                print(l+' not Updated !')
                 pass
         except:
             try:
