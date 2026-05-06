@@ -232,29 +232,9 @@ dict.get(list(dict.key())[x])
 
 ### 1、获取历史专业财务数据列表
 
-/home/ts/app/TDXapp/MtdxGetFS.py
+/home/ts/app/TDXapp/tdxGetFS_OP.py
 
-```python
-
-import pandas as pd
-from pytdx.hq import TdxHq_API
-from pytdx.crawler.history_financial_crawler import HistoryFinancialListCrawler
-
-api = TdxHq_API()
-
-# api.connect('119.147.212.81', 7709) 2024.9.30废弃
-
-api.connect('180.153.18.170', 7709)
-
-crawler = HistoryFinancialListCrawler()
-list_data = crawler.fetch_and_parse()
-print(pd.DataFrame(data=list_data))
-
-```
-
-2024.5.12  --> gpcw20240331.zip 4786722
-2024.6.21  --> gpcw20240331.zip 4788337
-并入---> /home/ts/app/TDXapp/MtdxGetFS.py
+/home/ts/app/TDXapp/MtdxGetFS.py  2026.5 废弃
 
 ### 2、手动更新数据库数据
 
