@@ -1,0 +1,232 @@
+metadata:
+  title: "十五五十大投资方向产业链全景图谱"
+  subtitle: "2026-2030 政策导向与产业演进"
+  version: "1.0"
+  source: "Z.ai Research & 十五五规划前瞻"
+
+visual_style:
+  theme: "plotly_white"
+  font_family: "Microsoft YaHei, PingFang SC, sans-serif"
+  colors:
+    primary: "#2563eb"
+    secondary: "#f59e0b"
+    success: "#10b981"
+    danger: "#ef4444"
+    warning: "#f97316"
+    info: "#06b6d4"
+    background: "#ffffff"
+
+supply_chains:
+  ai:
+    name: "人工智能"
+    policy_score: 5
+    certainty_score: 5
+    layers:
+      - name: "应用层"
+        nodes: [{name: "金融/医疗/工业AI", value: 95, color: "#f59e0b"}, {name: "AI Agent", value: 90, color: "#f59e0b"}]
+      - name: "模型层"
+        nodes: [{name: "科大讯飞(002230)", value: 100, color: "#2563eb"}, {name: "三六零(601360)", value: 85, color: "#2563eb"}]
+      - name: "算力层"
+        nodes: [{name: "海光信息(688041)", value: 100, color: "#10b981"}, {name: "中际旭创(300308)", value: 95, color: "#10b981"}]
+    links: [{source: "应用层", target: "模型层", value: 90}, {source: "模型层", target: "算力层", value: 100}]
+
+  semiconductor:
+    name: "半导体国产化"
+    policy_score: 5
+    certainty_score: 5
+    layers:
+      - name: "终端应用"
+        nodes: [{name: "新能源车/光伏/消费电子", value: 95, color: "#f59e0b"}]
+      - name: "晶圆制造"
+        nodes: [{name: "中芯国际(688981)", value: 100, color: "#2563eb"}, {name: "华虹公司(688347)", value: 85, color: "#2563eb"}]
+      - name: "设备材料"
+        nodes: [{name: "北方华创(002371)", value: 100, color: "#10b981"}, {name: "拓荆科技(688072)", value: 90, color: "#10b981"}]
+    links: [{source: "终端应用", target: "晶圆制造", value: 95}, {source: "晶圆制造", target: "设备材料", value: 90}]
+
+  new_energy:
+    name: "新能源"
+    policy_score: 5
+    certainty_score: 4
+    layers:
+      - name: "终端应用"
+        nodes: [{name: "新能源车/光伏/储能", value: 95, color: "#f59e0b"}]
+      - name: "核心部件"
+        nodes: [{name: "宁德时代(300750)", value: 100, color: "#2563eb"}, {name: "阳光电源(300274)", value: 90, color: "#2563eb"}]
+      - name: "上游资源"
+        nodes: [{name: "天齐锂业(002466)", value: 85, color: "#10b981"}, {name: "紫金矿业(601899)", value: 90, color: "#10b981"}]
+    links: [{source: "终端应用", target: "核心部件", value: 95}, {source: "核心部件", target: "上游资源", value: 85}]
+
+  robot:
+    name: "人形机器人"
+    policy_score: 4
+    certainty_score: 3
+    layers:
+      - name: "应用场景"
+        nodes: [{name: "工业制造/物流仓储", value: 90, color: "#f59e0b"}]
+      - name: "整机系统"
+        nodes: [{name: "人形机器人整机", value: 100, color: "#2563eb"}]
+      - name: "核心零部件"
+        nodes: [{name: "绿的谐波(688017)", value: 95, color: "#10b981"}, {name: "鸣志电器(603728)", value: 85, color: "#10b981"}]
+    links: [{source: "应用场景", target: "整机系统", value: 90}, {source: "整机系统", target: "核心零部件", value: 100}]
+
+  low_altitude:
+    name: "低空经济"
+    policy_score: 5
+    certainty_score: 4
+    layers:
+      - name: "应用场景"
+        nodes: [{name: "低空物流/城市空中交通", value: 90, color: "#f59e0b"}]
+      - name: "飞行器制造"
+        nodes: [{name: "eVTOL整机/工业无人机", value: 95, color: "#2563eb"}]
+      - name: "基础设施"
+        nodes: [{name: "莱斯信息(688631)", value: 90, color: "#10b981"}, {name: "中国卫通(601698)", value: 85, color: "#10b981"}]
+    links: [{source: "应用场景", target: "飞行器制造", value: 90}, {source: "飞行器制造", target: "基础设施", value: 85}]
+
+  consumption:
+    name: "消费升级"
+    policy_score: 4
+    certainty_score: 4
+    layers:
+      - name: "终端需求"
+        nodes: [{name: "银发经济/AI终端/国货品牌", value: 90, color: "#f59e0b"}]
+      - name: "品牌与制造"
+        nodes: [{name: "珀莱雅(603605)", value: 85, color: "#2563eb"}, {name: "鱼跃医疗(002223)", value: 80, color: "#2563eb"}]
+      - name: "供应链与渠道"
+        nodes: [{name: "线上渠道/智能制造", value: 95, color: "#10b981"}]
+    links: [{source: "终端需求", target: "品牌与制造", value: 90}, {source: "品牌与制造", target: "供应链与渠道", value: 85}]
+
+  defense:
+    name: "国防军工"
+    policy_score: 5
+    certainty_score: 5
+    layers:
+      - name: "装备列装"
+        nodes: [{name: "航空发动机/隐身战机", value: 95, color: "#f59e0b"}]
+      - name: "总装集成"
+        nodes: [{name: "航发动力(600893)", value: 100, color: "#2563eb"}, {name: "中航沈飞(600760)", value: 95, color: "#2563eb"}]
+      - name: "配套系统"
+        nodes: [{name: "紫光国微(002049)", value: 90, color: "#10b981"}, {name: "中航光电(002179)", value: 85, color: "#10b981"}]
+    links: [{source: "装备列装", target: "总装集成", value: 95}, {source: "总装集成", target: "配套系统", value: 90}]
+
+  data_elements:
+    name: "数据要素"
+    policy_score: 5
+    certainty_score: 4
+    layers:
+      - name: "行业应用"
+        nodes: [{name: "金融/政务/医疗数据", value: 90, color: "#f59e0b"}]
+      - name: "平台与流通"
+        nodes: [{name: "人民网(603000)", value: 85, color: "#2563eb"}, {name: "浙数文化(600633)", value: 80, color: "#2563eb"}]
+      - name: "安全与基建"
+        nodes: [{name: "奇安信(688561)", value: 90, color: "#10b981"}, {name: "易华录(300212)", value: 85, color: "#10b981"}]
+    links: [{source: "行业应用", target: "平台与流通", value: 90}, {source: "平台与流通", target: "安全与基建", value: 85}]
+
+  biotech:
+    name: "创新药"
+    policy_score: 4
+    certainty_score: 4
+    layers:
+      - name: "临床与出海"
+        nodes: [{name: "ADC/GLP-1/AI制药", value: 90, color: "#f59e0b"}]
+      - name: "研发与CMC"
+        nodes: [{name: "恒瑞医药(600276)", value: 100, color: "#2563eb"}, {name: "药明康德(603259)", value: 95, color: "#2563eb"}]
+      - name: "临床前与CXO"
+        nodes: [{name: "凯莱英(002821)", value: 85, color: "#10b981"}, {name: "泰格医药(300347)", value: 80, color: "#10b981"}]
+    links: [{source: "临床与出海", target: "研发与CMC", value: 90}, {source: "研发与CMC", target: "临床前与CXO", value: 85}]
+
+  strategic_resources:
+    name: "战略资源"
+    policy_score: 5
+    certainty_score: 5
+    layers:
+      - name: "终端制造"
+        nodes: [{name: "永磁电机/新能源/军工", value: 95, color: "#f59e0b"}]
+      - name: "深加工与冶炼"
+        nodes: [{name: "北方稀土(600111)", value: 100, color: "#2563eb"}, {name: "厦门钨业(600549)", value: 90, color: "#2563eb"}]
+      - name: "矿产开采"
+        nodes: [{name: "紫金矿业(601899)", value: 95, color: "#10b981"}, {name: "盐湖股份(000792)", value: 85, color: "#10b981"}]
+    links: [{source: "终端制造", target: "深加工与冶炼", value: 95}, {source: "深加工与冶炼", target: "矿产开采", value: 90}]
+
+global_indicators:
+  ai:
+    - name: "国产AI芯片市占率"
+      target: "30%+"
+      current: "<10%"
+    - name: "液冷渗透率"
+      target: "40%+"
+      current: "5%"
+  semiconductor:
+    - name: "设备国产化率"
+      target: "50%+"
+      current: "25%"
+    - name: "成熟制程全球占比"
+      target: "45%+"
+      current: "30%"
+  new_energy:
+    - name: "新型储能累计装机"
+      target: "300GWh+"
+      current: "100GWh"
+    - name: "固态电池能量密度"
+      target: "500Wh/kg+"
+      current: "300Wh/kg"
+  robot:
+    - name: "核心零部件国产化率"
+      target: "50%+"
+      current: "30%"
+    - name: "单机成本目标"
+      target: "15-20万元"
+      current: "50-80万元"
+  low_altitude:
+    - name: "eVTOL适航取证"
+      target: "10+款型"
+      current: "3款"
+    - name: "起降场建设"
+      target: "10000+个"
+      current: "500+"
+  consumption:
+    - name: "家用医疗器械渗透率"
+      target: "40%+"
+      current: "15%"
+    - name: "AI PC渗透率"
+      target: "50%+"
+      current: "10%"
+  defense:
+    - name: "国产航发自给率"
+      target: "70%+"
+      current: "40%"
+    - name: "军工电子信息化占比"
+      target: "40%+"
+      current: "25%"
+  data_elements:
+    - name: "隐私计算市场增速"
+      target: "50%+/年"
+      current: "30%+/年"
+    - name: "数据资产入表企业数"
+      target: "数千家"
+      current: "数百家"
+  biotech:
+    - name: "ADC出海交易总额"
+      target: "数百亿美元"
+      current: "数十亿美元"
+    - name: "AI制药管线数量"
+      target: "100+条"
+      current: "20+条"
+  strategic_resources:
+    - name: "稀土永磁需求增速"
+      target: "年化15%+"
+      current: "10%+"
+    - name: "锂供需平衡时间"
+      target: "2027年前后"
+      current: "2025-2026"
+
+timeline:
+  phases:
+    - name: "2026-2027"
+      description: "技术突破与产能扩张期"
+      color: "#667eea"
+    - name: "2028-2029"
+      description: "规模化应用期"
+      color: "#764ba2"
+    - name: "2030+"
+      description: "成熟生态期"
+      color: "#f093fb"

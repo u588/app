@@ -1,0 +1,1664 @@
+# ============================================================
+# 十五五A股十大方向精选标的池 (136 stocks)
+# Fifteenth Five-Year Plan A-Share Investment Stock Pool
+# ============================================================
+#
+# 配置策略: 核心(65%) + 卫星(35)
+# 权重归一化: sum(weight) = 1.0
+#
+# 字段说明:
+#   code                : 6位股票代码
+#   name                : 股票简称
+#   sector              : 子类·赛道
+#   weight              : 组合权重 (归一化)
+#   macro_link          : 关联宏观因子列表
+#   params:
+#     stop_loss_atr_mult   : 止损ATR倍数 (大市值2.5 / 中3.0 / 小3.5)
+#     entry_ma_period      : 入场均线周期 (大中20日 / 小30日)
+#     target_multiplier    : 目标价倍数 (核心1.15~1.25 / 卫星1.25~1.40)
+#     min_fundamental_score: 最低基本面评分 (核心60~70 / 卫星45~55)
+#     macro_sensitivity    : 宏观敏感度 (1.2~2.3)
+
+ffyp_a_share_pool:
+
+  # ── 人工智能 (artificial_intelligence) ──
+  - code: "688256"
+    name: "寒武纪"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "002049"
+    name: "紫光国微"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "688787"
+    name: "海天瑞声"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0058
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "300418"
+    name: "昆仑万维"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0073
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688083"
+    name: "中望软件"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0073
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688396"
+    name: "华润微"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0073
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688521"
+    name: "芯原股份"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0058
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688561"
+    name: "奇安信"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0073
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "300474"
+    name: "景嘉微"
+    sector: "AI大模型·大模型基础层"
+    weight: 0.0128
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "000977"
+    name: "浪潮信息"
+    sector: "算力基础设施·AI服务器"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "603019"
+    name: "中科曙光"
+    sector: "算力基础设施·AI服务器"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "002236"
+    name: "大华股份"
+    sector: "算力基础设施·AI服务器"
+    weight: 0.0088
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "300502"
+    name: "新易盛"
+    sector: "算力基础设施·光模块"
+    weight: 0.0128
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "300308"
+    name: "中际旭创"
+    sector: "算力基础设施·光模块"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "688168"
+    name: "安博通"
+    sector: "算力基础设施·光模块"
+    weight: 0.0058
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "002837"
+    name: "英维克"
+    sector: "算力基础设施·液冷散热"
+    weight: 0.0128
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "300873"
+    name: "佳力图"
+    sector: "算力基础设施·液冷散热"
+    weight: 0.0058
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688111"
+    name: "金山办公"
+    sector: "AI应用·AI+办公"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "300010"
+    name: "立思辰"
+    sector: "AI应用·AI+教育"
+    weight: 0.0058
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "603887"
+    name: "城地香江"
+    sector: "AI应用·AI+金融"
+    weight: 0.0058
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "300015"
+    name: "爱尔眼科"
+    sector: "AI应用·AI+医疗"
+    weight: 0.0088
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688169"
+    name: "石头科技"
+    sector: "AI应用·AI+工业"
+    weight: 0.0073
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "688006"
+    name: "杭可科技"
+    sector: "AI应用·AI+工业"
+    weight: 0.0073
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 人工智能·卫星宏观敏感度
+
+  - code: "601633"
+    name: "长城汽车"
+    sector: "AI应用·AI+自动驾驶"
+    weight: 0.0153
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  - code: "002920"
+    name: "德赛西威"
+    sector: "AI应用·AI+自动驾驶"
+    weight: 0.0128
+    macro_link: ["ai_capex", "semiconductor_index", "usd_cny"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.5       # 人工智能·核心宏观敏感度
+
+  # ── 半导体国产化 (semiconductor_domestic) ──
+  - code: "688981"
+    name: "中芯国际"
+    sector: "晶圆制造·先进制程代工"
+    weight: 0.013
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  - code: "002371"
+    name: "北方华创"
+    sector: "晶圆制造·先进制程代工"
+    weight: 0.013
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  - code: "688012"
+    name: "中微公司"
+    sector: "晶圆制造·先进制程代工"
+    weight: 0.0109
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  - code: "688046"
+    name: "华海清科"
+    sector: "晶圆制造·特色工艺"
+    weight: 0.0062
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "688268"
+    name: "华特气体"
+    sector: "晶圆制造·特色工艺"
+    weight: 0.005
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "603185"
+    name: "上机数控"
+    sector: "晶圆制造·特色工艺"
+    weight: 0.0062
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "603690"
+    name: "至纯科技"
+    sector: "设备材料·薄膜沉积"
+    weight: 0.005
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "688036"
+    name: "传音控股"
+    sector: "设备材料·薄膜沉积"
+    weight: 0.0075
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "603501"
+    name: "韦尔股份"
+    sector: "设备材料·半导体材料"
+    weight: 0.013
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  - code: "688800"
+    name: "瑞可达"
+    sector: "设备材料·半导体材料"
+    weight: 0.005
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "300236"
+    name: "上海新阳"
+    sector: "设备材料·半导体材料"
+    weight: 0.005
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "300346"
+    name: "南大光电"
+    sector: "设备材料·半导体材料"
+    weight: 0.0109
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  - code: "688536"
+    name: "思瑞浦"
+    sector: "芯片设计·模拟芯片"
+    weight: 0.0109
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  - code: "300661"
+    name: "圣邦股份"
+    sector: "芯片设计·模拟芯片"
+    weight: 0.0062
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 半导体国产化·卫星宏观敏感度
+
+  - code: "688041"
+    name: "海光信息"
+    sector: "芯片设计·SoC芯片"
+    weight: 0.013
+    macro_link: ["semiconductor_cycle", "us_china_tech", "domestic_replacement_rate"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 半导体国产化·核心宏观敏感度
+
+  # ── 人形机器人 (humanoid_robot) ──
+  - code: "002472"
+    name: "双环传动"
+    sector: "核心零部件·减速器"
+    weight: 0.0096
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "003021"
+    name: "兆威机电"
+    sector: "核心零部件·减速器"
+    weight: 0.0077
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.25       # 核心稳健目标
+      min_fundamental_score: 60 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "603901"
+    name: "永创智能"
+    sector: "核心零部件·减速器"
+    weight: 0.0044
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.2       # 人形机器人·卫星宏观敏感度
+
+  - code: "002050"
+    name: "三花智控"
+    sector: "核心零部件·伺服电机"
+    weight: 0.0115
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "688165"
+    name: "埃夫特"
+    sector: "核心零部件·伺服电机"
+    weight: 0.0077
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.25       # 核心稳健目标
+      min_fundamental_score: 60 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "603728"
+    name: "鸣志电器"
+    sector: "核心零部件·伺服电机"
+    weight: 0.0096
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "688007"
+    name: "光大嘉宝"
+    sector: "核心零部件·传感器"
+    weight: 0.0044
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.2       # 人形机器人·卫星宏观敏感度
+
+  - code: "300457"
+    name: "赢合科技"
+    sector: "核心零部件·传感器"
+    weight: 0.0055
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.2       # 人形机器人·卫星宏观敏感度
+
+  - code: "603486"
+    name: "科沃斯"
+    sector: "整机集成·本体制造"
+    weight: 0.0066
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.2       # 人形机器人·卫星宏观敏感度
+
+  - code: "300024"
+    name: "机器人"
+    sector: "整机集成·本体制造"
+    weight: 0.0096
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "002747"
+    name: "埃斯顿"
+    sector: "整机集成·本体制造"
+    weight: 0.0096
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 人形机器人·核心宏观敏感度
+
+  - code: "002527"
+    name: "新时达"
+    sector: "整机集成·系统集成"
+    weight: 0.0044
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.2       # 人形机器人·卫星宏观敏感度
+
+  - code: "688322"
+    name: "奥比中光"
+    sector: "整机集成·系统集成"
+    weight: 0.0044
+    macro_link: ["robot_shipment", "ai_capex", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.2       # 人形机器人·卫星宏观敏感度
+
+  # ── 低空经济 (low_altitude_economy) ──
+  - code: "002097"
+    name: "山河智能"
+    sector: "eVTOL飞行器·整机研发"
+    weight: 0.009
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 低空经济·核心宏观敏感度
+
+  - code: "688598"
+    name: "金博股份"
+    sector: "eVTOL飞行器·整机研发"
+    weight: 0.0051
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "000099"
+    name: "中信海直"
+    sector: "eVTOL飞行器·整机研发"
+    weight: 0.009
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 低空经济·核心宏观敏感度
+
+  - code: "688599"
+    name: "天宜上佳"
+    sector: "eVTOL飞行器·动力系统"
+    weight: 0.0041
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "300750"
+    name: "宁德时代"
+    sector: "eVTOL飞行器·动力系统"
+    weight: 0.0107
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 低空经济·核心宏观敏感度
+
+  - code: "688090"
+    name: "瑞华泰"
+    sector: "eVTOL飞行器·动力系统"
+    weight: 0.0041
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "600050"
+    name: "中国联通"
+    sector: "低空基建·通信导航"
+    weight: 0.0107
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 低空经济·核心宏观敏感度
+
+  - code: "600941"
+    name: "中国移动"
+    sector: "低空基建·通信导航"
+    weight: 0.0107
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 低空经济·核心宏观敏感度
+
+  - code: "002415"
+    name: "海康威视"
+    sector: "低空基建·通信导航"
+    weight: 0.0061
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "688515"
+    name: "莱斯信息"
+    sector: "低空基建·空管系统"
+    weight: 0.0072
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.25       # 核心稳健目标
+      min_fundamental_score: 60 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 低空经济·核心宏观敏感度
+
+  - code: "600438"
+    name: "通威股份"
+    sector: "低空基建·空管系统"
+    weight: 0.0061
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "002396"
+    name: "星网锐捷"
+    sector: "低空基建·空管系统"
+    weight: 0.0051
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "002120"
+    name: "韵达股份"
+    sector: "低空应用·物流配送"
+    weight: 0.0051
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "603069"
+    name: "海峡股份"
+    sector: "低空应用·物流配送"
+    weight: 0.0051
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  - code: "601888"
+    name: "中国中免"
+    sector: "低空应用·旅游观光"
+    weight: 0.0061
+    macro_link: ["policy_low_altitude", "aviation_mixed_index", "infrastructure_investment"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 低空经济·卫星宏观敏感度
+
+  # ── 新能源 (new_energy) ──
+  - code: "601012"
+    name: "隆基绿能"
+    sector: "光伏·光伏组件"
+    weight: 0.0084
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  - code: "688223"
+    name: "晶科能源"
+    sector: "光伏·光伏组件"
+    weight: 0.0084
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  - code: "002459"
+    name: "晶澳科技"
+    sector: "光伏·光伏硅料"
+    weight: 0.004
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.1       # 新能源·卫星宏观敏感度
+
+  - code: "002129"
+    name: "中环股份"
+    sector: "光伏·光伏硅料"
+    weight: 0.0084
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  - code: "300274"
+    name: "阳光电源"
+    sector: "光伏·光伏逆变器"
+    weight: 0.0084
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  - code: "300014"
+    name: "亿纬锂能"
+    sector: "储能·电化学储能"
+    weight: 0.007
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  - code: "002074"
+    name: "国轩高科"
+    sector: "储能·储能系统集成"
+    weight: 0.004
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.1       # 新能源·卫星宏观敏感度
+
+  - code: "688032"
+    name: "禾迈股份"
+    sector: "储能·储能逆变器"
+    weight: 0.0032
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.1       # 新能源·卫星宏观敏感度
+
+  - code: "002594"
+    name: "比亚迪"
+    sector: "智能车·整车"
+    weight: 0.0084
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  - code: "600741"
+    name: "华域汽车"
+    sector: "智能车·整车"
+    weight: 0.0084
+    macro_link: ["lme_copper", "solar_installation", "battery_price_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.6       # 新能源·核心宏观敏感度
+
+  # ── 国防军工 (defense_military) ──
+  - code: "600893"
+    name: "航发动力"
+    sector: "主战装备·航空装备"
+    weight: 0.01
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "600760"
+    name: "中航沈飞"
+    sector: "主战装备·航空装备"
+    weight: 0.01
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "000768"
+    name: "中航西飞"
+    sector: "主战装备·航空装备"
+    weight: 0.01
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "600862"
+    name: "中航高科"
+    sector: "主战装备·导弹武器"
+    weight: 0.0047
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.6       # 国防军工·卫星宏观敏感度
+
+  - code: "603678"
+    name: "火炬电子"
+    sector: "主战装备·导弹武器"
+    weight: 0.0038
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.6       # 国防军工·卫星宏观敏感度
+
+  - code: "600435"
+    name: "北方导航"
+    sector: "军工电子·雷达系统"
+    weight: 0.0083
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "002414"
+    name: "高德红外"
+    sector: "军工电子·雷达系统"
+    weight: 0.0083
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "300224"
+    name: "航宇科技"
+    sector: "新域新质·无人装备"
+    weight: 0.0038
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.6       # 国防军工·卫星宏观敏感度
+
+  - code: "002179"
+    name: "中航光电"
+    sector: "新域新质·无人装备"
+    weight: 0.01
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "600879"
+    name: "航天电子"
+    sector: "新域新质·电子对抗"
+    weight: 0.0083
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  - code: "688308"
+    name: "智明达"
+    sector: "新域新质·电子对抗"
+    weight: 0.0038
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.6       # 国防军工·卫星宏观敏感度
+
+  - code: "603799"
+    name: "华友钴业"
+    sector: "新材料·高温合金"
+    weight: 0.0057
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 1.6       # 国防军工·卫星宏观敏感度
+
+  - code: "600885"
+    name: "发债材料"
+    sector: "新材料·碳纤维"
+    weight: 0.0047
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.6       # 国防军工·卫星宏观敏感度
+
+  - code: "600456"
+    name: "宝钛股份"
+    sector: "新材料·钛合金"
+    weight: 0.0083
+    macro_link: ["defense_budget_yoy", "geopolitical_risk_index", "manufacturing_pmi"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.2       # 国防军工·核心宏观敏感度
+
+  # ── 数据要素 (data_element) ──
+  - code: "000938"
+    name: "紫光股份"
+    sector: "数据基建·数据中心"
+    weight: 0.0061
+    macro_link: ["cloud_capex", "digital_economy_index", "policy_data_element"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 数据要素·核心宏观敏感度
+
+  - code: "600521"
+    name: "华工科技"
+    sector: "数据基建·光通信"
+    weight: 0.0029
+    macro_link: ["cloud_capex", "digital_economy_index", "policy_data_element"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 数据要素·卫星宏观敏感度
+
+  - code: "300846"
+    name: "首都在线"
+    sector: "数据基建·IDC运营"
+    weight: 0.0023
+    macro_link: ["cloud_capex", "digital_economy_index", "policy_data_element"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 数据要素·卫星宏观敏感度
+
+  - code: "002410"
+    name: "广联达"
+    sector: "数据资产化·数据交易"
+    weight: 0.0051
+    macro_link: ["cloud_capex", "digital_economy_index", "policy_data_element"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 数据要素·核心宏观敏感度
+
+  - code: "600734"
+    name: "实达集团"
+    sector: "数据资产化·数据交易"
+    weight: 0.0023
+    macro_link: ["cloud_capex", "digital_economy_index", "policy_data_element"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.8       # 数据要素·卫星宏观敏感度
+
+  - code: "600570"
+    name: "恒生电子"
+    sector: "行业应用·金融数据"
+    weight: 0.0061
+    macro_link: ["cloud_capex", "digital_economy_index", "policy_data_element"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 数据要素·核心宏观敏感度
+
+  # ── 创新药 (innovative_drug) ──
+  - code: "688185"
+    name: "康希诺"
+    sector: "前沿平台·ADC药物"
+    weight: 0.004
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "688516"
+    name: "奥泰生物"
+    sector: "前沿平台·ADC药物"
+    weight: 0.0032
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "688235"
+    name: "百济神州"
+    sector: "前沿平台·ADC药物"
+    weight: 0.0084
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 创新药·核心宏观敏感度
+
+  - code: "688065"
+    name: "凯赛生物"
+    sector: "前沿平台·ADC药物"
+    weight: 0.004
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "300760"
+    name: "迈瑞医疗"
+    sector: "重点疾病领域·肿瘤免疫"
+    weight: 0.0084
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 创新药·核心宏观敏感度
+
+  - code: "300347"
+    name: "泰格医药"
+    sector: "重点疾病领域·肿瘤免疫"
+    weight: 0.004
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "300551"
+    name: "古鳌科技"
+    sector: "重点疾病领域·代谢疾病"
+    weight: 0.0032
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "300003"
+    name: "乐普医疗"
+    sector: "重点疾病领域·中枢神经"
+    weight: 0.004
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "002007"
+    name: "华兰生物"
+    sector: "出海·海外市场"
+    weight: 0.007
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 创新药·核心宏观敏感度
+
+  - code: "300122"
+    name: "智飞生物"
+    sector: "出海·海外市场"
+    weight: 0.007
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 创新药·核心宏观敏感度
+
+  - code: "300030"
+    name: "东方生物"
+    sector: "出海·海外市场"
+    weight: 0.0032
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.0       # 创新药·卫星宏观敏感度
+
+  - code: "603259"
+    name: "药明康德"
+    sector: "CXO·临床前CRO"
+    weight: 0.0084
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 创新药·核心宏观敏感度
+
+  - code: "603127"
+    name: "昭衍新药"
+    sector: "CXO·临床前CRO"
+    weight: 0.007
+    macro_link: ["nmpa_approval_count", "us_fed_rate", "healthcare_spending_yoy"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.4       # 创新药·核心宏观敏感度
+
+  # ── 战略资源 (strategic_resource) ──
+  - code: "600111"
+    name: "北方稀土"
+    sector: "稀土·轻稀土"
+    weight: 0.0092
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "002340"
+    name: "格林美"
+    sector: "稀土·重稀土"
+    weight: 0.0077
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "600366"
+    name: "宁波韵升"
+    sector: "稀土·稀土永磁"
+    weight: 0.0077
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "002155"
+    name: "湖南黄金"
+    sector: "小金属·锑"
+    weight: 0.0077
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "000657"
+    name: "中钨高新"
+    sector: "小金属·钨"
+    weight: 0.0077
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "002460"
+    name: "赣锋锂业"
+    sector: "锂资源·锂矿"
+    weight: 0.0092
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "002466"
+    name: "天齐锂业"
+    sector: "锂资源·锂矿"
+    weight: 0.0092
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "000792"
+    name: "盐湖股份"
+    sector: "锂资源·盐湖提锂"
+    weight: 0.0092
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "603993"
+    name: "洛阳钼业"
+    sector: "铜资源·铜矿"
+    weight: 0.0092
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "601168"
+    name: "西部矿业"
+    sector: "铜资源·铜加工"
+    weight: 0.0053
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.3       # 战略资源·卫星宏观敏感度
+
+  - code: "688122"
+    name: "西部超导"
+    sector: "铜资源·铜箔"
+    weight: 0.0077
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.7       # 战略资源·核心宏观敏感度
+
+  - code: "601138"
+    name: "工业富联"
+    sector: "半导体材料·硅片"
+    weight: 0.0053
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.3       # 战略资源·卫星宏观敏感度
+
+  - code: "002648"
+    name: "卫星化学"
+    sector: "半导体材料·电子气体"
+    weight: 0.0053
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.3       # 战略资源·卫星宏观敏感度
+
+  - code: "603882"
+    name: "金丹科技"
+    sector: "石墨·天然石墨"
+    weight: 0.0035
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 2.3       # 战略资源·卫星宏观敏感度
+
+  - code: "603833"
+    name: "欧派家居"
+    sector: "石墨·石墨负极"
+    weight: 0.0053
+    macro_link: ["brent_crude", "lme_copper", "lithium_price_index", "usd_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 2.3       # 战略资源·卫星宏观敏感度
+
+  # ── 消费升级 (consumption_upgrade) ──
+  - code: "002432"
+    name: "九安医疗"
+    sector: "银发经济·养老医疗"
+    weight: 0.0033
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "600887"
+    name: "伊利股份"
+    sector: "银发经济·养老消费"
+    weight: 0.0069
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.15       # 核心稳健目标
+      min_fundamental_score: 70 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 消费升级·核心宏观敏感度
+
+  - code: "603288"
+    name: "海天味业"
+    sector: "银发经济·养老消费"
+    weight: 0.0039
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "000858"
+    name: "五粮液"
+    sector: "银发经济·养老消费"
+    weight: 0.0039
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "300961"
+    name: "森马服饰"
+    sector: "国货崛起·运动品牌"
+    weight: 0.0026
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "603605"
+    name: "珀莱雅"
+    sector: "国货崛起·化妆品"
+    weight: 0.0058
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.2       # 核心稳健目标
+      min_fundamental_score: 65 # 核心基本面门槛
+      macro_sensitivity: 1.3       # 消费升级·核心宏观敏感度
+
+  - code: "603983"
+    name: "丸美股份"
+    sector: "国货崛起·化妆品"
+    weight: 0.0026
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 3.5   # 小市值宽松止损
+      entry_ma_period: 30          # 短线均线
+      target_multiplier: 1.4       # 卫星弹性目标
+      min_fundamental_score: 45 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "600276"
+    name: "恒瑞医药"
+    sector: "数字消费·电商"
+    weight: 0.0039
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "002714"
+    name: "牧原股份"
+    sector: "数字消费·电商"
+    weight: 0.0039
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 2.5   # 大市值稳健止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.25       # 卫星弹性目标
+      min_fundamental_score: 55 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
+
+  - code: "002555"
+    name: "三七互娱"
+    sector: "数字消费·内容消费"
+    weight: 0.0033
+    macro_link: ["cpi_yoy", "retail_sales_yoy", "consumer_confidence_index"]
+    params:
+      stop_loss_atr_mult: 3.0   # 中市值标准止损
+      entry_ma_period: 20          # 中线均线
+      target_multiplier: 1.3       # 卫星弹性目标
+      min_fundamental_score: 50 # 卫星基本面门槛
+      macro_sensitivity: 1.7       # 消费升级·卫星宏观敏感度
