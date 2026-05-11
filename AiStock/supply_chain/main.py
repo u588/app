@@ -1,8 +1,22 @@
 #!/usr/bin/env python3
-import argparse
+import sys
+import os
 from pathlib import Path
-import pandas as pd
+import argparse
+# 1. 路径配置 (核心修复)
+try:
+    # 获取当前脚本 main.py 的绝对路径
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+except NameError:
+    # 兼容交互式环境 (如 Python Shell / Jupyter)，回退到当前工作目录
+    PROJECT_ROOT = os.getcwd()
 
+# 将项目根目录插入到 sys.path 的最前面
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+    print(f"INFO: Added project root to sys.path: {PROJECT_ROOT}")
+
+# 2. 导入业务模块 (现在 src 可以被识别了)
 from src.core.loader import ConfigLoader
 from src.visualizers.sankey import SankeyVisualizer
 from src.visualizers.radar import RadarVisualizer
@@ -10,6 +24,7 @@ from src.visualizers.timeline import TimelineVisualizer
 from src.dashboard.assembler import DashboardAssembler
 from src.exporters.io_manager import IOManager
 from src.utils.helpers import setup_logging
+import pandas as pd
 
 def main():
     parser = argparse.ArgumentParser(description="十五五产业链图谱生成器")
