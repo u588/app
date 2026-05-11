@@ -1,0 +1,84 @@
+# supply_chain/config/config.yaml
+system:
+  name: "十五五战略投资产业链图谱"
+  version: "1.0.0"
+  root_dir: "/home/ts/app/AiStock/supply_chain"
+  output_dir: "output"
+
+data:
+  raw_file: "data/raw/targets.csv"
+  processed_dir: "data/processed"
+  encoding: "utf-8-sig"
+  delimiter: ","
+
+# 产业链层级映射规则
+chain_hierarchy:
+  - level: 1
+    name: "一级方向"
+    node_size: 45
+    color_scale: "Set3"
+  - level: 2
+    name: "二级分类"
+    node_size: 35
+    color_scale: "Pastel1"
+  - level: 3
+    name: "三级赛道"
+    node_size: 28
+    color_scale: "Pastel2"
+  - level: 4
+    name: "标的公司"
+    node_size: 20
+    color_by: "市值规模"
+
+# 市值规模映射
+market_cap_map:
+  "大": {"size": 25, "color": "#e41a1c", "label": "Large Cap"}
+  "中": {"size": 18, "color": "#377eb8", "label": "Mid Cap"}
+  "小": {"size": 12, "color": "#4daf4a", "label": "Small Cap"}
+
+# 关系类型定义
+relationship_rules:
+  supply_chain:
+    description: "供应链上下游"
+    color: "#984ea3"
+    width: 2
+    dash: "solid"
+    logic: "upstream_downstream"
+  competition:
+    description: "同赛道竞争"
+    color: "#ff7f00"
+    width: 1
+    dash: "dot"
+    logic: "same_track_same_cap"
+  synergy:
+    description: "技术/客户协同"
+    color: "#377eb8"
+    width: 1.5
+    dash: "dash"
+    logic: "cross_track_synergy"
+  validation:
+    description: "技术验证/认证"
+    color: "#a65628"
+    width: 1
+    dash: "dashdot"
+    logic: "certification_flow"
+
+# Plotly可视化配置
+visualization:
+  width: 1920
+  height: 1200
+  layout: "force_atlas2"  # force-directed / hierarchical / circular
+  zoom: 1.2
+  show_legend: true
+  show_hover: true
+  font_family: "Microsoft YaHei, sans-serif"
+  title_font_size: 24
+  node_label_font_size: 10
+  edge_alpha: 0.6
+  
+# 交互功能
+interaction:
+  enable_click_highlight: true
+  enable_filter_by_level: true
+  enable_search: true
+  enable_export: ["png", "html", "json"]
