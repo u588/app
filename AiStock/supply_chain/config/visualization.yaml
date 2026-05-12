@@ -1,0 +1,253 @@
+# ============================================================
+# 可视化配置
+# pyvis网络图的样式、物理参数、交互设置
+# ============================================================
+
+# 全局设置
+global:
+  height: "900px"
+  width: "100%"
+  background: "#0a0e27"
+  font_family: "Microsoft YaHei, Noto Sans SC, sans-serif"
+  notebook: true
+  directed: true
+
+# 产业链层级样式
+chain_level:
+  upstream:
+    shape: "diamond"
+    border_width: 2
+    opacity: 0.95
+    label_position: "middle"
+    badge: "上游"
+    badge_color: "#4CAF50"
+
+  midstream:
+    shape: "hexagon"
+    border_width: 2
+    opacity: 0.95
+    label_position: "middle"
+    badge: "中游"
+    badge_color: "#FF9800"
+
+  downstream:
+    shape: "star"
+    border_width: 2
+    opacity: 0.95
+    label_position: "middle"
+    badge: "下游"
+    badge_color: "#E91E63"
+
+# 一级方向颜色方案（暗色主题适配）
+industry_colors:
+  半导体国产化:
+    primary: "#FF6B6B"
+    secondary: "#FF8E8E"
+    background: "#2D1B1B"
+    border: "#FF6B6B"
+    highlight: "#FF4757"
+
+  人工智能:
+    primary: "#4ECDC4"
+    secondary: "#7EDDD7"
+    background: "#1B2D2B"
+    border: "#4ECDC4"
+    highlight: "#2ECC71"
+
+  战略资源:
+    primary: "#FFD93D"
+    secondary: "#FFE469"
+    background: "#2D2A1B"
+    border: "#FFD93D"
+    highlight: "#F39C12"
+
+  国防军工:
+    primary: "#6C5CE7"
+    secondary: "#8B7FEB"
+    background: "#1F1B2D"
+    border: "#6C5CE7"
+    highlight: "#9B59B6"
+
+  新能源:
+    primary: "#00B894"
+    secondary: "#33C9AD"
+    background: "#1B2D25"
+    border: "#00B894"
+    highlight: "#1ABC9C"
+
+  数据要素:
+    primary: "#0984E3"
+    secondary: "#3D9FE8"
+    background: "#1B222D"
+    border: "#0984E3"
+    highlight: "#3498DB"
+
+  低空经济:
+    primary: "#E17055"
+    secondary: "#E88E79"
+    background: "#2D221B"
+    border: "#E17055"
+    highlight: "#E74C3C"
+
+  创新药:
+    primary: "#FD79A8"
+    secondary: "#FE97BC"
+    background: "#2D1B24"
+    border: "#FD79A8"
+    highlight: "#E84393"
+
+  消费升级:
+    primary: "#FDCB6E"
+    secondary: "#FDD98D"
+    background: "#2D2A1B"
+    border: "#FDCB6E"
+    highlight: "#F1C40F"
+
+  人形机器人:
+    primary: "#00CEC9"
+    secondary: "#33D8D4"
+    background: "#1B2D2C"
+    border: "#00CEC9"
+    highlight: "#1DD1A1"
+
+# 市值规模节点大小
+market_cap_size:
+  大:
+    node_size: 35
+    border_width: 3
+    font_size: 14
+    shadow: true
+  中:
+    node_size: 25
+    border_width: 2
+    font_size: 12
+    shadow: true
+  小:
+    node_size: 18
+    border_width: 1
+    font_size: 10
+    shadow: false
+
+# 关系类型样式
+relationship_styles:
+  supply_chain:
+    color: "#4CAF50"
+    width: 3
+    dashes: false
+    arrows:
+      to:
+        enabled: true
+        scaleFactor: 0.8
+    smooth:
+      type: "curvedCW"
+      roundness: 0.15
+    hover_width: 5
+    selection_width: 5
+    label_font:
+      size: 10
+      color: "#4CAF50"
+      strokeWidth: 3
+      strokeColor: "#0a0e27"
+
+  competition:
+    color: "#F44336"
+    width: 2
+    dashes: [8, 4]
+    arrows:
+      to:
+        enabled: false
+    smooth:
+      type: "curvedCCW"
+      roundness: 0.2
+    hover_width: 4
+    selection_width: 4
+    label_font:
+      size: 10
+      color: "#F44336"
+      strokeWidth: 3
+      strokeColor: "#0a0e27"
+
+  collaboration:
+    color: "#2196F3"
+    width: 2
+    dashes: [4, 4]
+    arrows:
+      to:
+        enabled: false
+    smooth:
+      type: "curvedCW"
+      roundness: 0.25
+    hover_width: 4
+    selection_width: 4
+    label_font:
+      size: 10
+      color: "#2196F3"
+      strokeWidth: 3
+      strokeColor: "#0a0e27"
+
+  verification:
+    color: "#FF9800"
+    width: 2
+    dashes: [6, 3, 2, 3]
+    arrows:
+      to:
+        enabled: true
+        scaleFactor: 0.6
+    smooth:
+      type: "curvedCCW"
+      roundness: 0.15
+    hover_width: 4
+    selection_width: 4
+    label_font:
+      size: 9
+      color: "#FF9800"
+      strokeWidth: 3
+      strokeColor: "#0a0e27"
+
+# 物理引擎参数
+physics:
+  enabled: true
+  barnesHut:
+    gravitationalConstant: -8000
+    centralGravity: 0.3
+    springLength: 200
+    springConstant: 0.04
+    damping: 0.09
+    avoidOverlap: 0.5
+
+# 交互设置
+interaction:
+  hover: true
+  tooltip_delay: 200
+  zoom_view: true
+  drag_view: true
+  drag_nodes: true
+  multiselect: true
+  navigation_buttons: true
+
+# 图例设置
+legend:
+  enabled: true
+  position: "top-left"
+  background: "rgba(10, 14, 39, 0.9)"
+  border: "1px solid rgba(255,255,255,0.1)"
+  border_radius: "8px"
+  padding: "15px"
+  font_size: "13px"
+  font_color: "#E0E0E0"
+
+# 分组显示设置
+group_display:
+  # 一级方向分组（按产业链层级展示）
+  by_industry:
+    enabled: true
+    cluster_gravity: 5
+    cluster_edge_width: 1
+    cluster_edge_color: "rgba(255,255,255,0.1)"
+
+  # 产业链层级分组
+  by_chain_level:
+    enabled: true
+    upstream_area: "left"
+    midstream_area: "center"
+    downstream_area: "right"

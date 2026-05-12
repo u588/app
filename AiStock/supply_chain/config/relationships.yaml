@@ -1,0 +1,708 @@
+# ============================================================
+# 四大关系配置：供应链/竞争/协同/验证
+# 定义关系构建规则与专业扩充知识
+# ============================================================
+
+# 供应链关系规则：定义跨层级/跨赛道的供需关系
+supply_chain:
+  description: "供应链关系反映产业链上下游之间的供需依赖关系"
+  edge_color: "#4CAF50"
+  edge_style: "solid"
+  arrow_direction: "to"
+
+  # 行业内供应链：上游→中游→下游
+  intra_industry:
+    半导体国产化:
+      - from: "设备材料→刻蚀薄膜"
+        to: "晶圆制造→成熟制程"
+        label: "设备供应"
+        weight: 5
+        description: "刻蚀/薄膜/检测设备是晶圆制造产线的核心投入"
+      - from: "设备材料→光刻硅片"
+        to: "晶圆制造→成熟制程"
+        label: "材料供应"
+        weight: 5
+        description: "硅片/光刻胶/电子特气是晶圆代工的核心原材料"
+      - from: "设备材料→光刻硅片"
+        to: "晶圆制造→先进封装"
+        label: "封装材料供应"
+        weight: 4
+        description: "引线框架/键合丝/基板材料是先进封装的核心耗材"
+      - from: "晶圆制造→成熟制程"
+        to: "晶圆制造→先进封装"
+        label: "晶圆流片"
+        weight: 5
+        description: "晶圆制造完成后进入封测环节，形成完整芯片"
+      - from: "晶圆制造→成熟制程"
+        to: "第三代半导体→SiC/GaN"
+        label: "工艺输出"
+        weight: 3
+        description: "成熟制程工艺经验可向第三代半导体产线迁移"
+      - from: "第三代半导体→SiC/GaN"
+        to: "晶圆制造→先进封装"
+        label: "器件封装"
+        weight: 3
+        description: "SiC/GaN功率器件需要先进封装工艺支持"
+
+    人工智能:
+      - from: "算力基建→算力芯片"
+        to: "大模型基座→大模型基座"
+        label: "算力供给"
+        weight: 5
+        description: "GPU/DCU加速卡是大模型训练推理的算力基础"
+      - from: "算力基建→光液冷"
+        to: "算力基建→算力芯片"
+        label: "散热保障"
+        weight: 4
+        description: "液冷散热保障高功率AI芯片稳定运行"
+      - from: "大模型基座→大模型基座"
+        to: "应用场景"
+        label: "模型输出"
+        weight: 4
+        description: "大模型向下游应用提供API与Agent能力"
+
+    战略资源:
+      - from: "稀土永磁→稀土开采"
+        to: "能源金属→铜锂钴"
+        label: "冶炼协同"
+        weight: 3
+        description: "稀土与能源金属在采选冶炼环节存在技术协同"
+      - from: "稀土永磁→稀土开采"
+        to: "战略小金属→锑钨锡"
+        label: "多金属伴生"
+        weight: 3
+        description: "稀土矿常与钨锡等多金属伴生，综合回收利用"
+      - from: "能源金属→铜锂钴"
+        to: "战略小金属→锑钨锡"
+        label: "金属深加工"
+        weight: 2
+        description: "部分能源金属经深加工后进入战略小金属领域"
+
+    国防军工:
+      - from: "军工材料→碳纤维复材"
+        to: "主战装备→航空发动机"
+        label: "复材供应"
+        weight: 5
+        description: "碳纤维复合材料是航空发动机/军机结构件核心材料"
+      - from: "军工材料→碳纤维复材"
+        to: "军工电子→信息化"
+        label: "特种材料"
+        weight: 3
+        description: "隐身涂层/特种合金用于电子装备防护"
+      - from: "军工电子→信息化"
+        to: "主战装备→航空发动机"
+        label: "航电系统"
+        weight: 5
+        description: "信息化电子系统是航空装备的核心分系统"
+
+    新能源:
+      - from: "光伏技术→N型电池"
+        to: "储能电池→储能系统"
+        label: "光储一体"
+        weight: 4
+        description: "光伏+储能一体化是新能源系统的标准配置"
+      - from: "储能电池→储能系统"
+        to: "应用场景"
+        label: "系统交付"
+        weight: 4
+        description: "储能系统向电站/工商业用户提供储能服务"
+
+    数据要素:
+      - from: "数据安全→隐私计算"
+        to: "数据资产→确权交易"
+        label: "安全保障"
+        weight: 5
+        description: "隐私计算/数据安全技术是数据确权交易的前提保障"
+      - from: "数据资产→确权交易"
+        to: "数据应用"
+        label: "数据输出"
+        weight: 4
+        description: "确权数据资产向下游应用输出数据产品与服务"
+
+    低空经济:
+      - from: "低空基建→通信空管"
+        to: "飞行器制造→eVTOL整机"
+        label: "基建支撑"
+        weight: 5
+        description: "通信导航空管基础设施是飞行器安全运行的前提"
+      - from: "飞行器制造→eVTOL整机"
+        to: "运营服务"
+        label: "飞行器交付"
+        weight: 4
+        description: "eVTOL整机交付运营方开展低空运输服务"
+
+    创新药:
+      - from: "产业化→CDMO/CRO"
+        to: "前沿平台→ADC/GLP-1"
+        label: "研发服务"
+        weight: 5
+        description: "CRO/CDMO为创新药研发提供临床前/临床/生产全链条服务"
+      - from: "前沿平台→ADC/GLP-1"
+        to: "商业化"
+        label: "管线输出"
+        weight: 4
+        description: "创新药管线推进至商业化上市阶段"
+
+    消费升级:
+      - from: "数字消费→AI终端"
+        to: "银发经济→医疗器械"
+        label: "AI赋能"
+        weight: 3
+        description: "AI终端技术赋能医疗器械智能化升级"
+      - from: "银发经济→医疗器械"
+        to: "消费服务"
+        label: "设备供给"
+        weight: 3
+        description: "医疗器械产品进入家庭健康管理服务场景"
+
+    人形机器人:
+      - from: "核心零部件→传感器"
+        to: "核心零部件→关节减速器"
+        label: "传感配套"
+        weight: 4
+        description: "力矩传感器/位置传感器是关节模组的核心感知部件"
+      - from: "核心零部件→微特电机"
+        to: "核心零部件→关节减速器"
+        label: "电机配套"
+        weight: 5
+        description: "空心杯电机/无框力矩电机是关节模组的驱动核心"
+      - from: "核心零部件→关节减速器"
+        to: "整机制造"
+        label: "零部件供给"
+        weight: 5
+        description: "关节模组是人形机器人整机的核心运动部件"
+
+  # 跨行业供应链：行业间的供需关系
+  cross_industry:
+    - from_industry: "战略资源"
+      from_track: "稀土永磁→稀土开采"
+      to_industry: "国防军工"
+      to_track: "军工材料→碳纤维复材"
+      label: "磁材供应"
+      weight: 4
+      description: "稀土永磁材料是军工隐身/电磁领域的关键材料"
+
+    - from_industry: "战略资源"
+      from_track: "能源金属→铜锂钴"
+      to_industry: "新能源"
+      to_track: "储能电池→储能系统"
+      label: "锂钴供应"
+      weight: 5
+      description: "锂/钴/镍是动力电池与储能电池正极材料的核心原料"
+
+    - from_industry: "战略资源"
+      from_track: "稀土永磁→稀土开采"
+      to_industry: "人形机器人"
+      to_track: "核心零部件→微特电机"
+      label: "永磁材料"
+      weight: 4
+      description: "钕铁硼永磁材料是微特电机/伺服电机的核心材料"
+
+    - from_industry: "战略资源"
+      from_track: "战略小金属→锑钨锡"
+      to_industry: "半导体国产化"
+      to_track: "设备材料→光刻硅片"
+      label: "特种气体/靶材"
+      weight: 3
+      description: "锗/钨等战略小金属是半导体靶材与特种气体的原料"
+
+    - from_industry: "半导体国产化"
+      from_track: "设备材料→刻蚀薄膜"
+      to_industry: "人工智能"
+      to_track: "算力基建→算力芯片"
+      label: "芯片制造设备"
+      weight: 4
+      description: "半导体设备支撑AI芯片产线建设"
+
+    - from_industry: "半导体国产化"
+      from_track: "第三代半导体→SiC/GaN"
+      to_industry: "新能源"
+      to_track: "储能电池→储能系统"
+      label: "SiC功率器件"
+      weight: 4
+      description: "SiC功率器件是新能源车/储能逆变器的核心开关器件"
+
+    - from_industry: "人工智能"
+      from_track: "大模型基座→大模型基座"
+      to_industry: "消费升级"
+      to_track: "数字消费→AI终端"
+      label: "AI能力输出"
+      weight: 4
+      description: "大模型能力赋能AI手机/PC等智能终端"
+
+    - from_industry: "人工智能"
+      from_track: "大模型基座→大模型基座"
+      to_industry: "数据要素"
+      to_track: "数据资产→确权交易"
+      label: "数据智能"
+      weight: 3
+      description: "AI大模型提升数据要素的价值提取能力"
+
+    - from_industry: "国防军工"
+      from_track: "军工电子→信息化"
+      to_industry: "低空经济"
+      to_track: "低空基建→通信空管"
+      label: "军工技术外溢"
+      weight: 3
+      description: "军用通信导航技术向低空空管领域外溢转化"
+
+    - from_industry: "半导体国产化"
+      from_track: "晶圆制造→成熟制程"
+      to_industry: "人形机器人"
+      to_track: "核心零部件→传感器"
+      label: "芯片供给"
+      weight: 3
+      description: "成熟制程MCU/传感器芯片为人形机器人提供感知计算能力"
+
+    - from_industry: "国防军工"
+      from_track: "军工材料→碳纤维复材"
+      to_industry: "低空经济"
+      to_track: "飞行器制造→eVTOL整机"
+      label: "复材结构件"
+      weight: 4
+      description: "碳纤维复合材料是eVTOL轻量化机身的核心材料"
+
+    - from_industry: "国防军工"
+      from_track: "军工材料→碳纤维复材"
+      to_industry: "新能源"
+      to_track: "光伏技术→N型电池"
+      label: "碳纤维应用"
+      weight: 2
+      description: "碳纤维用于光伏硅片热场材料及风电叶片"
+
+    - from_industry: "新能源"
+      from_track: "储能电池→储能系统"
+      to_industry: "人形机器人"
+      to_track: "核心零部件→微特电机"
+      label: "电池供电"
+      weight: 3
+      description: "高能量密度电池是人形机器人续航的核心保障"
+
+    - from_industry: "数据要素"
+      from_track: "数据安全→隐私计算"
+      to_industry: "人工智能"
+      to_track: "大模型基座→大模型基座"
+      label: "数据安全合规"
+      weight: 3
+      description: "隐私计算保障AI大模型训练数据的合规使用"
+
+    - from_industry: "半导体国产化"
+      from_track: "第三代半导体→SiC/GaN"
+      to_industry: "国防军工"
+      to_track: "军工电子→信息化"
+      label: "GaN射频器件"
+      weight: 3
+      description: "GaN射频器件是军用雷达/电子战的核心有源器件"
+
+
+# 竞争关系规则：同赛道内的竞争格局
+competition:
+  description: "竞争关系反映同一赛道内标的公司之间的直接或间接竞争"
+  edge_color: "#F44336"
+  edge_style: "dashed"
+  arrow_direction: "none"
+
+  # 同赛道竞争规则
+  rules:
+    - dimension: "同三级赛道"
+      description: "同一三级赛道内的标的互为直接竞争对手"
+      weight: 4
+      auto_generate: true
+
+    - dimension: "同二级分类不同三级赛道"
+      description: "同一二级分类下不同三级赛道的标的存在间接竞争"
+      weight: 2
+      auto_generate: true
+
+  # 手动定义的关键竞争关系
+  manual:
+    - targets: ["中芯国际", "华虹公司"]
+      label: "晶圆代工双雄"
+      weight: 5
+      description: "中芯国际与华虹公司是国内晶圆代工两大龙头，成熟制程产能竞争激烈"
+
+    - targets: ["长电科技", "通富微电", "华天科技"]
+      label: "封测三强"
+      weight: 4
+      description: "长电/通富/华天是国内封测三大龙头，在先进封装领域全面竞争"
+
+    - targets: ["北方华创", "中微公司"]
+      label: "刻蚀设备双雄"
+      weight: 5
+      description: "北方华创(平台型)与中微公司(专精型)在刻蚀设备领域直接竞争"
+
+    - targets: ["海光信息", "寒武纪"]
+      label: "国产AI芯片竞争"
+      weight: 5
+      description: "海光(x86生态)与寒武纪(自研架构)在国产AI训练推理芯片领域直接竞争"
+
+    - targets: ["中际旭创", "新易盛"]
+      label: "光模块双雄"
+      weight: 4
+      description: "中际旭创与新易盛在800G/1.6T高速光模块市场直接竞争"
+
+    - targets: ["北方稀土", "中国稀土"]
+      label: "稀土双平台"
+      weight: 4
+      description: "北方稀土(轻稀土)与中国稀土(中重稀土)是两大稀土资源平台"
+
+    - targets: ["宁德时代", "比亚迪"]
+      label: "动力电池双雄"
+      weight: 5
+      description: "宁德时代与比亚迪在动力电池+储能领域全面竞争"
+
+    - targets: ["恒瑞医药", "百济神州"]
+      label: "创新药龙头竞争"
+      weight: 4
+      description: "恒瑞(国内平台型)与百济(出海型)在创新药领域形成差异化竞争"
+
+    - targets: ["汇川技术", "绿的谐波"]
+      label: "机器人关节方案竞争"
+      weight: 3
+      description: "汇川(电机+驱动)与绿的(减速器)在机器人关节解决方案上存在技术路线竞争"
+
+    - targets: ["隆基绿能", "晶科能源"]
+      label: "光伏组件双雄"
+      weight: 4
+      description: "隆基(HPBC)与晶科(TOPCon)在N型电池技术路线上直接竞争"
+
+    - targets: ["科大讯飞", "三六零", "昆仑万维"]
+      label: "大模型竞争"
+      weight: 4
+      description: "讯飞/360/昆仑是国内大模型第一梯队，在通用大模型市场直接竞争"
+
+
+# 协同关系规则：跨赛道/跨行业的协同配合
+collaboration:
+  description: "协同关系反映不同标的之间在业务/技术/客户层面的互补合作关系"
+  edge_color: "#2196F3"
+  edge_style: "dotted"
+  arrow_direction: "none"
+
+  manual:
+    # 半导体内部协同
+    - targets: ["北方华创", "中芯国际"]
+      label: "设备-产线协同"
+      weight: 5
+      description: "北方华创设备在中芯国际产线批量验证与采购，形成国产设备+国产产线协同"
+
+    - targets: ["沪硅产业", "中芯国际"]
+      label: "硅片-代工协同"
+      weight: 4
+      description: "沪硅12英寸大硅片向中芯国际等代工厂供货，国产硅片+国产代工协同"
+
+    - targets: ["雅克科技", "华虹公司"]
+      label: "材料-代工协同"
+      weight: 4
+      description: "雅克科技前驱体/光刻胶向华虹特色工艺产线供货"
+
+    - targets: ["拓荆科技", "长电科技"]
+      label: "设备-封装协同"
+      weight: 3
+      description: "PECVD等薄膜设备在先进封装工艺中的协同应用"
+
+    # AI生态协同
+    - targets: ["海光信息", "中科曙光"]
+      label: "芯片-服务器协同"
+      weight: 5
+      description: "海光DCU+曙光AI服务器形成国产算力完整解决方案"
+
+    - targets: ["中际旭创", "天孚通信"]
+      label: "光模块-光器件协同"
+      weight: 5
+      description: "天孚光无源器件/光引擎是中际旭创光模块的核心组件"
+
+    - targets: ["科大讯飞", "海光信息"]
+      label: "模型-芯片协同"
+      weight: 4
+      description: "讯飞大模型在海光DCU上进行训练推理优化适配"
+
+    - targets: ["浪潮信息", "英维克"]
+      label: "服务器-液冷协同"
+      weight: 4
+      description: "浪潮AI服务器配套英维克液冷方案，形成算力+散热整体方案"
+
+    # 资源-制造协同
+    - targets: ["金力永磁", "宁德时代"]
+      label: "磁材-电池协同"
+      weight: 4
+      description: "钕铁硼磁材是新能源车驱动电机的核心材料，磁材+电池形成协同"
+
+    - targets: ["天齐锂业", "宁德时代"]
+      label: "锂资源-电池协同"
+      weight: 4
+      description: "天齐锂业锂资源向宁德时代供应，形成资源-电池产业链协同"
+
+    - targets: ["华友钴业", "宁德时代"]
+      label: "前驱体-电池协同"
+      weight: 4
+      description: "华友钴业三元前驱体向宁德时代等电池厂供应"
+
+    # 军工协同
+    - targets: ["光威复材", "中航沈飞"]
+      label: "碳纤维-战机协同"
+      weight: 5
+      description: "光威碳纤维复材用于歼击机结构件，形成材料-整机协同"
+
+    - targets: ["钢研高纳", "航发动力"]
+      label: "高温合金-发动机协同"
+      weight: 5
+      description: "钢研高纳高温合金叶片用于航发动力发动机，核心配套关系"
+
+    - targets: ["紫光国微", "中航光电"]
+      label: "芯片-连接器协同"
+      weight: 4
+      description: "紫光国微FPGA+中航光电连接器构成军工电子核心组合"
+
+    - targets: ["中简科技", "中航高科"]
+      label: "碳纤维-预浸料协同"
+      weight: 4
+      description: "中简碳纤维→中航高科预浸料→航空复材结构件，上下游协同"
+
+    # 新能源协同
+    - targets: ["隆基绿能", "阳光电源"]
+      label: "组件-逆变器协同"
+      weight: 4
+      description: "隆基组件+阳光逆变器形成光储一体化方案"
+
+    - targets: ["通威股份", "晶科能源"]
+      label: "硅料-组件协同"
+      weight: 4
+      description: "通威硅料向晶科等组件厂供应，形成上游-下游协同"
+
+    - targets: ["迈为股份", "通威股份"]
+      label: "设备-电池片协同"
+      weight: 3
+      description: "迈为HJT设备在通威电池片产线应用"
+
+    # 机器人协同
+    - targets: ["绿的谐波", "鸣志电器"]
+      label: "减速器-电机协同"
+      weight: 5
+      description: "谐波减速器+空心杯电机构成人形机器人灵巧手关节核心模组"
+
+    - targets: ["汇川技术", "柯力传感"]
+      label: "驱动-传感协同"
+      weight: 4
+      description: "伺服驱动+六维力矩传感器形成机器人关节感知驱动闭环"
+
+    - targets: ["双环传动", "步科股份"]
+      label: "减速器-伺服协同"
+      weight: 4
+      description: "RV减速器+低压伺服组成工业/人形机器人关节模组"
+
+    # 低空经济协同
+    - targets: ["万丰奥威", "海格通信"]
+      label: "飞行器-通信协同"
+      weight: 4
+      description: "eVTOL整机+低空通信导航系统协同保障飞行安全"
+
+    - targets: ["纵横股份", "华测导航"]
+      label: "无人机-定位协同"
+      weight: 4
+      description: "工业无人机+高精度定位技术协同提升自主飞行能力"
+
+    # 创新药协同
+    - targets: ["药明康德", "恒瑞医药"]
+      label: "CDMO-药企协同"
+      weight: 4
+      description: "药明康德为恒瑞医药等创新药企提供研发生产服务"
+
+    - targets: ["凯莱英", "百济神州"]
+      label: "CDMO-出海药企协同"
+      weight: 4
+      description: "凯莱英为百济神州等出海药企提供小分子CDMO服务"
+
+    # 数据要素协同
+    - targets: ["奇安信", "人民网"]
+      label: "安全-数据协同"
+      weight: 4
+      description: "奇安信数据安全+人民网数据确权平台形成数据要素安全流通方案"
+
+    - targets: ["启明星辰", "云赛智联"]
+      label: "安全-运营协同"
+      weight: 3
+      description: "启明星辰安全方案+云赛智联数据运营平台形成安全数据服务"
+
+    # 消费升级协同
+    - targets: ["立讯精密", "传音控股"]
+      label: "精密制造-终端协同"
+      weight: 3
+      description: "立讯精密结构件/连接器供应传音等终端品牌"
+
+    - targets: ["迈瑞医疗", "鱼跃医疗"]
+      label: "专业-家用器械协同"
+      weight: 3
+      description: "迈瑞专业医疗器械+鱼跃家用器械覆盖全场景医疗需求"
+
+
+# 验证关系规则：客户验证/技术验证/产品验证
+verification:
+  description: "验证关系反映标的公司的产品/技术通过关键客户或权威机构的认证验证"
+  edge_color: "#FF9800"
+  edge_style: "dash-dot"
+  arrow_direction: "to"
+
+  manual:
+    # 半导体验证
+    - from: "江丰电子"
+      to: "中芯国际"
+      label: "靶材验证"
+      weight: 5
+      description: "江丰电子超高纯铜/钽靶通过中芯国际产线验证"
+
+    - from: "华特气体"
+      to: "中芯国际"
+      label: "特气验证"
+      weight: 4
+      description: "华特气体高纯电子特气通过中芯国际等晶圆厂认证"
+
+    - from: "南大光电"
+      to: "中芯国际"
+      label: "光刻胶验证"
+      weight: 4
+      description: "南大光电ArF光刻胶通过客户验证，送样中芯/华虹"
+
+    - from: "拓荆科技"
+      to: "中芯国际"
+      label: "PECVD验证"
+      weight: 5
+      description: "拓荆PECVD设备在中芯国际28/14nm产线批量验证"
+
+    - from: "华海清科"
+      to: "中芯国际"
+      label: "CMP验证"
+      weight: 4
+      description: "华海清科CMP设备在中芯国际12英寸产线验证通过"
+
+    - from: "沪硅产业"
+      to: "中芯国际"
+      label: "硅片验证"
+      weight: 5
+      description: "沪硅12英寸大硅片通过中芯国际等代工厂认证"
+
+    - from: "彤程新材"
+      to: "华虹公司"
+      label: "KrF光刻胶验证"
+      weight: 4
+      description: "彤程新材KrF光刻胶绑定华虹/中芯验证"
+
+    - from: "芯源微"
+      to: "中芯国际"
+      label: "涂胶显影验证"
+      weight: 4
+      description: "芯源微涂胶显影设备在前道工艺突破验证"
+
+    - from: "通富微电"
+      to: "海光信息"
+      label: "封装验证"
+      weight: 4
+      description: "通富微电为海光DCU提供高端处理器封装服务"
+
+    - from: "长电科技"
+      to: "寒武纪"
+      label: "Chiplet封装验证"
+      weight: 4
+      description: "长电科技Chiplet/2.5D封装为寒武纪AI芯片提供封装方案"
+
+    # AI验证
+    - from: "海光信息"
+      to: "中科曙光"
+      label: "DCU生态验证"
+      weight: 5
+      description: "海光DCU在曙光AI服务器整机方案中完成生态验证"
+
+    - from: "中际旭创"
+      to: "浪潮信息"
+      label: "光模块验证"
+      weight: 4
+      description: "中际旭创800G光模块在浪潮AI服务器集群中验证通过"
+
+    - from: "英维克"
+      to: "浪潮信息"
+      label: "液冷方案验证"
+      weight: 4
+      description: "英维克液冷方案在浪潮AI服务器整机中完成验证"
+
+    # 军工验证
+    - from: "钢研高纳"
+      to: "航发动力"
+      label: "叶片验证"
+      weight: 5
+      description: "钢研高纳单晶叶片通过航发动力WS-15发动机验证"
+
+    - from: "光威复材"
+      to: "中航沈飞"
+      label: "复材验证"
+      weight: 5
+      description: "光威T800级碳纤维通过歼击机结构件验证"
+
+    - from: "铖昌科技"
+      to: "中航沈飞"
+      label: "T/R芯片验证"
+      weight: 4
+      description: "铖昌科技相控阵T/R芯片通过机载雷达验证"
+
+    - from: "华秦科技"
+      to: "中航沈飞"
+      label: "隐身材料验证"
+      weight: 5
+      description: "华秦科技隐身涂层通过新一代战机验证，独家供应"
+
+    - from: "中简科技"
+      to: "中航高科"
+      label: "碳纤维验证"
+      weight: 5
+      description: "中简航空航天级碳纤维通过预浸料验证"
+
+    # 新能源验证
+    - from: "迈为股份"
+      to: "通威股份"
+      label: "HJT设备验证"
+      weight: 4
+      description: "迈为HJT整线设备在通威HJT电池片产线验证"
+
+    - from: "帝尔激光"
+      to: "隆基绿能"
+      label: "激光设备验证"
+      weight: 4
+      description: "帝尔激光微加工设备在隆基HPBC产线验证"
+
+    # 机器人验证
+    - from: "绿的谐波"
+      to: "汇川技术"
+      label: "减速器验证"
+      weight: 4
+      description: "绿的谐波减速器在汇川机器人关节模组中验证"
+
+    - from: "柯力传感"
+      to: "汇川技术"
+      label: "力矩传感器验证"
+      weight: 3
+      description: "柯力六维力矩传感器在机器人关节中验证"
+
+    # 创新药验证
+    - from: "药明康德"
+      to: "恒瑞医药"
+      label: "CDMO服务验证"
+      weight: 4
+      description: "药明康德CDMO服务通过恒瑞创新药管线验证"
+
+    - from: "凯莱英"
+      to: "百济神州"
+      label: "CDMO验证"
+      weight: 4
+      description: "凯莱英为百济神州泽布替尼等管线提供CDMO服务验证"
+
+    # 低空验证
+    - from: "莱斯信息"
+      to: "纵横股份"
+      label: "空管系统验证"
+      weight: 3
+      description: "莱斯信息空管系统与无人机飞行验证"
+
+    - from: "华测导航"
+      to: "纵横股份"
+      label: "定位验证"
+      weight: 3
+      description: "华测高精度定位技术在无人机自主飞行中验证"

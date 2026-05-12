@@ -1,0 +1,609 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #0a0e27;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background: #0a0e27 !important;
+                overflow: hidden;
+            }
+            #mynetwork {
+                margin-top: 55px;
+                height: calc(100vh - 55px) !important;
+            }
+            div.vis-network canvas {
+                outline: none;
+            }
+            .vis-tooltip {
+                background: rgba(10, 14, 39, 0.95) !important;
+                border: 1px solid rgba(78, 205, 196, 0.3) !important;
+                border-radius: 8px !important;
+                padding: 10px 14px !important;
+                font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif !important;
+                color: #E0E0E0 !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+                max-width: 350px !important;
+                line-height: 1.6 !important;
+            }
+            .vis-tooltip b {
+                color: #4ECDC4 !important;
+            }
+            .vis-tooltip hr {
+                border-color: rgba(78, 205, 196, 0.3) !important;
+            }
+        </style>
+        
+</head>
+
+
+    <body>
+
+        <div id="title-bar" style="
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1e3e 100%);
+            border-bottom: 2px solid rgba(78,205,196,0.3);
+            padding: 12px 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        ">
+            <div style="display:flex;align-items:center;gap:15px;">
+                <div style="
+                    width:8px;height:30px;border-radius:4px;
+                    background:linear-gradient(180deg,#4ECDC4,#FF6B6B);
+                "></div>
+                <span style="
+                    font-size:20px;font-weight:bold;color:#E0E0E0;
+                    font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;
+                ">数据要素 - 产业链关系网络</span>
+            </div>
+            <div style="font-size:12px;color:#666;">
+                产业链分析系统 | 数据驱动投资决策
+            </div>
+        </div>
+        
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"borderWidth": 3, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "603000_\u4eba\u6c11\u7f51", "label": "\u4eba\u6c11\u7f51", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "hexagon", "size": 48.5, "title": "\u003cb\u003e\u4eba\u6c11\u7f51\u003c/b\u003e (603000)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e2d\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5927\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u6570\u636e\u786e\u6743+\u5185\u5bb9\u98ce\u63a7\u56fd\u5bb6\u961f,\u592e\u5a92\u80cc\u666f+\u6570\u636e\u8d44\u6e90+\u653f\u7b56\u5361\u4f4d\u4e09\u91cd\u4f18\u52bf"}, {"borderWidth": 3, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "600633_\u6d59\u6570\u6587\u5316", "label": "\u6d59\u6570\u6587\u5316", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "hexagon", "size": 48.5, "title": "\u003cb\u003e\u6d59\u6570\u6587\u5316\u003c/b\u003e (600633)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e2d\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5927\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u6d59\u6c5f\u5927\u6570\u636e\u4ea4\u6613\u4e2d\u5fc3\u8fd0\u8425\u65b9,\u653f\u52a1\u6570\u636e+\u6587\u5316\u6570\u636e\u53cc\u8f6e\u9a71\u52a8\u53d8\u73b0\u6e05\u6670"}, {"borderWidth": 2, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "600602_\u4e91\u8d5b\u667a\u8054", "label": "\u4e91\u8d5b\u667a\u8054", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "hexagon", "size": 38.5, "title": "\u003cb\u003e\u4e91\u8d5b\u667a\u8054\u003c/b\u003e (600602)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e2d\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u4e2d\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u4e0a\u6d77\u6570\u636e\u8981\u7d20\u6838\u5fc3\u5e73\u53f0\u5546,\u667a\u6167\u57ce\u5e02+\u6570\u636e\u8fd0\u8425+\u56fd\u8d44\u4e91\u534f\u540c\u843d\u5730"}, {"borderWidth": 2, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "000032_\u6df1\u6851\u8fbeA", "label": "\u6df1\u6851\u8fbeA", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "hexagon", "size": 38.5, "title": "\u003cb\u003e\u6df1\u6851\u8fbeA\u003c/b\u003e (000032)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e2d\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u4e2d\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u4e2d\u56fd\u7535\u5b50\u6570\u636e\u4e91\u6838\u5fc3\u8f7d\u4f53,\u592e\u4f01\u4e91\u5e95\u5ea7+\u6570\u636e\u8981\u7d20\u5e02\u573a\u5316\u5148\u950b"}, {"borderWidth": 1, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "002368_\u592a\u6781\u80a1\u4efd", "label": "\u592a\u6781\u80a1\u4efd", "shadow": {"color": "#0984E3", "enabled": false}, "shape": "hexagon", "size": 31.5, "title": "\u003cb\u003e\u592a\u6781\u80a1\u4efd\u003c/b\u003e (002368)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e2d\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5c0f\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u653f\u52a1\u4e91+\u6570\u636e\u6cbb\u7406\u56fd\u5bb6\u961f,\u4e2d\u7535\u79d1\u80cc\u666f+\u90e8\u59d4\u7ea7\u9879\u76ee\u7ecf\u9a8c\u4e30\u5bcc"}, {"borderWidth": 1, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "300212_\u6613\u534e\u5f55", "label": "\u6613\u534e\u5f55", "shadow": {"color": "#0984E3", "enabled": false}, "shape": "hexagon", "size": 31.5, "title": "\u003cb\u003e\u6613\u534e\u5f55\u003c/b\u003e (300212)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e2d\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5c0f\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u57ce\u5e02\u6570\u636e\u6e56\u8fd0\u8425\u9886\u519b\u8005,\u84dd\u5149\u5b58\u50a8+\u6570\u636e\u8d44\u4ea7\u5165\u8868+\u592e\u4f01\u91cd\u7ec4\u9884\u671f"}, {"borderWidth": 3, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "688561_\u5947\u5b89\u4fe1", "label": "\u5947\u5b89\u4fe1", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "diamond", "size": 48.5, "title": "\u003cb\u003e\u5947\u5b89\u4fe1\u003c/b\u003e (688561)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e0a\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5927\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u7f51\u7edc\u5b89\u5168\u5168\u6808\u89e3\u51b3\u65b9\u6848\u9f99\u5934,\u96f6\u4fe1\u4efb+\u9690\u79c1\u8ba1\u7b97+\u6570\u636e\u5b89\u5168\u5e02\u5360\u7387\u7b2c\u4e00"}, {"borderWidth": 3, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "002439_\u542f\u660e\u661f\u8fb0", "label": "\u542f\u660e\u661f\u8fb0", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "diamond", "size": 48.5, "title": "\u003cb\u003e\u542f\u660e\u661f\u8fb0\u003c/b\u003e (002439)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e0a\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5927\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u5b89\u5168\u8fd0\u8425+\u6570\u636e\u5b89\u5168\u9886\u519b\u8005,\u4e2d\u56fd\u79fb\u52a8\u5165\u80a1+\u6e20\u9053\u534f\u540c\u52a0\u901f\u653f\u4f01\u62d3\u5c55"}, {"borderWidth": 2, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "688023_\u5b89\u6052\u4fe1\u606f", "label": "\u5b89\u6052\u4fe1\u606f", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "diamond", "size": 38.5, "title": "\u003cb\u003e\u5b89\u6052\u4fe1\u606f\u003c/b\u003e (688023)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e0a\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u4e2d\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u6570\u636e\u5b89\u5168+\u4e91\u5b89\u5168\u4e13\u7cbe\u4f01\u4e1a,\u653f\u52a1+\u91d1\u878d+\u8fd0\u8425\u5546\u5ba2\u6237\u6df1\u8015\u4ea7\u54c1\u6807\u51c6\u5316"}, {"borderWidth": 2, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "002268_\u7535\u79d1\u7f51\u5b89", "label": "\u7535\u79d1\u7f51\u5b89", "shadow": {"color": "#0984E3", "enabled": true}, "shape": "diamond", "size": 38.5, "title": "\u003cb\u003e\u7535\u79d1\u7f51\u5b89\u003c/b\u003e (002268)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e0a\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u4e2d\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u5bc6\u7801\u6280\u672f+\u6570\u636e\u5b89\u5168\u56fd\u5bb6\u961f,\u56fd\u5bc6\u7b97\u6cd5+\u5bc6\u7801\u673a+\u6570\u636e\u8131\u654f\u5168\u6808"}, {"borderWidth": 1, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "300188_\u56fd\u6295\u667a\u80fd", "label": "\u56fd\u6295\u667a\u80fd", "shadow": {"color": "#0984E3", "enabled": false}, "shape": "diamond", "size": 31.5, "title": "\u003cb\u003e\u56fd\u6295\u667a\u80fd\u003c/b\u003e (300188)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e0a\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5c0f\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u7535\u5b50\u53d6\u8bc1+\u6570\u636e\u5ba1\u8ba1\u9f99\u5934,\u53f8\u6cd5\u516c\u5b89+\u6570\u636e\u5b89\u5168\u5408\u89c4\u8ba2\u5355\u7a33\u5b9a"}, {"borderWidth": 1, "color": {"background": "#1B222D", "border": "#0984E3", "highlight": {"background": "#0984E3", "border": "#3498DB"}, "hover": {"background": "#3D9FE8", "border": "#0984E3"}}, "font": {"color": "#E0E0E0"}, "id": "603232_\u683c\u5c14\u8f6f\u4ef6", "label": "\u683c\u5c14\u8f6f\u4ef6", "shadow": {"color": "#0984E3", "enabled": false}, "shape": "diamond", "size": 31.5, "title": "\u003cb\u003e\u683c\u5c14\u8f6f\u4ef6\u003c/b\u003e (603232)\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u884c\u4e1a\u003c/b\u003e: \u6570\u636e\u8981\u7d20\u003cbr\u003e\u003cb\u003e\u4ea7\u4e1a\u94fe\u003c/b\u003e: \u4e0a\u6e38\u003cbr\u003e\u003cb\u003e\u5e02\u503c\u89c4\u6a21\u003c/b\u003e: \u5c0f\u003cbr\u003e\u003cb\u003e\u653f\u7b56\u5951\u5408\u5ea6\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2605\u003cbr\u003e\u003cb\u003e\u6295\u8d44\u786e\u5b9a\u6027\u003c/b\u003e: \u2605\u2605\u2605\u2605\u2606\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#0984E3\u0027\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: PKI\u5bc6\u7801\u57fa\u7840\u8bbe\u65bd,\u653f\u52a1/\u91d1\u878d/\u519b\u5de5\u8eab\u4efd\u8ba4\u8bc1\u6838\u5fc3\u4f9b\u5e94\u5546"}, {"color": {"background": "#0984E3", "border": "#0984E3", "highlight": {"background": "#3498DB", "border": "#0984E3"}}, "fixed": true, "font": {"color": "#E0E0E0"}, "id": "group_\u6570\u636e\u8981\u7d20", "label": "\u6570\u636e\u8981\u7d20", "level": 0, "physics": false, "shape": "text", "size": 50}]);
+                  edges = new vis.DataSet([{"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "603000_\u4eba\u6c11\u7f51", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "600633_\u6d59\u6570\u6587\u5316", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "600602_\u4e91\u8d5b\u667a\u8054", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "000032_\u6df1\u6851\u8fbeA", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "002368_\u592a\u6781\u80a1\u4efd", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "300212_\u6613\u534e\u5f55", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "603000_\u4eba\u6c11\u7f51", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "600633_\u6d59\u6570\u6587\u5316", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "600602_\u4e91\u8d5b\u667a\u8054", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "000032_\u6df1\u6851\u8fbeA", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "002368_\u592a\u6781\u80a1\u4efd", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "300212_\u6613\u534e\u5f55", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688023_\u5b89\u6052\u4fe1\u606f", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "603000_\u4eba\u6c11\u7f51", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688023_\u5b89\u6052\u4fe1\u606f", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "600633_\u6d59\u6570\u6587\u5316", "width": 5.0}, {"arrows": {"to": {"enabled": true, "scaleFactor": 0.8}}, "color": {"color": "#4CAF50", "highlight": "#4CAF50", "hover": "#4CAF50", "opacity": 0.7}, "dashes": false, "font": {"align": "middle", "color": "#4CAF50", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688023_\u5b89\u6052\u4fe1\u606f", "hoverWidth": 5, "label": "\u5b89\u5168\u4fdd\u969c", "selectionWidth": 5, "smooth": {"roundness": 0.15, "type": "curvedCW"}, "title": "\u003cb\u003e[\u4f9b\u5e94\u94fe]\u003c/b\u003e \u5b89\u5168\u4fdd\u969c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#4CAF50\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cf\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u9690\u79c1\u8ba1\u7b97/\u6570\u636e\u5b89\u5168\u6280\u672f\u662f\u6570\u636e\u786e\u6743\u4ea4\u6613\u7684\u524d\u63d0\u4fdd\u969c", "to": "600602_\u4e91\u8d5b\u667a\u8054", "width": 5.0}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "603000_\u4eba\u6c11\u7f51", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "600633_\u6d59\u6570\u6587\u5316", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "603000_\u4eba\u6c11\u7f51", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "600602_\u4e91\u8d5b\u667a\u8054", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "603000_\u4eba\u6c11\u7f51", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "000032_\u6df1\u6851\u8fbeA", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "603000_\u4eba\u6c11\u7f51", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002368_\u592a\u6781\u80a1\u4efd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "603000_\u4eba\u6c11\u7f51", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300212_\u6613\u534e\u5f55", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600633_\u6d59\u6570\u6587\u5316", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "600602_\u4e91\u8d5b\u667a\u8054", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600633_\u6d59\u6570\u6587\u5316", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "000032_\u6df1\u6851\u8fbeA", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600633_\u6d59\u6570\u6587\u5316", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002368_\u592a\u6781\u80a1\u4efd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600633_\u6d59\u6570\u6587\u5316", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300212_\u6613\u534e\u5f55", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600602_\u4e91\u8d5b\u667a\u8054", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "000032_\u6df1\u6851\u8fbeA", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600602_\u4e91\u8d5b\u667a\u8054", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002368_\u592a\u6781\u80a1\u4efd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "600602_\u4e91\u8d5b\u667a\u8054", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300212_\u6613\u534e\u5f55", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "000032_\u6df1\u6851\u8fbeA", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002368_\u592a\u6781\u80a1\u4efd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "000032_\u6df1\u6851\u8fbeA", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300212_\u6613\u534e\u5f55", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002368_\u592a\u6781\u80a1\u4efd", "hoverWidth": 4, "label": "\u786e\u6743\u4ea4\u6613\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u786e\u6743\u4ea4\u6613\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u8d44\u4ea7/\u786e\u6743\u4ea4\u6613\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300212_\u6613\u534e\u5f55", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002439_\u542f\u660e\u661f\u8fb0", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "688023_\u5b89\u6052\u4fe1\u606f", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002268_\u7535\u79d1\u7f51\u5b89", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300188_\u56fd\u6295\u667a\u80fd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "603232_\u683c\u5c14\u8f6f\u4ef6", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "688023_\u5b89\u6052\u4fe1\u606f", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002268_\u7535\u79d1\u7f51\u5b89", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300188_\u56fd\u6295\u667a\u80fd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "603232_\u683c\u5c14\u8f6f\u4ef6", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688023_\u5b89\u6052\u4fe1\u606f", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "002268_\u7535\u79d1\u7f51\u5b89", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688023_\u5b89\u6052\u4fe1\u606f", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300188_\u56fd\u6295\u667a\u80fd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688023_\u5b89\u6052\u4fe1\u606f", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "603232_\u683c\u5c14\u8f6f\u4ef6", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002268_\u7535\u79d1\u7f51\u5b89", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "300188_\u56fd\u6295\u667a\u80fd", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002268_\u7535\u79d1\u7f51\u5b89", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "603232_\u683c\u5c14\u8f6f\u4ef6", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#F44336", "highlight": "#F44336", "hover": "#F44336", "opacity": 0.7}, "dashes": [8, 4], "font": {"align": "middle", "color": "#F44336", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "300188_\u56fd\u6295\u667a\u80fd", "hoverWidth": 4, "label": "\u9690\u79c1\u8ba1\u7b97\u7ade\u4e89", "selectionWidth": 4, "smooth": {"roundness": 0.2, "type": "curvedCCW"}, "title": "\u003cb\u003e[\u7ade\u4e89]\u003c/b\u003e \u9690\u79c1\u8ba1\u7b97\u7ade\u4e89\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#F44336\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u540c\u5c5e\u6570\u636e\u8981\u7d20/\u6570\u636e\u5b89\u5168/\u9690\u79c1\u8ba1\u7b97\u8d5b\u9053\uff0c\u4e92\u4e3a\u7ade\u4e89\u5bf9\u624b", "to": "603232_\u683c\u5c14\u8f6f\u4ef6", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#2196F3", "highlight": "#2196F3", "hover": "#2196F3", "opacity": 0.7}, "dashes": [4, 4], "font": {"align": "middle", "color": "#2196F3", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "688561_\u5947\u5b89\u4fe1", "hoverWidth": 4, "label": "\u5b89\u5168-\u6570\u636e\u534f\u540c", "selectionWidth": 4, "smooth": {"roundness": 0.25, "type": "curvedCW"}, "title": "\u003cb\u003e[\u534f\u540c]\u003c/b\u003e \u5b89\u5168-\u6570\u636e\u534f\u540c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#2196F3\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cf\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u5947\u5b89\u4fe1\u6570\u636e\u5b89\u5168+\u4eba\u6c11\u7f51\u6570\u636e\u786e\u6743\u5e73\u53f0\u5f62\u6210\u6570\u636e\u8981\u7d20\u5b89\u5168\u6d41\u901a\u65b9\u6848", "to": "603000_\u4eba\u6c11\u7f51", "width": 2.6666666666666665}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#2196F3", "highlight": "#2196F3", "hover": "#2196F3", "opacity": 0.7}, "dashes": [4, 4], "font": {"align": "middle", "color": "#2196F3", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "002439_\u542f\u660e\u661f\u8fb0", "hoverWidth": 4, "label": "\u5b89\u5168-\u8fd0\u8425\u534f\u540c", "selectionWidth": 4, "smooth": {"roundness": 0.25, "type": "curvedCW"}, "title": "\u003cb\u003e[\u534f\u540c]\u003c/b\u003e \u5b89\u5168-\u8fd0\u8425\u534f\u540c\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#2196F3\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cb\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u542f\u660e\u661f\u8fb0\u5b89\u5168\u65b9\u6848+\u4e91\u8d5b\u667a\u8054\u6570\u636e\u8fd0\u8425\u5e73\u53f0\u5f62\u6210\u5b89\u5168\u6570\u636e\u670d\u52a1", "to": "600602_\u4e91\u8d5b\u667a\u8054", "width": 2.0}, {"arrows": {"to": {"enabled": false}}, "color": {"color": "#2196F3", "highlight": "#2196F3", "hover": "#2196F3", "opacity": 0.7}, "dashes": [4, 4], "font": {"align": "middle", "color": "#2196F3", "face": "Microsoft YaHei, Noto Sans SC, sans-serif", "size": 10, "strokeColor": "#0a0e27", "strokeWidth": 3}, "from": "603000_\u4eba\u6c11\u7f51", "hoverWidth": 4, "label": "\u6570\u636e\u8981\u7d20\u653f\u7b56\u53cc\u53d7\u76ca", "selectionWidth": 4, "smooth": {"roundness": 0.25, "type": "curvedCW"}, "title": "\u003cb\u003e[\u534f\u540c]\u003c/b\u003e \u6570\u636e\u8981\u7d20\u653f\u7b56\u53cc\u53d7\u76ca\u003cbr\u003e\u003chr style=\u0027margin:3px 0;border-color:#2196F3\u0027\u003e\u003cb\u003e\u5173\u7cfb\u5f3a\u5ea6\u003c/b\u003e: \u25cf\u25cf\u25cf\u25cb\u25cb\u003cbr\u003e\u003cb\u003e\u8bf4\u660e\u003c/b\u003e: \u6570\u636e\u786e\u6743+\u6570\u636e\u5b58\u50a8\u662f\u6570\u636e\u8981\u7d20\u653f\u7b56\u4e24\u5927\u6293\u624b", "to": "300212_\u6613\u534e\u5f55", "width": 2.0}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics",
+            "nodes",
+            "edges"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0.5,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -8000,
+            "springConstant": 0.04,
+            "springLength": 200
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+        <div id="legend" style="
+            position:fixed;bottom:20px;left:20px;z-index:1000;
+            background:rgba(10,14,39,0.92);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:10px;padding:15px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.5);
+            font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;
+            max-height:80vh;overflow-y:auto;
+        ">
+            <div style="font-size:14px;font-weight:bold;color:#4ECDC4;margin-bottom:10px;">图例说明</div>
+
+            <div style="font-size:12px;color:#999;margin-bottom:6px;">关系类型</div>
+            
+            <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+                <div style="width:30px;height:0;border-bottom: 3px solid #4CAF50;"></div>
+                <span style="color:#4CAF50;font-size:16px;">→</span>
+                <span style="color:#4CAF50;font-size:13px;">供应链关系</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+                <div style="width:30px;height:0;border-bottom: 3px dashed #F44336;"></div>
+                
+                <span style="color:#F44336;font-size:13px;">竞争关系</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+                <div style="width:30px;height:0;border-bottom: 3px dotted #2196F3;"></div>
+                
+                <span style="color:#2196F3;font-size:13px;">协同关系</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+                <div style="width:30px;height:0;border-bottom: 3px dashed #FF9800; border-bottom-style: dashed;"></div>
+                <span style="color:#FF9800;font-size:16px;">→</span>
+                <span style="color:#FF9800;font-size:13px;">验证关系</span>
+            </div>
+
+            <div style="height:1px;background:rgba(255,255,255,0.1);margin:10px 0;"></div>
+
+            <div style="font-size:12px;color:#999;margin-bottom:6px;">行业分类</div>
+            
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#FF6B6B;border:2px solid #FF6B6B;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">半导体国产化</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#4ECDC4;border:2px solid #4ECDC4;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">人工智能</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#FFD93D;border:2px solid #FFD93D;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">战略资源</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#6C5CE7;border:2px solid #6C5CE7;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">国防军工</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#00B894;border:2px solid #00B894;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">新能源</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#0984E3;border:2px solid #0984E3;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">数据要素</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#E17055;border:2px solid #E17055;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">低空经济</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#FD79A8;border:2px solid #FD79A8;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">创新药</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#FDCB6E;border:2px solid #FDCB6E;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">消费升级</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;border-radius:3px;background:#00CEC9;border:2px solid #00CEC9;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">人形机器人</span>
+            </div>
+
+            <div style="height:1px;background:rgba(255,255,255,0.1);margin:10px 0;"></div>
+
+            <div style="font-size:12px;color:#999;margin-bottom:6px;">产业链层级</div>
+            
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;background:#4CAF50;border-radius:0;transform:rotate(45deg) scale(0.7);"></div>
+                <span style="color:#E0E0E0;font-size:12px;">上游（原材料/基础）</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;background:#FF9800;border-radius:3px;transform:none;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">中游（制造/加工）</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:14px;height:14px;background:#E91E63;border-radius:3px;transform:none;"></div>
+                <span style="color:#E0E0E0;font-size:12px;">下游（应用/终端）</span>
+            </div>
+
+            <div style="height:1px;background:rgba(255,255,255,0.1);margin:10px 0;"></div>
+
+            <div style="font-size:12px;color:#999;margin-bottom:6px;">市值规模</div>
+            
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.6);"></div>
+                <span style="color:#E0E0E0;font-size:12px;">大市值</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.6);"></div>
+                <span style="color:#E0E0E0;font-size:12px;">中市值</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                <div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.6);"></div>
+                <span style="color:#E0E0E0;font-size:12px;">小市值</span>
+            </div>
+        </div>
+        
+
+        <div id="statistics" style="
+            position:fixed;bottom:20px;right:20px;z-index:1000;
+            background:rgba(10,14,39,0.92);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:10px;padding:15px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.5);
+            font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;
+            min-width:250px;
+        ">
+            <div style="font-size:14px;font-weight:bold;color:#4ECDC4;margin-bottom:10px;">关系统计</div>
+            
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="color:#4CAF50;font-size:13px;">供应链</span>
+                <div style="display:flex;gap:15px;">
+                    <span style="color:#E0E0E0;font-size:12px;">总计: <b>465</b></span>
+                    <span style="color:#888;font-size:11px;">跨行业: 150</span>
+                </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="color:#F44336;font-size:13px;">竞争</span>
+                <div style="display:flex;gap:15px;">
+                    <span style="color:#E0E0E0;font-size:12px;">总计: <b>420</b></span>
+                    <span style="color:#888;font-size:11px;">跨行业: 0</span>
+                </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="color:#2196F3;font-size:13px;">协同</span>
+                <div style="display:flex;gap:15px;">
+                    <span style="color:#E0E0E0;font-size:12px;">总计: <b>29</b></span>
+                    <span style="color:#888;font-size:11px;">跨行业: 3</span>
+                </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="color:#FF9800;font-size:13px;">验证</span>
+                <div style="display:flex;gap:15px;">
+                    <span style="color:#E0E0E0;font-size:12px;">总计: <b>26</b></span>
+                    <span style="color:#888;font-size:11px;">跨行业: 0</span>
+                </div>
+            </div>
+        </div>
+        
+
+        <div id="filter-controls" style="
+            position:fixed;top:60px;right:20px;z-index:1000;
+            background:rgba(10,14,39,0.92);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:10px;padding:12px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.5);
+            font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;
+        ">
+            <div style="font-size:12px;font-weight:bold;color:#4ECDC4;margin-bottom:8px;">交互提示</div>
+            <div style="font-size:11px;color:#999;line-height:1.8;">
+                • 拖拽节点调整布局<br>
+                • 滚轮缩放视图<br>
+                • 悬停查看详细信息<br>
+                • 点击节点高亮关联<br>
+                • 右侧面板调节物理参数<br>
+                • 双击节点聚焦子图
+            </div>
+        </div>
+        
+</body>
+</html>
