@@ -24,6 +24,12 @@ class DataLoader:
         raw_path = self.root_dir / self.config['data']['raw_file']
         
         # 解析用户提供的表格数据（模拟CSV读取）
+        # df = pd.read_excel(
+        #     raw_path, 
+        #     encoding=self.config['data']['encoding'],
+        #     delimiter=self.config['data']['delimiter'],
+        #     dtype={'代码': str, '排序': int}
+        # )
         df = pd.read_csv(
             raw_path, 
             encoding=self.config['data']['encoding'],

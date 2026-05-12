@@ -104,7 +104,7 @@ class ChainVisualizer:
                 dx = pos[n2][0] - pos[n1][0]
                 dy = pos[n2][1] - pos[n1][1]
                 dist = max((dx**2 + dy**2)**0.5, 1)
-                force = dist * 0.01 * G[n1][2].get('weight', 1)
+                force = dist * 0.01 * G[n1][n2].get('weight', 1)
                 displacements[n1][0] += dx / dist * force
                 displacements[n1][1] += dy / dist * force
                 displacements[n2][0] -= dx / dist * force
@@ -175,22 +175,22 @@ class ChainVisualizer:
         traces = []
         edge_groups = {}
         
-        # 按类型分组
+        # 按关系类型分组
         for edge in edges:
             etype = edge['type']
             if etype not in edge_groups:
-                edge_groups[etype] = {'x': [], 'y': [], 'text': [], 'config': edge}
-            
+                edge_groups[etype] = {'x': [], 'y': [], 'text': []}
+                
             src, tgt = edge['source'], edge['target']
             if src in pos and tgt in pos:
                 x0, y0 = pos[src]
                 x1, y1 = pos[tgt]
-                # 添加曲线控制点使边更美观
+                # 使用 None 断点实现多段线合并绘制，提升渲染性能
                 edge_groups[etype]['x'].extend([x0, x1, None])
                 edge_groups[etype]['y'].extend([y0, y1, None])
                 edge_groups[etype]['text'].append(edge['hover_text'])
-        
-        # 为每种类型创建trace
+                
+        # 关系类型中文字典
         type_names = {
             'supply_chain': '🔗 供应链',
             'competition': '⚔️ 竞争',
@@ -207,15 +207,15 @@ class ChainVisualizer:
                 line=dict(
                     color=config.get('color', '#95a5a6'),
                     width=config.get('width', 1),
-                    dash=config.get('dash', 'solid'),
-                    opacity=self.viz_config['edge_alpha']
+                    dash=config.get('dash', 'solid')
+                    # ✅ 已移除 line 内部的 opacity
                 ),
+                opacity=self.viz_config.get('edge_alpha', 0.6), # ✅ 移至 trace 顶层
                 hovertext=data['text'],
                 hoverinfo='text',
                 name=type_names.get(etype, etype),
                 showlegend=True
             ))
-        
         return traces
     
     def _build_layout(self) -> go.Layout:

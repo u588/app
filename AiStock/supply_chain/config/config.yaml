@@ -10,6 +10,11 @@ data:
   processed_dir: "data/processed"
   encoding: "utf-8-sig"
   delimiter: ","
+  # 市值规模映射
+  market_cap_map:
+    "大": {"size": 25, "color": "#e41a1c", "label": "Large Cap"}
+    "中": {"size": 18, "color": "#377eb8", "label": "Mid Cap"}
+    "小": {"size": 12, "color": "#4daf4a", "label": "Small Cap"}
 
 # 产业链层级映射规则
 chain_hierarchy:
@@ -29,12 +34,6 @@ chain_hierarchy:
     name: "标的公司"
     node_size: 20
     color_by: "市值规模"
-
-# 市值规模映射
-market_cap_map:
-  "大": {"size": 25, "color": "#e41a1c", "label": "Large Cap"}
-  "中": {"size": 18, "color": "#377eb8", "label": "Mid Cap"}
-  "小": {"size": 12, "color": "#4daf4a", "label": "Small Cap"}
 
 # 关系类型定义
 relationship_rules:
