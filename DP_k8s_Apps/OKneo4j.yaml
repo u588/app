@@ -14,7 +14,9 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: 10.3.18.60/docker/neo4j:v5.11
+        image: 10.3.18.60/docker/neo4j:2026.04.0
+        # image: 10.3.18.60/docker/neo4j:v5.11
+        # image: 10.3.18.60/docker/neo4j:5.26.25
         ports:
         - containerPort: 7474
         - containerPort: 7687
@@ -33,7 +35,7 @@ metadata:
    namespace: default
 spec:
    type: ClusterIP
-   clusterIP: 10.18.1.1
+   clusterIP: 10.88.1.1
    selector:
       app: neo4j
    ports:

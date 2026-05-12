@@ -292,18 +292,37 @@ class NetworkBuilder:
         # 边宽根据权重调整
         adjusted_width = edge_style.get('width', 2) * (weight / 3)
 
-        # 构建悬停提示
+        # 构建悬停提示（富HTML格式）
         type_labels = {
             'supply_chain': '供应链',
             'competition': '竞争',
             'collaboration': '协同',
             'verification': '验证',
         }
+        type_colors = {
+            'supply_chain': '#4CAF50',
+            'competition': '#F44336',
+            'collaboration': '#2196F3',
+            'verification': '#FF9800',
+        }
+        rel_color = type_colors.get(relation_type, '#888')
+        rel_label = type_labels.get(relation_type, '')
+
+        # 关系强度条
+        strength_bar = f"<span style='color:{rel_color}'>{'●' * weight}</span><span style='color:#555'>{'○' * (5 - weight)}</span>"
+
         tooltip = (
-            f"<b>[{type_labels.get(relation_type, '')}]</b> {label}<br>"
-            f"<hr style='margin:3px 0;border-color:{edge_style.get('color', {}).get('color', '#888')}'>"
-            f"<b>关系强度</b>: {'●' * weight}{'○' * (5 - weight)}<br>"
-            f"<b>说明</b>: {description}"
+            f"<div style='min-width:180px'>"
+            f"<div style='font-size:13px;font-weight:bold;color:{rel_color};margin-bottom:4px;'>"
+            f"  [{rel_label}] {label}"
+            f"</div>"
+            f"<hr style='border:none;border-top:1px solid {rel_color}30;margin:6px 0;'>"
+            f"<div style='display:flex;justify-content:space-between;align-items:center;margin:4px 0;'>"
+            f"  <span style='color:#999;'>关系强度</span>"
+            f"  <span>{strength_bar}</span>"
+            f"</div>"
+            f"<div style='color:#BBB;font-size:12px;line-height:1.6;margin-top:4px;'>{description}</div>"
+            f"</div>"
         )
 
         try:

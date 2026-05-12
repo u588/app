@@ -75,20 +75,46 @@ class StyleManager:
             'shadow': False,
         })
 
-        # 构建悬停提示
+        # 构建悬停提示（富HTML格式，由JS补丁渲染）
         level_label = {'upstream': '上游', 'midstream': '中游', 'downstream': '下游'}
         badge = level_config.get('badge', level_label.get(chain_level, ''))
 
+        # 市值规模标签颜色
+        cap_colors = {'大': '#FF6B6B', '中': '#FFD93D', '小': '#90CAF9'}
+        cap_color = cap_colors.get(market_cap, '#E0E0E0')
+
+        # 评分条
+        policy_stars = f"<span style='color:#FFD93D'>{'★' * policy_score}</span><span style='color:#555'>{'☆' * (5 - policy_score)}</span>"
+        certainty_stars = f"<span style='color:#4ECDC4'>{'★' * certainty_score}</span><span style='color:#555'>{'☆' * (5 - certainty_score)}</span>"
+
         tooltip = (
-            f"<b>{target_name}</b> ({code})<br>"
-            f"<hr style='margin:3px 0;border-color:{colors['primary']}'>"
-            f"<b>行业</b>: {industry}<br>"
-            f"<b>产业链</b>: {badge}<br>"
-            f"<b>市值规模</b>: {market_cap}<br>"
-            f"<b>政策契合度</b>: {'★' * policy_score}{'☆' * (5 - policy_score)}<br>"
-            f"<b>投资确定性</b>: {'★' * certainty_score}{'☆' * (5 - certainty_score)}<br>"
-            f"<hr style='margin:3px 0;border-color:{colors['primary']}'>"
-            f"<b>说明</b>: {description}"
+            f"<div style='min-width:200px'>"
+            f"<div style='font-size:15px;font-weight:bold;color:{colors['primary']};margin-bottom:4px;'>{target_name}</div>"
+            f"<div style='font-size:11px;color:#888;margin-bottom:8px;'>{code}</div>"
+            f"<hr style='border:none;border-top:1px solid {colors['primary']}30;margin:6px 0;'>"
+            f"<div style='display:flex;justify-content:space-between;margin:4px 0;'>"
+            f"  <span style='color:#999;'>行业</span>"
+            f"  <span style='color:{colors['primary']};font-weight:500;'>{industry}</span>"
+            f"</div>"
+            f"<div style='display:flex;justify-content:space-between;margin:4px 0;'>"
+            f"  <span style='color:#999;'>产业链</span>"
+            f"  <span style='color:#FF9800;font-weight:500;'>{badge}</span>"
+            f"</div>"
+            f"<div style='display:flex;justify-content:space-between;margin:4px 0;'>"
+            f"  <span style='color:#999;'>市值规模</span>"
+            f"  <span style='color:{cap_color};font-weight:600;'>● {market_cap}</span>"
+            f"</div>"
+            f"<div style='display:flex;justify-content:space-between;align-items:center;margin:4px 0;'>"
+            f"  <span style='color:#999;'>政策契合度</span>"
+            f"  <span>{policy_stars}</span>"
+            f"</div>"
+            f"<div style='display:flex;justify-content:space-between;align-items:center;margin:4px 0;'>"
+            f"  <span style='color:#999;'>投资确定性</span>"
+            f"  <span>{certainty_stars}</span>"
+            f"</div>"
+            f"<hr style='border:none;border-top:1px solid {colors['primary']}30;margin:6px 0;'>"
+            f"<div style='color:#BBB;font-size:12px;line-height:1.6;'>{description}</div>"
+            f"</div>"
         )
 
         node_size = size_config.get('node_size', 15)

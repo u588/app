@@ -1,5 +1,4 @@
 """
-渲染器模块
 负责网络图的最终渲染、HTML注入（图例/统计等）和文件输出
 """
 
@@ -88,6 +87,12 @@ class Renderer:
         # 注入筛选控件
         filter_html = self._build_filter_controls()
         html = html.replace('</body>', f'{filter_html}\n</body>')
+
+        # ★ 核心修复：注入JS修补vis-network的tooltip渲染
+        # vis-network 9.x 使用 innerText 渲染tooltip，导致HTML标签显示为源代码
+        # 修补为 innerHTML，使tooltip支持富文本
+        tooltip_patch = self._build_tooltip_patch()
+        html = html.replace('</body>', f'{tooltip_patch}\n</body>')
 
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(html)
@@ -290,6 +295,136 @@ class Renderer:
         </div>
         '''
 
+    def _build_tooltip_patch(self) -> str:
+        """构建tooltip渲染修补JS"""
+        return '''
+        <script>
+        // ============================================================
+        // 修补 vis-network 9.x tooltip 渲染问题
+        // 原始代码使用 innerText 渲染 tooltip，导致 HTML 标签显示为源代码
+        // 修补为 innerHTML，使 tooltip 支持富文本格式
+        // ============================================================
+        (function patchTooltipRendering() {
+            function tryPatch() {
+                // 查找 vis-network 实例的 Popup 对象
+                var container = document.getElementById('mynetwork');
+                if (!container || !container.network) {
+                    setTimeout(tryPatch, 500);
+                    return;
+                }
+                var network = container.network;
+                if (network.manipulation && network.manipulation.canvas
+                    && network.manipulation.canvas.popup) {
+                    var popup = network.manipulation.canvas.popup;
+                    // 备份原始 setText 方法
+                    var origSet = popup.setText.bind(popup);
+                    // 重写 setText，将 innerText 替换为 innerHTML
+                    popup.setText = function(content) {
+                        if (typeof content === 'string') {
+                            // 将空字符串重置
+                            if (content === '') {
+                                this.frame.innerHTML = '';
+                                return;
+                            }
+                            // 关键修改：使用 innerHTML 渲染 HTML 内容
+                            this.frame.innerHTML = content;
+                        } else if (content instanceof Element) {
+                            while (this.frame.firstChild) {
+                                this.frame.removeChild(this.frame.firstChild);
+                            }
+                            this.frame.appendChild(content);
+                        }
+                    };
+                    console.log('[产业链系统] Tooltip HTML渲染修补成功');
+                } else {
+                    // Popup 对象可能尚未初始化，延迟重试
+                    setTimeout(tryPatch, 300);
+                }
+            }
+
+            // 方案二：通过 MutationObserver 监听 vis-tooltip DOM 变化
+            // 将 innerText 渲染的内容转为 HTML
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.classList && node.classList.contains('vis-tooltip')) {
+                            // 获取 innerText 内容，转义后设置为 innerHTML
+                            var raw = node.innerText;
+                            if (raw && (raw.includes('<b>') || raw.includes('<br>')
+                                || raw.includes('<hr') || raw.includes('<div')))
+                            {
+                                // 将 innerText 中的 HTML 标签还原为真正的 HTML
+                                // 因为 innerText 会将 < 转义为 &lt; 等
+                                var tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = raw;
+                                // 如果解析成功（内容包含HTML元素），使用解析结果
+                                if (tempDiv.children.length > 0) {
+                                    node.innerHTML = raw;
+                                }
+                            }
+                        }
+                    });
+                    // 同时检查 characterData 变化
+                    if (mutation.type === 'characterData' && mutation.target.parentElement
+                        && mutation.target.parentElement.classList
+                        && mutation.target.parentElement.classList.contains('vis-tooltip')) {
+                        var tooltip = mutation.target.parentElement;
+                        var raw = tooltip.innerText;
+                        if (raw && (raw.includes('<b>') || raw.includes('<br>')
+                            || raw.includes('<hr') || raw.includes('<div')))
+                        {
+                            tooltip.innerHTML = raw;
+                        }
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+
+            // 方案三：直接修补 Tooltip.prototype.setText（最可靠）
+            // 在 vis-network 加载后执行
+            function patchPrototype() {
+                if (typeof vis !== 'undefined' && vis.Popup) {
+                    var proto = vis.Popup.prototype;
+                    if (proto && proto.setText) {
+                        var originalSetText = proto.setText;
+                        proto.setText = function(content) {
+                            if (typeof content === 'string') {
+                                if (content === '') {
+                                    this.frame.innerHTML = '';
+                                    return;
+                                }
+                                // 核心修改：使用 innerHTML 替代 innerText
+                                this.frame.innerHTML = content;
+                            } else if (content instanceof Element) {
+                                while (this.frame.firstChild) {
+                                    this.frame.removeChild(this.frame.firstChild);
+                                }
+                                this.frame.appendChild(content);
+                            }
+                        };
+                        console.log('[产业链系统] Popup.prototype.setText 修补成功');
+                        observer.disconnect(); // 原型修补成功，无需 observer
+                    }
+                }
+            }
+
+            // 等 vis-network 加载完成后修补原型
+            if (document.readyState === 'complete') {
+                setTimeout(patchPrototype, 200);
+            } else {
+                window.addEventListener('load', function() {
+                    setTimeout(patchPrototype, 200);
+                });
+            }
+        })();
+        </script>
+        '''
+
     def _build_custom_css(self) -> str:
         """构建自定义CSS"""
         return '''
@@ -311,18 +446,29 @@ class Renderer:
                 background: rgba(10, 14, 39, 0.95) !important;
                 border: 1px solid rgba(78, 205, 196, 0.3) !important;
                 border-radius: 8px !important;
-                padding: 10px 14px !important;
+                padding: 12px 16px !important;
                 font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif !important;
                 color: #E0E0E0 !important;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
-                max-width: 350px !important;
-                line-height: 1.6 !important;
+                box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
+                max-width: 380px !important;
+                line-height: 1.7 !important;
+                font-size: 13px !important;
+                word-wrap: break-word !important;
             }
             .vis-tooltip b {
                 color: #4ECDC4 !important;
+                font-weight: 600 !important;
             }
             .vis-tooltip hr {
-                border-color: rgba(78, 205, 196, 0.3) !important;
+                border: none !important;
+                border-top: 1px solid rgba(78, 205, 196, 0.3) !important;
+                margin: 6px 0 !important;
+            }
+            .vis-tooltip .tooltip-industry {
+                color: #FFD93D;
+            }
+            .vis-tooltip .tooltip-level {
+                color: #FF9800;
             }
         </style>
         '''
