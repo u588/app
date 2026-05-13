@@ -247,50 +247,50 @@ function highlightFilter(filter) {
              
         </style>
     
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-                background: #0a0e27 !important;
-                overflow: hidden;
-            }
-            #mynetwork {
-                margin-top: 55px;
-                height: calc(100vh - 55px) !important;
-            }
-            div.vis-network canvas {
-                outline: none;
-            }
-            .vis-tooltip {
-                background: rgba(10, 14, 39, 0.95) !important;
-                border: 1px solid rgba(78, 205, 196, 0.3) !important;
-                border-radius: 8px !important;
-                padding: 12px 16px !important;
-                font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif !important;
-                color: #E0E0E0 !important;
-                box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
-                max-width: 380px !important;
-                line-height: 1.7 !important;
-                font-size: 13px !important;
-                word-wrap: break-word !important;
-            }
-            .vis-tooltip b {
-                color: #4ECDC4 !important;
-                font-weight: 600 !important;
-            }
-            .vis-tooltip hr {
-                border: none !important;
-                border-top: 1px solid rgba(78, 205, 196, 0.3) !important;
-                margin: 6px 0 !important;
-            }
-            .vis-tooltip .tooltip-industry {
-                color: #FFD93D;
-            }
-            .vis-tooltip .tooltip-level {
-                color: #FF9800;
-            }
-        </style>
-        
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background: #0a0e27 !important;
+                    overflow: hidden;
+                }
+                #mynetwork {
+                    margin-top: 55px;
+                    height: calc(100vh - 55px) !important;
+                }
+                div.vis-network canvas {
+                    outline: none;
+                }
+                .vis-tooltip {
+                    background: rgba(10, 14, 39, 0.95) !important;
+                    border: 1px solid rgba(78, 205, 196, 0.3) !important;
+                    border-radius: 8px !important;
+                    padding: 12px 16px !important;
+                    font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif !important;
+                    color: #E0E0E0 !important;
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
+                    max-width: 380px !important;
+                    line-height: 1.7 !important;
+                    font-size: 13px !important;
+                    word-wrap: break-word !important;
+                }
+                .vis-tooltip b {
+                    color: #4ECDC4 !important;
+                    font-weight: 600 !important;
+                }
+                .vis-tooltip hr {
+                    border: none !important;
+                    border-top: 1px solid rgba(78, 205, 196, 0.3) !important;
+                    margin: 6px 0 !important;
+                }
+                .vis-tooltip .tooltip-industry {
+                    color: #FFD93D;
+                }
+                .vis-tooltip .tooltip-level {
+                    color: #FF9800;
+                }
+            </style>
+            
 </head>
 
 
@@ -620,82 +620,195 @@ function highlightFilter(filter) {
         <script>
         // ============================================================
         // 修补 vis-network 9.x tooltip 渲染问题
-        // 原始代码使用 innerText 渲染 tooltip，导致 HTML 标签显示为源代码
-        // 修补为 innerHTML，使 tooltip 支持富文本格式
+        // 根因：Popup.setText 使用 innerText 渲染 tooltip，
+        //       导致 HTML 标签显示为源代码
+        //       第一次悬停可能正常（MutationObserver 初始捕获），
+        //       后续悬停显示源代码（复用 .vis-tooltip 元素，Observer 漏检）
+        //
+        // 三种修补方式：
+        //   方式一：实例修补 — 找到 Popup 实例，重写 setText
+        //   方式二：MutationObserver — 监听 .vis-tooltip 子节点变化并修复
+        //   方式三：原型修补 — 通过实例回溯构造函数，修补 prototype.setText
         // ============================================================
         (function patchTooltipRendering() {
-            function tryPatch() {
-                // 查找 vis-network 实例的 Popup 对象
-                var container = document.getElementById('mynetwork');
-                if (!container || !container.network) {
-                    setTimeout(tryPatch, 500);
-                    return;
-                }
-                var network = container.network;
-                if (network.manipulation && network.manipulation.canvas
-                    && network.manipulation.canvas.popup) {
-                    var popup = network.manipulation.canvas.popup;
-                    // 备份原始 setText 方法
-                    var origSet = popup.setText.bind(popup);
-                    // 重写 setText，将 innerText 替换为 innerHTML
-                    popup.setText = function(content) {
-                        if (typeof content === 'string') {
-                            // 将空字符串重置
-                            if (content === '') {
-                                this.frame.innerHTML = '';
-                                return;
-                            }
-                            // 关键修改：使用 innerHTML 渲染 HTML 内容
-                            this.frame.innerHTML = content;
-                        } else if (content instanceof Element) {
-                            while (this.frame.firstChild) {
-                                this.frame.removeChild(this.frame.firstChild);
-                            }
-                            this.frame.appendChild(content);
-                        }
-                    };
-                    console.log('[产业链系统] Tooltip HTML渲染修补成功');
-                } else {
-                    // Popup 对象可能尚未初始化，延迟重试
-                    setTimeout(tryPatch, 300);
+            var patched = false; // 标记是否已成功修补
+
+            // ============ 通用：innerHTM 替换 innerText 的 setText 实现 ============
+            function patchedSetText(content) {
+                if (typeof content === 'string') {
+                    if (content === '') {
+                        this.frame.innerHTML = '';
+                        return;
+                    }
+                    this.frame.innerHTML = content; // 关键：innerHTML 替代 innerText
+                } else if (content instanceof Element) {
+                    while (this.frame.firstChild) {
+                        this.frame.removeChild(this.frame.firstChild);
+                    }
+                    this.frame.appendChild(content);
                 }
             }
 
-            // 方案二：通过 MutationObserver 监听 vis-tooltip DOM 变化
-            // 将 innerText 渲染的内容转为 HTML
-            var observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    mutation.addedNodes.forEach(function(node) {
-                        if (node.classList && node.classList.contains('vis-tooltip')) {
-                            // 获取 innerText 内容，转义后设置为 innerHTML
-                            var raw = node.innerText;
-                            if (raw && (raw.includes('<b>') || raw.includes('<br>')
-                                || raw.includes('<hr') || raw.includes('<div')))
-                            {
-                                // 将 innerText 中的 HTML 标签还原为真正的 HTML
-                                // 因为 innerText 会将 < 转义为 &lt; 等
-                                var tempDiv = document.createElement('div');
-                                tempDiv.innerHTML = raw;
-                                // 如果解析成功（内容包含HTML元素），使用解析结果
-                                if (tempDiv.children.length > 0) {
-                                    node.innerHTML = raw;
-                                }
+            // ============ 方式一：Popup 实例修补 ============
+            // 问题：原代码路径 network.manipulation.canvas.popup 不存在
+            // 修正：遍历多条路径查找 popup 实例；
+            //       若首次悬停前 popup 未创建，注册一次性 hover 事件，
+            //       等首次悬停创建 popup 后立即修补
+            function tryPatchInstance() {
+                if (patched) return;
+                var net = window.network;
+                if (!net) { setTimeout(tryPatchInstance, 500); return; }
+
+                // 多路径查找 popup 实例
+                var popup = null;
+                var paths = [
+                    function() { return net.interactionHandler && net.interactionHandler.popup; },
+                    function() { return net.manipulation && net.manipulation.canvas && net.manipulation.canvas.popup; },
+                    function() { return net.canvas && net.canvas.popup; },
+                    function() { return net.body && net.body.popup; },
+                ];
+                for (var i = 0; i < paths.length; i++) {
+                    try {
+                        popup = paths[i]();
+                        if (popup && popup.frame && typeof popup.setText === 'function') break;
+                        popup = null;
+                    } catch(e) {}
+                }
+
+                if (popup) {
+                    popup.setText = patchedSetText;
+                    patched = true;
+                    console.log('[产业链系统] 方式一：Popup实例setText修补成功');
+                    return;
+                }
+
+                // popup 尚未创建（首次悬停前不存在），注册一次性 hover 事件
+                var hoverHandler = function() {
+                    setTimeout(function() {
+                        var p = null;
+                        for (var j = 0; j < paths.length; j++) {
+                            try {
+                                p = paths[j]();
+                                if (p && p.frame && typeof p.setText === 'function') break;
+                                p = null;
+                            } catch(e) {}
+                        }
+                        if (p) {
+                            p.setText = patchedSetText;
+                            patched = true;
+                            console.log('[产业链系统] 方式一（延迟）：Popup实例setText修补成功');
+                            net.off('hoverNode', hoverHandler);
+                            net.off('hoverEdge', hoverHandler);
+                        }
+                    }, 50);
+                };
+                net.on('hoverNode', hoverHandler);
+                net.on('hoverEdge', hoverHandler);
+            }
+
+            // ============ 方式二：MutationObserver 监听修补 ============
+            // 问题：原代码只检查 addedNodes 是否为 .vis-tooltip 元素，
+            //       但后续悬停时 vis-network 复用 .vis-tooltip 元素只更新子节点，
+            //       addedNodes 是文本节点而非 .vis-tooltip，检测失败
+            // 修正：检查 mutation.target 是否为 .vis-tooltip 或其内部元素；
+            //       用 isFixing 标记防止递归
+            var isFixing = false;
+            var tooltipTitles = {}; // 缓存：nodeId/edgeId → title HTML
+
+            // 收集所有节点的 title HTML（用于方式二的精确修复）
+            function collectTitles() {
+                try {
+                    if (typeof nodes !== 'undefined' && nodes.get) {
+                        var allNodes = nodes.get();
+                        for (var i = 0; i < allNodes.length; i++) {
+                            if (allNodes[i].title) {
+                                tooltipTitles['node_' + allNodes[i].id] = allNodes[i].title;
                             }
                         }
-                    });
-                    // 同时检查 characterData 变化
-                    if (mutation.type === 'characterData' && mutation.target.parentElement
-                        && mutation.target.parentElement.classList
-                        && mutation.target.parentElement.classList.contains('vis-tooltip')) {
-                        var tooltip = mutation.target.parentElement;
-                        var raw = tooltip.innerText;
-                        if (raw && (raw.includes('<b>') || raw.includes('<br>')
-                            || raw.includes('<hr') || raw.includes('<div')))
-                        {
-                            tooltip.innerHTML = raw;
+                    }
+                } catch(e) {}
+                try {
+                    if (typeof edges !== 'undefined' && edges.get) {
+                        var allEdges = edges.get();
+                        for (var i = 0; i < allEdges.length; i++) {
+                            if (allEdges[i].title) {
+                                tooltipTitles['edge_' + allEdges[i].id] = allEdges[i].title;
+                            }
                         }
                     }
-                });
+                } catch(e) {}
+            }
+
+            var observer = new MutationObserver(function(mutations) {
+                if (patched) { observer.disconnect(); return; }
+
+                for (var m = 0; m < mutations.length; m++) {
+                    var mutation = mutations[m];
+                    if (isFixing) return;
+
+                    // 查找受影响的 .vis-tooltip 元素
+                    var tooltipEl = null;
+
+                    // 检查 addedNodes（首次添加 .vis-tooltip 元素时）
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        var node = mutation.addedNodes[i];
+                        if (node.nodeType === 1) { // Element node
+                            if (node.classList && node.classList.contains('vis-tooltip')) {
+                                tooltipEl = node;
+                                break;
+                            }
+                            // addedNode 可能是 .vis-tooltip 内部的元素
+                            if (node.parentElement) {
+                                var p = node.parentElement;
+                                while (p && p !== document.body) {
+                                    if (p.classList && p.classList.contains('vis-tooltip')) {
+                                        tooltipEl = p;
+                                        break;
+                                    }
+                                    p = p.parentElement;
+                                }
+                                if (tooltipEl) break;
+                            }
+                        }
+                    }
+
+                    // 检查 mutation.target（后续悬停时，vis-network 复用 .vis-tooltip，
+                    // 只通过 innerText 替换子节点内容，此时 target 就是 .vis-tooltip 本身）
+                    if (!tooltipEl && mutation.target) {
+                        var target = mutation.target;
+                        // target 可能就是 .vis-tooltip
+                        if (target.nodeType === 1 && target.classList && target.classList.contains('vis-tooltip')) {
+                            tooltipEl = target;
+                        }
+                        // 或者 target 是 .vis-tooltip 内部的文本节点/元素
+                        else if (target.parentElement) {
+                            var p = target.parentElement;
+                            while (p && p !== document.body) {
+                                if (p.classList && p.classList.contains('vis-tooltip')) {
+                                    tooltipEl = p;
+                                    break;
+                                }
+                                p = p.parentElement;
+                            }
+                        }
+                    }
+
+                    if (tooltipEl && !isFixing) {
+                        // 获取 innerText 中的 HTML 标签字面量
+                        var raw = tooltipEl.innerText || tooltipEl.textContent || '';
+                        if (raw && (raw.indexOf('<div') !== -1 || raw.indexOf('<span') !== -1
+                            || raw.indexOf('<b>') !== -1 || raw.indexOf('<hr') !== -1
+                            || raw.indexOf('<br') !== -1))
+                        {
+                            isFixing = true;
+                            try {
+                                // 将 innerText 中的 HTML 标签字面量作为真正的 HTML 渲染
+                                tooltipEl.innerHTML = raw;
+                            } catch(e) {}
+                            isFixing = false;
+                        }
+                    }
+                }
             });
 
             observer.observe(document.body, {
@@ -704,40 +817,65 @@ function highlightFilter(filter) {
                 characterData: true
             });
 
-            // 方案三：直接修补 Tooltip.prototype.setText（最可靠）
-            // 在 vis-network 加载后执行
-            function patchPrototype() {
-                if (typeof vis !== 'undefined' && vis.Popup) {
-                    var proto = vis.Popup.prototype;
-                    if (proto && proto.setText) {
-                        var originalSetText = proto.setText;
-                        proto.setText = function(content) {
-                            if (typeof content === 'string') {
-                                if (content === '') {
-                                    this.frame.innerHTML = '';
-                                    return;
-                                }
-                                // 核心修改：使用 innerHTML 替代 innerText
-                                this.frame.innerHTML = content;
-                            } else if (content instanceof Element) {
-                                while (this.frame.firstChild) {
-                                    this.frame.removeChild(this.frame.firstChild);
-                                }
-                                this.frame.appendChild(content);
-                            }
-                        };
-                        console.log('[产业链系统] Popup.prototype.setText 修补成功');
-                        observer.disconnect(); // 原型修补成功，无需 observer
+            // ============ 方式三：Popup 原型修补 ============
+            // 问题：vis.Popup 不是公共 API，vis.Popup 为 undefined
+            // 修正：通过实例的 constructor 回溯原型链；
+            //       等首次悬停创建 popup 实例后，从实例获取 constructor.prototype
+            function tryPatchPrototype() {
+                if (patched) return;
+
+                // 尝试直接访问 vis.Popup
+                if (typeof vis !== 'undefined' && vis.Popup && vis.Popup.prototype) {
+                    vis.Popup.prototype.setText = patchedSetText;
+                    patched = true;
+                    console.log('[产业链系统] 方式三：vis.Popup.prototype 修补成功');
+                    observer.disconnect();
+                    return;
+                }
+
+                // 通过实例的 constructor 回溯原型
+                var net = window.network;
+                if (net) {
+                    var popup = null;
+                    var paths = [
+                        function() { return net.interactionHandler && net.interactionHandler.popup; },
+                        function() { return net.manipulation && net.manipulation.canvas && net.manipulation.canvas.popup; },
+                        function() { return net.canvas && net.canvas.popup; },
+                        function() { return net.body && net.body.popup; },
+                    ];
+                    for (var i = 0; i < paths.length; i++) {
+                        try {
+                            popup = paths[i]();
+                            if (popup && popup.frame && typeof popup.setText === 'function') break;
+                            popup = null;
+                        } catch(e) {}
                     }
+
+                    if (popup && popup.constructor && popup.constructor.prototype) {
+                        popup.constructor.prototype.setText = patchedSetText;
+                        patched = true;
+                        console.log('[产业链系统] 方式三：通过实例constructor回溯原型修补成功');
+                        observer.disconnect();
+                        return;
+                    }
+                }
+
+                // 未找到，延迟重试
+                if (!patched) {
+                    setTimeout(tryPatchPrototype, 800);
                 }
             }
 
-            // 等 vis-network 加载完成后修补原型
+            // ============ 初始化 ============
+            // 方式一：立即尝试实例修补
+            tryPatchInstance();
+
+            // 方式三：页面加载后尝试原型修补
             if (document.readyState === 'complete') {
-                setTimeout(patchPrototype, 200);
+                setTimeout(function() { collectTitles(); tryPatchPrototype(); }, 300);
             } else {
                 window.addEventListener('load', function() {
-                    setTimeout(patchPrototype, 200);
+                    setTimeout(function() { collectTitles(); tryPatchPrototype(); }, 300);
                 });
             }
         })();
