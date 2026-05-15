@@ -1,4 +1,5 @@
 """
+渲染器模块
 负责网络图的最终渲染、HTML注入（图例/统计等）和文件输出
 """
 
@@ -89,8 +90,6 @@ class Renderer:
         html = html.replace('</body>', f'{filter_html}\n</body>')
 
         # ★ 核心修复：注入JS修补vis-network的tooltip渲染
-        # vis-network 9.x 使用 innerText 渲染tooltip，导致HTML标签显示为源代码
-        # 修补为 innerHTML，使tooltip支持富文本
         tooltip_patch = self._build_tooltip_patch()
         html = html.replace('</body>', f'{tooltip_patch}\n</body>')
 
@@ -169,7 +168,7 @@ class Renderer:
                 <span style="color:#E0E0E0;font-size:12px;">{industry}</span>
             </div>'''
 
-        # 层级图例
+        # 层级图例（使用SVG图标精确展示形状）
         chain_level_config = self.viz_config.get('chain_level', {})
         level_legends = ""
         level_info = {
@@ -177,12 +176,17 @@ class Renderer:
             'midstream': '中游（制造/加工）',
             'downstream': '下游（应用/终端）',
         }
+        # SVG形状定义
+        level_shapes_svg = {
+            'upstream': f'''<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,1 15,8 8,15 1,8" fill="{chain_level_config.get('upstream', {}).get('badge_color', '#4CAF50')}" stroke="#fff" stroke-width="0.5"/></svg>''',
+            'midstream': f'''<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,1 12,1 15.5,8 12,15 4,15 0.5,8" fill="{chain_level_config.get('midstream', {}).get('badge_color', '#FF9800')}" stroke="#fff" stroke-width="0.5"/></svg>''',
+            'downstream': f'''<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,0.5 9.8,5.8 15.5,6.2 11.2,10 12.5,15.5 8,12.5 3.5,15.5 4.8,10 0.5,6.2 6.2,5.8" fill="{chain_level_config.get('downstream', {}).get('badge_color', '#E91E63')}" stroke="#fff" stroke-width="0.5"/></svg>''',
+        }
         for level, label in level_info.items():
-            lc = chain_level_config.get(level, {})
-            shape = lc.get('shape', 'dot')
+            svg_icon = level_shapes_svg.get(level, '')
             level_legends += f'''
             <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
-                <div style="width:14px;height:14px;background:{lc.get('badge_color','#888')};border-radius:{'0' if shape=='diamond' else '50%' if shape=='dot' else '3px'};transform:{'rotate(45deg) scale(0.7)' if shape=='diamond' else 'none'};"></div>
+                {svg_icon}
                 <span style="color:#E0E0E0;font-size:12px;">{label}</span>
             </div>'''
 
@@ -561,91 +565,52 @@ class Renderer:
             }
         })();
         </script>
-        '''    
-        
-    def _inject_custom_html(
-        self,
-        filepath: str,
-        title: str,
-        legend_items: Optional[Dict],
-        statistics: Optional[Dict],
-    ):
-        """注入自定义HTML（标题栏、图例、统计面板等）"""
-        with open(filepath, 'r', encoding='utf-8') as f:
-            html = f.read()
+        '''
 
-        # 注入标题栏
-        title_bar = self._build_title_bar(title)
-        html = html.replace('<body>', f'<body>\n{title_bar}')
-
-        # 注入图例
-        if legend_items:
-            legend_html = self._build_legend(legend_items)
-            html = html.replace('</body>', f'{legend_html}\n</body>')
-
-        # 注入统计面板
-        if statistics:
-            stats_html = self._build_statistics_panel(statistics)
-            html = html.replace('</body>', f'{stats_html}\n</body>')
-
-        # 注入自定义CSS
-        custom_css = self._build_custom_css()
-        html = html.replace('</head>', f'{custom_css}\n</head>')
-
-        # 注入筛选控件
-        filter_html = self._build_filter_controls()
-        html = html.replace('</body>', f'{filter_html}\n</body>')
-
-        # ★ 核心修复：注入JS修补vis-network的tooltip渲染
-        tooltip_patch = self._build_tooltip_patch()
-        html = html.replace('</body>', f'{tooltip_patch}\n</body>')
-
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(html)
     def _build_custom_css(self) -> str:
-            """构建自定义CSS"""
-            return '''
-            <style>
-                body {
-                    margin: 0;
-                    padding: 0;
-                    background: #0a0e27 !important;
-                    overflow: hidden;
-                }
-                #mynetwork {
-                    margin-top: 55px;
-                    height: calc(100vh - 55px) !important;
-                }
-                div.vis-network canvas {
-                    outline: none;
-                }
-                .vis-tooltip {
-                    background: rgba(10, 14, 39, 0.95) !important;
-                    border: 1px solid rgba(78, 205, 196, 0.3) !important;
-                    border-radius: 8px !important;
-                    padding: 12px 16px !important;
-                    font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif !important;
-                    color: #E0E0E0 !important;
-                    box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
-                    max-width: 380px !important;
-                    line-height: 1.7 !important;
-                    font-size: 13px !important;
-                    word-wrap: break-word !important;
-                }
-                .vis-tooltip b {
-                    color: #4ECDC4 !important;
-                    font-weight: 600 !important;
-                }
-                .vis-tooltip hr {
-                    border: none !important;
-                    border-top: 1px solid rgba(78, 205, 196, 0.3) !important;
-                    margin: 6px 0 !important;
-                }
-                .vis-tooltip .tooltip-industry {
-                    color: #FFD93D;
-                }
-                .vis-tooltip .tooltip-level {
-                    color: #FF9800;
-                }
-            </style>
-            '''
+        """构建自定义CSS"""
+        return '''
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background: #0a0e27 !important;
+                overflow: hidden;
+            }
+            #mynetwork {
+                margin-top: 55px;
+                height: calc(100vh - 55px) !important;
+            }
+            div.vis-network canvas {
+                outline: none;
+            }
+            .vis-tooltip {
+                background: rgba(10, 14, 39, 0.95) !important;
+                border: 1px solid rgba(78, 205, 196, 0.3) !important;
+                border-radius: 8px !important;
+                padding: 12px 16px !important;
+                font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif !important;
+                color: #E0E0E0 !important;
+                box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
+                max-width: 380px !important;
+                line-height: 1.7 !important;
+                font-size: 13px !important;
+                word-wrap: break-word !important;
+            }
+            .vis-tooltip b {
+                color: #4ECDC4 !important;
+                font-weight: 600 !important;
+            }
+            .vis-tooltip hr {
+                border: none !important;
+                border-top: 1px solid rgba(78, 205, 196, 0.3) !important;
+                margin: 6px 0 !important;
+            }
+            .vis-tooltip .tooltip-industry {
+                color: #FFD93D;
+            }
+            .vis-tooltip .tooltip-level {
+                color: #FF9800;
+            }
+        </style>
+        '''

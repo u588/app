@@ -194,9 +194,18 @@ class NetworkBuilder:
                 market_cap=target['市值规模'],
                 target_name=target['标的名称'],
                 code=target['代码'],
-                description=target['入选说明'],
-                policy_score=target['政策契合度'],
-                certainty_score=target['投资确定性'],
+                description=target.get('入选说明', ''),
+                policy_score=target.get('政策契合度', 0),
+                certainty_score=target.get('投资确定性', 0),
+                score=target.get('综合评分', 0.0),
+                target_priority=target.get('标的优先级', 0),
+                config_advice=target.get('配置建议', ''),
+                invest_style=target.get('投资风格', ''),
+                core_ratio=target.get('核心业务占比', 0),
+                category=target.get('二级分类', ''),
+                track=target.get('三级赛道', ''),
+                track_priority=target.get('赛道优先级', ''),
+                policy_cycle=target.get('政策周期', ''),
             )
 
             net.add_node(
@@ -292,37 +301,18 @@ class NetworkBuilder:
         # 边宽根据权重调整
         adjusted_width = edge_style.get('width', 2) * (weight / 3)
 
-        # 构建悬停提示（富HTML格式）
+        # 构建悬停提示
         type_labels = {
             'supply_chain': '供应链',
             'competition': '竞争',
             'collaboration': '协同',
             'verification': '验证',
         }
-        type_colors = {
-            'supply_chain': '#4CAF50',
-            'competition': '#F44336',
-            'collaboration': '#2196F3',
-            'verification': '#FF9800',
-        }
-        rel_color = type_colors.get(relation_type, '#888')
-        rel_label = type_labels.get(relation_type, '')
-
-        # 关系强度条
-        strength_bar = f"<span style='color:{rel_color}'>{'●' * weight}</span><span style='color:#555'>{'○' * (5 - weight)}</span>"
-
         tooltip = (
-            f"<div style='min-width:180px'>"
-            f"<div style='font-size:13px;font-weight:bold;color:{rel_color};margin-bottom:4px;'>"
-            f"  [{rel_label}] {label}"
-            f"</div>"
-            f"<hr style='border:none;border-top:1px solid {rel_color}30;margin:6px 0;'>"
-            f"<div style='display:flex;justify-content:space-between;align-items:center;margin:4px 0;'>"
-            f"  <span style='color:#999;'>关系强度</span>"
-            f"  <span>{strength_bar}</span>"
-            f"</div>"
-            f"<div style='color:#BBB;font-size:12px;line-height:1.6;margin-top:4px;'>{description}</div>"
-            f"</div>"
+            f"<b>[{type_labels.get(relation_type, '')}]</b> {label}<br>"
+            f"<hr style='margin:3px 0;border-color:{edge_style.get('color', {}).get('color', '#888')}'>"
+            f"<b>关系强度</b>: {'●' * weight}{'○' * (5 - weight)}<br>"
+            f"<b>说明</b>: {description}"
         )
 
         try:

@@ -201,9 +201,9 @@ class KnowledgeExpander:
             },
             # 传感器技术同源
             {
-                'source': '柯力传感', 'target': '汉威科技',
+                'source': '奥普特', 'target': '汉威科技',
                 'label': '传感技术同源', 'weight': 2,
-                'description': '力学传感器+气体传感器在物联网/机器人领域技术互补',
+                'description': '机器视觉传感器+气体传感器在物联网/机器人领域技术互补',
                 'insight': '多模态传感器融合是机器人感知系统的发展方向'
             },
             # CRO技术同源
@@ -286,9 +286,9 @@ class KnowledgeExpander:
             },
             # 数据要素政策
             {
-                'source': '人民网', 'target': '易华录',
+                'source': '易华录', 'target': '润泽科技',
                 'label': '数据要素政策双受益', 'weight': 3,
-                'description': '数据确权+数据存储是数据要素政策两大抓手',
+                'description': '数据存储+数据基础设施是数据要素政策两大抓手',
                 'insight': '数据二十条政策推动数据确权与数据资产入表加速'
             },
         ]

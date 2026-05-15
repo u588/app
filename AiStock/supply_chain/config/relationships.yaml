@@ -1,6 +1,7 @@
 # ============================================================
 # 四大关系配置：供应链/竞争/协同/验证
 # 定义关系构建规则与专业扩充知识
+# 基于"十大投资方向分类体系标的池（2026.5）.xlsx"重构
 # ============================================================
 
 # 供应链关系规则：定义跨层级/跨赛道的供需关系
@@ -12,28 +13,28 @@ supply_chain:
 
   # 行业内供应链：上游→中游→下游
   intra_industry:
-    半导体国产化:
-      - from: "设备材料→刻蚀薄膜"
-        to: "晶圆制造→成熟制程"
+    半导体:
+      - from: "设备材料→刻蚀与薄膜"
+        to: "晶圆制造→成熟制程代工"
         label: "设备供应"
         weight: 5
         description: "刻蚀/薄膜/检测设备是晶圆制造产线的核心投入"
-      - from: "设备材料→光刻硅片"
-        to: "晶圆制造→成熟制程"
+      - from: "设备材料→光刻与硅片"
+        to: "晶圆制造→成熟制程代工"
         label: "材料供应"
         weight: 5
         description: "硅片/光刻胶/电子特气是晶圆代工的核心原材料"
-      - from: "设备材料→光刻硅片"
+      - from: "设备材料→光刻与硅片"
         to: "晶圆制造→先进封装"
         label: "封装材料供应"
         weight: 4
         description: "引线框架/键合丝/基板材料是先进封装的核心耗材"
-      - from: "晶圆制造→成熟制程"
+      - from: "晶圆制造→成熟制程代工"
         to: "晶圆制造→先进封装"
         label: "晶圆流片"
         weight: 5
         description: "晶圆制造完成后进入封测环节，形成完整芯片"
-      - from: "晶圆制造→成熟制程"
+      - from: "晶圆制造→成熟制程代工"
         to: "第三代半导体→SiC/GaN"
         label: "工艺输出"
         weight: 3
@@ -43,141 +44,206 @@ supply_chain:
         label: "器件封装"
         weight: 3
         description: "SiC/GaN功率器件需要先进封装工艺支持"
+      - from: "EDA与IP→EDA工具"
+        to: "设备材料→刻蚀与薄膜"
+        label: "设计驱动"
+        weight: 3
+        description: "EDA工具支撑设备工艺开发与验证"
+      - from: "EDA与IP→芯片IP与服务"
+        to: "晶圆制造→成熟制程代工"
+        label: "IP授权"
+        weight: 3
+        description: "芯片IP授权是晶圆代工设计服务的基础"
 
     人工智能:
       - from: "算力基建→算力芯片"
-        to: "大模型基座→大模型基座"
+        to: "大模型基座→推理侧优化"
         label: "算力供给"
         weight: 5
         description: "GPU/DCU加速卡是大模型训练推理的算力基础"
-      - from: "算力基建→光液冷"
+      - from: "算力基建→光模块与CPO"
+        to: "算力基建→算力芯片"
+        label: "互联保障"
+        weight: 4
+        description: "高速光模块保障AI算力集群间数据互联"
+      - from: "算力基建→液冷温控"
         to: "算力基建→算力芯片"
         label: "散热保障"
         weight: 4
         description: "液冷散热保障高功率AI芯片稳定运行"
-      - from: "大模型基座→大模型基座"
-        to: "应用场景"
+      - from: "大模型基座→通用大模型"
+        to: "大模型基座→推理侧优化"
+        label: "模型优化"
+        weight: 4
+        description: "通用大模型向推理侧优化演进"
+      - from: "大模型基座→通用大模型"
+        to: "Agent与智能体→企业级AI Agent与服务"
+        label: "模型输出"
+        weight: 4
+        description: "大模型向Agent智能体输出核心能力"
+      - from: "大模型基座→通用大模型"
+        to: "行业应用"
         label: "模型输出"
         weight: 4
         description: "大模型向下游应用提供API与Agent能力"
 
     战略资源:
-      - from: "稀土永磁→稀土开采"
+      - from: "稀土永磁→稀土开采与磁材"
         to: "能源金属→铜锂钴"
         label: "冶炼协同"
         weight: 3
         description: "稀土与能源金属在采选冶炼环节存在技术协同"
-      - from: "稀土永磁→稀土开采"
-        to: "战略小金属→锑钨锡"
+      - from: "稀土永磁→稀土开采与磁材"
+        to: "战略小金属→锑钨锡钼"
         label: "多金属伴生"
         weight: 3
         description: "稀土矿常与钨锡等多金属伴生，综合回收利用"
       - from: "能源金属→铜锂钴"
-        to: "战略小金属→锑钨锡"
+        to: "战略小金属→锑钨锡钼"
         label: "金属深加工"
         weight: 2
         description: "部分能源金属经深加工后进入战略小金属领域"
+      - from: "能源金属→铜锂钴"
+        to: "循环经济→电池回收与再生"
+        label: "回收循环"
+        weight: 4
+        description: "铜锂钴等金属可通过电池回收再生实现循环利用"
 
     国防军工:
-      - from: "军工材料→碳纤维复材"
+      - from: "军工材料→碳纤维与复材"
         to: "主战装备→航空发动机"
         label: "复材供应"
         weight: 5
         description: "碳纤维复合材料是航空发动机/军机结构件核心材料"
-      - from: "军工材料→碳纤维复材"
-        to: "军工电子→信息化"
+      - from: "军工材料→碳纤维与复材"
+        to: "军工电子→信息化与连接器"
         label: "特种材料"
         weight: 3
         description: "隐身涂层/特种合金用于电子装备防护"
-      - from: "军工电子→信息化"
+      - from: "军工电子→信息化与连接器"
         to: "主战装备→航空发动机"
         label: "航电系统"
         weight: 5
         description: "信息化电子系统是航空装备的核心分系统"
+      - from: "商业航天→火箭与卫星"
+        to: "主战装备→无人机与导弹"
+        label: "航天技术外溢"
+        weight: 3
+        description: "航天推进与制导技术向导弹无人机领域外溢"
 
     新能源:
-      - from: "光伏技术→N型电池"
-        to: "储能电池→储能系统"
+      - from: "光伏技术→N型电池与钙钛矿"
+        to: "储能系统→储能集成"
         label: "光储一体"
         weight: 4
         description: "光伏+储能一体化是新能源系统的标准配置"
-      - from: "储能电池→储能系统"
-        to: "应用场景"
-        label: "系统交付"
+      - from: "储能系统→储能集成"
+        to: "智能电网→虚拟电厂与特高压"
+        label: "储能支撑电网"
         weight: 4
-        description: "储能系统向电站/工商业用户提供储能服务"
+        description: "储能系统为智能电网调峰调频提供核心支撑"
+      - from: "储能系统→储能集成"
+        to: "智能驾驶→三电与整车"
+        label: "电池供应"
+        weight: 5
+        description: "储能电池技术直接应用于新能源汽车动力电池"
+      - from: "智能电网→虚拟电厂与特高压"
+        to: "碳管理与绿色低碳→碳交易与绿色建筑"
+        label: "绿色电力"
+        weight: 3
+        description: "智能电网支撑绿电交易与碳管理"
 
     数据要素:
-      - from: "数据安全→隐私计算"
-        to: "数据资产→确权交易"
+      - from: "数据安全→隐私计算与加密"
+        to: "数据资产→数据资产与基础设施"
         label: "安全保障"
         weight: 5
         description: "隐私计算/数据安全技术是数据确权交易的前提保障"
-      - from: "数据资产→确权交易"
-        to: "数据应用"
+      - from: "数据资产→数据资产与基础设施"
+        to: "行业数据"
         label: "数据输出"
         weight: 4
         description: "确权数据资产向下游应用输出数据产品与服务"
 
     低空经济:
-      - from: "低空基建→通信空管"
-        to: "飞行器制造→eVTOL整机"
+      - from: "低空基建→空管与通感"
+        to: "eVTOL整机→eVTOL制造"
         label: "基建支撑"
         weight: 5
         description: "通信导航空管基础设施是飞行器安全运行的前提"
-      - from: "飞行器制造→eVTOL整机"
+      - from: "低空基建→动力系统"
+        to: "eVTOL整机→eVTOL制造"
+        label: "动力配套"
+        weight: 4
+        description: "动力系统是eVTOL整机的核心子系统"
+      - from: "eVTOL整机→eVTOL制造"
         to: "运营服务"
         label: "飞行器交付"
         weight: 4
         description: "eVTOL整机交付运营方开展低空运输服务"
 
     创新药:
-      - from: "产业化→CDMO/CRO"
-        to: "前沿平台→ADC/GLP-1"
+      - from: "产业化平台→CDMO/CRO"
+        to: "前沿技术→ADC/GLP-1"
         label: "研发服务"
         weight: 5
         description: "CRO/CDMO为创新药研发提供临床前/临床/生产全链条服务"
-      - from: "前沿平台→ADC/GLP-1"
-        to: "商业化"
-        label: "管线输出"
-        weight: 4
-        description: "创新药管线推进至商业化上市阶段"
+      - from: "产业化平台→CDMO/CRO"
+        to: "前沿技术→AI与CGT"
+        label: "研发服务"
+        weight: 5
+        description: "CRO/CDMO为AI+CGT创新药提供研发生产服务"
+      - from: "前沿技术→ADC/GLP-1"
+        to: "生物制造→合成生物学"
+        label: "技术转化"
+        weight: 3
+        description: "创新药技术向生物制造产业化转化"
 
     消费升级:
-      - from: "数字消费→AI终端"
-        to: "银发经济→医疗器械"
+      - from: "数字消费→AI终端制造"
+        to: "体验消费→文旅与智能家电"
         label: "AI赋能"
         weight: 3
-        description: "AI终端技术赋能医疗器械智能化升级"
-      - from: "银发经济→医疗器械"
-        to: "消费服务"
-        label: "设备供给"
+        description: "AI终端技术赋能智能家电升级"
+      - from: "数字消费→AI终端制造"
+        to: "银发经济→医疗器械与智慧养老"
+        label: "AI赋能医疗"
         weight: 3
-        description: "医疗器械产品进入家庭健康管理服务场景"
+        description: "AI终端技术赋能医疗器械智能化升级"
+      - from: "银发经济→医疗器械与智慧养老"
+        to: "银发经济→保健品"
+        label: "健康闭环"
+        weight: 2
+        description: "医疗器械监测+保健品干预形成健康管理闭环"
 
     人形机器人:
       - from: "核心零部件→传感器"
-        to: "核心零部件→关节减速器"
+        to: "核心零部件→减速器与丝杠"
         label: "传感配套"
         weight: 4
         description: "力矩传感器/位置传感器是关节模组的核心感知部件"
       - from: "核心零部件→微特电机"
-        to: "核心零部件→关节减速器"
+        to: "核心零部件→减速器与丝杠"
         label: "电机配套"
         weight: 5
         description: "空心杯电机/无框力矩电机是关节模组的驱动核心"
-      - from: "核心零部件→关节减速器"
-        to: "整机制造"
+      - from: "核心零部件→减速器与丝杠"
+        to: "具身智能→整机与系统集成"
         label: "零部件供给"
         weight: 5
         description: "关节模组是人形机器人整机的核心运动部件"
+      - from: "核心零部件→传感器"
+        to: "脑机接口→脑机与康复"
+        label: "传感技术外溢"
+        weight: 2
+        description: "传感技术可延伸至脑机接口信号采集领域"
 
   # 跨行业供应链：行业间的供需关系
   cross_industry:
     - from_industry: "战略资源"
-      from_track: "稀土永磁→稀土开采"
+      from_track: "稀土永磁→稀土开采与磁材"
       to_industry: "国防军工"
-      to_track: "军工材料→碳纤维复材"
+      to_track: "军工材料→碳纤维与复材"
       label: "磁材供应"
       weight: 4
       description: "稀土永磁材料是军工隐身/电磁领域的关键材料"
@@ -185,13 +251,13 @@ supply_chain:
     - from_industry: "战略资源"
       from_track: "能源金属→铜锂钴"
       to_industry: "新能源"
-      to_track: "储能电池→储能系统"
+      to_track: "储能系统→储能集成"
       label: "锂钴供应"
       weight: 5
       description: "锂/钴/镍是动力电池与储能电池正极材料的核心原料"
 
     - from_industry: "战略资源"
-      from_track: "稀土永磁→稀土开采"
+      from_track: "稀土永磁→稀土开采与磁材"
       to_industry: "人形机器人"
       to_track: "核心零部件→微特电机"
       label: "永磁材料"
@@ -199,55 +265,55 @@ supply_chain:
       description: "钕铁硼永磁材料是微特电机/伺服电机的核心材料"
 
     - from_industry: "战略资源"
-      from_track: "战略小金属→锑钨锡"
-      to_industry: "半导体国产化"
-      to_track: "设备材料→光刻硅片"
+      from_track: "战略小金属→锑钨锡钼"
+      to_industry: "半导体"
+      to_track: "设备材料→光刻与硅片"
       label: "特种气体/靶材"
       weight: 3
       description: "锗/钨等战略小金属是半导体靶材与特种气体的原料"
 
-    - from_industry: "半导体国产化"
-      from_track: "设备材料→刻蚀薄膜"
+    - from_industry: "半导体"
+      from_track: "设备材料→刻蚀与薄膜"
       to_industry: "人工智能"
       to_track: "算力基建→算力芯片"
       label: "芯片制造设备"
       weight: 4
       description: "半导体设备支撑AI芯片产线建设"
 
-    - from_industry: "半导体国产化"
+    - from_industry: "半导体"
       from_track: "第三代半导体→SiC/GaN"
       to_industry: "新能源"
-      to_track: "储能电池→储能系统"
+      to_track: "储能系统→储能集成"
       label: "SiC功率器件"
       weight: 4
       description: "SiC功率器件是新能源车/储能逆变器的核心开关器件"
 
     - from_industry: "人工智能"
-      from_track: "大模型基座→大模型基座"
+      from_track: "大模型基座→通用大模型"
       to_industry: "消费升级"
-      to_track: "数字消费→AI终端"
+      to_track: "数字消费→AI终端制造"
       label: "AI能力输出"
       weight: 4
       description: "大模型能力赋能AI手机/PC等智能终端"
 
     - from_industry: "人工智能"
-      from_track: "大模型基座→大模型基座"
+      from_track: "大模型基座→通用大模型"
       to_industry: "数据要素"
-      to_track: "数据资产→确权交易"
+      to_track: "数据资产→数据资产与基础设施"
       label: "数据智能"
       weight: 3
       description: "AI大模型提升数据要素的价值提取能力"
 
     - from_industry: "国防军工"
-      from_track: "军工电子→信息化"
+      from_track: "军工电子→信息化与连接器"
       to_industry: "低空经济"
-      to_track: "低空基建→通信空管"
+      to_track: "低空基建→空管与通感"
       label: "军工技术外溢"
       weight: 3
       description: "军用通信导航技术向低空空管领域外溢转化"
 
-    - from_industry: "半导体国产化"
-      from_track: "晶圆制造→成熟制程"
+    - from_industry: "半导体"
+      from_track: "晶圆制造→成熟制程代工"
       to_industry: "人形机器人"
       to_track: "核心零部件→传感器"
       label: "芯片供给"
@@ -255,23 +321,23 @@ supply_chain:
       description: "成熟制程MCU/传感器芯片为人形机器人提供感知计算能力"
 
     - from_industry: "国防军工"
-      from_track: "军工材料→碳纤维复材"
+      from_track: "军工材料→碳纤维与复材"
       to_industry: "低空经济"
-      to_track: "飞行器制造→eVTOL整机"
+      to_track: "eVTOL整机→eVTOL制造"
       label: "复材结构件"
       weight: 4
       description: "碳纤维复合材料是eVTOL轻量化机身的核心材料"
 
     - from_industry: "国防军工"
-      from_track: "军工材料→碳纤维复材"
+      from_track: "军工材料→碳纤维与复材"
       to_industry: "新能源"
-      to_track: "光伏技术→N型电池"
+      to_track: "光伏技术→N型电池与钙钛矿"
       label: "碳纤维应用"
       weight: 2
       description: "碳纤维用于光伏硅片热场材料及风电叶片"
 
     - from_industry: "新能源"
-      from_track: "储能电池→储能系统"
+      from_track: "储能系统→储能集成"
       to_industry: "人形机器人"
       to_track: "核心零部件→微特电机"
       label: "电池供电"
@@ -279,20 +345,28 @@ supply_chain:
       description: "高能量密度电池是人形机器人续航的核心保障"
 
     - from_industry: "数据要素"
-      from_track: "数据安全→隐私计算"
+      from_track: "数据安全→隐私计算与加密"
       to_industry: "人工智能"
-      to_track: "大模型基座→大模型基座"
+      to_track: "大模型基座→通用大模型"
       label: "数据安全合规"
       weight: 3
       description: "隐私计算保障AI大模型训练数据的合规使用"
 
-    - from_industry: "半导体国产化"
+    - from_industry: "半导体"
       from_track: "第三代半导体→SiC/GaN"
       to_industry: "国防军工"
-      to_track: "军工电子→信息化"
+      to_track: "军工电子→信息化与连接器"
       label: "GaN射频器件"
       weight: 3
       description: "GaN射频器件是军用雷达/电子战的核心有源器件"
+
+    - from_industry: "人工智能"
+      from_track: "行业应用→AI+医疗"
+      to_industry: "创新药"
+      to_track: "前沿技术→AI与CGT"
+      label: "AI赋能新药"
+      weight: 3
+      description: "AI技术赋能创新药研发与CGT疗法开发"
 
 
 # 竞争关系规则：同赛道内的竞争格局
@@ -356,11 +430,6 @@ competition:
       weight: 4
       description: "恒瑞(国内平台型)与百济(出海型)在创新药领域形成差异化竞争"
 
-    - targets: ["汇川技术", "绿的谐波"]
-      label: "机器人关节方案竞争"
-      weight: 3
-      description: "汇川(电机+驱动)与绿的(减速器)在机器人关节解决方案上存在技术路线竞争"
-
     - targets: ["隆基绿能", "晶科能源"]
       label: "光伏组件双雄"
       weight: 4
@@ -370,6 +439,16 @@ competition:
       label: "大模型竞争"
       weight: 4
       description: "讯飞/360/昆仑是国内大模型第一梯队，在通用大模型市场直接竞争"
+
+    - targets: ["药明康德", "康龙化成"]
+      label: "CRO双雄"
+      weight: 4
+      description: "药明与康龙是全球CRO领域中国双龙头，客户池高度重叠"
+
+    - targets: ["国电南瑞", "许继电气"]
+      label: "电网设备竞争"
+      weight: 3
+      description: "国电南瑞与许继电气在电网自动化设备领域竞争"
 
 
 # 协同关系规则：跨赛道/跨行业的协同配合
@@ -481,22 +560,12 @@ collaboration:
       weight: 5
       description: "谐波减速器+空心杯电机构成人形机器人灵巧手关节核心模组"
 
-    - targets: ["汇川技术", "柯力传感"]
-      label: "驱动-传感协同"
-      weight: 4
-      description: "伺服驱动+六维力矩传感器形成机器人关节感知驱动闭环"
-
     - targets: ["双环传动", "步科股份"]
       label: "减速器-伺服协同"
       weight: 4
       description: "RV减速器+低压伺服组成工业/人形机器人关节模组"
 
     # 低空经济协同
-    - targets: ["万丰奥威", "海格通信"]
-      label: "飞行器-通信协同"
-      weight: 4
-      description: "eVTOL整机+低空通信导航系统协同保障飞行安全"
-
     - targets: ["纵横股份", "华测导航"]
       label: "无人机-定位协同"
       weight: 4
@@ -514,15 +583,10 @@ collaboration:
       description: "凯莱英为百济神州等出海药企提供小分子CDMO服务"
 
     # 数据要素协同
-    - targets: ["奇安信", "人民网"]
-      label: "安全-数据协同"
+    - targets: ["奇安信", "安恒信息"]
+      label: "安全生态协同"
       weight: 4
-      description: "奇安信数据安全+人民网数据确权平台形成数据要素安全流通方案"
-
-    - targets: ["启明星辰", "云赛智联"]
-      label: "安全-运营协同"
-      weight: 3
-      description: "启明星辰安全方案+云赛智联数据运营平台形成安全数据服务"
+      description: "奇安信+安恒信息在数据安全与AI安全领域生态协同"
 
     # 消费升级协同
     - targets: ["立讯精密", "传音控股"]
@@ -649,12 +713,6 @@ verification:
       weight: 5
       description: "华秦科技隐身涂层通过新一代战机验证，独家供应"
 
-    - from: "中简科技"
-      to: "中航高科"
-      label: "碳纤维验证"
-      weight: 5
-      description: "中简航空航天级碳纤维通过预浸料验证"
-
     # 新能源验证
     - from: "迈为股份"
       to: "通威股份"
@@ -674,12 +732,6 @@ verification:
       label: "减速器验证"
       weight: 4
       description: "绿的谐波减速器在汇川机器人关节模组中验证"
-
-    - from: "柯力传感"
-      to: "汇川技术"
-      label: "力矩传感器验证"
-      weight: 3
-      description: "柯力六维力矩传感器在机器人关节中验证"
 
     # 创新药验证
     - from: "药明康德"

@@ -34,6 +34,15 @@ class StyleManager:
         description: str,
         policy_score: int,
         certainty_score: int,
+        score: float = 0.0,
+        target_priority: int = 0,
+        config_advice: str = '',
+        invest_style: str = '',
+        core_ratio: int = 0,
+        category: str = '',
+        track: str = '',
+        track_priority: str = '',
+        policy_cycle: str = '',
     ) -> Dict:
         """
         生成节点样式
@@ -47,6 +56,15 @@ class StyleManager:
             description: 入选说明
             policy_score: 政策契合度
             certainty_score: 投资确定性
+            score: 综合评分
+            target_priority: 标的优先级
+            config_advice: 配置建议
+            invest_style: 投资风格
+            core_ratio: 核心业务占比
+            category: 二级分类
+            track: 三级赛道
+            track_priority: 赛道优先级
+            policy_cycle: 政策周期
 
         Returns:
             pyvis节点样式字典
@@ -75,52 +93,59 @@ class StyleManager:
             'shadow': False,
         })
 
-        # 构建悬停提示（富HTML格式，由JS补丁渲染）
+        # 构建悬停提示
         level_label = {'upstream': '上游', 'midstream': '中游', 'downstream': '下游'}
         badge = level_config.get('badge', level_label.get(chain_level, ''))
 
-        # 市值规模标签颜色
-        cap_colors = {'大': '#FF6B6B', '中': '#FFD93D', '小': '#90CAF9'}
-        cap_color = cap_colors.get(market_cap, '#E0E0E0')
+        # 优先级标签
+        priority_map = {5: 'S5-核心', 4: 'S4-重点', 3: 'S3-适度', 2: 'S2-关注', 1: 'S1-观察'}
+        priority_label = priority_map.get(target_priority, '')
 
-        # 评分条
-        policy_stars = f"<span style='color:#FFD93D'>{'★' * policy_score}</span><span style='color:#555'>{'☆' * (5 - policy_score)}</span>"
-        certainty_stars = f"<span style='color:#4ECDC4'>{'★' * certainty_score}</span><span style='color:#555'>{'☆' * (5 - certainty_score)}</span>"
+        # 配置建议颜色
+        advice_colors = {
+            '核心配置·长期持有': '#FF6B6B',
+            '重点配置·关注回调': '#FFD93D',
+            '适度配置·波段操作': '#4ECDC4',
+        }
+        advice_color = '#E0E0E0'
+        for key, val in advice_colors.items():
+            if key in config_advice:
+                advice_color = val
+                break
 
         tooltip = (
-            f"<div style='min-width:200px'>"
-            f"<div style='font-size:15px;font-weight:bold;color:{colors['primary']};margin-bottom:4px;'>{target_name}</div>"
-            f"<div style='font-size:11px;color:#888;margin-bottom:8px;'>{code}</div>"
-            f"<hr style='border:none;border-top:1px solid {colors['primary']}30;margin:6px 0;'>"
-            f"<div style='display:flex;justify-content:space-between;margin:4px 0;'>"
-            f"  <span style='color:#999;'>行业</span>"
-            f"  <span style='color:{colors['primary']};font-weight:500;'>{industry}</span>"
-            f"</div>"
-            f"<div style='display:flex;justify-content:space-between;margin:4px 0;'>"
-            f"  <span style='color:#999;'>产业链</span>"
-            f"  <span style='color:#FF9800;font-weight:500;'>{badge}</span>"
-            f"</div>"
-            f"<div style='display:flex;justify-content:space-between;margin:4px 0;'>"
-            f"  <span style='color:#999;'>市值规模</span>"
-            f"  <span style='color:{cap_color};font-weight:600;'>● {market_cap}</span>"
-            f"</div>"
-            f"<div style='display:flex;justify-content:space-between;align-items:center;margin:4px 0;'>"
-            f"  <span style='color:#999;'>政策契合度</span>"
-            f"  <span>{policy_stars}</span>"
-            f"</div>"
-            f"<div style='display:flex;justify-content:space-between;align-items:center;margin:4px 0;'>"
-            f"  <span style='color:#999;'>投资确定性</span>"
-            f"  <span>{certainty_stars}</span>"
-            f"</div>"
-            f"<hr style='border:none;border-top:1px solid {colors['primary']}30;margin:6px 0;'>"
-            f"<div style='color:#BBB;font-size:12px;line-height:1.6;'>{description}</div>"
-            f"</div>"
+            f"<b style='font-size:15px'>{target_name}</b> <span style='color:#888'>({code})</span><br>"
+            f"<hr style='margin:4px 0;border-color:{colors['primary']}'>"
+            f"<b>行业</b>: <span style='color:{colors['primary']}'>{industry}</span>"
+            f" | <b>层级</b>: <span style='color:{level_config.get('badge_color', '#FF9800')}'>{badge}</span><br>"
         )
+        if category:
+            tooltip += f"<b>分类</b>: {category}"
+            if track:
+                tooltip += f" → {track}"
+            tooltip += "<br>"
+        if track_priority:
+            tooltip += f"<b>赛道优先级</b>: {track_priority}<br>"
+        if policy_cycle:
+            tooltip += f"<b>政策周期</b>: {policy_cycle}<br>"
+        tooltip += (
+            f"<hr style='margin:4px 0;border-color:rgba(255,255,255,0.1)'>"
+            f"<b>市值</b>: {market_cap}盘 | <b>风格</b>: {invest_style}<br>"
+            f"<b>政策契合</b>: {'★' * policy_score}{'☆' * (5 - policy_score)} "
+            f"<b>确定性</b>: {'★' * certainty_score}{'☆' * (5 - certainty_score)}<br>"
+            f"<b>核心占比</b>: {core_ratio}% | <b>综合评分</b>: {score} | <b>优先级</b>: {priority_label}<br>"
+            f"<hr style='margin:4px 0;border-color:rgba(255,255,255,0.1)'>"
+            f"<b style='color:{advice_color}'>{config_advice}</b><br>"
+        )
+        if description:
+            # 截取说明前80字
+            desc_short = description[:80] + ('...' if len(description) > 80 else '')
+            tooltip += f"<span style='color:#999;font-size:12px'>{desc_short}</span>"
 
         node_size = size_config.get('node_size', 15)
 
-        # 根据政策契合度和投资确定性微调大小
-        score_bonus = (policy_score + certainty_score) * 1.5
+        # 根据综合评分微调大小
+        score_bonus = score * 3
         final_size = node_size + score_bonus
 
         return {
