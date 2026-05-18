@@ -1,0 +1,943 @@
+# ============================================================
+# 供应链/竞争/协同/验证 关系定义配置
+# ============================================================
+# 关系类型:
+#   supply_chain: 供应链关系（上游→中游→下游的供需流动）
+#   competition:  竞争关系（同赛道/同分类内的直接竞争）
+#   synergy:      协同关系（跨赛道/跨方向的互补协作）
+#   validation:   验证关系（下游需求对上游技术/产品的验证确认）
+# ============================================================
+
+# ---------- 供应链关系（跨赛道供给流） ----------
+supply_chain:
+  # 半导体内部供应链
+  - from: 光刻与硅片
+    to: 成熟制程代工
+    weight: 10
+    label: "硅片/光刻胶→晶圆代工"
+
+  - from: 刻蚀与薄膜
+    to: 成熟制程代工
+    weight: 10
+    label: "刻蚀/薄膜设备→晶圆代工"
+
+  - from: EDA工具
+    to: 成熟制程代工
+    weight: 9
+    label: "EDA工具→芯片设计/代工"
+
+  - from: 芯片IP与服务
+    to: 成熟制程代工
+    weight: 8
+    label: "芯片IP→芯片设计流片"
+
+  - from: 成熟制程代工
+    to: 先进封装
+    weight: 10
+    label: "晶圆→封装测试"
+
+  - from: SiC/GaN
+    to: 先进封装
+    weight: 7
+    label: "第三代半导体→功率封装"
+
+  - from: EDA工具
+    to: 先进封装
+    weight: 6
+    label: "EDA→封装设计仿真"
+
+  # 半导体→人工智能供应链
+  - from: 成熟制程代工
+    to: 算力芯片
+    weight: 10
+    label: "晶圆代工→AI芯片制造"
+
+  - from: 先进封装
+    to: 算力芯片
+    weight: 9
+    label: "先进封装→AI芯片集成"
+
+  - from: SiC/GaN
+    to: 光模块与CPO
+    weight: 7
+    label: "GaN→光模块激光驱动"
+
+  - from: 光刻与硅片
+    to: 算力芯片
+    weight: 8
+    label: "大硅片→AI芯片基底"
+
+  # 人工智能内部供应链
+  - from: 算力芯片
+    to: 通用大模型
+    weight: 10
+    label: "AI芯片→大模型训练"
+
+  - from: 光模块与CPO
+    to: 通用大模型
+    weight: 9
+    label: "光互联→算力集群通信"
+
+  - from: 液冷温控
+    to: 通用大模型
+    weight: 8
+    label: "液冷→算力中心散热"
+
+  - from: 通用大模型
+    to: 推理侧优化
+    weight: 9
+    label: "大模型→推理部署优化"
+
+  - from: 通用大模型
+    to: AI安全与治理
+    weight: 7
+    label: "大模型→安全合规治理"
+
+  - from: 推理侧优化
+    to: 企业级AI Agent与服务
+    weight: 9
+    label: "推理优化→Agent应用"
+
+  - from: AI安全与治理
+    to: 企业级AI Agent与服务
+    weight: 7
+    label: "安全治理→可信Agent"
+
+  - from: 企业级AI Agent与服务
+    to: AI+医疗
+    weight: 8
+    label: "Agent→医疗AI应用"
+
+  - from: 企业级AI Agent与服务
+    to: AI+金融
+    weight: 8
+    label: "Agent→金融AI应用"
+
+  - from: 企业级AI Agent与服务
+    to: AI+教育
+    weight: 7
+    label: "Agent→教育AI应用"
+
+  - from: 企业级AI Agent与服务
+    to: AI+法律
+    weight: 6
+    label: "Agent→法律AI应用"
+
+  # 6G与通信供应链
+  - from: 6G关键技术
+    to: 星地融合
+    weight: 8
+    label: "6G技术→天地一体通信"
+
+  - from: 星地融合
+    to: 通用大模型
+    weight: 5
+    label: "星地通信→分布式AI"
+
+  - from: 量子计算
+    to: AI安全与治理
+    weight: 6
+    label: "量子加密→AI安全"
+
+  # 新能源内部供应链
+  - from: N型电池与钙钛矿
+    to: 储能集成
+    weight: 9
+    label: "光伏电池→储能系统"
+
+  - from: 储能集成
+    to: 虚拟电厂与特高压
+    weight: 9
+    label: "储能→电网调度"
+
+  - from: 长时储能
+    to: 虚拟电厂与特高压
+    weight: 8
+    label: "长时储能→电网平衡"
+
+  - from: 绿氢与储运
+    to: 储能集成
+    weight: 7
+    label: "氢能→长时储能"
+
+  - from: 核聚变与装备
+    to: 虚拟电厂与特高压
+    weight: 6
+    label: "核能→基荷电力"
+
+  - from: 核电与小堆
+    to: 虚拟电厂与特高压
+    weight: 7
+    label: "小堆→分布式能源"
+
+  - from: 800V高压快充
+    to: 三电与整车
+    weight: 9
+    label: "高压快充→电动汽车"
+
+  - from: 储能集成
+    to: 800V高压快充
+    weight: 7
+    label: "储能→充电基础设施"
+
+  - from: 虚拟电厂与特高压
+    to: L3+自动驾驶
+    weight: 5
+    label: "智能电网→车网互动"
+
+  - from: 三电与整车
+    to: L3+自动驾驶
+    weight: 8
+    label: "三电系统→智能驾驶整车"
+
+  - from: 碳交易与绿色建筑
+    to: 储能集成
+    weight: 5
+    label: "碳配额→绿色储能需求"
+
+  # 人形机器人供应链
+  - from: 减速器与丝杠
+    to: 整机与系统集成
+    weight: 10
+    label: "减速器/丝杠→机器人整机"
+
+  - from: 传感器
+    to: 整机与系统集成
+    weight: 9
+    label: "传感器→机器人感知"
+
+  - from: 微特电机
+    to: 整机与系统集成
+    weight: 9
+    label: "微特电机→机器人驱动"
+
+  - from: 整机与系统集成
+    to: 脑机与康复
+    weight: 5
+    label: "机器人→康复终端"
+
+  # 创新药供应链
+  - from: CDMO/CRO
+    to: ADC/GLP-1
+    weight: 10
+    label: "CRO/CDMO→创新药研发"
+
+  - from: CDMO/CRO
+    to: AI与CGT
+    weight: 9
+    label: "CRO/CDMO→基因/细胞治疗"
+
+  - from: 合成生物学
+    to: ADC/GLP-1
+    weight: 7
+    label: "合成生物→药物原料"
+
+  - from: 生物基材料
+    to: CDMO/CRO
+    weight: 6
+    label: "生物基材料→药用辅料"
+
+  - from: AI与CGT
+    to: ADC/GLP-1
+    weight: 6
+    label: "CGT→ADC药物创新"
+
+  # 低空经济供应链
+  - from: 动力系统
+    to: eVTOL制造
+    weight: 10
+    label: "电推进→eVTOL整机"
+
+  - from: 动力系统
+    to: 工业无人机
+    weight: 9
+    label: "动力→无人机"
+
+  - from: 通感一体化
+    to: 空管与通感
+    weight: 9
+    label: "通感→低空通信监视"
+
+  - from: 低空安防
+    to: 空管与通感
+    weight: 7
+    label: "安防→空管安全体系"
+
+  - from: eVTOL制造
+    to: 低空物流
+    weight: 8
+    label: "eVTOL→物流运营"
+
+  - from: 工业无人机
+    to: 低空物流
+    weight: 7
+    label: "无人机→配送"
+
+  - from: 空管与通感
+    to: eVTOL制造
+    weight: 7
+    label: "空管→适航许可"
+
+  - from: 维修检测
+    to: eVTOL制造
+    weight: 6
+    label: "维修→运营保障"
+
+  # 国防军工供应链
+  - from: 碳纤维与复材
+    to: 整机总装
+    weight: 9
+    label: "碳纤维→航空结构"
+
+  - from: 碳纤维与复材
+    to: 航空发动机
+    weight: 8
+    label: "复材→发动机轻量化"
+
+  - from: 信息化与连接器
+    to: 整机总装
+    weight: 9
+    label: "电子/连接器→航电系统"
+
+  - from: 信息化与连接器
+    to: 无人机与导弹
+    weight: 8
+    label: "军工电子→制导系统"
+
+  - from: 航天配套
+    to: 火箭与卫星
+    weight: 9
+    label: "配套→火箭/卫星制造"
+
+  - from: 航天配套
+    to: 低轨卫星互联网
+    weight: 8
+    label: "配套→卫星组网"
+
+  - from: 探测与装备
+    to: 无人机与导弹
+    weight: 7
+    label: "探测→目标感知"
+
+  - from: 整机总装
+    to: 无人机与导弹
+    weight: 6
+    label: "总装→无人平台"
+
+  - from: 航空发动机
+    to: 整机总装
+    weight: 10
+    label: "发动机→飞机动力"
+
+  - from: 火箭与卫星
+    to: 遥感与导航
+    weight: 8
+    label: "卫星→遥感/导航服务"
+
+  - from: 低轨卫星互联网
+    to: 遥感与导航
+    weight: 7
+    label: "低轨星座→导航增强"
+
+  # 数据要素供应链
+  - from: 隐私计算与加密
+    to: 数据资产与基础设施
+    weight: 9
+    label: "隐私计算→数据安全流通"
+
+  - from: 空间信息
+    to: 数据资产与基础设施
+    weight: 7
+    label: "空间数据→数据资产"
+
+  - from: 数据资产与基础设施
+    to: 政务数据
+    weight: 8
+    label: "数据设施→政务数据平台"
+
+  - from: 数据资产与基础设施
+    to: 行业数据资产
+    weight: 8
+    label: "数据设施→行业数据运营"
+
+  - from: 政务数据
+    to: 行业数据资产
+    weight: 6
+    label: "政务数据→行业数据融合"
+
+  # 战略资源供应链
+  - from: 稀土开采与磁材
+    to: 铜锂钴
+    weight: 5
+    label: "稀土→新能源金属需求联动"
+
+  - from: 铜锂钴
+    to: 电池回收与再生
+    weight: 8
+    label: "锂钴→电池回收原料"
+
+  - from: 废旧高值化
+    to: 电池回收与再生
+    weight: 7
+    label: "废旧高值化→再生利用"
+
+  - from: 锑钨锡钼
+    to: 稀土开采与磁材
+    weight: 5
+    label: "战略金属→永磁合金"
+
+  - from: 种子与生物育种
+    to: 钾肥与磷矿
+    weight: 6
+    label: "种业→化肥需求"
+
+  # 消费升级供应链
+  - from: AI终端制造
+    to: 国货品牌
+    weight: 7
+    label: "AI终端→品牌智能化"
+
+  - from: AI终端制造
+    to: 医疗器械与智慧养老
+    weight: 7
+    label: "AI终端→智慧医疗设备"
+
+  - from: 国货品牌
+    to: 文旅与智能家电
+    weight: 5
+    label: "品牌→消费体验升级"
+
+  - from: 保健品
+    to: 医疗器械与智慧养老
+    weight: 5
+    label: "保健品→银发健康"
+
+  # ========== 跨方向供应链 ==========
+  - from: 稀土开采与磁材
+    to: 微特电机
+    weight: 9
+    label: "稀土永磁→机器人电机"
+
+  - from: 算力芯片
+    to: L3+自动驾驶
+    weight: 8
+    label: "AI芯片→自动驾驶算力"
+
+  - from: 光模块与CPO
+    to: 低轨卫星互联网
+    weight: 7
+    label: "光通信→星间链路"
+
+  - from: 信息化与连接器
+    to: 整机与系统集成
+    weight: 6
+    label: "军工连接器→机器人"
+
+  - from: 铜锂钴
+    to: 储能集成
+    weight: 8
+    label: "锂→储能电池"
+
+  - from: 铜锂钴
+    to: 三电与整车
+    weight: 9
+    label: "锂/钴→动力电池"
+
+  - from: 算力芯片
+    to: 推理侧优化
+    weight: 8
+    label: "AI芯片→推理加速"
+
+  - from: 先进封装
+    to: 算力芯片
+    weight: 9
+    label: "Chiplet封装→AI芯片"
+
+  - from: 算力芯片
+    to: AI终端制造
+    weight: 7
+    label: "AI芯片→终端智能"
+
+  - from: 数据资产与基础设施
+    to: AI+金融
+    weight: 7
+    label: "数据资产→金融数据"
+
+  - from: 隐私计算与加密
+    to: AI安全与治理
+    weight: 7
+    label: "隐私计算→AI数据安全"
+
+# ---------- 竞争关系（同赛道内标的互竞） ----------
+competition:
+  # 半导体竞争
+  - from: 先进封装
+    to: 先进封装
+    type: intra_track
+    weight: 8
+    description: "长电科技/华天科技/通富微电三大封测龙头直接竞争"
+
+  - from: 成熟制程代工
+    to: 成熟制程代工
+    type: intra_track
+    weight: 7
+    description: "中芯国际/华虹/晶合代工产能竞争"
+
+  - from: 刻蚀与薄膜
+    to: 刻蚀与薄膜
+    type: intra_track
+    weight: 7
+    description: "中微公司/北方华创/拓荆科技设备竞争"
+
+  - from: 光刻与硅片
+    to: 光刻与硅片
+    type: intra_track
+    weight: 6
+    description: "沪硅产业vs硅片集群竞争"
+
+  - from: SiC/GaN
+    to: SiC/GaN
+    type: intra_track
+    weight: 8
+    description: "天岳先进/三安光电/燕东微衬底竞争"
+
+  # 人工智能竞争
+  - from: 通用大模型
+    to: 通用大模型
+    type: intra_track
+    weight: 9
+    description: "科大讯飞/三六零/昆仑万维大模型竞争"
+
+  - from: 算力芯片
+    to: 算力芯片
+    type: intra_track
+    weight: 9
+    description: "海光/龙芯/景嘉微国产GPU竞争"
+
+  - from: 光模块与CPO
+    to: 光模块与CPO
+    type: intra_track
+    weight: 8
+    description: "中际旭创/新易盛/天孚通信光模块竞争"
+
+  - from: 企业级AI Agent与服务
+    to: 企业级AI Agent与服务
+    type: intra_track
+    weight: 6
+    description: "用友/泛微/软通企业服务竞争"
+
+  # 新能源竞争
+  - from: 储能集成
+    to: 储能集成
+    type: intra_track
+    weight: 8
+    description: "宁德时代/阳光电源/派能储能竞争"
+
+  - from: N型电池与钙钛矿
+    to: N型电池与钙钛矿
+    type: intra_track
+    weight: 7
+    description: "晶科/通威/隆基光伏技术竞争"
+
+  - from: L3+自动驾驶
+    to: L3+自动驾驶
+    type: intra_track
+    weight: 7
+    description: "伯特利/德赛西威/经纬恒润智驾竞争"
+
+  - from: 三电与整车
+    to: 三电与整车
+    type: intra_track
+    weight: 8
+    description: "比亚迪/汇川技术电驱竞争"
+
+  # 人形机器人竞争
+  - from: 减速器与丝杠
+    to: 减速器与丝杠
+    type: intra_track
+    weight: 8
+    description: "绿的谐波/双环传动/丰立智能减速器竞争"
+
+  - from: 整机与系统集成
+    to: 整机与系统集成
+    type: intra_track
+    weight: 7
+    description: "机器人/博实/埃斯顿整机竞争"
+
+  # 创新药竞争
+  - from: ADC/GLP-1
+    to: ADC/GLP-1
+    type: intra_track
+    weight: 9
+    description: "恒瑞/百济/荣昌创新药管线竞争"
+
+  - from: CDMO/CRO
+    to: CDMO/CRO
+    type: intra_track
+    weight: 8
+    description: "药明/康龙/凯莱英CRO竞争"
+
+  # 低空经济竞争
+  - from: eVTOL制造
+    to: eVTOL制造
+    type: intra_track
+    weight: 7
+    description: "中信海直/纵横股份/山河智能eVTOL竞争"
+
+  # 国防军工竞争
+  - from: 整机总装
+    to: 整机总装
+    type: intra_track
+    weight: 8
+    description: "中航西飞/中航沈飞/中国船舶总装竞争"
+
+  - from: 低轨卫星互联网
+    to: 低轨卫星互联网
+    type: intra_track
+    weight: 7
+    description: "上海瀚讯/盟升电子/中国卫星卫星竞争"
+
+  # 战略资源竞争
+  - from: 稀土开采与磁材
+    to: 稀土开采与磁材
+    type: intra_track
+    weight: 8
+    description: "中国稀土/北方稀土/盛和资源稀土竞争"
+
+  - from: 铜锂钴
+    to: 铜锂钴
+    type: intra_track
+    weight: 8
+    description: "紫金/天齐/赣锋锂矿竞争"
+
+  # 数据要素竞争
+  - from: 数据资产与基础设施
+    to: 数据资产与基础设施
+    type: intra_track
+    weight: 7
+    description: "润泽/易华录/太极数据设施竞争"
+
+  # 消费升级竞争
+  - from: AI终端制造
+    to: AI终端制造
+    type: intra_track
+    weight: 7
+    description: "立讯/传音/光弘终端竞争"
+
+# ---------- 协同关系（跨赛道互补协作） ----------
+synergy:
+  # 半导体↔人工智能协同
+  - from: 先进封装
+    to: 算力芯片
+    weight: 9
+    label: "Chiplet→AI芯片协同"
+    description: "先进封装实现Chiplet异构集成，支撑AI算力芯片性能突破"
+
+  - from: EDA工具
+    to: 通用大模型
+    weight: 7
+    label: "EDA→AI设计协同"
+    description: "EDA工具赋能AI芯片设计，AI大模型反哺EDA智能化"
+
+  - from: SiC/GaN
+    to: 液冷温控
+    weight: 6
+    label: "宽禁带→高效电源协同"
+    description: "GaN功率器件用于液冷系统电源，提升散热效率"
+
+  # 人工智能↔人形机器人协同
+  - from: 通用大模型
+    to: 整机与系统集成
+    weight: 9
+    label: "大模型→具身智能协同"
+    description: "大模型为机器人提供认知决策能力，具身智能反哺模型进化"
+
+  - from: 推理侧优化
+    to: 传感器
+    weight: 7
+    label: "推理→感知融合协同"
+    description: "边缘推理优化支撑传感器实时智能处理"
+
+  - from: 算力芯片
+    to: 整机与系统集成
+    weight: 8
+    label: "AI芯片→机器人算力协同"
+    description: "端侧AI芯片为机器人提供本地推理能力"
+
+  # 人工智能↔新能源协同
+  - from: 通用大模型
+    to: 虚拟电厂与特高压
+    weight: 8
+    label: "AI→智能电网协同"
+    description: "AI大模型优化电网调度，虚拟电厂提供AI应用场景"
+
+  - from: 推理侧优化
+    to: L3+自动驾驶
+    weight: 9
+    label: "推理优化→智驾协同"
+    description: "模型推理优化支撑自动驾驶实时决策"
+
+  - from: AI安全与治理
+    to: 隐私计算与加密
+    weight: 7
+    label: "AI安全↔隐私计算协同"
+    description: "AI安全需求驱动隐私计算，隐私计算保障AI数据合规"
+
+  # 新能源↔人形机器人协同
+  - from: 储能集成
+    to: 动力系统
+    weight: 6
+    label: "储能→低空动力协同"
+    description: "储能电池技术外溢至eVTOL动力系统"
+
+  - from: 三电与整车
+    to: 动力系统
+    weight: 7
+    label: "三电→低空电推进协同"
+    description: "电动汽车三电技术外溢至eVTOL电推进系统"
+
+  # 新能源↔战略资源协同
+  - from: 储能集成
+    to: 铜锂钴
+    weight: 9
+    label: "储能↔锂资源协同"
+    description: "储能需求拉动锂钴资源开发，资源保障储能供应链安全"
+
+  - from: N型电池与钙钛矿
+    to: 铜锂钴
+    weight: 7
+    label: "光伏↔银/铜协同"
+    description: "光伏银浆需求拉动银/铜资源，技术迭代降低银耗"
+
+  # 低空经济↔国防军工协同
+  - from: eVTOL制造
+    to: 碳纤维与复材
+    weight: 8
+    label: "eVTOL↔复材协同"
+    description: "航空复材用于eVTOL轻量化，eVTOL需求拉动复材新市场"
+
+  - from: 空管与通感
+    to: 信息化与连接器
+    weight: 7
+    label: "低空空管↔军工电子协同"
+    description: "军工电子技术外溢至低空通信监视"
+
+  - from: 工业无人机
+    to: 无人机与导弹
+    weight: 6
+    label: "无人机技术↔军工协同"
+    description: "军用无人机技术溢出至工业无人机，工业需求反哺军工迭代"
+
+  # 国防军工↔人形机器人协同
+  - from: 碳纤维与复材
+    to: 减速器与丝杠
+    weight: 5
+    label: "复材→机器人轻量化协同"
+    description: "航空复材用于机器人结构件轻量化"
+
+  - from: 微特电机
+    to: 航空发动机
+    weight: 5
+    label: "电机↔发动机控制协同"
+    description: "微特电机用于航空发动机伺服控制"
+
+  # 数据要素↔人工智能协同
+  - from: 数据资产与基础设施
+    to: 通用大模型
+    weight: 8
+    label: "数据资产→大模型训练协同"
+    description: "高质量数据资产为大模型提供训练语料"
+
+  - from: 行业数据资产
+    to: AI+金融
+    weight: 8
+    label: "金融数据→AI金融协同"
+    description: "金融行业数据支撑AI金融模型训练"
+
+  - from: 行业数据资产
+    to: AI+医疗
+    weight: 7
+    label: "医疗数据→AI医疗协同"
+    description: "医疗数据资产支撑AI诊疗模型训练"
+
+  # 战略资源↔半导体协同
+  - from: 稀土开采与磁材
+    to: SiC/GaN
+    weight: 6
+    label: "稀土↔宽禁带半导体协同"
+    description: "稀土元素用于GaN外延衬底及磁性材料"
+
+  - from: 锑钨锡钼
+    to: 刻蚀与薄膜
+    weight: 5
+    label: "战略金属↔半导体靶材协同"
+    description: "钼/钨用于半导体溅射靶材"
+
+  # 创新药↔人工智能协同
+  - from: AI+医疗
+    to: ADC/GLP-1
+    weight: 8
+    label: "AI→创新药研发协同"
+    description: "AI加速药物发现，创新药提供AI医疗验证场景"
+
+  - from: CDMO/CRO
+    to: AI+医疗
+    weight: 7
+    label: "CRO→AI医疗协同"
+    description: "CRO临床数据赋能AI医疗模型"
+
+  # 消费升级↔人工智能协同
+  - from: AI终端制造
+    to: 推理侧优化
+    weight: 7
+    label: "终端→推理优化协同"
+    description: "终端需求驱动推理优化技术迭代"
+
+  - from: 医疗器械与智慧养老
+    to: AI+医疗
+    weight: 7
+    label: "智慧养老→AI医疗协同"
+    description: "养老器械产生健康数据，AI赋能远程医疗"
+
+  # 消费升级↔战略资源协同
+  - from: 国货品牌
+    to: 稀土开采与磁材
+    weight: 4
+    label: "品牌→稀土永磁协同"
+    description: "国货品牌电子产品需求拉动稀土永磁"
+
+# ---------- 验证关系（下游需求验证上游技术） ----------
+validation:
+  # 人工智能下游验证上游
+  - from: AI+医疗
+    to: 通用大模型
+    weight: 9
+    label: "医疗AI验证大模型能力"
+    description: "医疗场景严格验证大模型准确性和可靠性"
+
+  - from: AI+金融
+    to: 通用大模型
+    weight: 8
+    label: "金融AI验证大模型推理"
+    description: "金融风控场景验证大模型逻辑推理能力"
+
+  - from: 企业级AI Agent与服务
+    to: 推理侧优化
+    weight: 8
+    label: "Agent应用验证推理优化"
+    description: "企业级Agent验证推理优化的实际效果和成本"
+
+  - from: L3+自动驾驶
+    to: 算力芯片
+    weight: 10
+    label: "自动驾驶验证AI芯片性能"
+    description: "L3+自动驾驶极高安全要求验证AI芯片算力和可靠性"
+
+  # 新能源下游验证上游
+  - from: 三电与整车
+    to: 储能集成
+    weight: 9
+    label: "整车验证储能电池"
+    description: "电动汽车使用验证储能电池循环寿命和安全"
+
+  - from: L3+自动驾驶
+    to: 800V高压快充
+    weight: 8
+    label: "智驾整车验证快充技术"
+    description: "智能驾驶电动汽车验证高压快充实用性和安全"
+
+  - from: 虚拟电厂与特高压
+    to: 储能集成
+    weight: 8
+    label: "电网验证储能系统"
+    description: "电网调度验证储能系统响应速度和稳定性"
+
+  # 人形机器人下游验证上游
+  - from: 整机与系统集成
+    to: 减速器与丝杠
+    weight: 9
+    label: "整机验证减速器精度"
+    description: "机器人整机验证减速器精度和寿命"
+
+  - from: 整机与系统集成
+    to: 传感器
+    weight: 8
+    label: "整机验证传感器性能"
+    description: "机器人整机验证传感器融合和响应"
+
+  - from: 整机与系统集成
+    to: 微特电机
+    weight: 8
+    label: "整机验证电机驱动"
+    description: "机器人整机验证电机控制精度和力矩"
+
+  # 低空经济下游验证
+  - from: 低空物流
+    to: eVTOL制造
+    weight: 8
+    label: "物流验证eVTOL适航"
+    description: "物流运营验证eVTOL安全性续航经济性"
+
+  - from: eVTOL制造
+    to: 动力系统
+    weight: 9
+    label: "eVTOL验证动力系统"
+    description: "eVTOL整机验证电推进系统功率密度和可靠性"
+
+  - from: 空管与通感
+    to: 通感一体化
+    weight: 8
+    label: "空管验证通感技术"
+    description: "空管运行验证通感一体化低空监视能力"
+
+  # 国防军工下游验证
+  - from: 整机总装
+    to: 碳纤维与复材
+    weight: 9
+    label: "总装验证复材性能"
+    description: "整机验证航空复材强度/韧性/耐温"
+
+  - from: 无人机与导弹
+    to: 信息化与连接器
+    weight: 8
+    label: "导弹验证电子系统"
+    description: "导弹制导验证军工电子可靠性"
+
+  - from: 遥感与导航
+    to: 低轨卫星互联网
+    weight: 7
+    label: "遥感验证卫星能力"
+    description: "遥感应用验证低轨卫星通信和观测能力"
+
+  # 创新药下游验证
+  - from: ADC/GLP-1
+    to: CDMO/CRO
+    weight: 8
+    label: "创新药验证CRO能力"
+    description: "创新药临床结果验证CRO研发能力"
+
+  # 消费升级下游验证
+  - from: 文旅与智能家电
+    to: AI终端制造
+    weight: 7
+    label: "消费验证终端体验"
+    description: "消费者使用验证AI终端产品体验"
+
+  - from: 国货品牌
+    to: AI终端制造
+    weight: 7
+    label: "品牌验证终端品质"
+    description: "品牌口碑验证终端制造品质"
+
+  # 半导体下游验证
+  - from: 算力芯片
+    to: 先进封装
+    weight: 9
+    label: "AI芯片验证封装技术"
+    description: "AI芯片性能验证先进封装热/电/互联极限"
+
+  - from: 成熟制程代工
+    to: 光刻与硅片
+    weight: 9
+    label: "代工验证硅片/光刻"
+    description: "晶圆代工良率验证硅片质量和光刻精度"

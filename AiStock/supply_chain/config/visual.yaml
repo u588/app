@@ -1,0 +1,144 @@
+# ============================================================
+# 可视化配置
+# ============================================================
+
+# 全局设置
+global:
+  background: "#0a0e1a"
+  font_color: "#e0e0e0"
+  title: "十大投资方向 · 产业链全景图谱"
+  subtitle: "上中下游 · 供应链 · 竞争 · 协同 · 验证 关系网络"
+  output_dir: "output"
+  default_size: 25
+
+# 一级方向颜色映射
+direction_colors:
+  半导体: "#ff6b6b"
+  人工智能: "#4ecdc4"
+  新能源: "#45b7d1"
+  人形机器人: "#96ceb4"
+  创新药: "#ffeaa7"
+  低空经济: "#dfe6e9"
+  国防军工: "#a29bfe"
+  数据要素: "#fd79a8"
+  战略资源: "#fab1a0"
+  消费升级: "#55efc4"
+
+# 产业链层级颜色
+chain_level_colors:
+  upstream: "#e74c3c"
+  midstream: "#f39c12"
+  downstream: "#27ae60"
+
+# 产业链层级中文
+chain_level_labels:
+  upstream: "上游"
+  midstream: "中游"
+  downstream: "下游"
+
+# 节点样式
+node_styles:
+  direction:
+    shape: "diamond"
+    size: 50
+    border_width: 3
+    font_size: 18
+    font_color: "#ffffff"
+
+  category:
+    shape: "hexagon"
+    size: 35
+    border_width: 2
+    font_size: 14
+    font_color: "#ffffff"
+
+  track:
+    shape: "dot"
+    size: 25
+    border_width: 1
+    font_size: 12
+    font_color: "#e0e0e0"
+
+  stock:
+    shape: "triangle"
+    size: 12
+    border_width: 1
+    font_size: 9
+    font_color: "#b0b0b0"
+
+# 边（关系）样式
+edge_styles:
+  supply_chain:
+    color: "#3498db"
+    width: 2.0
+    dashes: false
+    arrows:
+      enabled: true
+      scale_factor: 0.5
+    smooth:
+      type: "curvedCCW"
+      roundness: 0.2
+
+  competition:
+    color: "#e74c3c"
+    width: 1.5
+    dashes: true
+    arrows:
+      enabled: false
+    smooth:
+      type: "curvedCW"
+      roundness: 0.3
+
+  synergy:
+    color: "#2ecc71"
+    width: 2.0
+    dashes: false
+    arrows:
+      enabled: true
+      scale_factor: 0.5
+    smooth:
+      type: "curvedCCW"
+      roundness: 0.25
+
+  validation:
+    color: "#f39c12"
+    width: 1.8
+    dashes:
+      - 8
+      - 4
+    arrows:
+      enabled: true
+      scale_factor: 0.5
+    smooth:
+      type: "curvedCW"
+      roundness: 0.2
+
+# 物理引擎配置
+physics:
+  barnesHut:
+    gravitationalConstant: -8000
+    centralGravity: 0.3
+    springLength: 200
+    springConstant: 0.04
+    damping: 0.09
+    avoidOverlap: 0.5
+
+# 交互配置
+interaction:
+  hover: true
+  tooltip:
+    enabled: true
+    style: "background:#1a1a2e;color:#e0e0e0;border:1px solid #333;padding:8px;border-radius:4px;font-size:12px;"
+  navigation_buttons: true
+  zoom_view: true
+
+# 图例配置
+legend:
+  enabled: true
+  position: "upper_left"
+
+# 规模分类图标
+size_icons:
+  大盘: "◆"
+  中盘: "◇"
+  小盘: "△"

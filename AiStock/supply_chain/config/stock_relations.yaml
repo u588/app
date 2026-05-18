@@ -1,0 +1,471 @@
+# ============================================================
+# 标的级关系扩充配置
+# 定义特定标的之间的关键关系（在赛道关系基础上进一步细化）
+# ============================================================
+
+# 标的间供应链关系
+stock_supply_chain:
+  # 半导体
+  - from: "中芯国际"
+    to: "长电科技"
+    weight: 9
+    label: "晶圆→封测"
+
+  - from: "华虹公司"
+    to: "华天科技"
+    weight: 7
+    label: "特色工艺晶圆→封测"
+
+  - from: "北方华创"
+    to: "中芯国际"
+    weight: 9
+    label: "刻蚀/薄膜设备→晶圆代工"
+
+  - from: "拓荆科技"
+    to: "中芯国际"
+    weight: 8
+    label: "ALD/CVD设备→晶圆代工"
+
+  - from: "沪硅产业"
+    to: "中芯国际"
+    weight: 8
+    label: "大硅片→晶圆代工"
+
+  - from: "华大九天"
+    to: "中芯国际"
+    weight: 7
+    label: "EDA→芯片设计"
+
+  - from: "芯原股份"
+    to: "中芯国际"
+    weight: 6
+    label: "IP→芯片设计代工"
+
+  - from: "江丰电子"
+    to: "北方华创"
+    weight: 6
+    label: "靶材→设备"
+
+  - from: "华特气体"
+    to: "中芯国际"
+    weight: 7
+    label: "电子特气→晶圆代工"
+
+  - from: "安集科技"
+    to: "中芯国际"
+    weight: 6
+    label: "CMP抛光液→晶圆代工"
+
+  - from: "康强电子"
+    to: "长电科技"
+    weight: 7
+    label: "引线框架/键合丝→封测"
+
+  # 人工智能
+  - from: "海光信息"
+    to: "寒武纪"
+    weight: 5
+    label: "国产GPU竞争"
+
+  - from: "中际旭创"
+    to: "海光信息"
+    weight: 8
+    label: "光模块→AI算力集群互联"
+
+  - from: "新易盛"
+    to: "海光信息"
+    weight: 7
+    label: "光模块→AI算力集群互联"
+
+  - from: "英维克"
+    to: "浪潮信息"
+    weight: 8
+    label: "液冷→AI服务器散热"
+
+  - from: "曙光数创"
+    to: "中科曙光"
+    weight: 9
+    label: "液冷→AI服务器散热"
+
+  - from: "科大讯飞"
+    to: "寒武纪"
+    weight: 7
+    label: "大模型→推理芯片需求"
+
+  - from: "用友网络"
+    to: "科大讯飞"
+    weight: 6
+    label: "企业Agent→大模型调用"
+
+  # 新能源
+  - from: "宁德时代"
+    to: "比亚迪"
+    weight: 8
+    label: "动力电池→整车"
+
+  - from: "阳光电源"
+    to: "宁德时代"
+    weight: 7
+    label: "储能变流器→储能集成"
+
+  - from: "国电南瑞"
+    to: "阳光电源"
+    weight: 7
+    label: "电网调度→储能并网"
+
+  - from: "隆基绿能"
+    to: "阳光电源"
+    weight: 7
+    label: "光伏→逆变器需求"
+
+  - from: "帝尔激光"
+    to: "钧达股份"
+    weight: 6
+    label: "激光设备→N型电池产线"
+
+  - from: "汇川技术"
+    to: "伯特利"
+    weight: 6
+    label: "电驱→线控底盘"
+
+  # 人形机器人
+  - from: "绿的谐波"
+    to: "机器人"
+    weight: 9
+    label: "谐波减速器→机器人关节"
+
+  - from: "双环传动"
+    to: "埃斯顿"
+    weight: 7
+    label: "RV减速器→工业机器人"
+
+  - from: "兆威机电"
+    to: "机器人"
+    weight: 8
+    label: "微型传动→灵巧手"
+
+  - from: "步科股份"
+    to: "博实股份"
+    weight: 6
+    label: "伺服驱动→机器人整机"
+
+  # 创新药
+  - from: "药明康德"
+    to: "恒瑞医药"
+    weight: 8
+    label: "CRO→创新药研发外包"
+
+  - from: "凯莱英"
+    to: "恒瑞医药"
+    weight: 7
+    label: "CDMO→创新药生产"
+
+  - from: "百济神州"
+    to: "药明康德"
+    weight: 7
+    label: "Biotech→CRO服务"
+
+  # 低空经济
+  - from: "宗申动力"
+    to: "纵横股份"
+    weight: 7
+    label: "航空发动机→无人机动力"
+
+  - from: "四川九洲"
+    to: "中信海直"
+    weight: 7
+    label: "空管设备→通航保障"
+
+  - from: "莱斯信息"
+    to: "纵横股份"
+    weight: 6
+    label: "空管系统→无人机调度"
+
+  # 国防军工
+  - from: "航发动力"
+    to: "中航西飞"
+    weight: 10
+    label: "航空发动机→飞机动力"
+
+  - from: "中航光电"
+    to: "中航沈飞"
+    weight: 8
+    label: "连接器→航电互联"
+
+  - from: "光威复材"
+    to: "中航西飞"
+    weight: 8
+    label: "碳纤维→航空结构"
+
+  - from: "振华科技"
+    to: "中无人机"
+    weight: 7
+    label: "军工电子→无人机航电"
+
+  - from: "中国卫星"
+    to: "中科星图"
+    weight: 7
+    label: "卫星→遥感数据"
+
+  # 数据要素
+  - from: "国投智能"
+    to: "易华录"
+    weight: 6
+    label: "数据安全→数据存储"
+
+  - from: "润泽科技"
+    to: "太极股份"
+    weight: 7
+    label: "数据中心→政务云"
+
+  # 战略资源
+  - from: "北方稀土"
+    to: "金力永磁"
+    weight: 9
+    label: "稀土原料→永磁材料"
+
+  - from: "中国稀土"
+    to: "中科三环"
+    weight: 8
+    label: "稀土原料→磁材"
+
+  - from: "紫金矿业"
+    to: "宁德时代"
+    weight: 7
+    label: "锂/铜→电池原料"
+
+  - from: "赣锋锂业"
+    to: "宁德时代"
+    weight: 8
+    label: "锂盐→电池正极"
+
+  # 消费升级
+  - from: "立讯精密"
+    to: "传音控股"
+    weight: 6
+    label: "精密制造→终端组装"
+
+  - from: "迈瑞医疗"
+    to: "鱼跃医疗"
+    weight: 5
+    label: "器械→家用医疗"
+
+# 标的间竞争关系
+stock_competition:
+  # 半导体
+  - from: "长电科技"
+    to: "通富微电"
+    weight: 9
+    label: "封测龙头竞争"
+
+  - from: "长电科技"
+    to: "华天科技"
+    weight: 8
+    label: "封测竞争"
+
+  - from: "中芯国际"
+    to: "华虹公司"
+    weight: 7
+    label: "代工竞争"
+
+  - from: "中微公司"
+    to: "北方华创"
+    weight: 8
+    label: "刻蚀设备竞争"
+
+  - from: "天岳先进"
+    to: "三安光电"
+    weight: 8
+    label: "SiC衬底竞争"
+
+  # 人工智能
+  - from: "中际旭创"
+    to: "新易盛"
+    weight: 9
+    label: "光模块双雄竞争"
+
+  - from: "海光信息"
+    to: "寒武纪"
+    weight: 9
+    label: "AI芯片竞争"
+
+  - from: "科大讯飞"
+    to: "三六零"
+    weight: 7
+    label: "大模型竞争"
+
+  # 新能源
+  - from: "宁德时代"
+    to: "比亚迪"
+    weight: 8
+    label: "动力电池+整车跨界竞争"
+
+  - from: "隆基绿能"
+    to: "晶科能源"
+    weight: 8
+    label: "光伏组件竞争"
+
+  - from: "阳光电源"
+    to: "派能科技"
+    weight: 6
+    label: "储能竞争"
+
+  # 人形机器人
+  - from: "绿的谐波"
+    to: "丰立智能"
+    weight: 7
+    label: "谐波减速器竞争"
+
+  - from: "双环传动"
+    to: "中大力德"
+    weight: 7
+    label: "RV减速器竞争"
+
+  # 创新药
+  - from: "恒瑞医药"
+    to: "百济神州"
+    weight: 9
+    label: "创新药龙头竞争"
+
+  - from: "药明康德"
+    to: "康龙化成"
+    weight: 8
+    label: "CRO双雄竞争"
+
+  # 低空经济
+  - from: "纵横股份"
+    to: "观典防务"
+    weight: 6
+    label: "工业无人机竞争"
+
+  # 国防军工
+  - from: "中航西飞"
+    to: "中航沈飞"
+    weight: 8
+    label: "军机总装竞争"
+
+  - from: "光威复材"
+    to: "中简科技"
+    weight: 7
+    label: "碳纤维竞争"
+
+  # 战略资源
+  - from: "北方稀土"
+    to: "中国稀土"
+    weight: 8
+    label: "稀土双雄竞争"
+
+  - from: "天齐锂业"
+    to: "赣锋锂业"
+    weight: 9
+    label: "锂矿双雄竞争"
+
+  - from: "紫金矿业"
+    to: "洛阳钼业"
+    weight: 7
+    label: "矿业巨头竞争"
+
+  # 消费升级
+  - from: "立讯精密"
+    to: "领益智造"
+    weight: 7
+    label: "精密制造竞争"
+
+  - from: "海尔智家"
+    to: "美的集团"
+    weight: 8
+    label: "家电双雄竞争"
+
+# 标的间协同关系
+stock_synergy:
+  - from: "海光信息"
+    to: "中际旭创"
+    weight: 8
+    label: "AI算力+光互联协同"
+
+  - from: "科大讯飞"
+    to: "寒武纪"
+    weight: 8
+    label: "大模型+推理芯片协同"
+
+  - from: "绿的谐波"
+    to: "兆威机电"
+    weight: 7
+    label: "谐波减速器+微型传动协同"
+
+  - from: "宁德时代"
+    to: "阳光电源"
+    weight: 8
+    label: "电池+储能变流器协同"
+
+  - from: "药明康德"
+    to: "恒瑞医药"
+    weight: 8
+    label: "CRO+创新药协同"
+
+  - from: "北方稀土"
+    to: "金力永磁"
+    weight: 9
+    label: "稀土+永磁协同"
+
+  - from: "中芯国际"
+    to: "长电科技"
+    weight: 8
+    label: "代工+封测协同"
+
+  - from: "国电南瑞"
+    to: "宁德时代"
+    weight: 7
+    label: "电网+储能协同"
+
+  - from: "隆基绿能"
+    to: "通威股份"
+    weight: 7
+    label: "组件+硅料协同"
+
+  - from: "中航光电"
+    to: "航天电器"
+    weight: 7
+    label: "军工连接器双龙头协同"
+
+# 标的间验证关系
+stock_validation:
+  - from: "比亚迪"
+    to: "宁德时代"
+    weight: 9
+    label: "整车验证电池"
+
+  - from: "机器人"
+    to: "绿的谐波"
+    weight: 9
+    label: "整机验证减速器"
+
+  - from: "中航西飞"
+    to: "光威复材"
+    weight: 8
+    label: "军机验证碳纤维"
+
+  - from: "中航西飞"
+    to: "航发动力"
+    weight: 10
+    label: "整机验证发动机"
+
+  - from: "伯特利"
+    to: "汇川技术"
+    weight: 7
+    label: "智驾验证电驱"
+
+  - from: "中信海直"
+    to: "宗申动力"
+    weight: 7
+    label: "eVTOL验证动力系统"
+
+  - from: "恒瑞医药"
+    to: "药明康德"
+    weight: 8
+    label: "创新药验证CRO"
+
+  - from: "浪潮信息"
+    to: "海光信息"
+    weight: 8
+    label: "AI服务器验证芯片"
