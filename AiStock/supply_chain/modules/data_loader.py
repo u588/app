@@ -16,6 +16,7 @@ class Stock:
     direction: str        # 一级方向
     category: str         # 二级分类
     track: str            # 三级赛道
+    policy_cycle: str     # 政策周期（近期/中期/远期）——标的级别    
     size_class: str       # 规模分类
     style: str            # 投资风格
     policy_fit: int       # 政策契合度
@@ -103,7 +104,7 @@ class DataLoader:
 
     def __init__(self, filepath: str = None):
         if filepath is None:
-            filepath = '/home/z/my-project/upload/十大投资方向分类体系标的池（2026.5）.xlsx'
+            filepath = '/home/ts/app/Ai投研/十大投资方向分类体系标的池（2026.5）.xlsx'
         self.filepath = filepath
         self._df: Optional[pd.DataFrame] = None
         self._directions: Dict[str, Direction] = {}
@@ -111,7 +112,7 @@ class DataLoader:
 
     def load(self) -> pd.DataFrame:
         """加载Excel数据"""
-        self._df = pd.read_excel(self.filepath)
+        self._df = pd.read_excel(self.filepath,converters={'代码': str})
         self._df.columns = [self.COLUMN_MAP.get(c, c) for c in self._df.columns]
         return self._df
 
@@ -182,6 +183,7 @@ class DataLoader:
                 direction=dir_name,
                 category=cat_name,
                 track=track_name,
+                policy_cycle=str(row.get('policy_cycle', '')),
                 size_class=str(row.get('size_class', '')),
                 style=str(row.get('style', '')),
                 policy_fit=int(row['policy_fit']) if pd.notna(row.get('policy_fit')) else 0,

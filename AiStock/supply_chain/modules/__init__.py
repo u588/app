@@ -7,6 +7,8 @@ from .data_loader import DataLoader
 from .chain_analyzer import ChainAnalyzer
 from .relation_builder import RelationBuilder
 from .visualizer import SupplyChainVisualizer
+from .plotly_builder import PlotlyBuilder
+from .dashboard import DashboardBuilder
 
 __all__ = [
     'ConfigLoader',
@@ -14,4 +16,6 @@ __all__ = [
     'ChainAnalyzer',
     'RelationBuilder',
     'SupplyChainVisualizer',
+    'PlotlyBuilder',
+    'DashboardBuilder',
 ]

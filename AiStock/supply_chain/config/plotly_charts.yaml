@@ -1,0 +1,71 @@
+# ============================================================
+# Plotly可视化配置
+# ============================================================
+
+# 全局主题
+theme:
+  font_family: "'Microsoft YaHei', 'Noto Sans SC', sans-serif"
+  title_font_size: 18
+  label_font_size: 12
+  tick_font_size: 11
+  background: "#0a0e1a"
+  paper_bgcolor: "#0e1425"
+  plot_bgcolor: "#0e1425"
+  font_color: "#e0e0e0"
+  grid_color: "rgba(255,255,255,0.06)"
+  margin: {l: 60, r: 30, t: 60, b: 50}
+
+# 一级方向颜色
+direction_colors:
+  半导体: "#ff6b6b"
+  人工智能: "#4ecdc4"
+  新能源: "#45b7d1"
+  人形机器人: "#96ceb4"
+  创新药: "#ffeaa7"
+  低空经济: "#dfe6e9"
+  国防军工: "#a29bfe"
+  数据要素: "#fd79a8"
+  战略资源: "#fab1a0"
+  消费升级: "#55efc4"
+
+# 产业链层级颜色
+chain_colors:
+  上游: "#e74c3c"
+  中游: "#f39c12"
+  下游: "#27ae60"
+
+# 规模颜色
+size_colors:
+  大盘: "#e74c3c"
+  中盘: "#f39c12"
+  小盘: "#3498db"
+
+# 投资风格颜色
+style_colors:
+  龙头稳健型: "#2ecc71"
+  中小盘弹性型: "#e67e22"
+
+# 优先级颜色渐变 (S2→S5)
+priority_colorscale: ["#95a5a6", "#f39c12", "#e67e22", "#e74c3c"]
+
+# 政策周期颜色
+cycle_colors:
+  近期: "#2ecc71"
+  中期: "#f39c12"
+  远期: "#e74c3c"
+
+# 关系类型颜色
+relation_colors:
+  supply_chain: "#3498db"
+  competition: "#e74c3c"
+  synergy: "#2ecc71"
+  validation: "#f39c12"
+
+# 评分色阶
+score_colorscale: "RdYlGn"
+
+# 仪表盘布局
+dashboard:
+  cols: 2
+  row_heights: [0.45, 0.55]
+  spacing: 0.08

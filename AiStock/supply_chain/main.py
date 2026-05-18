@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
 产业链分析系统 - 主入口
-功能：读取标的池数据 → 产业链上中下游分析 → 关系构建 → Pyvis可视化
+功能：读取标的池数据 → 产业链上中下游分析 → 关系构建 → Pyvis + Plotly可视化
 """
 
 import os
 import sys
 import argparse
+import shutil
 
 # 添加项目路径
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,12 +18,30 @@ from modules.data_loader import DataLoader
 from modules.chain_analyzer import ChainAnalyzer
 from modules.relation_builder import RelationBuilder
 from modules.visualizer import SupplyChainVisualizer
+from modules.plotly_builder import PlotlyBuilder
+from modules.dashboard import DashboardBuilder
+
+
+def copy_outputs_to_dirs(src_dir: str):
+    """将输出文件复制到download目录"""
+    download_dir = '/home/ts/app/AiStock/supply_chain/download'
+    os.makedirs(download_dir, exist_ok=True)
+    try:
+        for fname in os.listdir(src_dir):
+            if fname.endswith('.html'):
+                src = os.path.join(src_dir, fname)
+                dst = os.path.join(download_dir, fname)
+                shutil.copy2(src, dst)
+    except Exception as e:
+        print(f"  (下载目录复制失败: {e})")
 
 
 def main():
     parser = argparse.ArgumentParser(description='产业链分析系统')
-    parser.add_argument('--mode', choices=['full', 'direction', 'all', 'report'],
-                        default='all', help='运行模式: full(全景图) / direction(单方向) / all(全部) / report(仅报告)')
+    parser.add_argument('--mode',
+                        choices=['full', 'direction', 'all', 'report', 'plotly', 'dashboard'],
+                        default='all',
+                        help='运行模式: full/pyvis全景 / direction/单方向 / all/全部 / report/报告 / plotly/Plotly图表 / dashboard/仪表盘')
     parser.add_argument('--direction', type=str, default=None, help='单方向模式下的方向名称')
     parser.add_argument('--no-stocks', action='store_true', help='不展示标的节点（仅赛道级）')
     parser.add_argument('--min-score', type=float, default=4.0, help='标的最低综合评分过滤')
@@ -36,7 +55,7 @@ def main():
 
     # ===== 1. 初始化配置 =====
     config_dir = args.config_dir or os.path.join(PROJECT_DIR, 'config')
-    print(f"\n[1/5] 加载配置 → {config_dir}")
+    print(f"\n[1/6] 加载配置 → {config_dir}")
     config = ConfigLoader(config_dir)
     validation = config.validate()
     for name, status in validation.items():
@@ -45,7 +64,7 @@ def main():
 
     # ===== 2. 加载数据 =====
     data_file = args.data_file or '/home/ts/app/Ai投研/十大投资方向分类体系标的池（2026.5）.xlsx'
-    print(f"\n[2/5] 加载数据 → {data_file}")
+    print(f"\n[2/6] 加载数据 → {data_file}")
     data = DataLoader(data_file)
     data.load()
     summary = data.summary()
@@ -55,11 +74,10 @@ def main():
     print(f"  标的数量: {summary['total_stocks']}只")
 
     # ===== 3. 产业链分析 =====
-    print(f"\n[3/5] 产业链上中下游分析")
+    print(f"\n[3/6] 产业链上中下游分析")
     chain = ChainAnalyzer(config, data)
     chain.analyze()
     distribution = chain.get_chain_distribution()
-
     for dir_name, dist in distribution.items():
         upstream_count = dist['upstream']['stock_count']
         midstream_count = dist['midstream']['stock_count']
@@ -67,7 +85,7 @@ def main():
         print(f"  {dir_name}: 上游{upstream_count}只 / 中游{midstream_count}只 / 下游{downstream_count}只")
 
     # ===== 4. 关系构建 =====
-    print(f"\n[4/5] 构建供应链/竞争/协同/验证关系")
+    print(f"\n[4/6] 构建供应链/竞争/协同/验证关系")
     rel_builder = RelationBuilder(config, data, chain)
     graph = rel_builder.build()
     stats = graph.stats
@@ -75,16 +93,8 @@ def main():
         label = RelationBuilder.TYPE_LABELS.get(rt, rt)
         print(f"  {label}: {count}条")
 
-    track_summary = rel_builder.get_track_relation_summary()
-    stock_summary = rel_builder.get_stock_relation_summary()
-    print(f"\n  赛道级关系:")
-    for rt, info in track_summary.items():
-        print(f"    {RelationBuilder.TYPE_LABELS.get(rt, rt)}: {info['count']}条, 平均权重={info['avg_weight']}")
-    print(f"\n  标的级关系:")
-    for rt, info in stock_summary.items():
-        print(f"    {RelationBuilder.TYPE_LABELS.get(rt, rt)}: {info['count']}条")
-
-    # ===== 5. 可视化 =====
+    # ===== 5. Pyvis网络图可视化 =====
+    src_dir = os.path.join(PROJECT_DIR, 'output')
     include_stocks = not args.no_stocks
 
     if args.mode == 'report':
@@ -92,59 +102,61 @@ def main():
         print(f"\n{report}")
         return
 
-    print(f"\n[5/5] Pyvis可视化生成")
-    visualizer = SupplyChainVisualizer(config, data, chain, rel_builder)
+    if args.mode in ('full', 'all'):
+        print(f"\n[5/6] Pyvis网络图可视化")
+        visualizer = SupplyChainVisualizer(config, data, chain, rel_builder)
+        if args.mode == 'full':
+            path = visualizer.create_full_network(include_stocks=include_stocks,
+                                                   min_stock_score=args.min_score)
+            print(f"  ✓ 全景图: {path}")
+        elif args.mode == 'all':
+            results = visualizer.generate_all(include_stocks=include_stocks)
+            print(f"  共生成 {len(results)} 个Pyvis可视化文件")
 
-    if args.mode == 'full':
-        path = visualizer.create_full_network(include_stocks=include_stocks,
-                                               min_stock_score=args.min_score)
-        print(f"  ✓ 全景图: {path}")
-
-    elif args.mode == 'direction':
+    if args.mode == 'direction':
+        print(f"\n[5/6] Pyvis方向图")
+        visualizer = SupplyChainVisualizer(config, data, chain, rel_builder)
         if not args.direction:
             print("  请指定 --direction 参数")
             return
         path = visualizer.create_direction_network(args.direction)
         print(f"  ✓ {args.direction}: {path}")
 
-    elif args.mode == 'all':
-        results = visualizer.generate_all(include_stocks=include_stocks)
-        print(f"\n  共生成 {len(results)} 个可视化文件:")
-        for name, path in results.items():
-            print(f"    {name}: {path}")
+    # ===== 6. Plotly交互式图表 =====
+    if args.mode in ('plotly', 'dashboard', 'all'):
+        print(f"\n[6/6] Plotly交互式图表生成")
+        plotly_builder = PlotlyBuilder(config, data, chain, rel_builder)
 
-    # 同时复制到目标路径
-    target_dir = '/home/ts/app/AiStock/supply_chain/output'
-    src_dir = os.path.join(PROJECT_DIR, 'output')
-    try:
-        os.makedirs(target_dir, exist_ok=True)
-        for fname in os.listdir(src_dir):
-            if fname.endswith('.html'):
-                src = os.path.join(src_dir, fname)
-                dst = os.path.join(target_dir, fname)
-                import shutil
-                shutil.copy2(src, dst)
-                print(f"  → 已同步到目标路径: {dst}")
-    except Exception as e:
-        print(f"  (目标路径同步跳过: {e})")
+        if args.mode == 'plotly':
+            print("  生成14类独立图表...")
+            results = plotly_builder.generate_all()
+            print(f"  共生成 {len(results)} 个Plotly图表")
 
-    # # 同时复制到download目录
-    # download_dir = '/home/ts/app/AiStock/supply_chain/download'
-    # os.makedirs(download_dir, exist_ok=True)
-    # try:
-    #     for fname in os.listdir(src_dir):
-    #         if fname.endswith('.html'):
-    #             src = os.path.join(src_dir, fname)
-    #             dst = os.path.join(download_dir, fname)
-    #             import shutil
-    #             shutil.copy2(src, dst)
-    #             print(f"  → 已复制到下载目录: {dst}")
-    # except Exception as e:
-    #     print(f"  (下载目录复制失败: {e})")
+        elif args.mode == 'dashboard':
+            dash_builder = DashboardBuilder(config, data, chain, rel_builder)
+            results = dash_builder.generate_all_dashboards()
+            print(f"  共生成 {len(results)} 个仪表盘")
 
-    # print("\n" + "=" * 60)
-    # print("  完成！请在浏览器中打开HTML文件查看交互式产业链图谱")
-    # print("=" * 60)
+        elif args.mode == 'all':
+            # 独立图表
+            print("  生成14类独立图表...")
+            chart_results = plotly_builder.generate_all()
+            print(f"  共生成 {len(chart_results)} 个Plotly图表")
+
+            # 仪表盘
+            dash_builder = DashboardBuilder(config, data, chain, rel_builder)
+            dash_results = dash_builder.generate_all_dashboards()
+            print(f"  共生成 {len(dash_results)} 个仪表盘")
+
+    # 复制到下载目录
+    # copy_outputs_to_dirs(src_dir)
+
+    print("\n" + "=" * 60)
+    print("  完成！")
+    print("  Pyvis网络图 → output/supply_chain_*.html")
+    print("  Plotly图表  → output/plotly_*.html")
+    print("  仪表盘      → output/plotly_dashboard_*.html")
+    print("=" * 60)
 
 
 if __name__ == '__main__':
