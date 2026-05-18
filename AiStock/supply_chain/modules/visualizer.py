@@ -117,14 +117,7 @@ class SupplyChainVisualizer:
         # 设置物理引擎
         physics = self._vis_config.get('physics', {})
         bh_params = physics.get('barnesHut', {})
-        net.barnes_hut(
-            gravity=bh_params.get('gravity', -80000),
-            central_gravity=bh_params.get('central_gravity', 0.3),
-            spring_length=bh_params.get('spring_length', 250),
-            spring_strength=bh_params.get('spring_strength', 0.001),
-            damping=bh_params.get('damping', 0.09),
-            overlap=bh_params.get('overlap', 0),
-        )
+        net.barnes_hut(**bh_params)
 
         # ===== 1. 添加一级方向节点 =====
         directions = self.data.get_directions()

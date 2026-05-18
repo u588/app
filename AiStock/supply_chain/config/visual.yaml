@@ -116,12 +116,20 @@ edge_styles:
 # 物理引擎配置
 physics:
   barnesHut:
-    gravitationalConstant: -8000
-    centralGravity: 0.3
-    springLength: 200
-    springConstant: 0.04
-    damping: 0.09
-    avoidOverlap: 0.5
+    gravity: -2000
+    central_gravity: 0.2
+    spring_length: 150
+    spring_strength: 0.04
+    damping: 0.15
+    overlap: 1
+# physics:
+#   barnesHut:
+#     gravity: -80000
+#     central_gravity: 0.3
+#     spring_length: 250
+#     spring_strength: 0.001
+#     damping: 0.09
+#     overlap: 0
 
 # 交互配置
 interaction:

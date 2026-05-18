@@ -128,23 +128,23 @@ def main():
     except Exception as e:
         print(f"  (目标路径同步跳过: {e})")
 
-    # 同时复制到download目录
-    download_dir = '/home/ts/app/AiStock/supply_chain/download'
-    os.makedirs(download_dir, exist_ok=True)
-    try:
-        for fname in os.listdir(src_dir):
-            if fname.endswith('.html'):
-                src = os.path.join(src_dir, fname)
-                dst = os.path.join(download_dir, fname)
-                import shutil
-                shutil.copy2(src, dst)
-                print(f"  → 已复制到下载目录: {dst}")
-    except Exception as e:
-        print(f"  (下载目录复制失败: {e})")
+    # # 同时复制到download目录
+    # download_dir = '/home/ts/app/AiStock/supply_chain/download'
+    # os.makedirs(download_dir, exist_ok=True)
+    # try:
+    #     for fname in os.listdir(src_dir):
+    #         if fname.endswith('.html'):
+    #             src = os.path.join(src_dir, fname)
+    #             dst = os.path.join(download_dir, fname)
+    #             import shutil
+    #             shutil.copy2(src, dst)
+    #             print(f"  → 已复制到下载目录: {dst}")
+    # except Exception as e:
+    #     print(f"  (下载目录复制失败: {e})")
 
-    print("\n" + "=" * 60)
-    print("  完成！请在浏览器中打开HTML文件查看交互式产业链图谱")
-    print("=" * 60)
+    # print("\n" + "=" * 60)
+    # print("  完成！请在浏览器中打开HTML文件查看交互式产业链图谱")
+    # print("=" * 60)
 
 
 if __name__ == '__main__':
