@@ -134,10 +134,12 @@ class PlotlyBuilder:
             # ── 方向层 ──
             dir_id = f"dir_{dir_name}"
             dir_stocks = [s for c in direction.categories for t in c.tracks for s in t.stocks]
+            dir_count = len(dir_stocks)
+            dir_avg = sum(s.score for s in dir_stocks) / max(dir_count, 1)
             dir_total = sum(s.score * 100 for s in dir_stocks)
 
             ids.append(dir_id)
-            labels.append(f"<b>{dir_name}</b>")
+            labels.append(f"<b>{dir_name}</b>  标的数量:{dir_count}只  均分:{dir_avg:.2f}")
             parents.append("")
             values.append(dir_total)
             colors_list.append(self._dir_colors.get(dir_name, '#888'))
@@ -146,10 +148,12 @@ class PlotlyBuilder:
                 # ── 分类层 ──
                 cat_id = f"{dir_id}_cat_{cat.name}"
                 cat_stocks = [s for t in cat.tracks for s in t.stocks]
+                cat_count = len(cat_stocks)
+                cat_avg = sum(s.score for s in cat_stocks) / max(cat_count, 1)
                 cat_total = sum(s.score * 100 for s in cat_stocks)
 
                 ids.append(cat_id)
-                labels.append(cat.name)
+                labels.append(f"{cat.name}  标的数量:{cat_count}只  均分:{cat_avg:.2f}")
                 parents.append(dir_id)
                 values.append(cat_total)
                 colors_list.append(self._dir_colors.get(dir_name, '#888'))
@@ -157,10 +161,12 @@ class PlotlyBuilder:
                 for track in cat.tracks:
                     # ── 赛道层 ──
                     track_id = f"{cat_id}_trk_{track.name}"
+                    track_count = len(track.stocks)
+                    track_avg = sum(s.score for s in track.stocks) / max(track_count, 1)
                     track_total = sum(s.score * 100 for s in track.stocks)
 
                     ids.append(track_id)
-                    labels.append(track.name)
+                    labels.append(f"{track.name}  标的数量:{track_count}只  均分:{track_avg:.2f}")
                     parents.append(cat_id)
                     values.append(track_total)
                     colors_list.append(self._dir_colors.get(dir_name, '#888'))
@@ -169,7 +175,7 @@ class PlotlyBuilder:
                         # ── 标的层 ──
                         stock_id = f"{track_id}_stk_{stock.name}"
                         ids.append(stock_id)
-                        labels.append(f"{stock.name}<br>{stock.code}<br>{stock.score}")
+                        labels.append(f"{stock.code}<br>{stock.name}<br>评分:{stock.score}")
                         parents.append(track_id)
                         values.append(stock.score * 100)
                         colors_list.append(stock.score)
@@ -183,13 +189,13 @@ class PlotlyBuilder:
                 line=dict(width=1, color='#1a1a2e'),
             ),
             textfont=dict(size=10),
-            hovertemplate='<b>%{label}</b><br>评分: %{color:.2f}<extra></extra>',
+            hovertemplate='<b>%{label}</b><extra></extra>',
+            # hovertemplate='<b>%{label}</b><br>评分: %{color:.2f}<extra></extra>',
             branchvalues='total',
             maxdepth=4,
         ))
         fig.update_layout(**self._base_layout("标的评分分布 · Treemap色阶图（方向→分类→赛道→标的）"))
         return fig
-
     # ================================================================
     # 图表3: 各方向评分箱线图
     # ================================================================
