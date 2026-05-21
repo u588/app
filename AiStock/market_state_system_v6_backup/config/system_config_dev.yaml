@@ -1,4 +1,0 @@
-system:
-  cache_ttl: 300  # 短缓存便于调试
-  max_workers: 2  # 少线程便于排查
-  visualize: true  # 启用可视化
