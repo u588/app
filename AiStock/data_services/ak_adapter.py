@@ -150,7 +150,7 @@ class AKAdapter:
         '伦敦金': {'factor': 1.0, 'unit': 'USD/oz'},
         'LME铜': {'factor': 1.0, 'unit': 'USD/ton'},
         'COMEX铜': {'factor': 1.0, 'unit': 'USD/ton'},
-        'LME铜3个月': {'factor': 1.0, 'unit': 'USD/ton'},  # 适配历史数据返回名称
+        'LME铜': {'factor': 1.0, 'unit': 'USD/ton'},  # 适配历史数据返回名称
         '新加坡铁矿石': {'factor': 1.0, 'unit': 'USD/ton'},
         'LME铝': {'factor': 1.0, 'unit': 'USD/ton'},
         'LME镍': {'factor': 1.0, 'unit': 'USD/ton'},
@@ -224,14 +224,29 @@ class AKAdapter:
         # 历史数据请求频率限制（避免触发限流）
         self._last_history_request: Dict[str, float] = {}
         self._history_request_interval = 1.0  # 秒
+        self._ak = None
+        self._init_akshare()
         
         logger.info(f"✅ ExternalAPI 初始化成功 | timeout={timeout}s, retry={retry_times}")
         logger.info(f"   缓存配置: 实时={realtime_cache_ttl}s, 历史={history_cache_ttl}s")
+
+    def _init_akshare(self):
+        try:
+            import akshare as ak
+            self._ak = ak
+            logger.info(f"✅ AKAdapter 初始化成功 | 缓存={'启用' if self.cache_enabled else '禁用'}")
+        except ImportError:
+            self._ak = None
+            logger.warning("⚠️ akshare 未安装，外部数据源不可用")
+
+    def is_available(self) -> bool:
+        return self._ak is not None                           
     
     # ═════════════════════════════════════════════════════════════
     # 【实时数据接口】
     # ═════════════════════════════════════════════════════════════
-    
+
+        
     def get_futures_realtime(self, code: str, use_cache: bool = True) -> Optional[Dict[str, Any]]:
         """
         获取外盘期货实时数据（单品种）
@@ -258,10 +273,10 @@ class AKAdapter:
         for attempt in range(self.retry_times):
             try:
                 logger.info(f"🔄 请求实时数据: {code} -> {ak_symbol} (尝试 {attempt+1}/{self.retry_times})")
-                import akshare as ak
+                # import akshare as ak
                 
                 # AkShare 实时接口：symbol 传配置代码
-                df = ak.futures_foreign_commodity_realtime(symbol=code)
+                df = self._ak.futures_foreign_commodity_realtime(symbol=code)
                 
                 if df is None or df.empty:
                     logger.warning(f"⚠️ AkShare 返回空数据: {ak_symbol}")
@@ -315,10 +330,10 @@ class AKAdapter:
         valid_codes = [c for c in codes if c in self.FUTURES_SYMBOL_MAP]
         if len(valid_codes) >= 2:
             try:
-                import akshare as ak
+                # import akshare as ak
                 symbol_str = ','.join(valid_codes)
                 logger.info(f"🔄 批量请求实时数据: {symbol_str}")
-                df = ak.futures_foreign_commodity_realtime(symbol=symbol_str)
+                df = self._ak.futures_foreign_commodity_realtime(symbol=symbol_str)
                 
                 if df is not None and not df.empty:
                     for code in valid_codes:
@@ -444,10 +459,10 @@ class AKAdapter:
         for attempt in range(self.retry_times):
             try:
                 logger.info(f"🔄 请求历史数据: {code} -> {ak_symbol} (尝试 {attempt+1}/{self.retry_times})")
-                import akshare as ak
+                # import akshare as ak
                 
                 # AkShare 历史接口：symbol 传配置代码
-                df = ak.futures_foreign_hist(symbol=code)
+                df = self._ak.futures_foreign_hist(symbol=code)
                 
                 if df is None or df.empty:
                     logger.warning(f"⚠️ AkShare 返回空历史数据: {ak_symbol}")
@@ -694,7 +709,22 @@ class AKAdapter:
                 'history': {'total': hist_total, 'valid': hist_valid, 'ttl': self._history_cache_ttl},
                 'timestamp': datetime.now().isoformat()
             }
-    
+
+    def close(self):
+        self.clear_cache()
+        logger.info("✅ AKAdapter 已关闭")
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
+
+    def __repr__(self) -> str:
+        status = "✅可用" if self.is_available() else "❌不可用"
+        cache_info = f"缓存={self.cache_size()}" if self._cache else "缓存=禁用"
+        return f"<AKAdapter {status} | {cache_info}>"
+        
     # ═════════════════════════════════════════════════════════════
     # 【工具方法】
     # ═════════════════════════════════════════════════════════════
