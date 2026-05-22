@@ -50,38 +50,6 @@ DATABASE_ENGINES = {
     'index_pe_db': get_db_url('DB_INDEX_PE','环境变量未加载'),
 }
 
-
-
-# # PostgreSQL 主数据库（指数/日线数据）
-# DB_INDEX = get_db_url(
-#     'DB_INDEX',
-#     '环境变量未加载'
-# )
-
-# # PostgreSQL 主数据库（股票/日线数据）
-# DB_STOCK = get_db_url(
-#     'DB_STOCK',
-#     '环境变量未加载'
-# )
-
-# # PostgreSQL 主数据库（个股资料）
-# DB_STOCK_BASE = get_db_url(
-#     'DB_STOCK_BASE',
-#     '环境变量未加载'
-# )
-
-# # PostgreSQL 主数据库（个股资料）
-# DB_STOCK_FS = get_db_url(
-#     'DB_STOCK_FS',
-#     '环境变量未加载'
-# )
-
-# # PostgreSQL PE 数据库（指数估值历史数据）
-# DB_INDEX_PE = get_db_url(
-#     'DB_INDEX_PE',
-#     '环境变量未加载'
-# )
-
 # 连接池配置
 DB_POOL_CONFIG = {
     'pool_size': int(os.getenv('DB_POOL_SIZE', 10)),
@@ -123,5 +91,5 @@ DATA_VALIDATION = {
 }
 
 # ==================== 系统版本 ====================
-SYSTEM_VERSION = "6.2.0"
+SYSTEM_VERSION = "7.0.0"
 SYSTEM_NAME = "AiStock 多系统架构"

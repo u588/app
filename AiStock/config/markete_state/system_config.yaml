@@ -1,0 +1,443 @@
+# ============================================
+# A股市场状态量化系统 V7.0
+# 系统配置文件
+# ============================================
+
+# ==================== 系统级配置 ====================
+system:
+  version: "7.0.0"
+  name: "市场状态量化系统"
+  mode: "production"          # production / development / backtest
+  base_date: null             # null=使用今天
+  log_level: "INFO"
+  max_workers: 5
+  data_min_days: 500
+  degradation_mode: "auto"    # TDX不可用时自动降级到数据库
+
+# ==================== 数据源配置 ====================
+tdx:
+  exhq_host: "47.112.95.207"
+  exhq_port: 7720
+  hq_host: "180.153.18.170"
+  hq_port: 7709
+  use_tdx: true
+  timeout: 30
+  retry_count: 3
+  parallel_workers: 5
+
+# ==================== 缓存配置 ====================
+cache:
+  max_size: 1000
+  ttl: 3600
+  stock_ttl: 7200
+  index_ttl: 7200
+  derivative_ttl: 1800
+  macro_ttl: 3600
+  pe_ttl: 86400
+
+# ==================== 合约动态推导 ====================
+contract_manager:
+  enabled: true
+  code_table_path: "./data/tdx_code_table.xlsx"
+  auto_rollover: true
+  expiry_warning_days: 5
+  near_month_strategy: "auto"
+  far_month_offset: 1
+  rollover_day: 15
+
+# ==================== 商品策略映射 ====================
+commodity_strategy_map:
+  CUL8:
+    name: "沪铜"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["高端制造", "供应链"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 10.0
+    threshold_down: -10.0
+  ALL8:
+    name: "沪铝"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["高端制造", "新能源"]
+    impact_type: "cost"
+    weight: 0.08
+    threshold_up: 8.0
+    threshold_down: -8.0
+  LCL8:
+    name: "碳酸锂"
+    market_code: 66
+    market_type: "future_gz"
+    directions: ["新能源", "信息技术"]
+    impact_type: "cost"
+    weight: 0.12
+    threshold_up: 20.0
+    threshold_down: -20.0
+  SIL8:
+    name: "工业硅"
+    market_code: 66
+    market_type: "future_gz"
+    directions: ["信息技术", "新能源"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 15.0
+    threshold_down: -15.0
+  SCL8:
+    name: "原油"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["公用事业", "供应链", "传统升级"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 15.0
+    threshold_down: -15.0
+  RBL8:
+    name: "螺纹钢"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["传统升级", "供应链"]
+    impact_type: "benefit"
+    weight: 0.08
+    threshold_up: 8.0
+    threshold_down: -8.0
+  ML8:
+    name: "豆粕"
+    market_code: 29
+    market_type: "future_dl"
+    directions: ["现代农业", "生物健康", "文化消费"]
+    impact_type: "cost"
+    weight: 0.08
+    threshold_up: 10.0
+    threshold_down: -10.0
+  AUL8:
+    name: "黄金"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["公用事业"]
+    impact_type: "benefit"
+    weight: 0.05
+    threshold_up: 8.0
+    threshold_down: -8.0
+
+# ==================== 股指期货配置 ====================
+index_futures_contracts:
+  if:
+    variety: "IF"
+    spot_code: "000300"
+    spot_name: "沪深300"
+    market_type: "future_zj"
+  ih:
+    variety: "IH"
+    spot_code: "000016"
+    spot_name: "上证50"
+    market_type: "future_zj"
+  ic:
+    variety: "IC"
+    spot_code: "000905"
+    spot_name: "中证500"
+    market_type: "future_zj"
+  im:
+    variety: "IM"
+    spot_code: "000852"
+    spot_name: "中证1000"
+    market_type: "future_zj"
+
+# ==================== 期权PCR配置 ====================
+option_underlying_mapping:
+  IO:
+    spot_code: "000300"
+    market_code: 7
+    market_type: "option_zj"
+    weight: 0.45
+    default_price: 4000.0
+  MO:
+    spot_code: "000852"
+    market_code: 7
+    market_type: "option_zj"
+    weight: 0.15
+    default_price: 7000.0
+  "510300":
+    spot_code: "510300"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.18
+    default_price: 4.7
+  "510500":
+    spot_code: "510500"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.07
+    default_price: 8.1
+  "588000":
+    spot_code: "588000"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.10
+    default_price: 1.5
+  "159915":
+    spot_code: "159915"
+    market_code: 9
+    market_type: "option_sz"
+    weight: 0.05
+    default_price: 3.3
+
+option_tolerance:
+  base_tolerance: 0.05
+  volatility_based:
+    enabled: true
+    low_vol_tolerance: 0.03
+    high_vol_tolerance: 0.08
+  liquidity_based:
+    enabled: true
+    high_liquidity_tolerance: 0.04
+    low_liquidity_tolerance: 0.06
+
+# ==================== 市场Regime配置(V7新增) ====================
+market_regime:
+  enabled: true
+  confirmation_days: 3
+  volatility_window: 60
+  momentum_window: 20
+  regimes:
+    bull:
+      volatility_threshold: 0.15
+      momentum_threshold: 0.05
+      description: "牛市"
+    bear:
+      volatility_threshold: 0.30
+      momentum_threshold: -0.05
+      description: "熊市"
+    volatile:
+      volatility_threshold: 0.25
+      momentum_range: [-0.02, 0.02]
+      description: "震荡市"
+    recovery:
+      volatility_decreasing: true
+      momentum_positive: true
+      description: "复苏期"
+
+# ==================== 市场状态分类(V7:3D模型) ====================
+market_state_classifier:
+  dimensions:
+    - valuation     # 估值维度
+    - momentum      # 动量维度
+    - regime        # 市场体制(V7新增)
+  grid:
+    strategic_offense: 80
+    active_allocation: 65
+    balanced_hold: 50
+    defensive_watch: 35
+    strategic_defense: 20
+  thresholds:
+    valuation_weight: 0.35
+    momentum_weight: 0.35
+    regime_weight: 0.30
+
+# ==================== 基准指数配置 ====================
+market_benchmarks:
+  大盘:
+    code: "000300"
+    weight: 0.40
+    volatility_target: 20.0
+  中盘:
+    code: "000905"
+    weight: 0.30
+    volatility_target: 25.0
+  小盘:
+    code: "000852"
+    weight: 0.20
+    volatility_target: 30.0
+  微盘:
+    code: "932000"
+    weight: 0.10
+    volatility_target: 35.0
+
+# ==================== 微盘监控配置 ====================
+micro_redundancy:
+  enabled: true
+  primary: "932000"
+  secondary: "399311"
+  correlation_threshold: 0.85
+  liquidity_check_days: 20
+
+micro_cap_indices:
+  - "930901"
+  - "931588"
+  - "930707"
+  - "930662"
+
+# ==================== 九大战略方向 ====================
+strategic_directions:
+  高端制造:
+    indices: ["932042", "931865", "930850", "931866", "930599"]
+    base_weight: 0.28
+    risk_level: "medium_high"
+    risk_score: 58
+  信息技术:
+    indices: ["931087", "930851", "930902", "931495", "931585"]
+    base_weight: 0.25
+    risk_level: "medium_high"
+    risk_score: 55
+  新能源:
+    indices: ["931798", "931772", "931897", "931687", "931746"]
+    base_weight: 0.15
+    risk_level: "medium"
+    risk_score: 45
+  生物健康:
+    indices: ["931140", "931152", "931992", "931166", "399812"]
+    base_weight: 0.10
+    risk_level: "low"
+    risk_score: 35
+  供应链:
+    indices: ["931465", "931235", "930716", "930725"]
+    base_weight: 0.06
+    risk_level: "low"
+    risk_score: 30
+  现代农业:
+    indices: ["930910", "930707", "930662", "000949"]
+    base_weight: 0.01
+    risk_level: "medium"
+    risk_score: 48
+  公用事业:
+    indices: ["000917", "000937", "930955", "932047"]
+    base_weight: 0.08
+    risk_level: "low"
+    risk_score: 25
+  传统升级:
+    indices: ["932039", "931231", "930838", "931463"]
+    base_weight: 0.04
+    risk_level: "low"
+    risk_score: 30
+  文化消费:
+    indices: ["931066", "931480", "930901", "930781", "931588"]
+    base_weight: 0.03
+    risk_level: "high"
+    risk_score: 75
+
+# ==================== 风险阈值 ====================
+risk_thresholds:
+  pcr:
+    warning_high: 1.3
+    warning_low: 0.7
+    extreme_high: 1.5
+    extreme_low: 0.5
+    ma_window: 5
+  basis:
+    warning: -1.5
+    extreme: -2.0
+    ma_window: 10
+  valuation:
+    overvalued_pe_percentile: 75
+    undervalued_pe_percentile: 25
+  volatility:
+    warning_expansion: 1.8
+    extreme_expansion: 2.5
+    ma_window: 60
+  liquidity:
+    warning_shrink: 0.6
+    extreme_shrink: 0.4
+    ma_window: 5
+
+# ==================== 宏观指标配置 ====================
+macro_indicators:
+  inflation:
+    enabled: true
+    weight: 0.20
+    indicators:
+      CPI:
+        code: "2_CPI"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 3.0
+          warning_low: -1.0
+      PPI:
+        code: "2_PPI"
+        market_type: "macro"
+        direction: "neutral"
+        thresholds:
+          warning_high: 5.0
+          warning_low: -3.0
+  growth:
+    enabled: true
+    weight: 0.25
+    indicators:
+      GDP:
+        code: "1_GDPI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 6.0
+          warning_low: 4.0
+  liquidity:
+    enabled: true
+    weight: 0.25
+    indicators:
+      shibor_3m:
+        code: "5_SHS3M"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 3.5
+          warning_low: 1.5
+  external_risk:
+    enabled: true
+    weight: 0.15
+    indicators:
+      us_10y_yield:
+        code: "8_ATY"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 4.5
+          warning_low: 3.0
+      usd_cny:
+        code: "5_RMBUS"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 7.3
+          warning_low: 6.5
+
+# ==================== 跨市场配置 ====================
+cross_market:
+  enabled: true
+  markets:
+    a_share:
+      code: "000300"
+      market_type: "index_zz"
+    hk_share:
+      code: "HSI"
+      market_type: "index_xg"
+    us_share:
+      code: "SPXD"
+      market_type: "macro"
+  correlation_window: 60
+
+# ==================== 输出配置 ====================
+output:
+  analysis_dir: "./output/analysis_results"
+  visualization_dir: "./output/visualization"
+  export_format: ["json", "csv"]
+  alert_channels: ["log"]
+
+# ==================== 可视化配置 ====================
+visualization:
+  enabled: true
+  chinese_font: "Noto Sans SC, SimHei, sans-serif"
+  chart_height: 600
+  chart_width: 1200
+  export_format: ["html", "png"]
+  color_palette:
+    primary: "#3498db"
+    success: "#27ae60"
+    warning: "#f39c12"
+    danger: "#e74c3c"
+    info: "#9b59b6"
+
+version:
+  system_version: "7.0.0"
+  config_version: "1.0.0"
+  last_updated: "2026-05-21"
+  notes: "V7: 模块解耦 + 3D市场状态模型 + 动态合约 + 配置驱动"
