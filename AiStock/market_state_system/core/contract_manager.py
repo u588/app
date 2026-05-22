@@ -300,21 +300,21 @@ VARIETY_MARKET_TYPE: Dict[str, str] = {
     'JD': 'future_dl', 'RR': 'future_dl', 'LH': 'future_dl',
     'BZ': 'future_dl', 'LG': 'future_dl',
     # 郑州商品
-    'CF': 'future_zj', 'SR': 'future_zj', 'TA': 'future_zj',
-    'MA': 'future_zj', 'FG': 'future_zj', 'SA': 'future_zj',
-    'AP': 'future_zj', 'CJ': 'future_zj', 'OI': 'future_zj',
-    'RM': 'future_zj', 'ZC': 'future_zj', 'SF': 'future_zj',
-    'SM': 'future_zj', 'PF': 'future_zj', 'SH': 'future_zj',
-    'UR': 'future_zj', 'PK': 'future_zj', 'CY': 'future_zj',
-    'WH': 'future_zj', 'PM': 'future_zj', 'RI': 'future_zj',
-    'JR': 'future_zj', 'RS': 'future_zj', 'PR': 'future_zj',
-    'PX': 'future_zj', 'PL': 'future_zj',
+    'CF': 'future_zz', 'SR': 'future_zz', 'TA': 'future_zz',
+    'MA': 'future_zz', 'FG': 'future_zz', 'SA': 'future_zz',
+    'AP': 'future_zz', 'CJ': 'future_zz', 'OI': 'future_zz',
+    'RM': 'future_zz', 'ZC': 'future_zz', 'SF': 'future_zz',
+    'SM': 'future_zz', 'PF': 'future_zz', 'SH': 'future_zz',
+    'UR': 'future_zz', 'PK': 'future_zz', 'CY': 'future_zz',
+    'WH': 'future_zz', 'PM': 'future_zz', 'RI': 'future_zz',
+    'JR': 'future_zz', 'RS': 'future_zz', 'PR': 'future_zz',
+    'PX': 'future_zz', 'PL': 'future_zz',
     # 广州期货
     'LC': 'future_gz', 'SI': 'future_gz', 'PS': 'future_gz',
     'PD': 'future_gz', 'PT': 'future_gz',
     # 中金所
-    'IF': 'future_zz', 'IH': 'future_zz', 'IC': 'future_zz', 'IM': 'future_zz',
-    'T': 'future_zz', 'TF': 'future_zz', 'TL': 'future_zz', 'TS': 'future_zz',
+    'IF': 'future_zj', 'IH': 'future_zj', 'IC': 'future_zj', 'IM': 'future_zj',
+    'T': 'future_zj', 'TF': 'future_zj', 'TL': 'future_zj', 'TS': 'future_zj',
 }
 
 #: 品种 → 中文名称
@@ -1241,7 +1241,7 @@ if __name__ == "__main__":
     code_table: Optional[str] = None
     search_paths = [
         './tdx基金期货期权代码表.xlsx',
-        './data/tdx_code_table.xlsx',
+        './data/tdx基金期货期权代码表.xlsx',
         './config/tdx基金期货期权代码表.xlsx',
         '../upload/tdx基金期货期权代码表.xlsx',
     ]

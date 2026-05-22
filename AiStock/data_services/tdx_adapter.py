@@ -53,14 +53,14 @@ class TDXAdapter:
         # 股票类
         'stock_sh': 'stock',
         'stock_sz': 'stock',
-        'stock_xg': 'stock',
+        'stock_xg': 'derivative',
         
         # 指数类
         'index_sh': 'index',
         'index_sz': 'index',
-        'index_zz': 'index',
-        'index_gz': 'index',
-        'index_xg': 'index',
+        'index_zz': 'derivative',
+        'index_gz': 'derivative',
+        'index_xg': 'derivative',
         
         # 衍生品类
         'future_zz': 'derivative',
