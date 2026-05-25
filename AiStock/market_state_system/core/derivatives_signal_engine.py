@@ -219,6 +219,7 @@ class DerivativesSignalEngine:
         if self.contract_manager:
             try:
                 d = self.contract_manager.generate_commodity_contracts_config()
+                print(d)
                 if d:
                     return d
             except Exception:

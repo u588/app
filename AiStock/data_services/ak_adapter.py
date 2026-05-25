@@ -234,7 +234,7 @@ class AKAdapter:
         try:
             import akshare as ak
             self._ak = ak
-            logger.info(f"✅ AKAdapter 初始化成功 | 缓存={'启用' if self.cache_enabled else '禁用'}")
+            logger.info(f"✅ AKAdapter 初始化成功 ")
         except ImportError:
             self._ak = None
             logger.warning("⚠️ akshare 未安装，外部数据源不可用")
