@@ -33,7 +33,7 @@ except ImportError:
 
 # ─── 全局配置 (从 global_settings 获取或使用默认值) ────────────────────────────
 try:
-    from global_settings import DATABASE_ENGINES
+    from config.global_settings import DATABASE_ENGINES
 except ImportError:
     DATABASE_ENGINES = {
         "valuation": {

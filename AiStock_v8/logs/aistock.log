@@ -106,3 +106,57 @@
 2026-05-25 16:08:50.134 | [32mINFO    [0m | [96maistock.main[0m | RiskAssessmentEngine 初始化 (含海外+PCR风险因子)
 2026-05-25 16:08:50.134 | [32mINFO    [0m | [96maistock.main[0m | ------------------------------------------------------------
 2026-05-25 16:08:50.134 | [32mINFO    [0m | [96maistock.main[0m | Step 1/9: 加载市场数据
+2026-05-25 16:47:41.610 | [32mINFO    [0m | [96maistock[0m | 📋 LoggerService 初始化完成 | 日志目录: /home/ts/app/AiStock_v8/logs | 控制台级别: INFO | 文件级别: DEBUG | 轮转: 50MB×10
+2026-05-25 16:47:41.610 | [32mINFO    [0m | [96maistock.main[0m | ======================================================================
+2026-05-25 16:47:41.610 | [32mINFO    [0m | [96maistock.main[0m | AiStock V8 市场状态量化系统 启动
+2026-05-25 16:47:41.610 | [32mINFO    [0m | [96maistock.main[0m | 运行模式: production
+2026-05-25 16:47:41.610 | [32mINFO    [0m | [96maistock.main[0m | ======================================================================
+2026-05-25 16:47:41.732 | [32mINFO    [0m | [96maistock.main[0m | 使用默认配置: /home/ts/app/AiStock_v8/config/system_config.yaml
+2026-05-25 16:47:41.732 | [32mINFO    [0m | [96maistock.main[0m | CacheService 初始化: max_size=2000, default_ttl=3600s
+2026-05-25 16:47:41.733 | [32mINFO    [0m | [96maistock.tdx.pool[0m | 心跳线程启动 | standard | 间隔 30 s
+2026-05-25 16:47:41.733 | [32mINFO    [0m | [96maistock.tdx.pool[0m | 心跳线程启动 | extension | 间隔 30 s
+2026-05-25 16:47:41.733 | [32mINFO    [0m | [96maistock.tdx.pool[0m | 🔌 TDXConnectionPool 初始化 | 池大小=5 | 标准=180.153.18.170:7709 | 扩展=180.153.18.176:7721 | 心跳=30.0s
+2026-05-25 16:47:41.733 | [32mINFO    [0m | [96maistock.main[0m | TDXConnectionPool 初始化: pool_size=5 | 标准=180.153.18.170:7709 | 扩展=180.153.18.176:7721
+2026-05-25 16:47:42.311 | [32mINFO    [0m | [96maistock.main[0m | TDXAdapter 初始化 (双端口模式: 180.153.18.170:7709 / 180.153.18.176:7721)
+2026-05-25 16:47:42.311 | [32mINFO    [0m | [96maistock.main[0m | AKAdapter 初始化 (海外期货29品种 + 辅助数据)
+2026-05-25 16:47:42.375 | [32mINFO    [0m | [96maistock.main[0m | DatabaseReader 初始化 (fallback=True)
+2026-05-25 16:47:42.376 | [32mINFO    [0m | [96maistock.main[0m | DataLoaderService 初始化 (7段数据编排)
+2026-05-25 16:47:42.487 | [32mINFO    [0m | [96maistock.main[0m | OptionCodeParser 初始化 (3格式统一解析)
+2026-05-25 16:47:42.487 | [32mINFO    [0m | [96maistock.main[0m | ContractManager 初始化 (含代码表)
+2026-05-25 16:47:42.488 | [32mINFO    [0m | [96maistock.main[0m | OptionPCREngine 初始化 (9ETF + 3CFFEX + 20商品)
+2026-05-25 16:47:42.488 | [32mINFO    [0m | [96maistock.overseas_signal[0m | OverseasFuturesSignalEngine V8.0 初始化完成 | 权重: price=40% position=25% macro=20% sentiment=15%
+2026-05-25 16:47:42.488 | [32mINFO    [0m | [96maistock.main[0m | OverseasFuturesSignalEngine 初始化 (4维度信号: 价格+持仓+宏观+情绪)
+2026-05-25 16:47:42.488 | [32mINFO    [0m | [96maistock.main[0m | DerivativesSignalEngine 初始化 (含海外整合)
+2026-05-25 16:47:42.488 | [32mINFO    [0m | [96maistock.main[0m | MacroSignalEngine 初始化 (99指标5维度)
+2026-05-25 16:47:42.488 | [32mINFO    [0m | [96maistock.main[0m | MarketRegimeEngine 初始化 (含海外Regime调整)
+2026-05-25 16:47:42.489 | [32mINFO    [0m | [96maistock.main[0m | MarketStateClassifier 初始化 (4D模型: 估值+动量+Regime+海外)
+2026-05-25 16:47:42.489 | [32mINFO    [0m | [96maistock.main[0m | RiskAssessmentEngine 初始化 (含海外+PCR风险因子)
+2026-05-25 16:47:42.489 | [32mINFO    [0m | [96maistock.main[0m | ------------------------------------------------------------
+2026-05-25 16:47:42.489 | [32mINFO    [0m | [96maistock.main[0m | Step 1/9: 加载市场数据
+2026-05-25 16:54:01.492 | [32mINFO    [0m | [96maistock[0m | 📋 LoggerService 初始化完成 | 日志目录: /home/ts/app/AiStock_v8/logs | 控制台级别: INFO | 文件级别: DEBUG | 轮转: 50MB×10
+2026-05-25 16:54:01.492 | [32mINFO    [0m | [96maistock.main[0m | ======================================================================
+2026-05-25 16:54:01.492 | [32mINFO    [0m | [96maistock.main[0m | AiStock V8 市场状态量化系统 启动
+2026-05-25 16:54:01.492 | [32mINFO    [0m | [96maistock.main[0m | 运行模式: production
+2026-05-25 16:54:01.493 | [32mINFO    [0m | [96maistock.main[0m | ======================================================================
+2026-05-25 16:54:01.635 | [32mINFO    [0m | [96maistock.main[0m | 使用默认配置: /home/ts/app/AiStock_v8/config/system_config.yaml
+2026-05-25 16:54:01.635 | [32mINFO    [0m | [96maistock.main[0m | CacheService 初始化: max_size=2000, default_ttl=3600s
+2026-05-25 16:54:01.636 | [32mINFO    [0m | [96maistock.tdx.pool[0m | 心跳线程启动 | standard | 间隔 30 s
+2026-05-25 16:54:01.637 | [32mINFO    [0m | [96maistock.tdx.pool[0m | 心跳线程启动 | extension | 间隔 30 s
+2026-05-25 16:54:01.637 | [32mINFO    [0m | [96maistock.tdx.pool[0m | 🔌 TDXConnectionPool 初始化 | 池大小=5 | 标准=180.153.18.170:7709 | 扩展=180.153.18.176:7721 | 心跳=30.0s
+2026-05-25 16:54:01.637 | [32mINFO    [0m | [96maistock.main[0m | TDXConnectionPool 初始化: pool_size=5 | 标准=180.153.18.170:7709 | 扩展=180.153.18.176:7721
+2026-05-25 16:54:02.220 | [32mINFO    [0m | [96maistock.main[0m | TDXAdapter 初始化 (双端口模式: 180.153.18.170:7709 / 180.153.18.176:7721)
+2026-05-25 16:54:02.220 | [32mINFO    [0m | [96maistock.main[0m | AKAdapter 初始化 (海外期货29品种 + 辅助数据)
+2026-05-25 16:54:02.277 | [32mINFO    [0m | [96maistock.main[0m | DatabaseReader 初始化 (fallback=True)
+2026-05-25 16:54:02.277 | [32mINFO    [0m | [96maistock.main[0m | DataLoaderService 初始化 (7段数据编排)
+2026-05-25 16:54:02.390 | [32mINFO    [0m | [96maistock.main[0m | OptionCodeParser 初始化 (3格式统一解析)
+2026-05-25 16:54:02.391 | [32mINFO    [0m | [96maistock.main[0m | ContractManager 初始化 (含代码表)
+2026-05-25 16:54:02.391 | [32mINFO    [0m | [96maistock.main[0m | OptionPCREngine 初始化 (9ETF + 3CFFEX + 20商品)
+2026-05-25 16:54:02.391 | [32mINFO    [0m | [96maistock.overseas_signal[0m | OverseasFuturesSignalEngine V8.0 初始化完成 | 权重: price=40% position=25% macro=20% sentiment=15%
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | OverseasFuturesSignalEngine 初始化 (4维度信号: 价格+持仓+宏观+情绪)
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | DerivativesSignalEngine 初始化 (含海外整合)
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | MacroSignalEngine 初始化 (99指标5维度)
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | MarketRegimeEngine 初始化 (含海外Regime调整)
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | MarketStateClassifier 初始化 (4D模型: 估值+动量+Regime+海外)
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | RiskAssessmentEngine 初始化 (含海外+PCR风险因子)
+2026-05-25 16:54:02.392 | [32mINFO    [0m | [96maistock.main[0m | ------------------------------------------------------------
+2026-05-25 16:54:02.393 | [32mINFO    [0m | [96maistock.main[0m | Step 1/9: 加载市场数据

@@ -79,7 +79,7 @@ cache:
 # ==================== 4. 合约动态推导配置 ====================
 contract_manager:
   enabled: true
-  code_table_path: "./data/tdx_code_table.xlsx"
+  code_table_path: "./data/tdx基金期货期权代码表.xlsx"
   auto_rollover: true
   expiry_warning_days: 5
   near_month_strategy: "auto"
