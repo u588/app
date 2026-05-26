@@ -1,0 +1,43 @@
+tdx:
+  standard:
+    host: "180.153.18.170"
+    port: 7709
+    pool_size: 3
+    retry_count: 2
+    retry_delay: 1.0
+  
+  extension:
+    host: "180.153.18.176"
+    port: 7721
+    pool_size: 3
+    retry_count: 2
+    retry_delay: 1.0
+  
+  bars_count:
+    index: 800
+    future: 800
+    option: 100
+    macro: 200
+
+  market_codes:
+    stock_sz: 0
+    stock_sh: 1
+    index_sz: 0
+    index_sh: 1
+    index_zz: 1
+    future_zz: 29
+    future_dl: 28
+    future_sh: 30
+    future_gz: 67
+    future_zj: 47
+    option_zj: 48
+    option_sh: 27
+    option_sz: 8
+    option_czce: 4
+    option_dce: 5
+    option_shfe: 6
+    option_gz: 67
+    index_intl: 12
+    gold_sh: 46
+    index_csi: 62
+    index_cni: 102

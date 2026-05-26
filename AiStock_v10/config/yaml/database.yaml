@@ -1,0 +1,16 @@
+database:
+  tdx_index:
+    host: "10.3.18.56"
+    port: 5432
+    database: "tdxIndex"
+    user: "postgres"
+    password: ""
+    schema: "public"
+  
+  csi_index_pe:
+    host: "10.3.18.56"
+    port: 5432
+    database: "csiIndexPE"
+    user: "postgres"
+    password: ""
+    schema: "public"

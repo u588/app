@@ -1,0 +1,38 @@
+logging:
+  version: 1
+  formatters:
+    standard:
+      format: "%(asctime)s | %(levelname)-8s | %(name)-20s | %(message)s"
+      datefmt: "%Y-%m-%d %H:%M:%S"
+    detailed:
+      format: "%(asctime)s | %(levelname)-8s | %(name)-20s | %(funcName)-20s | %(message)s"
+  
+  handlers:
+    console:
+      class: "logging.StreamHandler"
+      level: "INFO"
+      formatter: "standard"
+      stream: "ext://sys.stdout"
+    file:
+      class: "logging.handlers.RotatingFileHandler"
+      level: "DEBUG"
+      formatter: "detailed"
+      filename: "logs/aistock.log"
+      maxBytes: 10485760
+      backupCount: 5
+  
+  loggers:
+    aistock:
+      level: "INFO"
+      handlers: ["console", "file"]
+      propagate: false
+    aistock.core:
+      level: "DEBUG"
+    aistock.data_service:
+      level: "INFO"
+    aistock.subsystems:
+      level: "INFO"
+  
+  root:
+    level: "WARNING"
+    handlers: ["console"]

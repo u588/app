@@ -1,0 +1,26 @@
+system:
+  name: "AiStock"
+  version: "10.0"
+  mode: "production"  # production / development / testing
+  
+  paths:
+    code_table: "config/tdxAPICode180.xlsx"
+    data_dir: "data"
+    log_dir: "logs"
+    cache_dir: "cache"
+  
+  subsystems:
+    - name: "market_state"
+      enabled: true
+      config_file: "market_state.yaml"
+    - name: "price_quant"
+      enabled: false
+      config_file: "price_quant.yaml"
+
+  pipeline:
+    - step: "data_load"
+      timeout: 120
+    - step: "computation"
+      timeout: 60
+    - step: "visualization"
+      timeout: 30
