@@ -1,0 +1,1644 @@
+# ============================================
+# A股市场状态量化系统 V9.1
+# 系统配置文件
+# V9.1升级: 商品期权市场码修正 + 广州期权 + tdxAPICode180 + 期权PCR细分
+# ============================================
+
+# ==================== 1. 系统级配置 ====================
+system:
+  version: "9.1.0"
+  name: "AiStock V9.1 A股市场状态量化系统"
+  mode: "production"
+  base_date: null
+  log_level: "INFO"
+  max_workers: 8
+  data_min_days: 500
+  degradation_mode: "auto"
+  enable_overseas_signal: true
+  enable_unified_option_parser: true
+  enable_dual_tdx: true
+
+# ==================== 2. TDX双端口配置 ====================
+tdx:
+  standard:
+    host: "180.153.18.170"
+    port: 7709
+    description: "TDX标准行情端口"
+    usage: "A股/指数/基础期货/基础期权"
+    use_for:
+      - "index_daily"
+      - "stock_daily"
+      - "index_futures"
+      - "etf_options"
+      - "cffex_options"
+  extension:
+    host: "180.153.18.176"
+    port: 7721
+    description: "TDX扩展行情端口"
+    usage: "期货/期权全合约/外盘/宏观指标"
+    use_for:
+      - "commodity_futures"
+      - "commodity_options"
+      - "overseas_futures"
+      - "macro_indicators"
+      - "full_option_chain"
+  use_tdx: true
+  timeout: 30
+  retry_count: 3
+  parallel_workers: 5
+  auto_fallback: true
+  fallback_priority: ["standard", "extension", "database"]
+
+# ==================== 3. 缓存配置 ====================
+cache:
+  max_size: 2000
+  default_ttl: 3600
+  ttl:
+    stock_daily: 7200
+    index_daily: 7200
+    index_futures: 1800
+    commodity_futures: 900
+    etf_options: 1800
+    cffex_options: 1800
+    commodity_options: 1800
+    overseas_futures: 3600
+    macro_indicators: 14400
+    pe_data: 86400
+    cftc_position: 86400
+    lme_inventory: 86400
+    bond_yield: 7200
+    qvix: 1800
+    eia_data: 86400
+    ism_pmi: 86400
+    global_indices: 3600
+    pcr_full: 1800
+    option_chain: 900
+  key_format: "{data_type}_{code}_{date}"
+  enable_compression: true
+
+# ==================== 4. 合约动态推导配置 ====================
+contract_manager:
+  enabled: true
+  code_table_path: "./data/tdxAPICode180.xlsx"
+  auto_rollover: true
+  expiry_warning_days: 5
+  near_month_strategy: "auto"
+  far_month_offset: 1
+  rollover_day: 15
+  unified_option_parser:
+    enabled: true
+    total_markets: 11
+    total_contracts: 57371
+    market_codes:
+      shanghai_etf: 8
+      shenzhen_etf: 9
+      cffex_index: 7
+      shfe_commodity: 1
+      dce_commodity: 29
+      czce_commodity: 28
+      gfex_commodity: 66
+      shfe_option: 6
+      dce_option: 5
+      czce_option: 4
+      gfex_option: 67
+    code_pattern: "^(\\d{6,8})[CP](\\d{2,5})$"
+    strike_normalization: true
+    expiry_detection: "contract_suffix"
+  dynamic_contract:
+    enabled: true
+    max_contracts_per_underlying: 80
+    volume_rank_threshold: 3
+    oi_filter_min: 100
+
+# ==================== 5. 外盘期货29品种配置 ====================
+overseas_futures:
+  enabled: true
+  total_symbols: 29
+  data_source: "akshare"
+  ak_function: "futures_foreign_hist"
+  default_multiplier: 1.0
+  # ---------- 核心层 Core (7) ----------
+  core:
+    CL:
+      ak_code: "CL"
+      name: "WTI原油"
+      exchange: "NYMEX"
+      tier: "core"
+      priority: 1
+      weight: 0.20
+      a_share_sectors: ["石油石化", "化工", "交运"]
+      signal_type: "price+position"
+      multiplier: 1.0
+    GC:
+      ak_code: "GC"
+      name: "COMEX黄金"
+      exchange: "COMEX"
+      tier: "core"
+      priority: 1
+      weight: 0.18
+      a_share_sectors: ["贵金属", "珠宝"]
+      signal_type: "price+sentiment"
+      multiplier: 1.0
+    SI:
+      ak_code: "SI"
+      name: "COMEX白银"
+      exchange: "COMEX"
+      tier: "core"
+      priority: 1
+      weight: 0.12
+      a_share_sectors: ["光伏", "电子"]
+      signal_type: "price+position"
+      multiplier: 1.0
+    HG:
+      ak_code: "HG"
+      name: "COMEX铜"
+      exchange: "COMEX"
+      tier: "core"
+      priority: 1
+      weight: 0.15
+      a_share_sectors: ["有色金属", "电力设备"]
+      signal_type: "price+position"
+      multiplier: 1.0
+    FEF:
+      ak_code: "FEF"
+      name: "新交所铁矿石"
+      exchange: "SGX"
+      tier: "core"
+      priority: 1
+      weight: 0.13
+      a_share_sectors: ["钢铁", "基建"]
+      signal_type: "price+macro"
+      multiplier: 1.0
+    S:
+      ak_code: "S"
+      name: "CBOT大豆"
+      exchange: "CBOT"
+      tier: "core"
+      priority: 1
+      weight: 0.12
+      a_share_sectors: ["农业", "饲料", "食品"]
+      signal_type: "price+macro"
+      multiplier: 1.0
+    CT:
+      ak_code: "CT"
+      name: "ICE棉花"
+      exchange: "ICE"
+      tier: "core"
+      priority: 1
+      weight: 0.10
+      a_share_sectors: ["纺织服装", "农业"]
+      signal_type: "price+position"
+      multiplier: 1.0
+  # ---------- 扩展层 Extended (9) ----------
+  extended:
+    NG:
+      ak_code: "NG"
+      name: "NYMEX天然气"
+      exchange: "NYMEX"
+      tier: "extended"
+      priority: 2
+      weight: 0.10
+      a_share_sectors: ["燃气", "化工"]
+      signal_type: "price+macro"
+      multiplier: 1.0
+    W:
+      ak_code: "W"
+      name: "CBOT小麦"
+      exchange: "CBOT"
+      tier: "extended"
+      priority: 2
+      weight: 0.06
+      a_share_sectors: ["农业", "食品"]
+      signal_type: "price+macro"
+      multiplier: 1.0
+    C:
+      ak_code: "C"
+      name: "CBOT玉米"
+      exchange: "CBOT"
+      tier: "extended"
+      priority: 2
+      weight: 0.07
+      a_share_sectors: ["饲料", "养殖", "食品"]
+      signal_type: "price+macro"
+      multiplier: 1.0
+    SB:
+      ak_code: "SB"
+      name: "ICE糖11号"
+      exchange: "ICE"
+      tier: "extended"
+      priority: 2
+      weight: 0.07
+      a_share_sectors: ["食品", "农业"]
+      signal_type: "price"
+      multiplier: 1.0
+    CC:
+      ak_code: "CC"
+      name: "ICE可可"
+      exchange: "ICE"
+      tier: "extended"
+      priority: 2
+      weight: 0.06
+      a_share_sectors: ["食品"]
+      signal_type: "price"
+      multiplier: 1.0
+    KC:
+      ak_code: "KC"
+      name: "ICE咖啡"
+      exchange: "ICE"
+      tier: "extended"
+      priority: 2
+      weight: 0.06
+      a_share_sectors: ["食品", "餐饮"]
+      signal_type: "price"
+      multiplier: 1.0
+    PA:
+      ak_code: "PA"
+      name: "NYMEX钯金"
+      exchange: "NYMEX"
+      tier: "extended"
+      priority: 2
+      weight: 0.08
+      a_share_sectors: ["汽车", "电子"]
+      signal_type: "price+sentiment"
+      multiplier: 1.0
+    PL:
+      ak_code: "PL"
+      name: "NYMEX铂金"
+      exchange: "NYMEX"
+      tier: "extended"
+      priority: 2
+      weight: 0.08
+      a_share_sectors: ["汽车", "化工"]
+      signal_type: "price+sentiment"
+      multiplier: 1.0
+    LH:
+      ak_code: "LH"
+      name: "CME瘦肉猪"
+      exchange: "CME"
+      tier: "extended"
+      priority: 2
+      weight: 0.05
+      a_share_sectors: ["养殖", "食品"]
+      signal_type: "price"
+      multiplier: 1.0
+  # ---------- 辅助层 Auxiliary (13) ----------
+  auxiliary:
+    LC:
+      ak_code: "LC"
+      name: "CME活牛"
+      exchange: "CME"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.03
+      a_share_sectors: ["养殖", "食品"]
+      signal_type: "price"
+      multiplier: 1.0
+    ZS:
+      ak_code: "ZS"
+      name: "CBOT豆油"
+      exchange: "CBOT"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.04
+      a_share_sectors: ["食品", "饲料"]
+      signal_type: "price"
+      multiplier: 1.0
+    SM:
+      ak_code: "SM"
+      name: "CBOT豆粕"
+      exchange: "CBOT"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.04
+      a_share_sectors: ["饲料", "养殖"]
+      signal_type: "price"
+      multiplier: 1.0
+    RR:
+      ak_code: "RR"
+      name: "CBOT稻谷"
+      exchange: "CBOT"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.02
+      a_share_sectors: ["农业"]
+      signal_type: "price"
+      multiplier: 1.0
+    OJ:
+      ak_code: "OJ"
+      name: "ICE橙汁"
+      exchange: "ICE"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.02
+      a_share_sectors: ["食品"]
+      signal_type: "price"
+      multiplier: 1.0
+    LBS:
+      ak_code: "LBS"
+      name: "CME木材"
+      exchange: "CME"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.03
+      a_share_sectors: ["建材", "地产"]
+      signal_type: "price"
+      multiplier: 1.0
+    BTC:
+      ak_code: "BTC"
+      name: "CME比特币"
+      exchange: "CME"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.03
+      a_share_sectors: ["金融科技", "区块链"]
+      signal_type: "sentiment"
+      multiplier: 1.0
+    ES:
+      ak_code: "ES"
+      name: "CME标普500"
+      exchange: "CME"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.05
+      a_share_sectors: ["大盘蓝筹", "外资重仓"]
+      signal_type: "macro+sentiment"
+      multiplier: 1.0
+    NQ:
+      ak_code: "NQ"
+      name: "CME纳斯达克100"
+      exchange: "CME"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.05
+      a_share_sectors: ["科技成长", "信息技术"]
+      signal_type: "macro+sentiment"
+      multiplier: 1.0
+    YM:
+      ak_code: "YM"
+      name: "CBOT道琼斯"
+      exchange: "CBOT"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.04
+      a_share_sectors: ["大盘价值"]
+      signal_type: "macro+sentiment"
+      multiplier: 1.0
+    DX:
+      ak_code: "DX"
+      name: "ICE美元指数"
+      exchange: "ICE"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.05
+      a_share_sectors: ["出口导向", "外资重仓"]
+      signal_type: "macro"
+      multiplier: 1.0
+    TN:
+      ak_code: "TN"
+      name: "CBOT超10年期国债"
+      exchange: "CBOT"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.04
+      a_share_sectors: ["银行", "保险"]
+      signal_type: "macro"
+      multiplier: 1.0
+    ZB:
+      ak_code: "ZB"
+      name: "CBOT 30年期国债"
+      exchange: "CBOT"
+      tier: "auxiliary"
+      priority: 3
+      weight: 0.04
+      a_share_sectors: ["银行", "保险"]
+      signal_type: "macro"
+      multiplier: 1.0
+
+# ==================== 6. 辅助数据源配置 ====================
+auxiliary_data_sources:
+  cftc_position:
+    enabled: true
+    ak_function: "futures_foreign_cftc"
+    description: "CFTC持仓报告(投机净多头)"
+    cache_ttl: 86400
+    update_frequency: "weekly"
+    key_symbols: ["CL", "GC", "SI", "HG", "S", "CT", "NG"]
+    position_threshold:
+      extreme_long: 0.80
+      extreme_short: 0.20
+      neutral_range: [0.40, 0.60]
+  lme_inventory:
+    enabled: true
+    ak_function: "futures_lme_inventory"
+    description: "LME有色金属库存"
+    cache_ttl: 86400
+    update_frequency: "daily"
+    metals: ["CU", "AL", "ZN", "PB", "NI", "SN"]
+    inventory_change_threshold:
+      significant: 5.0
+      extreme: 10.0
+  bond_yields:
+    enabled: true
+    ak_function_cn: "bond_china_yield"
+    ak_function_us: "macro_bond_yield_us"
+    description: "中美债券收益率"
+    cache_ttl: 7200
+    update_frequency: "daily"
+    keys:
+      cn_10y: "10年期国债收益率"
+      us_10y: "美国10年期国债收益率"
+      cn_us_spread: "中美利差"
+    spread_warning: -1.0
+    spread_extreme: -1.5
+  qvix:
+    enabled: true
+    ak_function: "index_option_50etf_qvix"
+    description: "中国期权隐含波动率指数"
+    cache_ttl: 1800
+    update_frequency: "realtime"
+    thresholds:
+      low_vol: 15.0
+      normal_vol: 25.0
+      high_vol: 35.0
+      extreme_vol: 50.0
+    pcr_adjustment_factor: 0.15
+  eia_crude:
+    enabled: true
+    ak_function: "futures_energy_eia"
+    description: "EIA原油库存数据"
+    cache_ttl: 86400
+    update_frequency: "weekly"
+    report_day: "wednesday"
+    inventory_change_threshold:
+      draw_warning: -5.0
+      build_warning: 5.0
+      extreme_draw: -10.0
+      extreme_build: 10.0
+    a_share_impact: ["石油石化", "化工"]
+  ism_pmi:
+    enabled: true
+    ak_function: "macro_usa_ism_pmi"
+    description: "ISM制造业PMI"
+    cache_ttl: 86400
+    update_frequency: "monthly"
+    thresholds:
+      expansion: 50.0
+      strong_expansion: 55.0
+      contraction_warning: 48.0
+      deep_contraction: 45.0
+    a_share_impact: ["出口导向", "制造业"]
+  global_indices:
+    enabled: true
+    description: "全球主要指数行情"
+    cache_ttl: 3600
+    update_frequency: "realtime"
+    indices:
+      sp500:
+        ak_function: "index_us_stock_sina"
+        code: ".INX"
+        name: "标普500"
+      nasdaq:
+        ak_function: "index_us_stock_sina"
+        code: ".IXIC"
+        name: "纳斯达克"
+      dji:
+        ak_function: "index_us_stock_sina"
+        code: ".DJI"
+        name: "道琼斯"
+      hsi:
+        ak_function: "stock_hk_index_daily_sina"
+        code: "HSI"
+        name: "恒生指数"
+      n225:
+        ak_function: "stock_japan_index_sina"
+        code: "N225"
+        name: "日经225"
+      dax:
+        ak_function: "index_euro_stoxx50_sina"
+        code: "DAX"
+        name: "德国DAX"
+      ftse:
+        ak_function: "index_uk_ftse_sina"
+        code: "FTSE"
+        name: "英国富时100"
+    correlation_window: 60
+
+# ==================== 7. 商品策略映射(V8增强) ====================
+commodity_strategy_map:
+  CUL8:
+    name: "沪铜"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["高端制造", "供应链"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 10.0
+    threshold_down: -10.0
+    overseas_aligned: "HG"
+  ALL8:
+    name: "沪铝"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["高端制造", "新能源"]
+    impact_type: "cost"
+    weight: 0.08
+    threshold_up: 8.0
+    threshold_down: -8.0
+    overseas_aligned: null
+  LCL8:
+    name: "碳酸锂"
+    market_code: 66
+    market_type: "future_gz"
+    directions: ["新能源", "信息技术"]
+    impact_type: "cost"
+    weight: 0.12
+    threshold_up: 20.0
+    threshold_down: -20.0
+    overseas_aligned: null
+  SIL8:
+    name: "工业硅"
+    market_code: 66
+    market_type: "future_gz"
+    directions: ["信息技术", "新能源"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 15.0
+    threshold_down: -15.0
+    overseas_aligned: null
+  SCL8:
+    name: "原油"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["公用事业", "供应链", "传统升级"]
+    impact_type: "cost"
+    weight: 0.10
+    threshold_up: 15.0
+    threshold_down: -15.0
+    overseas_aligned: "CL"
+  RBL8:
+    name: "螺纹钢"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["传统升级", "供应链"]
+    impact_type: "benefit"
+    weight: 0.08
+    threshold_up: 8.0
+    threshold_down: -8.0
+    overseas_aligned: "FEF"
+  ML8:
+    name: "豆粕"
+    market_code: 29
+    market_type: "future_dl"
+    directions: ["现代农业", "生物健康", "文化消费"]
+    impact_type: "cost"
+    weight: 0.08
+    threshold_up: 10.0
+    threshold_down: -10.0
+    overseas_aligned: "SM"
+  AUL8:
+    name: "黄金"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["公用事业"]
+    impact_type: "benefit"
+    weight: 0.05
+    threshold_up: 8.0
+    threshold_down: -8.0
+    overseas_aligned: "GC"
+  IL8:
+    name: "铁矿石"
+    market_code: 29
+    market_type: "future_dl"
+    directions: ["传统升级", "供应链", "基建"]
+    impact_type: "cost"
+    weight: 0.09
+    threshold_up: 10.0
+    threshold_down: -10.0
+    overseas_aligned: "FEF"
+  AGL8:
+    name: "白银"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["新能源", "信息技术"]
+    impact_type: "cost"
+    weight: 0.06
+    threshold_up: 10.0
+    threshold_down: -10.0
+    overseas_aligned: "SI"
+  ZNL8:
+    name: "沪锌"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["高端制造", "基建"]
+    impact_type: "cost"
+    weight: 0.04
+    threshold_up: 8.0
+    threshold_down: -8.0
+    overseas_aligned: null
+  PBL8:
+    name: "沪铅"
+    market_code: 30
+    market_type: "future_sh"
+    directions: ["新能源", "供应链"]
+    impact_type: "cost"
+    weight: 0.03
+    threshold_up: 8.0
+    threshold_down: -8.0
+    overseas_aligned: null
+
+# ==================== 8. 股指期货配置 ====================
+index_futures_contracts:
+  if:
+    variety: "IF"
+    spot_code: "000300"
+    spot_name: "沪深300"
+    market_type: "future_zj"
+  ih:
+    variety: "IH"
+    spot_code: "000016"
+    spot_name: "上证50"
+    market_type: "future_zj"
+  ic:
+    variety: "IC"
+    spot_code: "000905"
+    spot_name: "中证500"
+    market_type: "future_zj"
+  im:
+    variety: "IM"
+    spot_code: "000852"
+    spot_name: "中证1000"
+    market_type: "future_zj"
+
+# ==================== 9. 期权标的映射(V8全量12+商品期权) ====================
+option_underlying_mapping:
+  # --- 上交所ETF期权(5) ---
+  "510050":
+    spot_code: "510050"
+    name: "上证50ETF"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.20
+    default_price: 2.8
+    category: "sh_etf"
+  "510300":
+    spot_code: "510300"
+    name: "沪深300ETF"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.18
+    default_price: 4.7
+    category: "sh_etf"
+  "510500":
+    spot_code: "510500"
+    name: "中证500ETF"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.07
+    default_price: 8.1
+    category: "sh_etf"
+  "588000":
+    spot_code: "588000"
+    name: "科创50ETF"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.10
+    default_price: 1.5
+    category: "sh_etf"
+  "588050":
+    spot_code: "588050"
+    name: "科创50ETF易方达"
+    market_code: 8
+    market_type: "option_sh"
+    weight: 0.05
+    default_price: 1.2
+    category: "sh_etf"
+  # --- 深交所ETF期权(4) ---
+  "159915":
+    spot_code: "159915"
+    name: "创业板ETF"
+    market_code: 9
+    market_type: "option_sz"
+    weight: 0.05
+    default_price: 3.3
+    category: "sz_etf"
+  "159901":
+    spot_code: "159901"
+    name: "深证100ETF"
+    market_code: 9
+    market_type: "option_sz"
+    weight: 0.03
+    default_price: 5.5
+    category: "sz_etf"
+  "159919":
+    spot_code: "159919"
+    name: "沪深300ETF(嘉实)"
+    market_code: 9
+    market_type: "option_sz"
+    weight: 0.04
+    default_price: 4.6
+    category: "sz_etf"
+  "159922":
+    spot_code: "159922"
+    name: "中证500ETF(嘉实)"
+    market_code: 9
+    market_type: "option_sz"
+    weight: 0.03
+    default_price: 8.0
+    category: "sz_etf"
+  # --- 中金所股指期权(3) ---
+  IO:
+    spot_code: "000300"
+    name: "沪深300股指期权"
+    market_code: 7
+    market_type: "option_zj"
+    weight: 0.45
+    default_price: 4000.0
+    category: "cffex_index"
+  HO:
+    spot_code: "000016"
+    name: "上证50股指期权"
+    market_code: 7
+    market_type: "option_zj"
+    weight: 0.10
+    default_price: 2800.0
+    category: "cffex_index"
+  MO:
+    spot_code: "000852"
+    name: "中证1000股指期权"
+    market_code: 7
+    market_type: "option_zj"
+    weight: 0.15
+    default_price: 7000.0
+    category: "cffex_index"
+  # --- 商品期权(SHFE+DCE) V9.1修正 ---
+  CU:
+    spot_code: "CU"
+    name: "沪铜期权"
+    market_code: 6
+    market_type: "option_sh_commodity"
+    weight: 0.04
+    default_price: 70000.0
+    category: "commodity"
+    underlying_future: "CUL8"
+  AG:
+    spot_code: "AG"
+    name: "白银期权"
+    market_code: 6
+    market_type: "option_sh_commodity"
+    weight: 0.03
+    default_price: 8000.0
+    category: "commodity"
+    underlying_future: "AGL8"
+  I:
+    spot_code: "I"
+    name: "铁矿石期权"
+    market_code: 5
+    market_type: "option_dl_commodity"
+    weight: 0.03
+    default_price: 800.0
+    category: "commodity"
+    underlying_future: "IL8"
+  AU:
+    spot_code: "AU"
+    name: "黄金期权"
+    market_code: 6
+    market_type: "option_sh_commodity"
+    weight: 0.02
+    default_price: 580.0
+    category: "commodity"
+    underlying_future: "AUL8"
+  AL:
+    spot_code: "AL"
+    name: "沪铝期权"
+    market_code: 6
+    market_type: "option_sh_commodity"
+    weight: 0.02
+    default_price: 20000.0
+    category: "commodity"
+    underlying_future: "ALL8"
+  # --- 广州商品期权(5) V9.1新增 ---
+  LC:
+    spot_code: "LC"
+    name: "碳酸锂期权"
+    market_code: 67
+    market_type: "option_gz_commodity"
+    weight: 0.02
+    default_price: 100000.0
+    category: "commodity"
+    underlying_future: "LCL8"
+  SI:
+    spot_code: "SI"
+    name: "工业硅期权"
+    market_code: 67
+    market_type: "option_gz_commodity"
+    weight: 0.02
+    default_price: 12000.0
+    category: "commodity"
+    underlying_future: "SIL8"
+  PS:
+    spot_code: "PS"
+    name: "碳酸锂期权(广期所)"
+    market_code: 67
+    market_type: "option_gz_commodity"
+    weight: 0.01
+    default_price: 100000.0
+    category: "commodity"
+    underlying_future: "LCL8"
+  PD:
+    spot_code: "PD"
+    name: "铂期权"
+    market_code: 67
+    market_type: "option_gz_commodity"
+    weight: 0.01
+    default_price: 250.0
+    category: "commodity"
+    underlying_future: "PDL8"
+  PT:
+    spot_code: "PT"
+    name: "钯期权"
+    market_code: 67
+    market_type: "option_gz_commodity"
+    weight: 0.01
+    default_price: 300.0
+    category: "commodity"
+    underlying_future: "PTL8"
+
+# ==================== 10. 期权容差配置 ====================
+option_tolerance:
+  base_tolerance: 0.05
+  volatility_based:
+    enabled: true
+    low_vol_tolerance: 0.03
+    high_vol_tolerance: 0.08
+    vol_threshold: 25.0
+  liquidity_based:
+    enabled: true
+    high_liquidity_tolerance: 0.04
+    low_liquidity_tolerance: 0.06
+    volume_threshold: 10000
+  pcr_thresholds:
+    stock_etf_option:
+      warning_high: 1.3
+      warning_low: 0.7
+      extreme_high: 1.5
+      extreme_low: 0.5
+    cffex_option:
+      warning_high: 1.2
+      warning_low: 0.8
+      extreme_high: 1.4
+      extreme_low: 0.6
+    commodity_option:
+      warning_high: 1.5
+      warning_low: 0.5
+      extreme_high: 2.0
+      extreme_low: 0.3
+    gfex_commodity_option:
+      warning_high: 1.6
+      warning_low: 0.4
+      extreme_high: 2.2
+      extreme_low: 0.2
+  pcr_ma_window: 5
+  full_pcr_weights:
+    stock_etf: 0.40
+    cffex: 0.35
+    commodity: 0.25
+
+# ==================== 11. 外盘信号引擎(V8四维体系) ====================
+overseas_signal_engine:
+  enabled: true
+  dimensions:
+    price:
+      weight: 0.40
+      description: "价格信号维度"
+      sub_signals:
+        trend_20d:
+          weight: 0.30
+          window: 20
+          method: "momentum"
+          thresholds:
+            strong_up: 5.0
+            up: 2.0
+            down: -2.0
+            strong_down: -5.0
+        trend_60d:
+          weight: 0.25
+          window: 60
+          method: "momentum"
+          thresholds:
+            strong_up: 10.0
+            up: 5.0
+            down: -5.0
+            strong_down: -10.0
+        ma_cross:
+          weight: 0.20
+          fast_period: 20
+          slow_period: 60
+          method: "golden_cross"
+        rsi_14:
+          weight: 0.15
+          period: 14
+          thresholds:
+            overbought: 70
+            oversold: 30
+        breakout:
+          weight: 0.10
+          window: 20
+          method: "bollinger"
+          multiplier: 2.0
+    position:
+      weight: 0.25
+      description: "持仓信号维度(CFTC)"
+      sub_signals:
+        net_long_ratio:
+          weight: 0.40
+          source: "cftc"
+          thresholds:
+            extreme_long: 0.80
+            extreme_short: 0.20
+            neutral_high: 0.60
+            neutral_low: 0.40
+        position_change_4w:
+          weight: 0.30
+          window: 4
+          method: "momentum"
+          thresholds:
+            large_increase: 10.0
+            large_decrease: -10.0
+        oi_trend:
+          weight: 0.30
+          window: 20
+          method: "trend"
+          thresholds:
+            increasing: 5.0
+            decreasing: -5.0
+    macro:
+      weight: 0.20
+      description: "宏观信号维度"
+      sub_signals:
+        dollar_index:
+          weight: 0.25
+          source: "DX"
+          method: "inverse_correlation"
+          thresholds:
+            strong_dollar: 105.0
+            weak_dollar: 95.0
+        bond_yield_spread:
+          weight: 0.25
+          source: "cn_us_bond_spread"
+          thresholds:
+            wide_spread: 2.0
+            narrow_spread: -1.0
+            inverted: -1.5
+        inventory_signal:
+          weight: 0.25
+          source: "lme_inventory"
+          method: "inverse"
+          thresholds:
+            significant_drawdown: -5.0
+            significant_buildup: 5.0
+        pmi_signal:
+          weight: 0.25
+          source: "ism_pmi"
+          thresholds:
+            expansion: 50.0
+            strong_expansion: 55.0
+            contraction: 48.0
+    sentiment:
+      weight: 0.15
+      description: "情绪信号维度"
+      sub_signals:
+        vix_proxy:
+          weight: 0.30
+          source: "qvix"
+          thresholds:
+            low_fear: 15.0
+            moderate_fear: 25.0
+            high_fear: 35.0
+            extreme_fear: 50.0
+        futures_contango:
+          weight: 0.25
+          method: "term_structure"
+          thresholds:
+            deep_contango: 5.0
+            backwardation: -2.0
+        safe_haven_flow:
+          weight: 0.25
+          source: "GC"
+          method: "correlation_break"
+          thresholds:
+            flight_to_safety: 2.0
+          correlated_assets: ["DX", "TN"]
+        sentiment_momentum:
+          weight: 0.20
+          window: 10
+          method: "composite"
+  aggregation:
+    method: "weighted_sum"
+    normalize: true
+    score_range: [-100, 100]
+    signal_decay: 0.95
+  tier_weights:
+    core: 0.50
+    extended: 0.30
+    auxiliary: 0.20
+
+# ==================== 12. 市场Regime配置 ====================
+market_regime:
+  enabled: true
+  confirmation_days: 3
+  volatility_window: 60
+  momentum_window: 20
+  volume_window: 20
+  regimes:
+    bull:
+      volatility_threshold: 0.15
+      momentum_threshold: 0.05
+      volume_trend: "increasing"
+      description: "牛市"
+    bear:
+      volatility_threshold: 0.30
+      momentum_threshold: -0.05
+      volume_trend: "decreasing"
+      description: "熊市"
+    volatile:
+      volatility_threshold: 0.25
+      momentum_range: [-0.02, 0.02]
+      volume_trend: "neutral"
+      description: "震荡市"
+    recovery:
+      volatility_decreasing: true
+      momentum_positive: true
+      volume_trend: "increasing"
+      description: "复苏期"
+  overseas_regime_adjustment:
+    enabled: true
+    weight: 0.20
+    bear_amplification: 1.3
+    bull_suppression: 0.9
+
+# ==================== 13. 市场状态分类器(V8四维模型) ====================
+market_state_classifier:
+  dimensions:
+    - valuation
+    - momentum
+    - regime
+    - overseas
+  grid:
+    strategic_offense: 80
+    active_allocation: 65
+    balanced_hold: 50
+    defensive_watch: 35
+    strategic_defense: 20
+  thresholds:
+    valuation_weight: 0.30
+    momentum_weight: 0.25
+    regime_weight: 0.25
+    overseas_weight: 0.20
+  valuation_sub_dimensions:
+    pe_percentile: 0.40
+    pb_percentile: 0.25
+    equity_risk_premium: 0.20
+    equity_bond_ratio: 0.15
+  momentum_sub_dimensions:
+    trend_strength: 0.35
+    breadth_ratio: 0.30
+    volume_price_divergence: 0.20
+    sector_rotation: 0.15
+  regime_sub_dimensions:
+    volatility_regime: 0.35
+    trend_regime: 0.30
+    liquidity_regime: 0.20
+    sentiment_regime: 0.15
+  overseas_sub_dimensions:
+    price_signal: 0.40
+    position_signal: 0.25
+    macro_signal: 0.20
+    sentiment_signal: 0.15
+  state_labels:
+    90: "强进攻"
+    80: "进攻"
+    65: "积极配置"
+    50: "均衡持有"
+    35: "防御观望"
+    20: "战略防御"
+    10: "强防御"
+
+# ==================== 14. 基准指数配置 ====================
+market_benchmarks:
+  大盘:
+    code: "000300"
+    weight: 0.40
+    volatility_target: 20.0
+  中盘:
+    code: "000905"
+    weight: 0.30
+    volatility_target: 25.0
+  小盘:
+    code: "000852"
+    weight: 0.20
+    volatility_target: 30.0
+  微盘:
+    code: "932000"
+    weight: 0.10
+    volatility_target: 35.0
+
+# ==================== 15. 九大战略方向 ====================
+strategic_directions:
+  高端制造:
+    indices: ["932042", "931865", "930850", "931866", "930599"]
+    base_weight: 0.28
+    risk_level: "medium_high"
+    risk_score: 58
+    overseas_linkage: ["HG", "PA", "PL"]
+  信息技术:
+    indices: ["931087", "930851", "930902", "931495", "931585"]
+    base_weight: 0.25
+    risk_level: "medium_high"
+    risk_score: 55
+    overseas_linkage: ["NQ", "SI"]
+  新能源:
+    indices: ["931798", "931772", "931897", "931687", "931746"]
+    base_weight: 0.15
+    risk_level: "medium"
+    risk_score: 45
+    overseas_linkage: ["SI", "HG", "LME_CU"]
+  生物健康:
+    indices: ["931140", "931152", "931992", "931166", "399812"]
+    base_weight: 0.10
+    risk_level: "low"
+    risk_score: 35
+    overseas_linkage: []
+  供应链:
+    indices: ["931465", "931235", "930716", "930725"]
+    base_weight: 0.06
+    risk_level: "low"
+    risk_score: 30
+    overseas_linkage: ["FEF", "CL", "S"]
+  现代农业:
+    indices: ["930910", "930707", "930662", "000949"]
+    base_weight: 0.01
+    risk_level: "medium"
+    risk_score: 48
+    overseas_linkage: ["S", "C", "CT", "SM"]
+  公用事业:
+    indices: ["000917", "000937", "930955", "932047"]
+    base_weight: 0.08
+    risk_level: "low"
+    risk_score: 25
+    overseas_linkage: ["GC", "TN", "ZB"]
+  传统升级:
+    indices: ["932039", "931231", "930838", "931463"]
+    base_weight: 0.04
+    risk_level: "low"
+    risk_score: 30
+    overseas_linkage: ["FEF", "CL", "LBS"]
+  文化消费:
+    indices: ["931066", "931480", "930901", "930781", "931588"]
+    base_weight: 0.03
+    risk_level: "high"
+    risk_score: 75
+    overseas_linkage: ["KC", "CC", "SB"]
+
+# ==================== 16. 风险阈值 ====================
+risk_thresholds:
+  pcr:
+    warning_high: 1.3
+    warning_low: 0.7
+    extreme_high: 1.5
+    extreme_low: 0.5
+    ma_window: 5
+    commodity_pcr_extreme_high: 2.0
+    commodity_pcr_extreme_low: 0.3
+  basis:
+    warning: -1.5
+    extreme: -2.0
+    ma_window: 10
+    commodity_basis_warning: -3.0
+    commodity_basis_extreme: -5.0
+  valuation:
+    overvalued_pe_percentile: 75
+    undervalued_pe_percentile: 25
+    extreme_overvalued: 90
+    extreme_undervalued: 10
+  volatility:
+    warning_expansion: 1.8
+    extreme_expansion: 2.5
+    ma_window: 60
+    overseas_vol_warning: 2.0
+    overseas_vol_extreme: 3.0
+  liquidity:
+    warning_shrink: 0.6
+    extreme_shrink: 0.4
+    ma_window: 5
+    margin_trading_warning: 0.7
+    margin_trading_extreme: 0.5
+  overseas_risk:
+    cftc_extreme_position: true
+    dollar_breakout: 105.0
+    bond_yield_inversion: true
+    vix_spike: 30.0
+
+# ==================== 17. 宏观指标配置(V8增强99指标) ====================
+macro_indicators:
+  inflation:
+    enabled: true
+    weight: 0.20
+    indicators:
+      CPI:
+        code: "2_CPI"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 3.0
+          warning_low: -1.0
+      PPI:
+        code: "2_PPI"
+        market_type: "macro"
+        direction: "neutral"
+        thresholds:
+          warning_high: 5.0
+          warning_low: -3.0
+      CPI_FOOD:
+        code: "2_CPIF"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 6.0
+          warning_low: -2.0
+      PPI_RM:
+        code: "2_PPIRM"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 8.0
+          warning_low: -4.0
+      CORE_CPI:
+        code: "2_CCPI"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 2.5
+          warning_low: 0.0
+  growth:
+    enabled: true
+    weight: 0.25
+    indicators:
+      GDP:
+        code: "1_GDPI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 6.0
+          warning_low: 4.0
+      PMI_MANUFACTURING:
+        code: "1_PMI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 55.0
+          warning_low: 48.0
+      PMI_NON_MANUFACTURING:
+        code: "1_NPMI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 58.0
+          warning_low: 50.0
+      INDUSTRIAL_OUTPUT:
+        code: "1_GYI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 7.0
+          warning_low: 4.0
+      FAI:
+        code: "1_FAI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 8.0
+          warning_low: 3.0
+      RETAIL_SALES:
+        code: "1_RTS"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 10.0
+          warning_low: 5.0
+  liquidity:
+    enabled: true
+    weight: 0.25
+    indicators:
+      SHIBOR_3M:
+        code: "5_SHS3M"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 3.5
+          warning_low: 1.5
+      M2_YOY:
+        code: "5_M2"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 12.0
+          warning_low: 7.0
+      SOCIAL_FINANCING:
+        code: "5_SFS"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 15.0
+          warning_low: 8.0
+      CREDIT_IMPULSE:
+        code: "5_CI"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 20.0
+          warning_low: 5.0
+      DR007:
+        code: "5_DR007"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 2.5
+          warning_low: 1.5
+      LPR_1Y:
+        code: "5_LPR1Y"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 4.5
+          warning_low: 3.0
+  external_risk:
+    enabled: true
+    weight: 0.18
+    indicators:
+      US_10Y_YIELD:
+        code: "8_ATY"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 4.5
+          warning_low: 3.0
+      USD_CNY:
+        code: "5_RMBUS"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 7.3
+          warning_low: 6.5
+      CN_US_BOND_SPREAD:
+        code: "8_CUS10"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 0.0
+          warning_low: -2.0
+          inverted: -1.5
+      ISM_PMI:
+        code: "8_ISM"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 55.0
+          warning_low: 48.0
+          contraction: 45.0
+      EIA_CRUDE:
+        code: "8_EIA"
+        market_type: "macro"
+        direction: "neutral"
+        thresholds:
+          draw_warning: -5.0
+          build_warning: 5.0
+          extreme_draw: -10.0
+          extreme_build: 10.0
+      LME_INVENTORY:
+        code: "8_LME"
+        market_type: "macro"
+        direction: "inverse"
+        thresholds:
+          significant_drawdown: -5.0
+          significant_buildup: 5.0
+          extreme_drawdown: -10.0
+          extreme_buildup: 10.0
+      US_DOLLAR_INDEX:
+        code: "8_DXY"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 105.0
+          warning_low: 95.0
+          extreme_high: 110.0
+      FED_FUNDS_RATE:
+        code: "8_FFR"
+        market_type: "macro"
+        direction: "negative"
+        thresholds:
+          warning_high: 5.5
+          warning_low: 2.0
+  market_sentiment:
+    enabled: true
+    weight: 0.12
+    indicators:
+      MARGIN_TRADE_RATIO:
+        code: "6_MGTR"
+        market_type: "macro"
+        direction: "contrarian"
+        thresholds:
+          warning_high: 0.12
+          warning_low: 0.07
+      NEW_INVESTOR_COUNT:
+        code: "6_NIC"
+        market_type: "macro"
+        direction: "contrarian"
+        thresholds:
+          warning_high: 200000
+          warning_low: 50000
+      TURNOVER_RATE:
+        code: "6_TVR"
+        market_type: "macro"
+        direction: "contrarian"
+        thresholds:
+          warning_high: 2.5
+          warning_low: 0.8
+      NORTHBOUND_FLOW:
+        code: "6_NBF"
+        market_type: "macro"
+        direction: "positive"
+        thresholds:
+          warning_high: 100.0
+          warning_low: -80.0
+          extreme_outflow: -150.0
+      QVIX_INDEX:
+        code: "6_QVIX"
+        market_type: "macro"
+        direction: "contrarian"
+        thresholds:
+          warning_high: 35.0
+          warning_low: 15.0
+          extreme_high: 50.0
+      PUT_CALL_RATIO:
+        code: "6_PCR"
+        market_type: "macro"
+        direction: "contrarian"
+        thresholds:
+          warning_high: 1.3
+          warning_low: 0.7
+          extreme_high: 1.5
+          extreme_low: 0.5
+
+# ==================== 18. 跨市场配置(V8增强) ====================
+cross_market:
+  enabled: true
+  markets:
+    a_share:
+      code: "000300"
+      market_type: "index_zz"
+    hk_share:
+      code: "HSI"
+      market_type: "index_xg"
+    us_share:
+      code: "SPXD"
+      market_type: "macro"
+  correlation_window: 60
+  # V8新增: 外盘期货→A股行业传导路径
+  overseas_to_ashare_transmission:
+    enabled: true
+    transmission_lag: 1
+    correlation_threshold: 0.60
+    paths:
+      CL_to_energy:
+        overseas: "CL"
+        a_share_sectors: ["石油石化", "化工", "交运"]
+        transmission_type: "cost_push"
+        lag_days: 1
+        strength: 0.80
+      GC_to_precious:
+        overseas: "GC"
+        a_share_sectors: ["贵金属", "珠宝"]
+        transmission_type: "price_sync"
+        lag_days: 0
+        strength: 0.90
+      SI_to_solar:
+        overseas: "SI"
+        a_share_sectors: ["光伏", "电子"]
+        transmission_type: "cost_push"
+        lag_days: 1
+        strength: 0.70
+      HG_to_copper:
+        overseas: "HG"
+        a_share_sectors: ["有色金属", "电力设备"]
+        transmission_type: "price_sync"
+        lag_days: 0
+        strength: 0.85
+      FEF_to_steel:
+        overseas: "FEF"
+        a_share_sectors: ["钢铁", "基建"]
+        transmission_type: "cost_push"
+        lag_days: 1
+        strength: 0.75
+      S_to_agri:
+        overseas: "S"
+        a_share_sectors: ["农业", "饲料", "食品"]
+        transmission_type: "cost_push"
+        lag_days: 2
+        strength: 0.65
+      CT_to_textile:
+        overseas: "CT"
+        a_share_sectors: ["纺织服装", "农业"]
+        transmission_type: "cost_push"
+        lag_days: 1
+        strength: 0.60
+      DX_to_export:
+        overseas: "DX"
+        a_share_sectors: ["出口导向", "外资重仓"]
+        transmission_type: "risk_sentiment"
+        lag_days: 0
+        strength: 0.70
+      ES_to_bluechip:
+        overseas: "ES"
+        a_share_sectors: ["大盘蓝筹", "外资重仓"]
+        transmission_type: "risk_sentiment"
+        lag_days: 0
+        strength: 0.65
+      NQ_to_tech:
+        overseas: "NQ"
+        a_share_sectors: ["科技成长", "信息技术"]
+        transmission_type: "risk_sentiment"
+        lag_days: 0
+        strength: 0.60
+      NG_to_gas:
+        overseas: "NG"
+        a_share_sectors: ["燃气", "化工"]
+        transmission_type: "cost_push"
+        lag_days: 1
+        strength: 0.65
+      PA_to_auto:
+        overseas: "PA"
+        a_share_sectors: ["汽车", "电子"]
+        transmission_type: "cost_push"
+        lag_days: 1
+        strength: 0.50
+
+# ==================== 19. 可视化配置 ====================
+visualization:
+  enabled: true
+  chinese_font: "Noto Sans SC, SimHei, sans-serif"
+  chart_height: 600
+  chart_width: 1200
+  export_format: ["html", "png"]
+  color_palette:
+    primary: "#3498db"
+    success: "#27ae60"
+    warning: "#f39c12"
+    danger: "#e74c3c"
+    info: "#9b59b6"
+  overseas_signal_colors:
+    strong_bullish: "#e74c3c"
+    bullish: "#f39c12"
+    neutral: "#95a5a6"
+    bearish: "#3498db"
+    strong_bearish: "#2c3e50"
+  regime_colors:
+    bull: "#e74c3c"
+    bear: "#3498db"
+    volatile: "#f39c12"
+    recovery: "#27ae60"
+  dashboard:
+    refresh_interval: 300
+    max_symbols_display: 30
+    show_pcr_heatmap: true
+    show_regime_timeline: true
+    show_overseas_radar: true
+    show_cross_market_flow: true
+
+# ==================== 20. 输出配置 ====================
+output:
+  analysis_dir: "./output/analysis_results"
+  visualization_dir: "./output/visualization"
+  export_format: ["json", "csv"]
+  alert_channels: ["log"]
+  overseas_signal_report:
+    enabled: true
+    output_dir: "./output/overseas_signals"
+    format: ["json", "csv"]
+    include_transmission_paths: true
+  pcr_report:
+    enabled: true
+    output_dir: "./output/pcr_analysis"
+    format: ["json", "csv"]
+    include_commodity_pcr: true
+  market_state_report:
+    enabled: true
+    output_dir: "./output/market_state"
+    format: ["json", "csv"]
+    include_4d_breakdown: true
+
+# ==================== 版本信息 ====================
+version:
+  system_version: "9.1.0"
+  config_version: "3.0.0"
+  last_updated: "2026-05-26"
+  notes: "V9.1: 商品期权市场码修正(SHFE=6/DCE=5/CZCE=4/GFEX=67) + 广州期权(LC/SI/PS/PD/PT) + tdxAPICode180 + 期权PCR细分(GFEX)"
