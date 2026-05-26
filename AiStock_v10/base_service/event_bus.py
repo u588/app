@@ -101,6 +101,24 @@ class EventBus:
                 except Exception as e:
                     logger.error("事件回调异常 [%s → %s]: %s", topic, sub.topic_pattern, e)
     
+    def get_history(self, topic: Optional[str] = None, limit: int = 10) -> List[Event]:
+        """获取历史事件列表
+
+        Args:
+            topic: 可选主题过滤, 支持通配符 (如 "market_state.*"); None 则返回全部
+            limit: 最大返回数量
+
+        Returns:
+            匹配的事件列表 (按时间倒序)
+        """
+        with self._lock:
+            if topic is None:
+                return list(reversed(self._history))[:limit]
+            return [
+                e for e in reversed(self._history)
+                if self._match_topic(topic, e.topic)
+            ][:limit]
+
     def replay(self, topic: str, callback: Callable[[Event], None], limit: int = 10) -> None:
         """回放历史事件"""
         with self._lock:

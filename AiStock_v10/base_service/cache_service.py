@@ -84,15 +84,48 @@ class _NamespaceCache:
         }
 
 
+class _NamespaceProxy:
+    """命名空间代理 — 提供 namespace-scoped 的 get/set/delete 接口"""
+
+    def __init__(self, cache_service: "CacheService", namespace: str):
+        self._cache = cache_service
+        self._ns = namespace
+
+    def get(self, key: str) -> Optional[Any]:
+        return self._cache.get(key, namespace=self._ns)
+
+    def set(self, key: str, value: Any, ttl: Optional[float] = None) -> None:
+        self._cache.set(key, value, ttl=ttl, namespace=self._ns)
+
+    def delete(self, key: str) -> bool:
+        return self._cache.delete(key, namespace=self._ns)
+
+    def set_batch(self, items: Dict[str, Any], ttl: Optional[float] = None) -> None:
+        for k, v in items.items():
+            self.set(k, v, ttl=ttl)
+
+    def get_batch(self, keys: List[str]) -> Dict[str, Any]:
+        result = {}
+        for k in keys:
+            v = self.get(k)
+            if v is not None:
+                result[k] = v
+        return result
+
+    @property
+    def stats(self) -> Dict[str, Any]:
+        return self._cache.get_stats(namespace=self._ns)
+
+
 class CacheService:
     """V10 统一缓存服务"""
-    
+
     def __init__(self, default_ttl: float = 300, default_max_size: int = 500):
         self._namespaces: Dict[str, _NamespaceCache] = {}
         self._default_ttl = default_ttl
         self._default_max_size = default_max_size
         self._lock = threading.RLock()
-        
+
         # 预创建常用命名空间
         self.ensure_namespace("config", ttl=0, max_size=100)
         self.ensure_namespace("data", ttl=300, max_size=500)
@@ -108,6 +141,23 @@ class CacheService:
                     max_size=max_size if max_size is not None else self._default_max_size,
                 )
     
+    def namespace(self, name: str) -> _NamespaceProxy:
+        """获取命名空间代理对象, 提供 namespace-scoped 的 get/set/delete 接口
+
+        Args:
+            name: 命名空间名称, 如 "data", "computation", "config"
+
+        Returns:
+            _NamespaceProxy 代理对象, 支持 .get()/.set()/.delete()/.set_batch()/.get_batch()
+        """
+        self.ensure_namespace(name)
+        return _NamespaceProxy(self, name)
+
+    @property
+    def stats(self) -> Dict[str, Any]:
+        """获取所有命名空间统计 (便捷属性)"""
+        return self.get_stats()
+
     def get(self, key: str, namespace: str = "data") -> Optional[Any]:
         """获取缓存值"""
         with self._lock:

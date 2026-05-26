@@ -386,9 +386,14 @@ class TDXAdapter:
     # ═══════════════════════════════════════════════════════════════════════
 
     @staticmethod
-    def _normalize_bars(df: Optional[pd.DataFrame]) -> pd.DataFrame:
-        """标准化K线数据列名"""
-        if df is None or df.empty:
+    def _normalize_bars(df) -> pd.DataFrame:
+        """标准化K线数据列名 — 兼容 pytdx 返回 list 或 DataFrame"""
+        # pytdx 某些版本/方法返回 list 而非 DataFrame, 先统一转换
+        if isinstance(df, list):
+            if not df:
+                return pd.DataFrame()
+            df = pd.DataFrame(df)
+        if df is None or (isinstance(df, pd.DataFrame) and df.empty):
             return pd.DataFrame()
         df = df.rename(columns=_PDX_COL_RENAME)
         # 构造日期列
@@ -440,7 +445,7 @@ class TDXAdapter:
                 else:
                     # 扩展端口: 期货/期权
                     df = api.get_instrument_bars(category, market, code, start, count)
-                return self._normalize_bars(df) if df is not None else pd.DataFrame()
+                return self._normalize_bars(df) if df is not None and df != [] else pd.DataFrame()
             except Exception as e:
                 # 自动重连
                 logger.warning("get_bars 连接异常,尝试重连: %s", e)
@@ -675,6 +680,11 @@ class TDXAdapter:
                         df = api.get_instrument_bars(
                             BarCategory.DAILY, market_code, code, 0, 1,
                         )
+                        # pytdx 某些版本返回 list
+                        if isinstance(df, list):
+                            if not df:
+                                continue
+                            df = pd.DataFrame(df)
                         if df is not None and not df.empty:
                             row = df.iloc[-1]
                             results.append({
@@ -723,6 +733,11 @@ class TDXAdapter:
             try:
                 # pytdx 扩展端口: 获取所有合约后筛选
                 df = api.get_instrument_info(start=start, count=count)
+                # pytdx 某些版本返回 list
+                if isinstance(df, list):
+                    if not df:
+                        return pd.DataFrame()
+                    df = pd.DataFrame(df)
                 if df is not None and not df.empty and market is not None:
                     # 按市场编号筛选
                     if "market" in df.columns:
@@ -756,6 +771,11 @@ class TDXAdapter:
                 batch_size = 2000
                 for start in range(0, total + batch_size, batch_size):
                     df = api.get_instrument_info(start=start, count=batch_size)
+                    # pytdx 某些版本返回 list, 需先转换
+                    if isinstance(df, list):
+                        if not df:
+                            continue
+                        df = pd.DataFrame(df)
                     if df is not None and not df.empty:
                         all_dfs.append(df)
                 if all_dfs:
@@ -797,7 +817,7 @@ class TDXAdapter:
                 df = api.get_instrument_bars(
                     BarCategory.DAILY, market, code, start, count,
                 )
-                return self._normalize_bars(df) if df is not None else pd.DataFrame()
+                return self._normalize_bars(df) if df is not None and df != [] else pd.DataFrame()
             finally:
                 pool.release(api)
 
