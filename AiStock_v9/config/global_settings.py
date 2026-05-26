@@ -30,11 +30,11 @@ def get_db_url(env_key: str, default: str) -> str:
     return default
 
 DATABASE_ENGINES = {
-    'index_db': get_db_url('DB_INDEX', 'postgresql://sa:11111111@10.3.18.56:5432/tdxIndex'),
-    'stock_db': get_db_url('DB_STOCK', 'postgresql://sa:11111111@10.3.18.56:5432/tdxStocks'),
-    'stock_base_db': get_db_url('DB_STOCK_BASE', 'postgresql://sa:11111111@10.3.18.56:5432/StockBase'),
-    'stock_fs_db': get_db_url('DB_STOCK_FS', 'postgresql://sa:11111111@10.3.18.56:5432/tdxFS'),
-    'index_pe_db': get_db_url('DB_INDEX_PE', 'postgresql://sa:11111111@10.3.18.56:5432/csiIndexPE'),
+    'index_db': get_db_url('DB_INDEX', 'postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxIndex'),
+    'stock_db': get_db_url('DB_STOCK', 'postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxStocks'),
+    'stock_base_db': get_db_url('DB_STOCK_BASE', 'postgresql+psycopg://sa:11111111@10.3.18.56:5432/StockBase'),
+    'stock_fs_db': get_db_url('DB_STOCK_FS', 'postgresql+psycopg://sa:11111111@10.3.18.56:5432/tdxFS'),
+    'index_pe_db': get_db_url('DB_INDEX_PE', 'postgresql+psycopg://sa:11111111@10.3.18.56:5432/csiIndexPE'),
 }
 
 DB_POOL_CONFIG = {
