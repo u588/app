@@ -33,11 +33,11 @@ except ImportError:
 
 # ─── 全局配置 (从 global_settings 获取或使用默认值) ────────────────────────────
 try:
-    from global_settings import DATABASE_ENGINES
+    from config.global_settings import DATABASE_ENGINES
 except ImportError:
     DATABASE_ENGINES = {
         "valuation": {
-            "url": "postgresql://aistock:aistock@localhost:5432/valuation",
+            "url": "postgresql+psycopg://aistock:aistock@localhost:5432/valuation",
             "pool_size": 5,
             "max_overflow": 10,
             "pool_timeout": 30,
@@ -146,7 +146,7 @@ class DatabaseReader:
             self._config = DATABASE_ENGINES[engine_name]
         else:
             self._config = {
-                "url": "postgresql://aistock:aistock@localhost:5432/valuation",
+                "url": "postgresql+psycopg://aistock:aistock@localhost:5432/valuation",
                 "pool_size": 5,
                 "max_overflow": 10,
             }

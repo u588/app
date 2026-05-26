@@ -1,0 +1,3 @@
+2026-05-26 14:49:13.105 | [32mINFO    [0m | [96maistock[0m | 📋 LoggerService 初始化完成 | 日志目录: /home/ts/app/AiStock_v10/logs | 控制台级别: DEBUG | 文件级别: DEBUG | 轮转: 50MB×10
+2026-05-26 14:57:26.506 | [32mINFO    [0m | [96maistock[0m | 📋 LoggerService 初始化完成 | 日志目录: /home/ts/app/AiStock_v10/logs | 控制台级别: DEBUG | 文件级别: DEBUG | 轮转: 50MB×10
+2026-05-26 15:22:12.755 | [32mINFO    [0m | [96maistock[0m | 📋 LoggerService 初始化完成 | 日志目录: /home/ts/app/AiStock_v10/logs | 控制台级别: DEBUG | 文件级别: DEBUG | 轮转: 50MB×10
