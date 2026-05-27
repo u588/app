@@ -1,0 +1,8 @@
+cache:
+  backend: "memory"  # memory / redis
+  default_ttl: 300
+  max_size: 1000
+  namespaces:
+    config: { ttl: 0, max_size: 100 }
+    data: { ttl: 300, max_size: 500 }
+    computation: { ttl: 600, max_size: 200 }

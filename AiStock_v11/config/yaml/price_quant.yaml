@@ -1,0 +1,6 @@
+# ── 动态市场价格量化子系统配置 (预留) ──────────────────
+price_quant:
+  name: "动态市场价格量化"
+  version: "0.1"
+  enabled: false
+  description: "未来扩展：动态市场价格量化系统"

@@ -1,0 +1,645 @@
+# ═══════════════════════════════════════════════════════════════
+# AiStock V11 品种代码配置 — 唯一数据源 (与 tdxAPICode180.xlsx / tdxIndexsRAW.xlsx 对齐)
+# TDX 连续合约后缀规范: L0=当月, L1=下月, L2=下季, L3=隔季, L8=主连, L9=加权
+# 注: M0/M1 不存在于 tdxAPICode180.xlsx 代码表
+# V11新增: style_rotation 行业/风格/规模轮动标的 (来自 tdxIndexsRAW.xlsx)
+# ═══════════════════════════════════════════════════════════════
+codes:
+  # ── 指数代码 ──────────────────────────────────────────────
+  indices:
+    - code: "000001"
+      market_type: "index_sh"
+      name: "上证指数"
+    - code: "399001"
+      market_type: "index_sz"
+      name: "深证成指"
+    - code: "399006"
+      market_type: "index_sz"
+      name: "创业板指"
+    - code: "000300"
+      market_type: "index_sh"
+      name: "沪深300"
+    - code: "000905"
+      market_type: "index_sh"
+      name: "中证500"
+    - code: "000852"
+      market_type: "index_sh"
+      name: "中证1000"
+
+  # ── 期货主连代码 ──────────────────────────────────────────
+  futures:
+    # 股指期货主连 (market=47)
+    - code: "IFL8"
+      variety: "IF"
+      market_type: "future_zj"
+      name: "沪深300主连"
+      category: "index_futures"
+    - code: "ICL8"
+      variety: "IC"
+      market_type: "future_zj"
+      name: "中证500主连"
+      category: "index_futures"
+    - code: "IML8"
+      variety: "IM"
+      market_type: "future_zj"
+      name: "中证1000主连"
+      category: "index_futures"
+    - code: "IHL8"
+      variety: "IH"
+      market_type: "future_zj"
+      name: "上证50主连"
+      category: "index_futures"
+    # 国债期货主连 (market=47)
+    - code: "TFL8"
+      variety: "TF"
+      market_type: "future_zj"
+      name: "5年期国债主连"
+      category: "bond_futures"
+    - code: "TLL8"
+      variety: "TL"
+      market_type: "future_zj"
+      name: "30年期国债主连"
+      category: "bond_futures"
+    - code: "TSL8"
+      variety: "TS"
+      market_type: "future_zj"
+      name: "2年期国债主连"
+      category: "bond_futures"
+    # 商品期货主连 (market=30)
+    - code: "CUL8"
+      variety: "CU"
+      market_type: "future_sh"
+      name: "沪铜主连"
+      category: "commodity_shfe"
+    - code: "ALL8"
+      variety: "AL"
+      market_type: "future_sh"
+      name: "沪铝主连"
+      category: "commodity_shfe"
+    - code: "AUL8"
+      variety: "AU"
+      market_type: "future_sh"
+      name: "黄金主连"
+      category: "commodity_shfe"
+    - code: "AGL8"
+      variety: "AG"
+      market_type: "future_sh"
+      name: "白银主连"
+      category: "commodity_shfe"
+    - code: "RBL8"
+      variety: "RB"
+      market_type: "future_sh"
+      name: "螺纹钢主连"
+      category: "commodity_shfe"
+    - code: "HCL8"
+      variety: "HC"
+      market_type: "future_sh"
+      name: "热卷主连"
+      category: "commodity_shfe"
+    - code: "NIL8"
+      variety: "NI"
+      market_type: "future_sh"
+      name: "沪镍主连"
+      category: "commodity_shfe"
+    - code: "SCL8"
+      variety: "SC"
+      market_type: "future_sh"
+      name: "原油主连"
+      category: "commodity_shfe"
+    # 商品期货主连 (market=29)
+    - code: "IL8"
+      variety: "I"
+      market_type: "future_dl"
+      name: "铁矿主连"
+      category: "commodity_dce"
+    - code: "JML8"
+      variety: "JM"
+      market_type: "future_dl"
+      name: "焦煤主连"
+      category: "commodity_dce"
+    # 商品期货主连 (market=28)
+    - code: "MAL8"
+      variety: "MA"
+      market_type: "future_zz"
+      name: "甲醇主连"
+      category: "commodity_czce"
+    - code: "SAL8"
+      variety: "SA"
+      market_type: "future_zz"
+      name: "纯碱主连"
+      category: "commodity_czce"
+
+  # ── 品种交割月份规则 ──────────────────────────────────────
+  commodity_delivery_months:
+    # 上海期货 (market=30)
+    CU: [1,2,3,4,5,6,7,8,9,10,11,12]
+    AL: [1,2,3,4,5,6,7,8,9,10,11,12]
+    ZN: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PB: [1,2,3,4,5,6,7,8,9,10,11,12]
+    NI: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SN: [1,2,3,4,5,6,7,8,9,10,11,12]
+    AU: [2,4,6,8,10,12]
+    AG: [1,2,3,4,5,6,7,8,9,10,11,12]
+    RB: [1,2,3,4,5,6,7,8,9,10,11,12]
+    HC: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SS: [1,2,3,4,5,6,7,8,9,10,11,12]
+    BU: [1,2,3,4,5,6,7,8,9,10,11,12]
+    RU: [1,3,4,5,6,7,8,9,10,11,12]
+    NR: [1,2,3,4,5,6,7,8,9,10,11,12]
+    FU: [1,2,3,4,5,6,7,8,9,10,11,12]
+    LU: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SP: [1,2,3,4,5,6,7,8,9,10,11,12]
+    BC: [1,2,3,4,5,6,7,8,9,10,11,12]
+    AO: [1,2,3,4,5,6,7,8,9,10,11,12]
+    BR: [1,2,3,4,5,6,7,8,9,10,11,12]
+    EC: [2,4,6,8,10,12]
+    AD: [1,2,3,4,5,6,7,8,9,10,11,12]
+    OP: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SC: [1,2,3,4,5,6,7,8,9,10,11,12]
+    WR: [1,2,3,4,5,6,7,8,9,10,11,12]
+    # 大连商品 (market=29)
+    M: [1,3,5,7,8,9,11,12]
+    Y: [1,3,5,7,8,9,11,12]
+    A: [1,3,5,7,9,11]
+    B: [1,2,3,4,5,6,7,8,9,10,11,12]
+    C: [1,3,5,7,9,11]
+    CS: [1,3,5,7,9,11]
+    I: [1,2,3,4,5,6,7,8,9,10,11,12]
+    J: [1,2,3,4,5,6,7,8,9,10,11,12]
+    JM: [1,2,3,4,5,6,7,8,9,10,11,12]
+    L: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PP: [1,2,3,4,5,6,7,8,9,10,11,12]
+    V: [1,2,3,4,5,6,7,8,9,10,11,12]
+    EG: [1,2,3,4,5,6,7,8,9,10,11,12]
+    EB: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PG: [1,2,3,4,5,6,7,8,9,10,11,12]
+    P: [1,2,3,4,5,6,7,8,9,10,11,12]
+    FB: [1,2,3,4,5,6,7,8,9,10,11,12]
+    BB: [1,3,5,7,9,11]
+    JD: [1,2,3,4,5,6,7,8,9,10,11,12]
+    RR: [1,2,3,4,5,6,7,8,9,10,11,12]
+    LH: [1,3,5,7,9,11]
+    BZ: [1,2,3,4,5,6,7,8,9,10,11,12]
+    LG: [1,3,5,7,9,11]
+    # 郑州商品 (market=28)
+    CF: [1,3,5,7,9,11]
+    SR: [1,3,5,7,9,11]
+    TA: [1,2,3,4,5,6,7,8,9,10,11,12]
+    MA: [1,2,3,4,5,6,7,8,9,10,11,12]
+    FG: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SA: [1,2,3,4,5,6,7,8,9,10,11,12]
+    AP: [1,3,5,10,11,12]
+    CJ: [1,3,5,7,9,11]
+    OI: [1,3,5,7,9,11]
+    RM: [1,3,5,7,8,9,11]
+    ZC: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SF: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SM: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PF: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SH: [1,2,3,4,5,6,7,8,9,10,11,12]
+    UR: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PK: [1,3,4,5,10,11,12]
+    CY: [1,2,3,4,5,6,7,8,9,10,11,12]
+    WH: [1,3,5,7,9,11]
+    PM: [1,3,5,7,9,11]
+    RI: [1,3,5,7,9,11]
+    JR: [1,3,5,7,9,11]
+    RS: [7,8,9,11]
+    PR: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PX: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PL: [1,2,3,4,5,6,7,8,9,10,11,12]
+    # 广州期货 (market=66)
+    LC: [1,2,3,4,5,6,7,8,9,10,11,12]
+    SI: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PS: [1,2,3,4,5,6,7,8,9,10,11,12]
+    PD: [6,8,10,12]
+    PT: [6,8,10,12]
+
+  # ── 品种→市场映射 ────────────────────────────────────────
+  variety_market:
+    CU: { market_code: 30, market_type: "future_sh", name: "沪铜" }
+    AL: { market_code: 30, market_type: "future_sh", name: "沪铝" }
+    ZN: { market_code: 30, market_type: "future_sh", name: "沪锌" }
+    PB: { market_code: 30, market_type: "future_sh", name: "沪铅" }
+    NI: { market_code: 30, market_type: "future_sh", name: "沪镍" }
+    SN: { market_code: 30, market_type: "future_sh", name: "沪锡" }
+    AU: { market_code: 30, market_type: "future_sh", name: "黄金" }
+    AG: { market_code: 30, market_type: "future_sh", name: "白银" }
+    RB: { market_code: 30, market_type: "future_sh", name: "螺纹钢" }
+    HC: { market_code: 30, market_type: "future_sh", name: "热卷" }
+    SS: { market_code: 30, market_type: "future_sh", name: "不锈钢" }
+    BU: { market_code: 30, market_type: "future_sh", name: "沥青" }
+    RU: { market_code: 30, market_type: "future_sh", name: "橡胶" }
+    NR: { market_code: 30, market_type: "future_sh", name: "20号胶" }
+    FU: { market_code: 30, market_type: "future_sh", name: "燃油" }
+    LU: { market_code: 30, market_type: "future_sh", name: "低硫燃油" }
+    SP: { market_code: 30, market_type: "future_sh", name: "纸浆" }
+    BC: { market_code: 30, market_type: "future_sh", name: "国际铜" }
+    AO: { market_code: 30, market_type: "future_sh", name: "氧化铝" }
+    BR: { market_code: 30, market_type: "future_sh", name: "丁二烯橡胶" }
+    EC: { market_code: 30, market_type: "future_sh", name: "集运指数" }
+    AD: { market_code: 30, market_type: "future_sh", name: "铝合金" }
+    OP: { market_code: 30, market_type: "future_sh", name: "石油沥青" }
+    SC: { market_code: 30, market_type: "future_sh", name: "原油" }
+    WR: { market_code: 30, market_type: "future_sh", name: "线材" }
+    M:  { market_code: 29, market_type: "future_dl", name: "豆粕" }
+    Y:  { market_code: 29, market_type: "future_dl", name: "豆油" }
+    A:  { market_code: 29, market_type: "future_dl", name: "豆一" }
+    B:  { market_code: 29, market_type: "future_dl", name: "豆二" }
+    C:  { market_code: 29, market_type: "future_dl", name: "玉米" }
+    CS: { market_code: 29, market_type: "future_dl", name: "淀粉" }
+    I:  { market_code: 29, market_type: "future_dl", name: "铁矿" }
+    J:  { market_code: 29, market_type: "future_dl", name: "焦炭" }
+    JM: { market_code: 29, market_type: "future_dl", name: "焦煤" }
+    L:  { market_code: 29, market_type: "future_dl", name: "塑料" }
+    PP: { market_code: 29, market_type: "future_dl", name: "聚丙烯" }
+    V:  { market_code: 29, market_type: "future_dl", name: "PVC" }
+    EG: { market_code: 29, market_type: "future_dl", name: "乙二醇" }
+    EB: { market_code: 29, market_type: "future_dl", name: "苯乙烯" }
+    PG: { market_code: 29, market_type: "future_dl", name: "LPG" }
+    P:  { market_code: 29, market_type: "future_dl", name: "棕榈油" }
+    FB: { market_code: 29, market_type: "future_dl", name: "纤维板" }
+    BB: { market_code: 29, market_type: "future_dl", name: "胶合板" }
+    JD: { market_code: 29, market_type: "future_dl", name: "鸡蛋" }
+    RR: { market_code: 29, market_type: "future_dl", name: "粳米" }
+    LH: { market_code: 29, market_type: "future_dl", name: "生猪" }
+    BZ: { market_code: 29, market_type: "future_dl", name: "纯苯" }
+    LG: { market_code: 29, market_type: "future_dl", name: "原木" }
+    CF: { market_code: 28, market_type: "future_zz", name: "棉花" }
+    SR: { market_code: 28, market_type: "future_zz", name: "白糖" }
+    TA: { market_code: 28, market_type: "future_zz", name: "PTA" }
+    MA: { market_code: 28, market_type: "future_zz", name: "甲醇" }
+    FG: { market_code: 28, market_type: "future_zz", name: "玻璃" }
+    SA: { market_code: 28, market_type: "future_zz", name: "纯碱" }
+    AP: { market_code: 28, market_type: "future_zz", name: "苹果" }
+    CJ: { market_code: 28, market_type: "future_zz", name: "红枣" }
+    OI: { market_code: 28, market_type: "future_zz", name: "菜油" }
+    RM: { market_code: 28, market_type: "future_zz", name: "菜粕" }
+    ZC: { market_code: 28, market_type: "future_zz", name: "动力煤" }
+    SF: { market_code: 28, market_type: "future_zz", name: "硅铁" }
+    SM: { market_code: 28, market_type: "future_zz", name: "锰硅" }
+    PF: { market_code: 28, market_type: "future_zz", name: "短纤" }
+    SH: { market_code: 28, market_type: "future_zz", name: "烧碱" }
+    UR: { market_code: 28, market_type: "future_zz", name: "尿素" }
+    PK: { market_code: 28, market_type: "future_zz", name: "花生" }
+    CY: { market_code: 28, market_type: "future_zz", name: "棉纱" }
+    WH: { market_code: 28, market_type: "future_zz", name: "强麦" }
+    PM: { market_code: 28, market_type: "future_zz", name: "普麦" }
+    RI: { market_code: 28, market_type: "future_zz", name: "早籼稻" }
+    JR: { market_code: 28, market_type: "future_zz", name: "粳稻" }
+    RS: { market_code: 28, market_type: "future_zz", name: "菜籽" }
+    PR: { market_code: 28, market_type: "future_zz", name: "瓶片" }
+    PX: { market_code: 28, market_type: "future_zz", name: "对二甲苯" }
+    PL: { market_code: 28, market_type: "future_zz", name: "丙烯" }
+    LC: { market_code: 66, market_type: "future_gz", name: "碳酸锂" }
+    SI: { market_code: 66, market_type: "future_gz", name: "工业硅" }
+    PS: { market_code: 66, market_type: "future_gz", name: "多晶硅" }
+    PD: { market_code: 66, market_type: "future_gz", name: "钯金" }
+    PT: { market_code: 66, market_type: "future_gz", name: "铂金" }
+    IF: { market_code: 47, market_type: "future_zj", name: "沪深300" }
+    IH: { market_code: 47, market_type: "future_zj", name: "上证50" }
+    IC: { market_code: 47, market_type: "future_zj", name: "中证500" }
+    IM: { market_code: 47, market_type: "future_zj", name: "中证1000" }
+    T:  { market_code: 47, market_type: "future_zj", name: "10年期国债" }
+    TF: { market_code: 47, market_type: "future_zj", name: "5年期国债" }
+    TL: { market_code: 47, market_type: "future_zj", name: "30年期国债" }
+    TS: { market_code: 47, market_type: "future_zj", name: "2年期国债" }
+
+  # ── 股指期货配置 ──────────────────────────────────────────
+  index_futures:
+    IF: { spot_code: "000300", spot_name: "沪深300", continuous_suffix: "L8" }
+    IH: { spot_code: "000016", spot_name: "上证50", continuous_suffix: "L8" }
+    IC: { spot_code: "000905", spot_name: "中证500", continuous_suffix: "L8" }
+    IM: { spot_code: "000852", spot_name: "中证1000", continuous_suffix: "L8" }
+    quarter_months: [3, 6, 9, 12]
+
+  # ── 期权标的配置 ──────────────────────────────────────────
+  option_underlyings:
+    # 中金所指数期权 (market=7)
+    IO: { spot_code: "000300", market_code: 7, market_type: "option_zj", name: "沪深300指数期权" }
+    HO: { spot_code: "000016", market_code: 7, market_type: "option_zj", name: "上证50指数期权" }
+    MO: { spot_code: "000852", market_code: 7, market_type: "option_zj", name: "中证1000指数期权" }
+    # 上交所ETF期权 (market=8)
+    "510050": { spot_code: "510050", market_code: 8, market_type: "option_sh", name: "上证50ETF期权" }
+    "510300": { spot_code: "510300", market_code: 8, market_type: "option_sh", name: "沪深300ETF期权(沪)" }
+    "510500": { spot_code: "510500", market_code: 8, market_type: "option_sh", name: "中证500ETF期权" }
+    "588000": { spot_code: "588000", market_code: 8, market_type: "option_sh", name: "科创50ETF期权" }
+    "588080": { spot_code: "588080", market_code: 8, market_type: "option_sh", name: "科创板50ETF期权" }
+    # 深交所ETF期权 (market=9)
+    "159901": { spot_code: "159901", market_code: 9, market_type: "option_sz", name: "深证100ETF期权" }
+    "159915": { spot_code: "159915", market_code: 9, market_type: "option_sz", name: "创业板ETF期权" }
+    "159919": { spot_code: "159919", market_code: 9, market_type: "option_sz", name: "沪深300ETF期权(深)" }
+    "159922": { spot_code: "159922", market_code: 9, market_type: "option_sz", name: "中证500ETF期权(深)" }
+    # 郑州商品期权 (market=4)
+    AP: { market_code: 4, market_type: "option_czce", name: "苹果期权" }
+    CF: { market_code: 4, market_type: "option_czce", name: "棉花期权" }
+    CJ: { market_code: 4, market_type: "option_czce", name: "红枣期权" }
+    FG: { market_code: 4, market_type: "option_czce", name: "玻璃期权" }
+    MA: { market_code: 4, market_type: "option_czce", name: "甲醇期权" }
+    OI: { market_code: 4, market_type: "option_czce", name: "菜油期权" }
+    PF: { market_code: 4, market_type: "option_czce", name: "短纤期权" }
+    PK: { market_code: 4, market_type: "option_czce", name: "花生期权" }
+    RM: { market_code: 4, market_type: "option_czce", name: "菜粕期权" }
+    SA: { market_code: 4, market_type: "option_czce", name: "纯碱期权" }
+    SR: { market_code: 4, market_type: "option_czce", name: "白糖期权" }
+    TA: { market_code: 4, market_type: "option_czce", name: "PTA期权" }
+    ZC: { market_code: 4, market_type: "option_czce", name: "动力煤期权" }
+    # 大连商品期权 (market=5)
+    A:  { market_code: 5, market_type: "option_dce", name: "豆一期权" }
+    C:  { market_code: 5, market_type: "option_dce", name: "玉米期权" }
+    I:  { market_code: 5, market_type: "option_dce", name: "铁矿期权" }
+    M:  { market_code: 5, market_type: "option_dce", name: "豆粕期权" }
+    Y:  { market_code: 5, market_type: "option_dce", name: "豆油期权" }
+    L:  { market_code: 5, market_type: "option_dce", name: "塑料期权" }
+    PP: { market_code: 5, market_type: "option_dce", name: "聚丙烯期权" }
+    V:  { market_code: 5, market_type: "option_dce", name: "PVC期权" }
+    EG: { market_code: 5, market_type: "option_dce", name: "乙二醇期权" }
+    EB: { market_code: 5, market_type: "option_dce", name: "苯乙烯期权" }
+    PG: { market_code: 5, market_type: "option_dce", name: "LPG期权" }
+    JD: { market_code: 5, market_type: "option_dce", name: "鸡蛋期权" }
+    P:  { market_code: 5, market_type: "option_dce", name: "棕榈油期权" }
+    # 上海商品期权 (market=6)
+    CU: { market_code: 6, market_type: "option_shfe", name: "沪铜期权" }
+    AL: { market_code: 6, market_type: "option_shfe", name: "沪铝期权" }
+    AU: { market_code: 6, market_type: "option_shfe", name: "黄金期权" }
+    AG: { market_code: 6, market_type: "option_shfe", name: "白银期权" }
+    RB: { market_code: 6, market_type: "option_shfe", name: "螺纹钢期权" }
+    HC: { market_code: 6, market_type: "option_shfe", name: "热卷期权" }
+    NI: { market_code: 6, market_type: "option_shfe", name: "沪镍期权" }
+    ZN: { market_code: 6, market_type: "option_shfe", name: "沪锌期权" }
+    SN: { market_code: 6, market_type: "option_shfe", name: "沪锡期权" }
+    RU: { market_code: 6, market_type: "option_shfe", name: "橡胶期权" }
+    SC: { market_code: 6, market_type: "option_shfe", name: "原油期权" }
+    BC: { market_code: 6, market_type: "option_shfe", name: "国际铜期权" }
+    # 广州期权 (market=67)
+    LC: { market_code: 67, market_type: "option_gz", name: "碳酸锂期权" }
+    SI: { market_code: 67, market_type: "option_gz", name: "工业硅期权" }
+
+  # ── 海外期货配置 ──────────────────────────────────────────
+  # V11修正: 与 ak_adapter.py FUTURES_SYMBOL_MAP 对齐
+  # CORE层(8):   CL,OIL,GC,XAU,SI,XAG,NG,HG — 流动性最高,始终加载
+  # EXTENDED层(12): C,W,S,BO,SM,CT,RS,CAD,LHC,AHD,EUA,FEF — 重要商品,按需加载
+  # AUXILIARY层(9): NID,PBD,SND,XPT,XPD,FCPO,RSS3,BTC,ZSD — 低频辅助
+  # 注: 留空则使用 ak_adapter.py 内置默认值 (推荐)
+  overseas:
+    # core_symbols 留空 → 使用 FUTURES_SYMBOL_MAP 内置8个CORE品种
+    # 如需覆盖, 取消下行注释 (必须全部为 FUTURES_SYMBOL_MAP 中存在的 symbol):
+    # core_symbols: "CL,OIL,GC,XAU,SI,XAG,NG,HG"
+    core_symbols: null
+    # extended_symbols 留空 → 使用 FUTURES_SYMBOL_MAP 内置12个EXTENDED品种
+    # 如需覆盖, 取消下行注释:
+    # extended_symbols: "C,W,S,BO,SM,CT,RS,CAD,LHC,AHD,EUA,FEF"
+    extended_symbols: null
+    auxiliary_types:
+      - "cftc"
+      - "lme_stock"
+      - "lme_holding"
+      - "bond_zh_us"
+      - "bond_us_10y"
+      - "eia_crude"
+      - "ism_pmi"
+      - "global_index"
+      # 注: qvix_50etf / qvix_300etf 已知不稳定, 按需启用
+      # - "qvix_50etf"
+      # - "qvix_300etf"
+
+  # ── 宏观指标配置 ──────────────────────────────────────────
+  # V11修正: Market 50 (标准TDX端口) 不支持 CPI/PPI/PMI 代码
+  # 正确数据源: Market 38 (TDX扩展端口), 使用 2_CPI/2_PPI/3_PMI 格式
+  # 注: 此段供 DataLoaderService.macro_data 数据段使用
+  #     MacroValuationEngine 使用 codes.macro_valuation.macro_indicators (更完整)
+  macro:
+    indicators:
+      - code: "2_CPI"
+        market: 38
+        name: "CPI同比"
+        sub_signal: "cpi"
+      - code: "2_PPI"
+        market: 38
+        name: "PPI同比"
+        sub_signal: "ppi"
+      - code: "3_PMI"
+        market: 38
+        name: "制造业PMI"
+        sub_signal: "pmi"
+
+  # ── 估值数据配置 ──────────────────────────────────────────
+  valuation:
+    codes: ["000300", "000905", "000852"]
+    days: 100
+
+  # ── 基金资金流配置 (V11 NEW) ────────────────────────────
+  # TDX扩展接口 Market 38 数据
+  # 注: TON/TOS(北上/南下资金) 自2023-08起为线性插值, 不纳入
+  fund_flow:
+    indicators:
+      - code: "7_RZ"
+        market: 38
+        name: "沪深融资余额"
+        sub_signal: "margin_long"
+      - code: "7_RQ"
+        market: 38
+        name: "沪深融券余额"
+        sub_signal: "margin_short"
+      - code: "7_TETF"
+        market: 38
+        name: "ETF基金规模"
+        sub_signal: "etf_scale"
+      - code: "9_990014"
+        market: 38
+        name: "偏股混基指数"
+        sub_signal: "stock_fund"
+      - code: "9_990015"
+        market: 38
+        name: "偏债混基指数"
+        sub_signal: "bond_fund"
+      - code: "9_990011"
+        market: 38
+        name: "主动股基指数"
+        sub_signal: "active_fund"
+      - code: "9_990012"
+        market: 38
+        name: "被动股基指数"
+        sub_signal: "passive_fund"
+      - code: "9_990002"
+        market: 38
+        name: "股票型基金指数"
+        sub_signal: "fund_index"
+    weights:
+      margin: 0.25
+      etf_scale: 0.20
+      stock_bond_rotation: 0.25
+      active_passive: 0.15
+      fund_momentum: 0.15
+
+  # ── 宏观估值配置 (V11 NEW) ──────────────────────────────
+  # TDX扩展接口 Market 38 宏观指标 + PostgreSQL估值数据
+  macro_valuation:
+    macro_indicators:
+      - code: "3_PMI"
+        market: 38
+        name: "制造业PMI"
+        sub_signal: "pmi"
+      - code: "3_PMIH"
+        market: 38
+        name: "非制造业PMI"
+        sub_signal: "pmih"
+      - code: "5_TRY"
+        market: 38
+        name: "社融存量同比"
+        sub_signal: "social_finance"
+      - code: "5_TRL"
+        market: 38
+        name: "人民币贷款同比"
+        sub_signal: "loan"
+      - code: "5_CNTY"
+        market: 38
+        name: "央行外汇占款"
+        sub_signal: "fx_occupation"
+      - code: "5_SHS3M"
+        market: 38
+        name: "Shibor3M"
+        sub_signal: "shibor_3m"
+      - code: "8_ATY"
+        market: 38
+        name: "美国十年国债"
+        sub_signal: "us_10y"
+      - code: "2_CPI"
+        market: 38
+        name: "CPI同比"
+        sub_signal: "cpi"
+      - code: "2_PPI"
+        market: 38
+        name: "PPI同比"
+        sub_signal: "ppi"
+    valuation_codes: ["000300", "000905", "000852"]
+    macro_weights:
+      pmi: 0.20
+      credit: 0.20
+      liquidity: 0.20
+      inflation: 0.10
+      valuation: 0.30
+
+  # ── 合约滚动配置 ──────────────────────────────────────────
+  contract_rollover:
+    rollover_day: 15
+    expiry_warning_days: 5
+
+  # ── 缓存TTL配置 (秒) ────────────────────────────────────
+  cache_ttl:
+    index_data: 300
+    futures_data: 120
+    option_data: 120
+    overseas_futures: 60
+    auxiliary_data: 1800
+    valuation_data: 3600
+    macro_data: 3600
+    # ─── V11 NEW 数据段TTL ─────────────────────────────────────────
+    fund_flow_data: 1800         # 基金资金流: 30分钟 (日频)
+    macro_valuation_data: 3600   # 宏观估值: 1小时 (月频为主)
+    style_rotation_data: 300     # 风格轮动: 5分钟 (日频指数)
+
+  # ── 行业/风格/规模轮动配置 (V11 NEW) ──────────────────
+  # 数据源: tdxIndexsRAW.xlsx, 全指行业系列(EX,MC=62) + 成长/价值风格对 + 大中小盘规模
+  # ST=标准接口, EX=扩展接口(MarketCode=62需用扩展端口)
+  style_rotation:
+    # ── 行业轮动: 中证全指行业系列 (10行业全覆盖) ──
+    # 优选逻辑: 全指行业(MarketCode=62)覆盖全A股, 成分股最多, 代表性最强
+    industry_indices:
+      - code: "932083"
+        market: 62
+        market_type: "index_ext"
+        name: "全指金融行业"
+        industry: "finance"
+      - code: "932077"
+        market: 62
+        market_type: "index_ext"
+        name: "全指能源行业"
+        industry: "energy"
+      - code: "932078"
+        market: 62
+        market_type: "index_ext"
+        name: "全指材料行业"
+        industry: "materials"
+      - code: "932079"
+        market: 62
+        market_type: "index_ext"
+        name: "全指工业行业"
+        industry: "industrials"
+      - code: "932080"
+        market: 62
+        market_type: "index_ext"
+        name: "全指可选行业"
+        industry: "discretionary"
+      - code: "932081"
+        market: 62
+        market_type: "index_ext"
+        name: "全指消费行业"
+        industry: "staples"
+      - code: "932082"
+        market: 62
+        market_type: "index_ext"
+        name: "全指医药行业"
+        industry: "healthcare"
+      - code: "932084"
+        market: 62
+        market_type: "index_ext"
+        name: "全指信息行业"
+        industry: "info_tech"
+      - code: "932085"
+        market: 62
+        market_type: "index_ext"
+        name: "全指通信行业"
+        industry: "telecom"
+      - code: "932086"
+        market: 62
+        market_type: "index_ext"
+        name: "全指公用行业"
+        industry: "utilities"
+    # ── 风格轮动: 成长/价值对 ──
+    # 优选逻辑: 300成长/价值(EX,跨沪深)为主, 国证成长/价值(ST,深市)为辅, 交叉验证
+    style_indices:
+      - code: "000918"
+        market_type: "index_sh"
+        name: "300成长"
+        role: "growth"
+      - code: "000919"
+        market_type: "index_sh"
+        name: "300价值"
+        role: "value"
+      - code: "399370"
+        market_type: "index_sz"
+        name: "国证成长"
+        role: "growth_alt"
+      - code: "399371"
+        market_type: "index_sz"
+        name: "国证价值"
+        role: "value_alt"
+    # ── 规模轮动: 大中小微四梯队 + 创业板 ──
+    # 优选逻辑: 50/300=大盘, 500=中盘, 1000/2000=小/微盘, 创业板=成长风格补充
+    size_indices:
+      - code: "000016"
+        market_type: "index_sh"
+        name: "上证50"
+        tier: "large"
+      - code: "000300"
+        market_type: "index_sh"
+        name: "沪深300"
+        tier: "large"
+      - code: "000905"
+        market_type: "index_sh"
+        name: "中证500"
+        tier: "mid"
+      - code: "000852"
+        market_type: "index_sh"
+        name: "中证1000"
+        tier: "small"
+      - code: "932000"
+        market: 62
+        market_type: "index_ext"
+        name: "中证2000"
+        tier: "micro"
+      - code: "399006"
+        market_type: "index_sz"
+        name: "创业板指"
+        tier: "gem"
