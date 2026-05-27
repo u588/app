@@ -48,7 +48,7 @@ try:
 except ImportError:
     DATABASE_ENGINES = {
         "valuation": {
-            "url": "postgresql://aistock:aistock@localhost:5432/valuation",
+            "url": "postgresql+psycopg://aistock:aistock@localhost:5432/valuation",
             "pool_size": 5,
             "max_overflow": 10,
             "pool_timeout": 30,
@@ -196,7 +196,7 @@ class DatabaseReader:
           password: ""
 
         转换为:
-          url: "postgresql://user:password@host:port/database"
+          url: "postgresql+psycopg://user:password@host:port/database"
           pool_size: 5
           ...
         """
@@ -206,11 +206,11 @@ class DatabaseReader:
         user = yaml_section.get("user", "postgres")
         password = yaml_section.get("password", "")
 
-        # 构建连接 URL
+        # 构建连接 URL (使用 psycopg 驱动)
         if password:
-            url = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+            url = f"postgresql+psycopg://{user}:{password}@{host}:{port}/{database}"
         else:
-            url = f"postgresql://{user}@{host}:{port}/{database}"
+            url = f"postgresql+psycopg://{user}@{host}:{port}/{database}"
 
         return {
             "url": url,
@@ -224,7 +224,7 @@ class DatabaseReader:
     def _default_config() -> Dict[str, Any]:
         """默认数据库配置"""
         return {
-            "url": "postgresql://aistock:aistock@localhost:5432/valuation",
+            "url": "postgresql+psycopg://aistock:aistock@localhost:5432/valuation",
             "pool_size": 5,
             "max_overflow": 10,
         }
