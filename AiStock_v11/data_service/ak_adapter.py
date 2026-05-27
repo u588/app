@@ -1,5 +1,13 @@
 """
-AiStock V10 AKAdapter — AKShare 海外期货及辅助数据适配器 (配置驱动)
+AiStock V11 AKAdapter — AKShare 海外期货及辅助数据适配器 (配置驱动)
+
+V11 关键修复 (2026-05):
+  - ak_code 从中文代码更新为英文短代码 (akshare 1.18.x API变更)
+    旧: ak_code="CL" → 新: ak_code="CL"
+    旧: ak_code="GC" → 新: ak_code="GC"
+    等29个品种全部更新
+  - futures_foreign_hist() 新API返回英文列名 (date/open/high/low/close/volume)
+    不再返回中文列名 (日期/开盘价/最高价/最低价/收盘价/成交量)
 
 V10 关键变更:
   - 构造函数接受 ConfigService, 从 codes.yaml 读取海外期货配置
@@ -62,49 +70,49 @@ FUTURES_SYMBOL_MAP: Dict[str, FuturesSymbol] = {
     # CORE 层 (8) — 流动性最高, 始终加载
     # ═════════════════════════════════════════════════════════════════════
     "CL": FuturesSymbol(
-        symbol="CL", ak_code="WTI原油", name="WTI原油",
+        symbol="CL", ak_code="CL", name="WTI原油",
         exchange="NYMEX", tier="core", priority=1,
         a_share_sectors=["石油开采", "油气服务"],
         signal_type="price", multiplier=1.0,
     ),
     "OIL": FuturesSymbol(
-        symbol="OIL", ak_code="布伦特原油", name="布伦特原油",
+        symbol="OIL", ak_code="OIL", name="布伦特原油",
         exchange="ICE", tier="core", priority=2,
         a_share_sectors=["石油开采", "油气服务"],
         signal_type="price", multiplier=1.0,
     ),
     "GC": FuturesSymbol(
-        symbol="GC", ak_code="COMEX黄金", name="COMEX黄金",
+        symbol="GC", ak_code="GC", name="COMEX黄金",
         exchange="COMEX", tier="core", priority=3,
         a_share_sectors=["黄金", "贵金属"],
         signal_type="price", multiplier=1.0,
     ),
     "XAU": FuturesSymbol(
-        symbol="XAU", ak_code="伦敦金", name="伦敦金现货",
+        symbol="XAU", ak_code="XAU", name="伦敦金现货",
         exchange="LBMA", tier="core", priority=4,
         a_share_sectors=["黄金", "贵金属"],
         signal_type="price", multiplier=1.0,
     ),
     "SI": FuturesSymbol(
-        symbol="SI", ak_code="COMEX白银", name="COMEX白银",
+        symbol="SI", ak_code="SI", name="COMEX白银",
         exchange="COMEX", tier="core", priority=5,
         a_share_sectors=["白银", "贵金属"],
         signal_type="price", multiplier=1.0,
     ),
     "XAG": FuturesSymbol(
-        symbol="XAG", ak_code="伦敦银", name="伦敦银现货",
+        symbol="XAG", ak_code="XAG", name="伦敦银现货",
         exchange="LBMA", tier="core", priority=6,
         a_share_sectors=["白银", "贵金属"],
         signal_type="price", multiplier=1.0,
     ),
     "NG": FuturesSymbol(
-        symbol="NG", ak_code="天然气", name="天然气",
+        symbol="NG", ak_code="NG", name="天然气",
         exchange="NYMEX", tier="core", priority=7,
         a_share_sectors=["燃气", "天然气"],
         signal_type="price", multiplier=1.0,
     ),
     "HG": FuturesSymbol(
-        symbol="HG", ak_code="COMEX铜", name="COMEX铜",
+        symbol="HG", ak_code="HG", name="COMEX铜",
         exchange="COMEX", tier="core", priority=8,
         a_share_sectors=["铜", "有色金属"],
         signal_type="price", multiplier=1.0,
@@ -114,73 +122,73 @@ FUTURES_SYMBOL_MAP: Dict[str, FuturesSymbol] = {
     # EXTENDED 层 (12) — 重要商品, 按需加载
     # ═════════════════════════════════════════════════════════════════════
     "C": FuturesSymbol(
-        symbol="C", ak_code="美玉米", name="CBOT玉米",
+        symbol="C", ak_code="C", name="CBOT玉米",
         exchange="CBOT", tier="extended", priority=9,
         a_share_sectors=["玉米", "农业种植"],
         signal_type="price", multiplier=1.0,
     ),
     "W": FuturesSymbol(
-        symbol="W", ak_code="美麦", name="CBOT小麦",
+        symbol="W", ak_code="W", name="CBOT小麦",
         exchange="CBOT", tier="extended", priority=10,
         a_share_sectors=["小麦", "农业种植"],
         signal_type="price", multiplier=1.0,
     ),
     "S": FuturesSymbol(
-        symbol="S", ak_code="美大豆", name="CBOT大豆",
+        symbol="S", ak_code="S", name="CBOT大豆",
         exchange="CBOT", tier="extended", priority=11,
         a_share_sectors=["大豆", "农业种植"],
         signal_type="price", multiplier=1.0,
     ),
     "BO": FuturesSymbol(
-        symbol="BO", ak_code="美豆油", name="CBOT豆油",
+        symbol="BO", ak_code="BO", name="CBOT豆油",
         exchange="CBOT", tier="extended", priority=12,
         a_share_sectors=["豆油", "食用油"],
         signal_type="price", multiplier=1.0,
     ),
     "SM": FuturesSymbol(
-        symbol="SM", ak_code="美豆粕", name="CBOT豆粕",
+        symbol="SM", ak_code="SM", name="CBOT豆粕",
         exchange="CBOT", tier="extended", priority=13,
         a_share_sectors=["饲料", "农产品加工"],
         signal_type="price", multiplier=1.0,
     ),
     "CT": FuturesSymbol(
-        symbol="CT", ak_code="美棉", name="ICE棉花",
+        symbol="CT", ak_code="CT", name="ICE棉花",
         exchange="ICE", tier="extended", priority=14,
         a_share_sectors=["棉花", "纺织"],
         signal_type="price", multiplier=1.0,
     ),
     "RS": FuturesSymbol(
-        symbol="RS", ak_code="ICE油菜籽", name="ICE油菜籽",
+        symbol="RS", ak_code="RS", name="ICE油菜籽",
         exchange="ICE", tier="extended", priority=15,
         a_share_sectors=["油菜籽", "食用油"],
         signal_type="price", multiplier=1.0,
     ),
     "CAD": FuturesSymbol(
-        symbol="CAD", ak_code="加元", name="CME加元",
+        symbol="CAD", ak_code="CAD", name="CME加元",
         exchange="CME", tier="extended", priority=16,
         a_share_sectors=["外汇"],
         signal_type="price", multiplier=1.0,
     ),
     "LHC": FuturesSymbol(
-        symbol="LHC", ak_code="LME铝", name="LME铝",
+        symbol="LHC", ak_code="LHC", name="LME铝",
         exchange="LME", tier="extended", priority=17,
         a_share_sectors=["铝", "有色金属"],
         signal_type="price", multiplier=1.0,
     ),
     "AHD": FuturesSymbol(
-        symbol="AHD", ak_code="LME铝合金", name="LME铝合金",
+        symbol="AHD", ak_code="AHD", name="LME铝合金",
         exchange="LME", tier="extended", priority=18,
         a_share_sectors=["铝", "有色金属"],
         signal_type="price", multiplier=1.0,
     ),
     "EUA": FuturesSymbol(
-        symbol="EUA", ak_code="碳排放", name="ICE碳排放配额",
+        symbol="EUA", ak_code="EUA", name="ICE碳排放配额",
         exchange="ICE", tier="extended", priority=19,
         a_share_sectors=["碳中和", "环保"],
         signal_type="price", multiplier=1.0,
     ),
     "FEF": FuturesSymbol(
-        symbol="FEF", ak_code="欧洲运费", name="远期运费协议",
+        symbol="FEF", ak_code="FEF", name="远期运费协议",
         exchange="ICE", tier="extended", priority=20,
         a_share_sectors=["航运", "物流"],
         signal_type="price", multiplier=1.0,
@@ -190,55 +198,55 @@ FUTURES_SYMBOL_MAP: Dict[str, FuturesSymbol] = {
     # AUXILIARY 层 (9) — 低频辅助品种
     # ═════════════════════════════════════════════════════════════════════
     "NID": FuturesSymbol(
-        symbol="NID", ak_code="LME镍", name="LME镍",
+        symbol="NID", ak_code="NID", name="LME镍",
         exchange="LME", tier="auxiliary", priority=21,
         a_share_sectors=["镍", "有色金属"],
         signal_type="price", multiplier=1.0,
     ),
     "PBD": FuturesSymbol(
-        symbol="PBD", ak_code="LME铅", name="LME铅",
+        symbol="PBD", ak_code="PBD", name="LME铅",
         exchange="LME", tier="auxiliary", priority=22,
         a_share_sectors=["铅", "有色金属"],
         signal_type="price", multiplier=1.0,
     ),
     "SND": FuturesSymbol(
-        symbol="SND", ak_code="LME锡", name="LME锡",
+        symbol="SND", ak_code="SND", name="LME锡",
         exchange="LME", tier="auxiliary", priority=23,
         a_share_sectors=["锡", "有色金属"],
         signal_type="price", multiplier=1.0,
     ),
     "XPT": FuturesSymbol(
-        symbol="XPT", ak_code="铂金", name="NYMEX铂金",
+        symbol="XPT", ak_code="XPT", name="NYMEX铂金",
         exchange="NYMEX", tier="auxiliary", priority=24,
         a_share_sectors=["铂金", "贵金属"],
         signal_type="price", multiplier=1.0,
     ),
     "XPD": FuturesSymbol(
-        symbol="XPD", ak_code="钯金", name="NYMEX钯金",
+        symbol="XPD", ak_code="XPD", name="NYMEX钯金",
         exchange="NYMEX", tier="auxiliary", priority=25,
         a_share_sectors=["钯金", "贵金属"],
         signal_type="price", multiplier=1.0,
     ),
     "FCPO": FuturesSymbol(
-        symbol="FCPO", ak_code="马棕油", name="BMD棕榈油",
+        symbol="FCPO", ak_code="FCPO", name="BMD棕榈油",
         exchange="BMD", tier="auxiliary", priority=26,
         a_share_sectors=["棕榈油", "食用油"],
         signal_type="price", multiplier=1.0,
     ),
     "RSS3": FuturesSymbol(
-        symbol="RSS3", ak_code="RSS3橡胶", name="TSR20橡胶",
+        symbol="RSS3", ak_code="RSS3", name="TSR20橡胶",
         exchange="SICOM", tier="auxiliary", priority=27,
         a_share_sectors=["橡胶", "化工"],
         signal_type="price", multiplier=1.0,
     ),
     "BTC": FuturesSymbol(
-        symbol="BTC", ak_code="比特币", name="CME比特币",
+        symbol="BTC", ak_code="BTC", name="CME比特币",
         exchange="CME", tier="auxiliary", priority=28,
         a_share_sectors=["数字货币", "区块链"],
         signal_type="volatility", multiplier=1.0,
     ),
     "ZSD": FuturesSymbol(
-        symbol="ZSD", ak_code="LME锌", name="LME锌",
+        symbol="ZSD", ak_code="ZSD", name="LME锌",
         exchange="LME", tier="auxiliary", priority=29,
         a_share_sectors=["锌", "有色金属"],
         signal_type="price", multiplier=1.0,
@@ -466,18 +474,20 @@ class AKAdapter:
                 return None
             row = df.iloc[-1]
             multiplier = UNIT_CONVERT.get(symbol, 1.0)
+            # V11: akshare 1.18.x 返回英文列名 (date/open/high/low/close/volume)
+            # 兼容旧版中文列名作为 fallback
             result = {
                 "symbol": symbol,
                 "name": info.name,
                 "exchange": info.exchange,
-                "price": float(row.get("收盘价", row.get("close", 0))) * multiplier,
-                "change": float(row.get("涨跌额", row.get("change", 0))) * multiplier,
-                "pct_change": float(row.get("涨跌幅", row.get("pct_change", 0))),
-                "open": float(row.get("开盘价", row.get("open", 0))) * multiplier,
-                "high": float(row.get("最高价", row.get("high", 0))) * multiplier,
-                "low": float(row.get("最低价", row.get("low", 0))) * multiplier,
-                "volume": int(row.get("成交量", row.get("volume", 0))),
-                "date": str(row.get("日期", row.get("date", ""))),
+                "price": float(row.get("close", row.get("收盘价", 0))) * multiplier,
+                "change": float(row.get("change", row.get("涨跌额", 0))) * multiplier,
+                "pct_change": float(row.get("pct_change", row.get("涨跌幅", 0))),
+                "open": float(row.get("open", row.get("开盘价", 0))) * multiplier,
+                "high": float(row.get("high", row.get("最高价", 0))) * multiplier,
+                "low": float(row.get("low", row.get("最低价", 0))) * multiplier,
+                "volume": int(row.get("volume", row.get("成交量", 0))),
+                "date": str(row.get("date", row.get("日期", ""))),
                 "tier": info.tier,
                 "timestamp": time.time(),
             }
@@ -542,13 +552,20 @@ class AKAdapter:
             if df is None or df.empty:
                 return None
 
-            # 标准化列名
-            col_map = {
+            # V11: akshare 1.18.x 已返回英文列名, 兼容旧版中文列名
+            # 英文列名: date/open/high/low/close/volume/position
+            # 中文列名: 日期/开盘价/最高价/最低价/收盘价/成交量/涨跌额/涨跌幅
+            col_map = {}
+            cn_to_en = {
                 "日期": "date", "开盘价": "open", "最高价": "high",
                 "最低价": "low", "收盘价": "close", "成交量": "volume",
                 "涨跌额": "change", "涨跌幅": "pct_change",
             }
-            df = df.rename(columns=col_map)
+            for cn, en in cn_to_en.items():
+                if cn in df.columns and en not in df.columns:
+                    col_map[cn] = en
+            if col_map:
+                df = df.rename(columns=col_map)
 
             # 截取最近 N 天
             if "date" in df.columns:
@@ -627,17 +644,18 @@ class AKAdapter:
 
             row = df.iloc[0]
             multiplier = UNIT_CONVERT.get(symbol, 1.0)
+            # V11: akshare 1.18.x 返回英文列名优先, 中文列名 fallback
             return {
                 "symbol": symbol,
                 "name": info.name,
                 "exchange": info.exchange,
-                "price": float(row.get("最新价", row.get("price", 0))) * multiplier,
-                "change": float(row.get("涨跌", row.get("change", 0))) * multiplier,
-                "pct_change": float(row.get("涨跌幅", row.get("pct_change", 0))),
-                "bid": float(row.get("买价", row.get("bid", 0))) * multiplier,
-                "ask": float(row.get("卖价", row.get("ask", 0))) * multiplier,
-                "volume": int(row.get("成交量", row.get("volume", 0))),
-                "open_interest": int(row.get("持仓量", row.get("open_interest", 0))),
+                "price": float(row.get("price", row.get("最新价", 0))) * multiplier,
+                "change": float(row.get("change", row.get("涨跌", 0))) * multiplier,
+                "pct_change": float(row.get("pct_change", row.get("涨跌幅", 0))),
+                "bid": float(row.get("bid", row.get("买价", 0))) * multiplier,
+                "ask": float(row.get("ask", row.get("卖价", 0))) * multiplier,
+                "volume": int(row.get("volume", row.get("成交量", 0))),
+                "open_interest": int(row.get("open_interest", row.get("持仓量", 0))),
                 "timestamp": time.time(),
             }
 

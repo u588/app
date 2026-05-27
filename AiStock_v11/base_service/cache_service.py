@@ -33,7 +33,8 @@ class _NamespaceCache:
     def get(self, key: str) -> Optional[Any]:
         if key in self._store:
             value, expire_at = self._store[key]
-            if time.time() < expire_at:
+            # ttl=0 表示永不过期: expire_at=0 为特殊标记
+            if expire_at == 0 or time.time() < expire_at:
                 self._hits += 1
                 self._store.move_to_end(key)
                 return value
@@ -44,7 +45,8 @@ class _NamespaceCache:
     
     def set(self, key: str, value: Any, ttl: Optional[float] = None) -> None:
         effective_ttl = ttl if ttl is not None else self._ttl
-        expire_at = time.time() + effective_ttl
+        # ttl=0 表示永不过期: 使用 expire_at=0 作为特殊标记
+        expire_at = 0 if effective_ttl == 0 else time.time() + effective_ttl
         
         if key in self._store:
             self._store.move_to_end(key)

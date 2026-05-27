@@ -1,6 +1,6 @@
 system:
   name: "AiStock"
-  version: "10.0"
+  version: "11.1"
   mode: "production"  # production / development / testing
   
   paths:

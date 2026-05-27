@@ -377,6 +377,8 @@ codes:
 
   # ── 海外期货配置 ──────────────────────────────────────────
   # V11修正: 与 ak_adapter.py FUTURES_SYMBOL_MAP 对齐
+  # V11修复: akshare 1.18.x API变更, ak_code 从中文代码改为英文短代码
+  #   旧: WTI原油/COMEX黄金/布伦特原油 → 新: CL/GC/OIL (symbol = ak_code)
   # CORE层(8):   CL,OIL,GC,XAU,SI,XAG,NG,HG — 流动性最高,始终加载
   # EXTENDED层(12): C,W,S,BO,SM,CT,RS,CAD,LHC,AHD,EUA,FEF — 重要商品,按需加载
   # AUXILIARY层(9): NID,PBD,SND,XPT,XPD,FCPO,RSS3,BTC,ZSD — 低频辅助

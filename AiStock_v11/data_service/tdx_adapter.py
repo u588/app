@@ -803,9 +803,12 @@ class TDXAdapter:
         """
         获取宏观经济指标数据 (扩展端口)
 
+        V11 修复: Market 38 (资金流/宏观指标) 需要 category=4 (指数日K)
+                   Market 62 (行业指数) 使用 category=7 (标准日K)
+
         Args:
             code: 指标代码
-            market: 宏观市场编号 (通常50)
+            market: 宏观市场编号 (38=资金流/宏观, 62=行业指数)
             start: 起始位置
             count: 数据条数
         """
@@ -814,8 +817,11 @@ class TDXAdapter:
         def _fetch():
             api = pool.acquire()
             try:
+                # Market 38 的资金流/宏观指标需要用 category=4 (指数日K线)
+                # Market 62 的行业指数用 category=7 (标准日K线)
+                category = 4 if market == 38 else BarCategory.DAILY
                 df = api.get_instrument_bars(
-                    BarCategory.DAILY, market, code, start, count,
+                    category, market, code, start, count,
                 )
                 return self._normalize_bars(df) if df is not None and df != [] else pd.DataFrame()
             finally:
