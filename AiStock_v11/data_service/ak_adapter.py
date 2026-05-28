@@ -608,6 +608,132 @@ class AKAdapter:
         return self.get_futures_batch(tier_symbols)
 
     # ═══════════════════════════════════════════════════════════════════════
+    # V11.5: 中证指数PE数据 (在线优先, PostgreSQL降级)
+    # ═══════════════════════════════════════════════════════════════════════
+
+    def get_index_pe_csindex(
+        self,
+        symbol: str,
+        start_date: str = "20200101",
+        end_date: Optional[str] = None,
+    ) -> Optional[pd.DataFrame]:
+        """
+        获取中证指数历史PE数据 (含K线和滚动市盈率)
+
+        V11.5 新增: 从 akshare stock_zh_index_hist_csindex 获取指数数据,
+        该接口返回包含"滚动市盈率"列的完整指数数据。
+
+        Args:
+            symbol: 指数代码 (如 "000300", "000905", "932083")
+            start_date: 开始日期 (格式: "20200101")
+            end_date: 结束日期 (None=今天)
+
+        Returns:
+            DataFrame with columns:
+              trade_date, open, high, low, close, volume, amount,
+              pe_ttm, change_pct, sample_count
+            或 None (失败时)
+        """
+        if end_date is None:
+            from datetime import date
+            end_date = date.today().strftime("%Y%m%d")
+
+        cache_key = f"index_pe_{symbol}_{start_date}_{end_date}"
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        def _fetch():
+            return self._fetch_index_pe_csindex(symbol, start_date, end_date)
+
+        result = self._execute_with_retry(_fetch)
+        if result is not None:
+            # PE数据较长TTL (1小时)
+            self._cache.set(cache_key, result, ttl=3600)
+        return result
+
+    def _fetch_index_pe_csindex(
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
+    ) -> Optional[pd.DataFrame]:
+        """从 akshare stock_zh_index_hist_csindex 获取指数PE数据"""
+        if ak is None:
+            return None
+
+        try:
+            func = getattr(ak, "stock_zh_index_hist_csindex", None)
+            if func is None:
+                logger.warning("ak.stock_zh_index_hist_csindex 不可用")
+                return None
+
+            df = func(symbol=symbol, start_date=start_date, end_date=end_date)
+            if df is None or df.empty:
+                return None
+
+            # 标准化列名 (中证指数接口返回中文列名)
+            col_map = {
+                "日期": "trade_date",
+                "开盘": "open",
+                "最高": "high",
+                "最低": "low",
+                "收盘": "close",
+                "涨跌": "change",
+                "涨跌幅": "change_pct",
+                "成交量": "volume",
+                "成交金额": "amount",
+                "样本数量": "sample_count",
+                "滚动市盈率": "pe_ttm",
+                "指数代码": "index_code",
+                "指数中文全称": "index_name_full",
+                "指数中文简称": "index_name",
+                "指数英文全称": "index_name_en",
+                "指数英文简称": "index_name_short",
+            }
+
+            # 只映射存在的列
+            rename_map = {}
+            for cn, en in col_map.items():
+                if cn in df.columns and en not in df.columns:
+                    rename_map[cn] = en
+            if rename_map:
+                df = df.rename(columns=rename_map)
+
+            # 确保关键列存在
+            if "trade_date" not in df.columns or "pe_ttm" not in df.columns:
+                logger.warning(
+                    "stock_zh_index_hist_csindex(%s): 缺少关键列, "
+                    "可用列: %s", symbol, list(df.columns)
+                )
+                return None
+
+            # 数值类型转换
+            numeric_cols = ["open", "high", "low", "close", "volume", "amount",
+                           "pe_ttm", "change_pct", "sample_count"]
+            for col in numeric_cols:
+                if col in df.columns:
+                    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+            # 日期格式统一
+            if "trade_date" in df.columns:
+                df["trade_date"] = pd.to_datetime(df["trade_date"], errors="coerce")
+
+            # 按日期降序排列 (最新在前)
+            if "trade_date" in df.columns:
+                df = df.sort_values("trade_date", ascending=False).reset_index(drop=True)
+
+            # 注入 index_code 列 (如果不存在)
+            if "index_code" not in df.columns:
+                df.insert(0, "index_code", symbol)
+
+            return df
+
+        except Exception as e:
+            logger.error("stock_zh_index_hist_csindex(%s) 失败: %s", symbol, e)
+            return None
+
+    # ═══════════════════════════════════════════════════════════════════════
     # 实时商品数据
     # ═══════════════════════════════════════════════════════════════════════
 

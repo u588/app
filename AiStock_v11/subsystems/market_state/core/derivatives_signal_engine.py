@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AiStock V11 — 衍生品信号引擎 (Derivatives Signal Engine)
+AiStock V11.5 — 衍生品信号引擎 (Derivatives Signal Engine)
 
-V10 → V11 升级改进:
-  1. DerivativesResult 新增 fund_flow_signal / option_pcr_signal / macro_valuation_signal
-  2. _calculate_domestic_composite() 升级为6分量模型:
-     commodity(0.25) + term_structure(0.10) + index_basis(0.20)
-     + fund_flow(0.20) + option_pcr(0.15) + macro_valuation(0.10)
-  3. 保留行业情绪和海外信号作为辅助信息 (不计入6分量权重)
+V11.5 升级改进:
+  1. FundFlowEngine 重新激活, 构成7分量系统
+  2. _calculate_domestic_composite() 升级为7分量模型:
+     commodity(0.20) + term_structure(0.06) + index_basis(0.16)
+     + fund_flow(0.10) + option_pcr(0.10) + macro_valuation(0.10)
+     + style_rotation(0.28)
+  3. 不使用 akshare 的 ak.stock_individual_fund_flow() / ak.stock_market_fund_flow()
+  4. 保留行业情绪和海外信号作为辅助信息 (不计入7分量权重)
 
 核心能力:
   1. 商品期货信号  — 国内期货品种动量/基差/持仓/波动率
   2. 期限结构信号  — 远近月价差 (Contango/Backwardation)
   3. 股指期货基差  — IF/IH/IC/IM 升贴水
-  4. 行业情绪信号  — 期货品种→A股行业传导 (辅助, 不计入6分量)
-  5. 海外衍生品信号 — 调用 OverseasFuturesSignalEngine (辅助, 不计入6分量)
-  6. 基金资金流信号 — FundFlowEngine (V11 NEW)
+  4. 行业情绪信号  — 期货品种→A股行业传导 (辅助, 不计入7分量)
+  5. 海外衍生品信号 — 调用 OverseasFuturesSignalEngine (辅助, 不计入7分量)
+  6. 资金流信号    — FundFlowEngine (V11.5 重新激活, 基于TDX成交量数据)
   7. 期权PCR信号   — OptionPCREngine (V11 NEW)
   8. 宏观估值信号  — MacroValuationEngine (V11 NEW)
-  9. 增强报告 — 含6分量+辅助信号的完整报告
+  9. 增强报告 — 含7分量+辅助信号的完整报告
 """
 
 from __future__ import annotations
@@ -174,7 +176,7 @@ class OverseasDerivativesSignal:
 
 @dataclass
 class DerivativesResult:
-    """衍生品信号引擎综合结果 (V11 7分量)"""
+    """衍生品信号引擎综合结果 (V11.5 7分量)"""
     # ─── V10 原有4分量 ──────────────────────────────────────────────
     commodity_signals: Dict[str, CommoditySignal] = field(default_factory=dict)
     term_structure: Dict[str, TermStructureSignal] = field(default_factory=dict)
@@ -224,14 +226,14 @@ _DEFAULT_COMMODITY_SIGNAL_WEIGHTS = {
     "volatility": 0.20,
 }
 
-_DEFAULT_COMPOSITE_WEIGHTS = {
+_DEFAULT_DOMESTIC_WEIGHTS = {
     "commodity": 0.20,
-    "term_structure": 0.08,
-    "index_basis": 0.15,
-    "fund_flow": 0.15,
-    "option_pcr": 0.12,
+    "term_structure": 0.06,
+    "index_basis": 0.16,
+    "fund_flow": 0.10,
+    "option_pcr": 0.10,
     "macro_valuation": 0.10,
-    "style_rotation": 0.20,
+    "style_rotation": 0.28,
 }
 
 _DEFAULT_OVERSEAS_FUSION_WEIGHT = 0.30
@@ -242,13 +244,16 @@ _DEFAULT_OVERSEAS_FUSION_WEIGHT = 0.30
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class DerivativesSignalEngine:
-    """衍生品信号引擎 (V11 7分量模型)
+    """衍生品信号引擎 (V11.5 7分量模型)
 
-    V11 核心变更:
+    V11.5 核心变更:
+    - FundFlowEngine 重新激活, 构成7分量系统
+    - _calculate_domestic_composite() 升级为7分量模型
+    - 不使用 akshare 的 ak.stock_individual_fund_flow() / ak.stock_market_fund_flow()
+    - FundFlowEngine 基于 TDX 成交量数据构建资金流信号
     - 所有硬编码配置移至 ConfigService (YAML)
     - _resolve_futures_code() 默认后缀 L8 (不是 M0)
     - 商品品种、股指期货、信号权重均从配置加载
-    - V11: _calculate_domestic_composite() 升级为7分量模型
 
     使用方式:
         >>> engine = DerivativesSignalEngine(
@@ -348,7 +353,7 @@ class DerivativesSignalEngine:
         if self._config is None:
             return {
                 "commodity_signal": _DEFAULT_COMMODITY_SIGNAL_WEIGHTS,
-                "composite": _DEFAULT_COMPOSITE_WEIGHTS,
+                "composite": _DEFAULT_DOMESTIC_WEIGHTS,
             }
 
         return {
@@ -358,7 +363,7 @@ class DerivativesSignalEngine:
             ),
             "composite": self._config.get(
                 "market_state.composite_weights",
-                _DEFAULT_COMPOSITE_WEIGHTS,
+                _DEFAULT_DOMESTIC_WEIGHTS,
             ),
         }
 
@@ -792,12 +797,12 @@ class DerivativesSignalEngine:
             result = self.calculate_all()
 
         report = {
-            "version": "11.0",
+            "version": "11.5",
             "timestamp": datetime.now().isoformat(),
             "summary": {
                 "composite_signal": round(result.composite_signal, 2),
                 "composite_direction": result.composite_direction,
-                "model": "6-component",
+                "model": "7-component",
             },
             "domestic": {
                 "commodity": {
@@ -846,16 +851,17 @@ class DerivativesSignalEngine:
         macro_valuation_signal: Optional[Any] = None,
         style_rotation_signal: Optional[Any] = None,
     ) -> float:
-        """计算国内综合信号 — V11: 7分量模型
+        """计算国内综合信号 — V11.5: 7分量模型
 
-        V11 7分量权重:
-          commodity(0.20) + term_structure(0.08) + index_basis(0.15)
-          + fund_flow(0.15) + option_pcr(0.12) + macro_valuation(0.10)
-          + style_rotation(0.20)
+        V11.5 7分量权重 (fund_flow 重新激活):
+          commodity(0.20) + term_structure(0.06) + index_basis(0.16)
+          + fund_flow(0.10) + option_pcr(0.10) + macro_valuation(0.10)
+          + style_rotation(0.28)
 
-        注: industry_sentiment 和 overseas 不再计入7分量, 但仍作为辅助信息计算
+        注: industry_sentiment 和 overseas 不计入7分量, 但仍作为辅助信息计算
+        注: FundFlowEngine 基于 TDX 成交量数据, 不使用 akshare fund flow 接口
         """
-        w = self._weights.get("composite", _DEFAULT_COMPOSITE_WEIGHTS)
+        w = self._weights.get("composite", _DEFAULT_DOMESTIC_WEIGHTS)
 
         # ─── 3个原有分量 (始终可用) ────────────────────────────────
         commodity_avg = float(np.mean([s.signal for s in commodity_signals.values()])) if commodity_signals else 0.0
@@ -868,15 +874,15 @@ class DerivativesSignalEngine:
         macro_val = macro_valuation_signal.composite_signal if macro_valuation_signal and macro_valuation_signal.data_available else 0.0
         style_rot_val = style_rotation_signal.composite_signal if style_rotation_signal and style_rotation_signal.data_available else 0.0
 
-        # ─── 7分量加权合成 ─────────────────────────────────────────────
+        # ─── 7分量加权合成 ────────────────────────────────────────────
         composite = (
             commodity_avg * w.get("commodity", 0.20)
-            + term_avg * w.get("term_structure", 0.08)
-            + basis_avg * w.get("index_basis", 0.15)
-            + fund_flow_val * w.get("fund_flow", 0.15)
-            + option_pcr_val * w.get("option_pcr", 0.12)
+            + term_avg * w.get("term_structure", 0.06)
+            + basis_avg * w.get("index_basis", 0.16)
+            + fund_flow_val * w.get("fund_flow", 0.10)
+            + option_pcr_val * w.get("option_pcr", 0.10)
             + macro_val * w.get("macro_valuation", 0.10)
-            + style_rot_val * w.get("style_rotation", 0.20)
+            + style_rot_val * w.get("style_rotation", 0.28)
         )
         return max(-100.0, min(100.0, composite))
 

@@ -3,16 +3,17 @@
 """
 AiStock V11 — 市场状态引擎 (MarketStateEngine)
 
-V11 核心变更:
-  - 6分量模型: commodity + term_structure + index_basis
-    + fund_flow + option_pcr + macro_valuation
-  - 新增 FundFlowEngine / OptionPCREngine / MacroValuationEngine
-  - 行业情绪和海外信号降级为辅助信息 (不计入6分量权重)
+V11.5 核心变更:
+  - 7分量模型: commodity + term_structure + index_basis
+    + fund_flow + option_pcr + macro_valuation + style_rotation
+  - FundFlowEngine 重新激活 (基于TDX成交量数据, 不使用akshare fund flow接口)
+  - 新增 OptionPCREngine / MacroValuationEngine / StyleRotationEngine
+  - 行业情绪和海外信号降级为辅助信息 (不计入7分量权重)
 
 核心职责:
   - 继承 SubsystemBase, 自动注入 config / cache / event_bus
   - 编排: ContractManager + OptionCodeParser + DerivativesSignalEngine
-    + FundFlowEngine + OptionPCREngine + MacroValuationEngine + DataLoaderService
+    - FundFlowEngine + OptionPCREngine + MacroValuationEngine + DataLoaderService
   - start() / stop() / run() 生命周期
   - 发布事件: MARKET_STATE_UPDATED
 
@@ -53,7 +54,7 @@ EVENT_MARKET_STATE_WARNING = "market_state.warning"
 
 
 class MarketStateEngine(SubsystemBase):
-    """市场状态引擎 — V11 7分量模型
+    """市场状态引擎 — V11.5 7分量模型
 
     继承 SubsystemBase, 自动获得:
     - self.config:    ConfigService (子系统隔离配置)
@@ -65,7 +66,7 @@ class MarketStateEngine(SubsystemBase):
     - ContractManager:         动态合约推导 (全配置驱动)
     - OptionCodeParser:        期权代码解析
     - DerivativesSignalEngine: 衍生品信号计算 (3个原有分量 + 辅助信号)
-    - FundFlowEngine:          基金资金流信号 (V11 NEW)
+    - FundFlowEngine:          资金流信号 (V11.5 重新激活, 基于TDX成交量数据)
     - OptionPCREngine:         期权PCR信号 (V11 NEW)
     - MacroValuationEngine:    宏观估值信号 (V11 NEW)
     - StyleRotationEngine:     行业/风格/规模轮动信号 (V11 NEW)
@@ -96,13 +97,14 @@ class MarketStateEngine(SubsystemBase):
         self._data_loader: Optional[Any] = None
         self._tdx_adapter: Optional[Any] = None
         self._db_reader: Optional[Any] = None
+        self._ak_adapter: Optional[Any] = None
 
         # 状态
         self._last_result: Optional[DerivativesResult] = None
         self._is_running: bool = False
         self._run_count: int = 0
 
-        self.logger.info("MarketStateEngine V11.1 实例化完成")
+        self.logger.info("MarketStateEngine V11.5 实例化完成 (7分量模型)")
 
     # ──────────────────────────────────────────────────────────────
     #  生命周期
@@ -116,12 +118,12 @@ class MarketStateEngine(SubsystemBase):
           2. OptionCodeParser (期权代码解析)
           3. DataLoaderService (数据加载, 从容器获取)
           4. DerivativesSignalEngine (衍生品信号计算)
-          5. FundFlowEngine (基金资金流信号, V11 NEW)
+          5. FundFlowEngine (资金流信号, V11.5 重新激活)
           6. OptionPCREngine (期权PCR信号, V11 NEW)
           7. MacroValuationEngine (宏观估值信号, V11 NEW)
           8. StyleRotationEngine (行业/风格/规模轮动信号, V11 NEW)
         """
-        self.logger.info("MarketStateEngine V11.1 正在启动...")
+        self.logger.info("MarketStateEngine V11.5 正在启动...")
 
         # 1. ContractManager
         code_table_path = self.get_config("codes.code_table_path", None)
@@ -164,6 +166,13 @@ class MarketStateEngine(SubsystemBase):
             self._db_reader = None
             self.logger.debug("DatabaseReader 未注册, 估值信号将不可用")
 
+        # V11.5: AKAdapter (在线PE数据源)
+        if self._container.has("ak_adapter"):
+            self._ak_adapter = self._container.get("ak_adapter")
+        else:
+            self._ak_adapter = None
+            self.logger.debug("AKAdapter 未注册, 在线PE数据不可用")
+
         # 4. DerivativesSignalEngine
         overseas_engine = None
         if self._container.has("overseas_signal_engine"):
@@ -178,13 +187,13 @@ class MarketStateEngine(SubsystemBase):
         )
         self.logger.info("DerivativesSignalEngine 初始化完成")
 
-        # 5. FundFlowEngine (V11 NEW)
+        # 5. FundFlowEngine (V11.5 重新激活 — 基于TDX成交量数据)
         self._fund_flow_engine = FundFlowEngine(
-            data_service=self._tdx_adapter or self._data_loader,
+            tdx_adapter=self._tdx_adapter,
             config=self.config,
             cache=self.cache,
         )
-        self.logger.info("FundFlowEngine V11 初始化完成")
+        self.logger.info("FundFlowEngine V11.5 重新激活 (基于TDX成交量数据)")
 
         # 6. OptionPCREngine (V11 NEW)
         self._option_pcr_engine = OptionPCREngine(
@@ -194,32 +203,35 @@ class MarketStateEngine(SubsystemBase):
         )
         self.logger.info("OptionPCREngine V11 初始化完成")
 
-        # 7. MacroValuationEngine (V11 NEW)
+        # 7. MacroValuationEngine (V11.5 在线优先)
         self._macro_valuation_engine = MacroValuationEngine(
             tdx_adapter=self._tdx_adapter,
+            db_reader=self._db_reader,
+            ak_adapter=self._ak_adapter,
+            config=self.config,
+            cache=self.cache,
+        )
+        self.logger.info("MacroValuationEngine V11.5 初始化完成 (在线优先)")
+
+        # 8. StyleRotationEngine (V11.5 估值双因子)
+        self._style_rotation_engine = StyleRotationEngine(
+            tdx_adapter=self._tdx_adapter,
+            ak_adapter=self._ak_adapter,
             db_reader=self._db_reader,
             config=self.config,
             cache=self.cache,
         )
-        self.logger.info("MacroValuationEngine V11 初始化完成")
-
-        # 8. StyleRotationEngine (V11 NEW)
-        self._style_rotation_engine = StyleRotationEngine(
-            tdx_adapter=self._tdx_adapter,
-            config=self.config,
-            cache=self.cache,
-        )
-        self.logger.info("StyleRotationEngine V11 初始化完成")
+        self.logger.info("StyleRotationEngine V11.5 初始化完成 (估值双因子)")
 
         self._is_running = True
 
         # 发布启动事件
         super().start()
-        self.logger.info("MarketStateEngine V11.1 启动完成 (7分量模型)")
+        self.logger.info("MarketStateEngine V11.5 启动完成 (7分量模型)")
 
     def stop(self) -> None:
         """停止市场状态子系统"""
-        self.logger.info("MarketStateEngine V11 正在停止...")
+        self.logger.info("MarketStateEngine V11.5 正在停止...")
         self._is_running = False
 
         # 清理资源
@@ -234,10 +246,11 @@ class MarketStateEngine(SubsystemBase):
         self._data_loader = None
         self._tdx_adapter = None
         self._db_reader = None
+        self._ak_adapter = None
 
         # 发布停止事件
         super().stop()
-        self.logger.info("MarketStateEngine V11.1 已停止")
+        self.logger.info("MarketStateEngine V11.5 已停止")
 
     @property
     def is_running(self) -> bool:
@@ -284,10 +297,10 @@ class MarketStateEngine(SubsystemBase):
     # ──────────────────────────────────────────────────────────────
 
     def run(self) -> Optional[DerivativesResult]:
-        """执行一次完整的市场状态计算 (V11 7分量模型)
+        """执行一次完整的市场状态计算 (V11.5 7分量模型)
 
         计算流程:
-          1. FundFlowEngine.calculate()    → 基金资金流信号
+          1. FundFlowEngine.calculate()    → 资金流信号 (V11.5 重新激活)
           2. OptionPCREngine.calculate()   → 期权PCR信号
           3. MacroValuationEngine.calculate() → 宏观估值信号
           4. StyleRotationEngine.calculate()  → 行业/风格/规模轮动信号
@@ -304,10 +317,10 @@ class MarketStateEngine(SubsystemBase):
             return None
 
         start_time = time.time()
-        self.logger.info("MarketStateEngine V11 开始执行第 %d 次计算 (6分量)...", self._run_count + 1)
+        self.logger.info("MarketStateEngine V11.5 开始执行第 %d 次计算 (7分量)...", self._run_count + 1)
 
         try:
-            # 1. 基金资金流信号 (V11 NEW)
+            # 1. 资金流信号 (V11.5 重新激活 — 基于TDX成交量数据)
             fund_flow_signal = None
             if self._fund_flow_engine is not None:
                 try:
@@ -372,7 +385,7 @@ class MarketStateEngine(SubsystemBase):
             })
 
             self.logger.info(
-                "MarketStateEngine V11.1 第 %d 次计算完成 | "
+                "MarketStateEngine V11.5 第 %d 次计算完成 | "
                 "综合信号: %.1f [%s] | 模型: 7分量 | 耗时: %.0fms",
                 self._run_count,
                 result.composite_signal,
@@ -444,9 +457,6 @@ class MarketStateEngine(SubsystemBase):
             self._signal_engine._index_futures = self._signal_engine._load_index_futures_config()
             self._signal_engine._weights = self._signal_engine._load_weights()
             self._signal_engine._overseas_fusion_weight = self._signal_engine._load_overseas_fusion_weight()
-        if self._fund_flow_engine:
-            self._fund_flow_engine._weights = self._fund_flow_engine._load_weights()
-            self._fund_flow_engine._indicators = self._fund_flow_engine._load_indicators()
         if self._option_pcr_engine:
             self._option_pcr_engine._weights = self._option_pcr_engine._load_weights()
             self._option_pcr_engine._thresholds = self._option_pcr_engine._load_thresholds()
@@ -460,5 +470,10 @@ class MarketStateEngine(SubsystemBase):
             self._style_rotation_engine._industry_indices = self._style_rotation_engine._load_industry_indices()
             self._style_rotation_engine._style_indices = self._style_rotation_engine._load_style_indices()
             self._style_rotation_engine._size_indices = self._style_rotation_engine._load_size_indices()
-            self._style_rotation_engine._alert_thresholds = self._style_rotation_engine._load_alert_thresholds()
-        self.logger.info("MarketStateEngine V11.1 配置热重载完成")
+            self._style_rotation_engine._industry_val_weights = self._style_rotation_engine._load_industry_val_weights()
+        if self._fund_flow_engine:
+            self._fund_flow_engine._weights = self._fund_flow_engine._load_weights()
+            self._fund_flow_engine._large_cap_codes = self._fund_flow_engine._load_large_cap_codes()
+            self._fund_flow_engine._small_cap_codes = self._fund_flow_engine._load_small_cap_codes()
+            self._fund_flow_engine._futures_codes = self._fund_flow_engine._load_futures_codes()
+        self.logger.info("MarketStateEngine V11.5 配置热重载完成 (7分量模型)")

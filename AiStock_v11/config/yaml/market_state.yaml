@@ -1,7 +1,9 @@
-# ── 市场状态量化子系统配置 (V11 7分量模型) ─────────────
+# ── 市场状态量化子系统配置 (V11.5 7分量模型) ─────────────
+# V11.5: FundFlowEngine 重新激活, 构成7分量系统
+# 不使用 akshare 的 ak.stock_individual_fund_flow() / ak.stock_market_fund_flow()
 market_state:
   name: "A股市场状态量化"
-  version: "11.1"
+  version: "11.5"
 
   # 商品信号权重
   commodity_signal_weights:
@@ -10,26 +12,25 @@ market_state:
     oi_change: 0.20
     volatility: 0.20
 
-  # ═══ V11 7分量综合信号权重 ═══
-  # commodity(0.20) + term_structure(0.08) + index_basis(0.15)
-  # + fund_flow(0.15) + option_pcr(0.12) + macro_valuation(0.10)
-  # + style_rotation(0.20)
+  # V11.5 7分量综合信号权重 (含 fund_flow)
+  # commodity(0.20) + term_structure(0.06) + index_basis(0.16)
+  # + fund_flow(0.10) + option_pcr(0.10) + macro_valuation(0.10)
+  # + style_rotation(0.28)
   composite_weights:
     commodity: 0.20
-    term_structure: 0.08
-    index_basis: 0.15
-    fund_flow: 0.15
-    option_pcr: 0.12
+    term_structure: 0.06
+    index_basis: 0.16
+    fund_flow: 0.10
+    option_pcr: 0.10
     macro_valuation: 0.10
-    style_rotation: 0.20
+    style_rotation: 0.28
 
-  # ── 基金资金流权重 (V11 NEW) ──────────────────────────
+  # ── 资金流权重 (V11.5 重新激活) ──────────────────────
   fund_flow_weights:
-    margin: 0.25
-    etf_scale: 0.20
-    stock_bond_rotation: 0.25
-    active_passive: 0.15
-    fund_momentum: 0.15
+    volume_trend: 0.30    # 成交量趋势
+    size_rotation: 0.30   # 大小盘资金轮动
+    leverage_ratio: 0.20  # 杠杆资金活跃度
+    momentum: 0.20        # 资金流动量
 
   # ── 宏观估值权重 (V11 NEW) ────────────────────────────
   macro_valuation_weights:
@@ -61,11 +62,16 @@ market_state:
     - "510050"
     - "510300"
 
-  # ── 风格轮动权重 (V11 NEW) ────────────────────────────
+  # ── 风格轮动权重 (V11.5: 含估值因子) ────────────────────
   style_rotation_weights:
-    industry: 0.35      # 行业轮动权重
+    industry: 0.30      # 行业轮动权重 (含估值因子)
     style: 0.35         # 风格(成长/价值)轮动权重
-    size: 0.30          # 规模(大/小盘)轮动权重
+    size: 0.35          # 规模(大/小盘)轮动权重
+
+  # ── 行业估值双因子权重 (V11.5 NEW) ──────────────────────
+  industry_valuation_weights:
+    momentum: 0.60      # 动量因子权重
+    valuation: 0.40     # 估值(PE百分位)因子权重
 
   # ── 轮动预警阈值 (V11 NEW) ────────────────────────────
   rotation_alert_thresholds:

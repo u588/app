@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AiStock V11 — 宏观估值信号引擎 (Macro Valuation Signal Engine)
+AiStock V11.5 — 宏观估值信号引擎 (Macro Valuation Signal Engine)
 
-V11 NEW: 基于宏观指标和估值数据构建宏观估值信号分量
+V11.5: PE only, no PB — 去除PB百分位, 仅使用PE百分位构建估值信号
 
 数据来源:
   - TDX扩展端口 Market 38/50: 宏观经济指标
-  - DatabaseReader (PostgreSQL): PE/PB估值百分位
+  - AK适配器 (在线优先): PE估值数据 (中证指数官网)
+  - DatabaseReader (PostgreSQL降级): PE估值百分位
 
 宏观指标 (TDX扩展端口):
   - 3_PMI:  制造业PMI       → 经济景气度
@@ -20,8 +21,10 @@ V11 NEW: 基于宏观指标和估值数据构建宏观估值信号分量
   - 2_CPI:  CPI同比         → 通胀
   - 2_PPI:  PPI同比         → 工业通胀
 
-估值数据 (PostgreSQL):
-  - index_valuation 表: PE_TTM, PB, pe_percentile, pb_percentile
+估值数据 (在线优先, PG降级):
+  - 在线优先: AK适配器 get_index_pe_csindex() 获取中证指数PE
+  - PG降级: DatabaseReader.get_valuation_percentiles() 从PostgreSQL获取
+  - V11.5: PE only, no PB — 不再使用PB百分位
 
 信号输出:
   MacroValuationSignal.composite_signal ∈ [-100, 100]
@@ -32,7 +35,7 @@ V11 NEW: 基于宏观指标和估值数据构建宏观估值信号分量
   credit:     0.20  — 信用扩张
   liquidity:  0.20  — 流动性
   inflation:  0.10  — 通胀
-  valuation:  0.30  — 估值百分位 (权重最高, 最直接)
+  valuation:  0.30  — 估值百分位 (PE only, 权重最高, 最直接)
 """
 
 from __future__ import annotations
@@ -48,6 +51,7 @@ import pandas as pd
 # ─── Type aliases ──────────────────────────────────────────────────────────────
 TDXAdapter = Any
 DatabaseReader = Any
+AKAdapter = Any
 ConfigService = Any
 CacheService = Any
 
@@ -60,7 +64,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class MacroValuationSignal:
-    """宏观估值信号"""
+    """宏观估值信号 (V11.5: PE only, no PB)"""
     pmi_signal: float = 0.0         # 景气度信号
     credit_signal: float = 0.0      # 信用扩张信号
     liquidity_signal: float = 0.0   # 流动性信号
@@ -78,8 +82,7 @@ class MacroValuationSignal:
     us_10y_yield: float = 0.0       # 美国10年国债
     cpi_latest: float = 0.0         # 最新CPI
     ppi_latest: float = 0.0         # 最新PPI
-    pe_percentile_avg: float = 0.0  # 平均PE百分位
-    pb_percentile_avg: float = 0.0  # 平均PB百分位
+    pe_percentile_avg: float = 0.0  # 平均PE百分位 (V11.5: PE only, no PB)
     data_available: bool = False    # 数据是否可用
 
     def to_dict(self) -> Dict[str, Any]:
@@ -101,7 +104,6 @@ class MacroValuationSignal:
                 "cpi": round(self.cpi_latest, 4),
                 "ppi": round(self.ppi_latest, 4),
                 "pe_percentile_avg": round(self.pe_percentile_avg, 4),
-                "pb_percentile_avg": round(self.pb_percentile_avg, 4),
             },
             "data_available": self.data_available,
         }
@@ -136,21 +138,27 @@ _DEFAULT_VALUATION_CODES = ["000300", "000905", "000852"]
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 宏观估值信号引擎 V11
+# 宏观估值信号引擎 V11.5
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class MacroValuationEngine:
-    """宏观估值信号引擎 (V11 NEW)
+    """宏观估值信号引擎 (V11.5: PE only, no PB)
 
     基于宏观经济指标和估值数据, 构建宏观估值信号分量,
-    作为6分量模型的第6分量 (权重0.10)。
+    作为7分量模型的第5分量 (权重0.10)。
 
     宏观数据为月频为主, 估值数据为日频, 引擎同时处理两种频率。
+
+    V11.5 更新:
+    - 去除PB百分位, 仅使用PE百分位构建估值信号
+    - 在线优先: 通过AK适配器获取中证指数PE数据
+    - PG降级: 通过DatabaseReader获取PostgreSQL估值数据
 
     使用方式:
         >>> engine = MacroValuationEngine(
         ...     tdx_adapter=tdx,
         ...     db_reader=db,
+        ...     ak_adapter=ak,
         ...     config=config_svc,
         ... )
         >>> signal = engine.calculate()
@@ -160,6 +168,7 @@ class MacroValuationEngine:
         self,
         tdx_adapter: TDXAdapter,
         db_reader: Optional[DatabaseReader] = None,
+        ak_adapter: Optional[AKAdapter] = None,
         config: Optional[ConfigService] = None,
         cache: Optional[CacheService] = None,
         logger_instance: Optional[logging.Logger] = None,
@@ -168,13 +177,15 @@ class MacroValuationEngine:
 
         Args:
             tdx_adapter: TDXAdapter 实例 (扩展端口获取宏观指标)
-            db_reader: DatabaseReader 实例 (获取估值数据)
+            db_reader: DatabaseReader 实例 (获取估值数据, PG降级)
+            ak_adapter: AK适配器实例 (在线获取PE数据, 在线优先)
             config: ConfigService 实例
             cache: CacheService 实例
             logger_instance: Logger 实例
         """
         self._tdx = tdx_adapter
         self._db = db_reader
+        self._ak = ak_adapter
         self._config = config
         self._cache = cache
         self._logger = logger_instance or logger
@@ -185,10 +196,11 @@ class MacroValuationEngine:
         self._valuation_codes = self._load_valuation_codes()
 
         self._logger.info(
-            "MacroValuationEngine V11 初始化完成 | 宏观指标: %d, 估值代码: %d, 权重: %s",
+            "MacroValuationEngine V11.5 初始化完成 | 宏观指标: %d, 估值代码: %d, 权重: %s, AK: %s",
             len(self._indicators),
             len(self._valuation_codes),
             {k: round(v, 2) for k, v in self._weights.items()},
+            "可用" if self._ak is not None else "不可用",
         )
 
     # ──────────────────────────────────────────────────────────────
@@ -276,8 +288,8 @@ class MacroValuationEngine:
 
         elapsed = (time.time() - start_time) * 1000
         self._logger.info(
-            "MacroValuationEngine 计算: 综合=%.1f [%s] | PMI=%.1f 信用=%.1f "
-            "流动性=%.1f 通胀=%.1f 估值=%.1f | %.0fms",
+            "MacroValuationEngine V11.5 计算: 综合=%.1f [%s] | PMI=%.1f 信用=%.1f "
+            "流动性=%.1f 通胀=%.1f 估值=%.1f (PE only) | %.0fms",
             composite, signal.composite_direction,
             signal.pmi_signal, signal.credit_signal,
             signal.liquidity_signal, signal.inflation_signal,
@@ -467,60 +479,78 @@ class MacroValuationEngine:
         return max(-100.0, min(100.0, inflation_signal))
 
     def _calc_valuation_signal(self, signal: MacroValuationSignal) -> float:
-        """计算估值信号 (PE/PB百分位)
+        """计算估值信号 (PE百分位, V11.5 纯PE模式)
 
-        逻辑:
-        - PE百分位 < 20% → 严重低估, 看多
-        - PE百分位 20-40% → 低估, 轻微看多
-        - PE百分位 40-60% → 中性
-        - PE百分位 60-80% → 高估, 轻微看空
-        - PE百分位 > 80% → 严重高估, 看空
-        - PB百分位同理
+        V11.5: 去除PB, 仅使用PE百分位
+        - pe_percentile: 从在线API或PostgreSQL获取, 由DatabaseReader计算
+        - 信号公式: (50 - pe_pct_avg) * 2.0
         """
         if self._db is None or not hasattr(self._db, 'is_connected') or not self._db.is_connected:
-            self._logger.debug("MacroValuationEngine: 数据库未连接, 估值信号为0")
-            return 0.0
+            # V11.5: 即使DB未连接, 也可以通过在线API获取
+            if self._ak is None:
+                self._logger.debug("MacroValuationEngine: 数据库和AK均不可用")
+                return 0.0
 
         try:
             pe_percentiles = []
-            pb_percentiles = []
 
             for code in self._valuation_codes:
                 try:
-                    df = self._db.get_index_pe(code, days=500)
-                    if df is not None and not df.empty:
-                        latest = df.iloc[0]  # 按日期降序, 第一行为最新
-                        pe_pct = float(latest.get("pe_percentile", 0))
-                        pb_pct = float(latest.get("pb_percentile", 0))
-                        if not np.isnan(pe_pct):
-                            pe_percentiles.append(pe_pct)
-                        if not np.isnan(pb_pct):
-                            pb_percentiles.append(pb_pct)
+                    pe_pct = self._get_pe_percentile_for_code(code)
+                    if not np.isnan(pe_pct):
+                        pe_percentiles.append(pe_pct)
                 except Exception as e:
                     self._logger.debug("估值数据获取失败 %s: %s", code, e)
 
-            if not pe_percentiles and not pb_percentiles:
+            if not pe_percentiles:
+                self._logger.warning("MacroValuationEngine: 所有指数PE数据均不可用")
                 return 0.0
 
-            # 取均值
-            avg_pe_pct = float(np.mean(pe_percentiles)) if pe_percentiles else 50.0
-            avg_pb_pct = float(np.mean(pb_percentiles)) if pb_percentiles else 50.0
-
+            avg_pe_pct = float(np.mean(pe_percentiles))
             signal.pe_percentile_avg = avg_pe_pct
-            signal.pb_percentile_avg = avg_pb_pct
 
-            # 综合百分位 (PE权重60%, PB权重40%)
-            combined_pct = avg_pe_pct * 0.6 + avg_pb_pct * 0.4
-
-            # 百分位→信号 (反向: 低估→看多, 高估→看空)
-            # 线性映射: 0%→+100, 50%→0, 100%→-100
-            val_signal = (50.0 - combined_pct) * 2.0
-
+            # 纯PE百分位信号
+            val_signal = (50.0 - avg_pe_pct) * 2.0
             return max(-100.0, min(100.0, val_signal))
 
         except Exception as e:
             self._logger.warning("估值信号计算失败: %s", e)
             return 0.0
+
+    def _get_pe_percentile_for_code(self, code: str) -> float:
+        """获取单个指数的PE百分位 (在线优先, PG降级)"""
+        # 1. 在线优先
+        if self._ak is not None and hasattr(self._ak, 'get_index_pe_csindex'):
+            try:
+                df = self._ak.get_index_pe_csindex(code)
+                if df is not None and not df.empty and "pe_ttm" in df.columns:
+                    # 计算百分位
+                    from data_service.database_reader import _calc_percentile_rank
+                    pe_series = pd.to_numeric(df["pe_ttm"], errors="coerce").dropna()
+                    if len(pe_series) >= 10:
+                        pct_series = _calc_percentile_rank(pe_series, 2500)
+                        return float(pct_series.iloc[0])
+            except Exception as e:
+                self._logger.debug("在线PE获取失败 %s: %s, 尝试PG降级", code, e)
+
+        # 2. PG降级
+        if self._db is not None and hasattr(self._db, 'is_connected') and self._db.is_connected:
+            try:
+                if hasattr(self._db, 'get_valuation_percentiles'):
+                    val_data = self._db.get_valuation_percentiles(code, days=500)
+                    if val_data.get("data_available", False):
+                        return float(val_data.get("pe_percentile", np.nan))
+                else:
+                    df = self._db.get_index_pe(code, days=500)
+                    if df is not None and not df.empty:
+                        latest = df.iloc[0]
+                        pe_pct = float(latest.get("pe_percentile", 0))
+                        if pe_pct != 0 and not np.isnan(pe_pct):
+                            return pe_pct
+            except Exception as e:
+                self._logger.debug("PG PE获取失败 %s: %s", code, e)
+
+        return np.nan
 
     # ═══════════════════════════════════════════════════════════════════════
     # 数据获取

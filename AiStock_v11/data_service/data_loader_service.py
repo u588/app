@@ -1,8 +1,8 @@
 """
 AiStock V11 DataLoaderService — 配置驱动的数据加载编排服务
 
-V11 关键变更 (vs V10):
-  - 新增 fund_flow_data / macro_valuation_data 两个数据段 (共9段)
+V11.5 关键变更 (vs V11):
+  - FundFlowEngine 重新激活 (基于TDX成交量数据), 不再需要独立 fund_flow_data 数据段
   - 移除 LoaderConfig 硬编码数据类, 所有配置来自 ConfigService (YAML)
   - 构造函数接受 config_service: ConfigService, 从 codes.yaml / tdx.yaml 读取
   - 配置热重载: codes.yaml 变更自动刷新品种列表
@@ -15,17 +15,16 @@ V11 关键变更 (vs V10):
   codes.overseas          → 海外期货配置
   codes.macro             → 宏观指标配置
   codes.valuation         → 估值数据配置
-  codes.fund_flow         → 基金资金流指标 (V11 NEW)
   codes.macro_valuation   → 宏观估值指标 (V11 NEW)
   codes.cache_ttl         → 各段缓存TTL
   tdx.bars_count          → K线条数配置
 
 统一编排三大数据源:
-  1. TDXAdapter  → 指数K线 / 期货K线 / 期权K线 / 宏观数据 / 资金流数据
+  1. TDXAdapter  → 指数K线 / 期货K线 / 期权K线 / 宏观数据
   2. AKAdapter   → 海外期货 (29品种) / 辅助数据 (CFTC/LME/QVIX...)
   3. DatabaseReader → PE/PB 估值 / 期权合约映射
 
-加载结果分为 9 个数据段:
+加载结果分为 8 个数据段:
   index_data           — A股指数K线 (TDX标准端口)
   futures_data         — 国内期货K线 (TDX扩展端口)
   option_data          — 期权K线 / PCR计算 (TDX扩展端口)
@@ -33,8 +32,9 @@ V11 关键变更 (vs V10):
   auxiliary_data       — CFTC/LME/QVIX等 (AKAdapter)
   valuation_data       — PE/PB百分位 (DatabaseReader)
   macro_data           — 宏观指标 (TDX扩展端口)
-  fund_flow_data       — 基金资金流 (TDX扩展端口 Market 38) [V11 NEW]
   macro_valuation_data — 宏观估值 (TDX扩展端口 + PostgreSQL) [V11 NEW]
+
+注: FundFlowEngine (V11.5) 直接通过 TDXAdapter 获取成交量数据, 不需要 DataLoaderService 加载
 
 特性:
   - 按段加载 (load_section) / 全量加载 (load_all)
@@ -81,7 +81,6 @@ class DataSection(str, Enum):
     VALUATION_DATA = "valuation_data"
     MACRO_DATA = "macro_data"
     # ─── V11 NEW 数据段 ─────────────────────────────────────────────
-    FUND_FLOW_DATA = "fund_flow_data"            # 基金资金流 (Market 38)
     MACRO_VALUATION_DATA = "macro_valuation_data"  # 宏观估值 (Market 38 + PostgreSQL)
 
 
@@ -95,7 +94,6 @@ DEFAULT_SECTION_TTL: Dict[str, float] = {
     DataSection.VALUATION_DATA: 3600,    # 估值数据: 1小时
     DataSection.MACRO_DATA: 3600,        # 宏观数据: 1小时
     # ─── V11 NEW 数据段TTL ─────────────────────────────────────────
-    DataSection.FUND_FLOW_DATA: 1800,         # 基金资金流: 30分钟 (日频)
     DataSection.MACRO_VALUATION_DATA: 3600,   # 宏观估值: 1小时 (月频为主)
 }
 
@@ -238,7 +236,7 @@ class DataLoaderService:
       - 配置热重载: codes.yaml 变更 → 自动刷新品种列表 → 清除缓存
 
     统一管理三大数据源的加载流程, 提供:
-      - load_all()         全量加载 7 个数据段
+      - load_all()         全量加载 8 个数据段
       - load_section()     按段加载
       - load_overseas_futures()  海外期货 (按层级)
       - load_option_data_for_pcr()  期权PCR数据
@@ -393,27 +391,6 @@ class DataLoaderService:
             },
         )
 
-        # ─── 基金资金流配置 (V11 NEW) ─────────────────────────────────────
-        self._fund_flow_config: Dict[str, Any] = self._get_config_dict(
-            "codes.fund_flow",
-            default={
-                "indicators": [
-                    {"code": "7_RZ",    "market": 38, "name": "沪深融资余额",  "sub_signal": "margin_long"},
-                    {"code": "7_RQ",    "market": 38, "name": "沪深融券余额",  "sub_signal": "margin_short"},
-                    {"code": "7_TETF",  "market": 38, "name": "ETF基金规模",  "sub_signal": "etf_scale"},
-                    {"code": "9_990014","market": 38, "name": "偏股混基指数",  "sub_signal": "stock_fund"},
-                    {"code": "9_990015","market": 38, "name": "偏债混基指数",  "sub_signal": "bond_fund"},
-                    {"code": "9_990011","market": 38, "name": "主动股基指数",  "sub_signal": "active_fund"},
-                    {"code": "9_990012","market": 38, "name": "被动股基指数",  "sub_signal": "passive_fund"},
-                    {"code": "9_990002","market": 38, "name": "股票型基金指数", "sub_signal": "fund_index"},
-                ],
-                "weights": {
-                    "margin": 0.25, "etf_scale": 0.20, "stock_bond_rotation": 0.25,
-                    "active_passive": 0.15, "fund_momentum": 0.15,
-                },
-            },
-        )
-
         # ─── 宏观估值配置 (V11 NEW) ─────────────────────────────────────────
         self._macro_valuation_config: Dict[str, Any] = self._get_config_dict(
             "codes.macro_valuation",
@@ -521,7 +498,7 @@ class DataLoaderService:
 
     def load_all(self) -> Dict[str, Any]:
         """
-        全量加载所有 7 个数据段
+        全量加载所有 8 个数据段
 
         Returns:
             {
@@ -548,7 +525,6 @@ class DataLoaderService:
             (DataSection.VALUATION_DATA,   self._load_valuation_data),
             (DataSection.MACRO_DATA,       self._load_macro_data),
             # ─── V11 NEW 数据段 ─────────────────────────────────────
-            (DataSection.FUND_FLOW_DATA,       self._load_fund_flow_data),
             (DataSection.MACRO_VALUATION_DATA, self._load_macro_valuation_data),
         ]
 
@@ -612,7 +588,6 @@ class DataLoaderService:
             DataSection.VALUATION_DATA:   self._load_valuation_data,
             DataSection.MACRO_DATA:       self._load_macro_data,
             # ─── V11 NEW ─────────────────────────────────────────────
-            DataSection.FUND_FLOW_DATA:       self._load_fund_flow_data,
             DataSection.MACRO_VALUATION_DATA: self._load_macro_valuation_data,
         }
 
@@ -1037,52 +1012,6 @@ class DataLoaderService:
         report = _validate_dict_data(result, DataSection.MACRO_DATA)
         report.load_time_ms = (time.time() - start_time) * 1000
         self._quality_reports[DataSection.MACRO_DATA] = report
-
-        return result
-
-    # ═══════════════════════════════════════════════════════════════════════
-    # V11 NEW: 基金资金流数据加载
-    # ═══════════════════════════════════════════════════════════════════════
-
-    def _load_fund_flow_data(self) -> Dict[str, pd.DataFrame]:
-        """加载基金资金流指标 (TDX扩展端口, Market 38)
-
-        V11 NEW: 基金资金流数据段
-        包含: 融资融券余额(7_RZ/7_RQ)、ETF规模(7_TETF)、
-              偏股/偏债混基(990014/990015)、主动/被动股基(990011/990012)、
-              股票型基金指数(990002)
-        """
-        start_time = time.time()
-        result: Dict[str, pd.DataFrame] = {}
-
-        fund_flow_indicators = self._fund_flow_config.get("indicators", [])
-
-        total = len(fund_flow_indicators)
-        for idx, cfg in enumerate(fund_flow_indicators):
-            code = cfg.get("code", "")
-            name = cfg.get("name", code)
-            market = cfg.get("market", 38)
-            sub_signal = cfg.get("sub_signal", code)
-
-            try:
-                df = self._tdx.get_macro_data(
-                    code=code,
-                    market=market,
-                    count=120,
-                )
-                result[sub_signal] = df
-                if df.empty:
-                    logger.warning("资金流指标 %s (%s) 数据为空", name, code)
-            except Exception as e:
-                logger.error("资金流指标 %s (%s) 加载失败: %s", name, code, e)
-                result[sub_signal] = pd.DataFrame()
-
-            progress = (idx + 1) / total
-            self._notify_progress(DataSection.FUND_FLOW_DATA, progress, f"{name} 完成")
-
-        report = _validate_dict_data(result, DataSection.FUND_FLOW_DATA)
-        report.load_time_ms = (time.time() - start_time) * 1000
-        self._quality_reports[DataSection.FUND_FLOW_DATA] = report
 
         return result
 

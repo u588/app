@@ -1,8 +1,9 @@
 # ═══════════════════════════════════════════════════════════════
-# AiStock V11 品种代码配置 — 唯一数据源 (与 tdxAPICode180.xlsx / tdxIndexsRAW.xlsx 对齐)
+# AiStock V11.5 品种代码配置 — 唯一数据源 (与 tdxAPICode180.xlsx / tdxIndexsRAW.xlsx 对齐)
 # TDX 连续合约后缀规范: L0=当月, L1=下月, L2=下季, L3=隔季, L8=主连, L9=加权
 # 注: M0/M1 不存在于 tdxAPICode180.xlsx 代码表
 # V11新增: style_rotation 行业/风格/规模轮动标的 (来自 tdxIndexsRAW.xlsx)
+# V11.5: FundFlowEngine 重新激活 (基于TDX成交量数据), 行业PE估值配置
 # ═══════════════════════════════════════════════════════════════
 codes:
   # ── 指数代码 ──────────────────────────────────────────────
@@ -430,49 +431,15 @@ codes:
     codes: ["000300", "000905", "000852"]
     days: 100
 
-  # ── 基金资金流配置 (V11 NEW) ────────────────────────────
-  # TDX扩展接口 Market 38 数据
-  # 注: TON/TOS(北上/南下资金) 自2023-08起为线性插值, 不纳入
+  # ── 资金流配置 (V11.5 重新激活) ──────────────────────
+  # FundFlowEngine 基于TDX成交量数据, 不使用 akshare fund flow 接口
   fund_flow:
-    indicators:
-      - code: "7_RZ"
-        market: 38
-        name: "沪深融资余额"
-        sub_signal: "margin_long"
-      - code: "7_RQ"
-        market: 38
-        name: "沪深融券余额"
-        sub_signal: "margin_short"
-      - code: "7_TETF"
-        market: 38
-        name: "ETF基金规模"
-        sub_signal: "etf_scale"
-      - code: "9_990014"
-        market: 38
-        name: "偏股混基指数"
-        sub_signal: "stock_fund"
-      - code: "9_990015"
-        market: 38
-        name: "偏债混基指数"
-        sub_signal: "bond_fund"
-      - code: "9_990011"
-        market: 38
-        name: "主动股基指数"
-        sub_signal: "active_fund"
-      - code: "9_990012"
-        market: 38
-        name: "被动股基指数"
-        sub_signal: "passive_fund"
-      - code: "9_990002"
-        market: 38
-        name: "股票型基金指数"
-        sub_signal: "fund_index"
-    weights:
-      margin: 0.25
-      etf_scale: 0.20
-      stock_bond_rotation: 0.25
-      active_passive: 0.15
-      fund_momentum: 0.15
+    # 大盘指数 (用于资金流方向判断)
+    large_cap_codes: ["000300", "000016"]
+    # 小盘指数 (用于大小盘轮动判断)
+    small_cap_codes: ["000852", "399006"]
+    # 股指期货代码 (用于杠杆资金活跃度判断)
+    futures_codes: ["IFL8", "IML8"]
 
   # ── 宏观估值配置 (V11 NEW) ──────────────────────────────
   # TDX扩展接口 Market 38 宏观指标 + PostgreSQL估值数据
@@ -536,10 +503,18 @@ codes:
     auxiliary_data: 1800
     valuation_data: 3600
     macro_data: 3600
-    # ─── V11 NEW 数据段TTL ─────────────────────────────────────────
-    fund_flow_data: 1800         # 基金资金流: 30分钟 (日频)
+    # ─── V11 数据段TTL ─────────────────────────────────────────
     macro_valuation_data: 3600   # 宏观估值: 1小时 (月频为主)
     style_rotation_data: 300     # 风格轮动: 5分钟 (日频指数)
+    # ─── V11.5 NEW 数据段TTL ──────────────────────────────────
+    industry_pe_data: 3600       # 行业PE数据: 1小时 (日频)
+
+  # ── 行业PE估值配置 (V11.5 NEW) ──────────────────────────
+  # 用于 StyleRotationEngine 估值双因子
+  industry_pe:
+    codes: ["932083", "932077", "932078", "932079", "932080", "932081", "932082", "932084", "932085", "932086"]
+    days: 2500          # PE百分位计算所需历史数据量
+    percentile_window: 2500
 
   # ── 行业/风格/规模轮动配置 (V11 NEW) ──────────────────
   # 数据源: tdxIndexsRAW.xlsx, 全指行业系列(EX,MC=62) + 成长/价值风格对 + 大中小盘规模

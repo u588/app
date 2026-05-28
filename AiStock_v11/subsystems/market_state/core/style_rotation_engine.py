@@ -4,6 +4,7 @@
 AiStock V11 — 风格轮动信号引擎 (Style Rotation Signal Engine)
 
 V11 NEW: 基于行业/风格/规模三维轮动构建风格轮动信号分量
+V11.5: 行业轮动升级为动量+估值双因子驱动
 
 数据来源:
   行业轮动 (中证全指行业系列, EX MarketCode=62):
@@ -37,7 +38,7 @@ V11 NEW: 基于行业/风格/规模三维轮动构建风格轮动信号分量
     - 399006: 创业板指 (SZ) → gem
 
 信号逻辑:
-  - 行业轮动: 各行业20日动量排名, top3与bottom3差值归一化
+  - 行业轮动: 动量+估值双因子, 各行业综合信号排名, top3与bottom3差值归一化 (V11.5)
   - 风格轮动: 成长/价值指数比值变化率, 正=成长领先
   - 规模轮动: 大盘加权/小盘加权比值变化率, 正=大盘领先
   - 预警: 5日比值变化>3%时触发轮动预警
@@ -47,9 +48,9 @@ V11 NEW: 基于行业/风格/规模三维轮动构建风格轮动信号分量
   StyleRotationSignal.composite_direction ∈ {"bullish", "bearish", "neutral"}
 
 权重 (从 market_state.yaml style_rotation_weights 加载):
-  industry: 0.35  — 行业轮动信号
+  industry: 0.30  — 行业轮动信号 (含估值因子)
   style:    0.35  — 成长/价值风格信号
-  size:     0.30  — 大小盘规模信号
+  size:     0.35  — 大小盘规模信号
 """
 
 from __future__ import annotations
@@ -82,6 +83,9 @@ class IndustryRotationSignal:
     name: str = ""              # 指数中文名
     momentum_5d: float = 0.0    # 5日动量 (%)
     momentum_20d: float = 0.0   # 20日动量 (%)
+    pe_ttm: float = 0.0              # 最新滚动市盈率 (V11.5)
+    pe_percentile: float = 0.0        # PE百分位 (V11.5)
+    valuation_signal: float = 0.0     # 估值信号值 (V11.5)
     signal: float = 0.0         # 行业信号值
     direction: str = "neutral"  # 方向
     rank: int = 0               # 排名 (1=最强)
@@ -93,6 +97,9 @@ class IndustryRotationSignal:
             "name": self.name,
             "momentum_5d": round(self.momentum_5d, 2),
             "momentum_20d": round(self.momentum_20d, 2),
+            "pe_ttm": round(self.pe_ttm, 2),
+            "pe_percentile": round(self.pe_percentile, 2),
+            "valuation_signal": round(self.valuation_signal, 2),
             "signal": round(self.signal, 2),
             "direction": self.direction,
             "rank": self.rank,
@@ -150,9 +157,9 @@ class StyleRotationSignal:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _DEFAULT_STYLE_ROTATION_WEIGHTS = {
-    "industry": 0.35,
+    "industry": 0.30,   # 行业轮动权重 (含估值因子)
     "style": 0.35,
-    "size": 0.30,
+    "size": 0.35,
 }
 
 _DEFAULT_INDUSTRY_INDICES = [
@@ -193,15 +200,18 @@ class StyleRotationEngine:
     """风格轮动信号引擎 (V11 NEW)
 
     基于行业/风格/规模三维轮动数据, 构建风格轮动信号分量。
+    V11.5: 行业轮动升级为动量+估值双因子驱动。
 
     三维轮动逻辑:
-      - 行业轮动: 各行业动量排名, top3与bottom3差值反映行业分化程度
+      - 行业轮动: 动量+估值双因子排名, top3与bottom3差值反映行业分化程度
       - 风格轮动: 成长/价值指数比值变化, 反映市场风格偏好切换
       - 规模轮动: 大盘/小盘指数比值变化, 反映资金在大与小之间的轮动
 
     使用方式:
         >>> engine = StyleRotationEngine(
         ...     tdx_adapter=tdx,
+        ...     ak_adapter=ak,
+        ...     db_reader=db,
         ...     config=config_svc,
         ... )
         >>> signal = engine.calculate()
@@ -210,6 +220,8 @@ class StyleRotationEngine:
     def __init__(
         self,
         tdx_adapter: TDXAdapter,
+        ak_adapter=None,
+        db_reader=None,
         config: Optional[ConfigService] = None,
         cache: Optional[CacheService] = None,
         logger_instance: Optional[logging.Logger] = None,
@@ -218,11 +230,15 @@ class StyleRotationEngine:
 
         Args:
             tdx_adapter: TDXAdapter 实例 (标准+扩展端口)
+            ak_adapter: AKShare适配器实例 (V11.5, 用于获取行业PE)
+            db_reader: 数据库读取器实例 (V11.5, 用于PE降级查询)
             config: ConfigService 实例
             cache: CacheService 实例
             logger_instance: Logger 实例
         """
         self._tdx = tdx_adapter
+        self._ak = ak_adapter
+        self._db = db_reader
         self._config = config
         self._cache = cache
         self._logger = logger_instance or logger
@@ -233,12 +249,16 @@ class StyleRotationEngine:
         self._style_indices = self._load_style_indices()
         self._size_indices = self._load_size_indices()
 
+        # V11.5: 行业估值权重
+        self._industry_val_weights = self._load_industry_val_weights()
+
         self._logger.info(
-            "StyleRotationEngine V11 初始化完成 | 行业: %d, 风格: %d, 规模: %d, 权重: %s",
+            "StyleRotationEngine V11.5 初始化完成 | 行业: %d, 风格: %d, 规模: %d, 权重: %s, 估值权重: %s",
             len(self._industry_indices),
             len(self._style_indices),
             len(self._size_indices),
             {k: round(v, 2) for k, v in self._weights.items()},
+            {k: round(v, 2) for k, v in self._industry_val_weights.items()},
         )
 
     # ──────────────────────────────────────────────────────────────
@@ -276,6 +296,14 @@ class StyleRotationEngine:
             if indices and isinstance(indices, list):
                 return indices
         return list(_DEFAULT_SIZE_INDICES)
+
+    def _load_industry_val_weights(self) -> Dict[str, float]:
+        """从 ConfigService 加载行业估值双因子权重 (V11.5)"""
+        if self._config is not None:
+            weights = self._config.get("market_state.industry_valuation_weights", None)
+            if weights and isinstance(weights, dict):
+                return {k: float(v) for k, v in weights.items()}
+        return {"momentum": 0.60, "valuation": 0.40}
 
     # ═══════════════════════════════════════════════════════════════════════
     # 核心计算
@@ -327,9 +355,9 @@ class StyleRotationEngine:
         # 4. 加权合成
         w = self._weights
         composite = (
-            industry_signal * w.get("industry", 0.35)
+            industry_signal * w.get("industry", 0.30)
             + style_signal_val * w.get("style", 0.35)
-            + size_signal_val * w.get("size", 0.30)
+            + size_signal_val * w.get("size", 0.35)
         )
         composite = max(-100.0, min(100.0, composite))
         signal.composite_signal = composite
@@ -352,7 +380,7 @@ class StyleRotationEngine:
         return signal
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 子信号计算 — 行业轮动
+    # 子信号计算 — 行业轮动 (V11.5: 动量+估值双因子)
     # ═══════════════════════════════════════════════════════════════════════
 
     def _calc_industry_rotation(
@@ -360,12 +388,14 @@ class StyleRotationEngine:
         industry_data: Dict[str, pd.DataFrame],
         signal: StyleRotationSignal,
     ) -> float:
-        """计算行业轮动信号
+        """计算行业轮动信号 (V11.5: 动量+估值双因子)
 
         逻辑:
         - 计算每个行业的5日和20日动量
-        - 按动量排名 (1=最强)
-        - top3平均动量 - bottom3平均动量 → 行业分化度
+        - V11.5: 获取行业PE估值, 生成估值信号
+        - V11.5: 动量+估值双因子加权合成综合信号
+        - 按综合信号排名 (1=最强)
+        - top3平均信号 - bottom3平均信号 → 行业分化度
         - 分化度归一化为信号值
 
         Args:
@@ -376,7 +406,9 @@ class StyleRotationEngine:
             行业轮动信号值
         """
         industry_signals: Dict[str, IndustryRotationSignal] = {}
-        momentum_list: List[Tuple[str, float]] = []  # (industry, momentum_20d)
+        momentum_list: List[Tuple[str, float]] = []  # (industry, combined_signal)
+
+        iv_w = self._industry_val_weights
 
         for cfg in self._industry_indices:
             industry = cfg.get("industry", "")
@@ -407,7 +439,26 @@ class StyleRotationEngine:
             if len(close) >= 21 and close[-21] > 0:
                 momentum_20d = (close[-1] / close[-21] - 1.0) * 100.0
 
-            momentum_list.append((industry, momentum_20d))
+            # V11.5: 获取行业PE估值
+            pe_ttm = 0.0
+            pe_percentile = 50.0
+            valuation_signal = 0.0
+            try:
+                pe_data = self._get_industry_pe(code)
+                if pe_data is not None:
+                    pe_ttm = pe_data.get("pe_ttm", 0.0)
+                    pe_percentile = pe_data.get("pe_percentile", 50.0)
+                    # 估值信号: 低PE百分位=低估=看多, 高PE百分位=高估=看空
+                    valuation_signal = (50.0 - pe_percentile) * 2.0
+            except Exception as e:
+                self._logger.debug("行业PE获取失败 %s: %s", code, e)
+
+            # V11.5: 动量+估值双因子
+            momentum_signal = momentum_20d * 5.0  # 动量信号 (原有)
+            combined_signal = (momentum_signal * iv_w.get("momentum", 0.6)
+                              + valuation_signal * iv_w.get("valuation", 0.4))
+
+            momentum_list.append((industry, combined_signal))
 
             industry_signals[industry] = IndustryRotationSignal(
                 industry=industry,
@@ -415,18 +466,18 @@ class StyleRotationEngine:
                 name=name,
                 momentum_5d=momentum_5d,
                 momentum_20d=momentum_20d,
-                direction="neutral",
+                pe_ttm=pe_ttm,
+                pe_percentile=pe_percentile,
+                valuation_signal=valuation_signal,
+                signal=combined_signal,
+                direction=self._signal_to_direction(combined_signal),
             )
 
-        # 按20日动量排名
+        # 按综合信号排名
         momentum_list.sort(key=lambda x: x[1], reverse=True)
         for rank, (industry, _) in enumerate(momentum_list, start=1):
             if industry in industry_signals:
                 industry_signals[industry].rank = rank
-
-        # 设置方向
-        for ind_sig in industry_signals.values():
-            ind_sig.direction = self._signal_to_direction(ind_sig.momentum_20d * 5.0)
 
         # 计算行业分化度信号: top3均值 - bottom3均值
         top3_avg = 0.0
@@ -454,17 +505,57 @@ class StyleRotationEngine:
         # 写入信号
         signal.industry_rotation = industry_signals
 
-        # 行业热力图排名 (按20日动量降序)
+        # 行业热力图排名 (按综合信号降序)
         signal.industry_heatmap_ranking = [
-            (industry, round(momentum, 2)) for industry, momentum in momentum_list
+            (industry, round(sig_val, 2)) for industry, sig_val in momentum_list
         ]
 
         self._logger.debug(
-            "行业轮动: 分化度=%.2f, top3=%.2f, bottom3=%.2f, 信号=%.1f",
+            "行业轮动(V11.5): 分化度=%.2f, top3=%.2f, bottom3=%.2f, 信号=%.1f",
             dispersion, top3_avg, bottom3_avg, industry_signal,
         )
 
         return industry_signal
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # 行业PE估值获取 (V11.5)
+    # ═══════════════════════════════════════════════════════════════════════
+
+    def _get_industry_pe(self, code: str) -> Optional[Dict[str, float]]:
+        """获取行业指数PE数据 (在线优先, PG降级) (V11.5)"""
+        # 1. 在线优先 (akshare)
+        if self._ak is not None and hasattr(self._ak, 'get_index_pe_csindex'):
+            try:
+                df = self._ak.get_index_pe_csindex(code)
+                if df is not None and not df.empty and "pe_ttm" in df.columns:
+                    from data_service.database_reader import _calc_percentile_rank
+                    pe_series = pd.to_numeric(df["pe_ttm"], errors="coerce").dropna()
+                    pe_ttm = float(pe_series.iloc[0]) if len(pe_series) > 0 else 0.0
+                    pe_pct = 50.0
+                    if len(pe_series) >= 10:
+                        pct_series = _calc_percentile_rank(pe_series, 2500)
+                        pe_pct = float(pct_series.iloc[0])
+                    return {"pe_ttm": pe_ttm, "pe_percentile": pe_pct}
+            except Exception:
+                pass
+
+        # 2. PG降级
+        if self._db is not None and hasattr(self._db, 'is_connected') and self._db.is_connected:
+            try:
+                if hasattr(self._db, 'get_index_pe_online_first'):
+                    df = self._db.get_index_pe_online_first(code, days=100, ak_adapter=self._ak)
+                else:
+                    df = self._db.get_index_pe(code, days=100)
+                if df is not None and not df.empty:
+                    latest = df.iloc[0]
+                    return {
+                        "pe_ttm": float(latest.get("pe_ttm", 0)),
+                        "pe_percentile": float(latest.get("pe_percentile", 50)),
+                    }
+            except Exception:
+                pass
+
+        return None
 
     # ═══════════════════════════════════════════════════════════════════════
     # 子信号计算 — 风格轮动
@@ -737,7 +828,7 @@ class StyleRotationEngine:
         - 成长/价值比值5日变化 < -3% → "成长→价值风格切换"
         - 大盘/小盘比值5日变化 > 3% → "小盘→大盘轮动预警"
         - 大盘/小盘比值5日变化 < -3% → "大盘→小盘轮动预警"
-        - 行业top1与bottom1动量差 > 15% → "行业分化加剧"
+        - 行业top1与bottom1信号差 > 15% → "行业分化加剧"
 
         Args:
             signal: 已计算的 StyleRotationSignal

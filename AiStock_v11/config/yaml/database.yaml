@@ -6,7 +6,24 @@ database:
     user: "sa"
     password: "11111111"
     schema: "public"
-  
+    # ─── V11.5: PE only, no PB ──────────────────────────────────────
+    # V11.5: 移除 pb/pb_percentile, pe_percentile改为衍生列, dividend_yield移至外部
+    table_mode: "per_code"
+    columns:                              # 列名映射 (物理列名 → 逻辑列名)
+      trade_date: "trade_date"
+      pe_ttm: "pe_ttm"
+    # ─── V11.5: 衍生列配置 (PE only, no PB) ──────────────────────
+    # pe_percentile: 由 DatabaseReader 从历史 pe_ttm 序列计算
+    # dividend_yield: 外部数据源 (可选)
+    derived_columns:
+      pe_percentile:
+        source: "pe_ttm"               # 从 pe_ttm 历史序列计算百分位
+        window: 2500                    # 百分位计算窗口 (约10年交易日)
+        method: "rank"                  # rank = 排名百分位, zscore = Z分数
+      dividend_yield:
+        source: "external"             # 外部数据源 (V11.5: 可选)
+        required: false                 # 非必须, 缺失时降级处理
+
   csi_index_pe:
     host: "10.3.18.56"
     port: 5432
@@ -14,3 +31,42 @@ database:
     user: "sa"
     password: "11111111"
     schema: "public"
+    # ─── V11.5: PE only, no PB ──────────────────────────────────────
+    # V11.5: 移除 pb/pb_percentile 衍生列, pe_ttm保留, dividend_yield移至外部
+    # 实际数据库列名为中文, 且包含完整K线数据
+    # 物理列名 → 逻辑列名 (供 DatabaseReader / MacroValuationEngine 使用)
+    table_mode: "per_code"
+    columns:
+      trade_date: "日期"                # 交易日期
+      index_code: "指数代码"            # 指数代码 (表中已有此列)
+      index_name_cn: "指数中文简称"     # 指数中文简称
+      open: "开盘"                      # 开盘价
+      high: "最高"                      # 最高价
+      low: "最低"                       # 最低价
+      close: "收盘"                     # 收盘价
+      change: "涨跌"                    # 涨跌额
+      change_pct: "涨跌幅"             # 涨跌幅(%)
+      volume: "成交量"                  # 成交量(万手)
+      amount: "成交金额"               # 成交额(亿)
+      sample_count: "样本数量"          # 成分股数量
+      pe_ttm: "滚动市盈率"             # 滚动市盈率 (PE_TTM)
+    # ─── V11.5: 衍生列配置 (PE only, no PB) ──────────────────────
+    # pe_percentile: 由 DatabaseReader 从历史 pe_ttm 序列计算
+    # dividend_yield: 外部数据源 (可选)
+    derived_columns:
+      pe_percentile:
+        source: "pe_ttm"               # 从 pe_ttm 历史序列计算百分位
+        window: 2500                    # 百分位计算窗口 (约10年交易日)
+        method: "rank"                  # rank = 排名百分位, zscore = Z分数
+      dividend_yield:
+        source: "external"             # 外部数据源 (V11.5: 可选)
+        required: false                 # 非必须, 缺失时降级处理
+    # ─── 期权合约列名映射 (如 tdxIndex 中有期权标的表) ──────────
+    option_columns:
+      underlying_code: "underlying_code"
+      contract_code: "contract_code"
+      contract_name: "contract_name"
+      option_type: "option_type"
+      strike_price: "strike_price"
+      expire_date: "expire_date"
+      market: "market"

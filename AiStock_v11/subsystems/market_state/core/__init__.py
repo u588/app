@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Market State 子系统 — 核心模块 (V11 6分量模型)"""
+"""Market State 子系统 — 核心模块 (V11.5 7分量模型)"""
 from __future__ import annotations
 
 from subsystems.market_state.core.market_state_engine import MarketStateEngine
@@ -36,6 +36,10 @@ from subsystems.market_state.core.macro_valuation_engine import (
     MacroValuationEngine,
     MacroValuationSignal,
 )
+from subsystems.market_state.core.style_rotation_engine import (
+    StyleRotationEngine,
+    StyleRotationSignal,
+)
 
 __all__ = [
     "MarketStateEngine",
@@ -60,4 +64,7 @@ __all__ = [
     "OptionPCRSignal",
     "MacroValuationEngine",
     "MacroValuationSignal",
+    # V11.5 Style Rotation
+    "StyleRotationEngine",
+    "StyleRotationSignal",
 ]
